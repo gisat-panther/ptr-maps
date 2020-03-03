@@ -1,0 +1,23 @@
+const numberOfLevels = 18;
+const defaultLevelsRange = [1,18];
+const zoomCoefficient = 500;
+
+const vectorLayerDefaultFeatureStyle = {
+	fillColor: null,
+	fillOpacity: 0,
+	strokeColor: "#444",
+	strokeWidth: 2,
+};
+
+const vectorLayerHighlightedFeatureStyle = {
+	strokeColor: "#00FFFF",
+	strokeWidth: 2,
+};
+
+export default {
+	numberOfLevels,
+	defaultLevelsRange,
+	zoomCoefficient,
+	vectorLayerDefaultFeatureStyle,
+	vectorLayerHighlightedFeatureStyle
+}
