@@ -1,19 +1,42 @@
 import viewUtils from '../viewUtils';
 
-function getLeafletViewFromViewParams(view) {
-	let leafletView = {
-		center: {
-			lat: view.center.lat,
-			lng: view.center.lon
-		},
-		zoom: null
-	};
+const defaultView = {
+	center: {
+		lat: 50,
+		lng: 15
+	},
+	zoom: 12
+};
 
-	if (view.boxRange) {
-		leafletView.zoom = viewUtils.getZoomLevelFromView(view);
+function getLeafletViewFromViewParams(view) {
+	let leafletView = {...defaultView};
+
+	if (view) {
+		if (view.center) {
+			if (view.center.lat || view.center.lat === 0) {
+				leafletView.center.lat = view.center.lat;
+			}
+
+			if (view.center.lon || view.center.lon === 0) {
+				leafletView.center.lng = view.center.lon;
+			}
+		}
+
+		if (view.boxRange) {
+			leafletView.zoom = viewUtils.getZoomLevelFromView(view);
+		}
 	}
 
 	return leafletView;
+}
+
+function getLeafletViewportFromViewParams(view) {
+	const leafletView = getLeafletViewFromViewParams(view);
+
+	return {
+		zoom: leafletView.zoom,
+		center: [leafletView.center.lat, leafletView.center.lng]
+	};
 }
 
 function update(map, view) {
@@ -28,5 +51,7 @@ function update(map, view) {
 }
 
 export default {
+	getLeafletViewFromViewParams,
+	getLeafletViewportFromViewParams,
 	update
 }

@@ -61,6 +61,7 @@ module.exports = {
         '@gisatcz/ptr-state': '@gisatcz/ptr-state',
         "js-quadtree": "js-quadtree",
         "leaflet": "leaflet",
+        "react-leaflet": "react-leaflet",
         "uri-templates": "uri-templates",
         "webworldwind-esa": "webworldwind-esa"
     }

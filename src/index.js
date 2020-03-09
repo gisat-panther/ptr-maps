@@ -3,10 +3,11 @@ import viewUtils from "./viewUtils";
 import GoToPlace from "./controls/GoToPlace";
 import MapGrid from "./MapGrid";
 import MapControls from "./controls/MapControls";
+import MapSet, {MapSetMap, MapSetPresentationMap} from "./MapSet";
 import MapTools from "./controls/MapTools";
 import LeafletMap from "./LeafletMap";
 import PresentationMap from "./Map";
-import MapSet, {MapSetMap, MapSetPresentationMap} from "./MapSet";
+import ReactLeafletMap from "./ReactLeafletMap";
 import SimpleLayersControl from "./controls/SimpleLayersControl";
 import WorldWindMap from "./WorldWindMap";
 
@@ -23,6 +24,7 @@ export {
     MapSet,
     LeafletMap,
     PresentationMap,
+    ReactLeafletMap,
     SimpleLayersControl,
     WorldWindMap,
 }
@@ -41,5 +43,6 @@ export default {
     LeafletMap,
     PresentationMap,
     SimpleLayersControl,
+    ReactLeafletMap,
     WorldWindMap
 }
