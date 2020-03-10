@@ -67,7 +67,7 @@ module.exports = {
     },
     resolve: {
         alias: {
-            "@gisatcz/ptr-core": "C:/Users/pvlach/DATA/ptr-core",
+            // "@gisatcz/ptr-core": "C:/Users/pvlach/DATA/ptr-core",
         }
     }
 };
