@@ -1,6 +1,7 @@
 import React from 'react';
 import { Map, GeoJSON, WMSTileLayer, TileLayer } from 'react-leaflet';
 import PropTypes from 'prop-types';
+import L from "leaflet";
 import viewHelpers from "../LeafletMap/viewHelpers";
 import viewUtils from "../viewUtils";
 import VectorLayer from "./layers/VectorLayer";
@@ -19,6 +20,22 @@ class ReactLeafletMap extends React.PureComponent {
 
         this.onLayerClick = this.onLayerClick.bind(this);
         this.onViewportChange = this.onViewportChange.bind(this);
+    }
+
+    componentDidMount() {
+        // Hack for ugly 1px tile borders in Chrome
+        // Version of Leaflet package in dependencies should match version used by react-leaflet
+        let originalInitTile = L.GridLayer.prototype._initTile;
+        L.GridLayer.include({
+            _initTile: function (tile) {
+                originalInitTile.call(this, tile);
+
+                var tileSize = this.getTileSize();
+
+                tile.style.width = tileSize.x + 1 + 'px';
+                tile.style.height = tileSize.y + 1 + 'px';
+            }
+        });
     }
 
     onViewportChange(viewport) {
