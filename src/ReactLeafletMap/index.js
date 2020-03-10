@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, TileLayer } from 'react-leaflet';
+import { Map, GeoJSON, TileLayer, WMSTileLayer } from 'react-leaflet';
 import PropTypes from 'prop-types';
 import viewHelpers from "../LeafletMap/viewHelpers";
 import viewUtils from "../viewUtils";
@@ -32,9 +32,9 @@ class ReactLeafletMap extends React.PureComponent {
 
     render() {
         const backgroundLayer = this.getLayerByType(this.props.backgroundLayer);
+        const layers = this.props.layers && this.props.layers.map((layer, i) => this.getLayerByType(layer, i));
         const view = viewHelpers.getLeafletViewportFromViewParams(this.props.view);
 
-        console.log(this.props.mapKey, view.center, view.zoom);
         return (
             <Map
                 id={this.props.mapKey}
@@ -43,18 +43,24 @@ class ReactLeafletMap extends React.PureComponent {
                 center={view.center}
                 zoom={view.zoom}
                 zoomControl={false}
+                attributionControl={false}
             >
                 {backgroundLayer}
+                {layers}
                 {this.props.children}
             </Map>
         );
     }
 
-    getLayerByType(layer) {
+    getLayerByType(layer, i) {
         if (layer.type){
             switch (layer.type) {
                 case 'wmts':
                     return this.getTileLayer(layer);
+                case 'wms':
+                    return this.getWmsTileLayer(layer, i);
+                case 'vector':
+                    return this.getVectorLayer(layer, i);
                 default:
                     return null;
             }
@@ -67,6 +73,32 @@ class ReactLeafletMap extends React.PureComponent {
         return (
             <TileLayer
                 url={layer.options.url}
+            />
+        );
+    }
+
+    getWmsTileLayer(layer, i) {
+        const o = layer.options;
+
+        return (
+            <WMSTileLayer
+                key={i}
+                url={o.url}
+                layers={o.params && o.params.layers}
+                opacity={layer.opacity || 1}
+                transparent={true}
+                format={o.params && o.params.imageFormat || 'image/png'}
+            />
+        );
+    }
+
+    getVectorLayer(layer, i) {
+        const o = layer.options;
+        return (
+            <GeoJSON
+                key={i}
+                opacity={layer.opacity || 1}
+                data={o.features}
             />
         );
     }
