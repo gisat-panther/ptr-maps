@@ -7,9 +7,11 @@ import constants from "../../constants";
 
 class VectorLayer extends React.PureComponent {
     static propTypes = {
+        layerKey: PropTypes.string,
         features: PropTypes.array,
         selected: PropTypes.object,
-        style: PropTypes.object
+        style: PropTypes.object,
+        onClick: PropTypes.func
     };
 
     constructor(props) {
@@ -19,6 +21,7 @@ class VectorLayer extends React.PureComponent {
         };
 
         this.setStyle = this.setStyle.bind(this);
+        this.onEachFeature = this.onEachFeature.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -63,6 +66,18 @@ class VectorLayer extends React.PureComponent {
         }
     }
 
+    onEachFeature(feature, layer){
+        layer.on({
+            click: (e) => {
+                const fid = feature.properties[this.props.fidColumnName];
+
+                if (this.props.onClick) {
+                    this.props.onClick(this.props.layerKey, [fid]);
+                }
+            }
+        })
+    }
+
     render() {
         return (
             <GeoJSON
@@ -70,6 +85,7 @@ class VectorLayer extends React.PureComponent {
                 opacity={this.props.opacity || 1}
                 data={this.props.features}
                 style={this.setStyle}
+                onEachFeature={this.onEachFeature}
             />
         );
     }

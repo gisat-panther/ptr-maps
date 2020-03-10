@@ -9,12 +9,15 @@ class ReactLeafletMap extends React.PureComponent {
     static propTypes = {
         backgroundLayer: PropTypes.object,
         mapKey: PropTypes.string.isRequired,
+        onLayerClick: PropTypes.func,
         onViewChange: PropTypes.func,
         view: PropTypes.object
     };
 
     constructor(props) {
         super(props);
+
+        this.onLayerClick = this.onLayerClick.bind(this);
         this.onViewportChange = this.onViewportChange.bind(this);
     }
 
@@ -98,13 +101,21 @@ class ReactLeafletMap extends React.PureComponent {
         return (
             <VectorLayer
                 key={i}
+                layerKey={layer.key}
                 opacity={layer.opacity || 1}
                 features={o.features}
                 selected={o.selected}
                 style={o.style}
                 fidColumnName={o.fidColumnName}
+                onClick={this.onLayerClick}
             />
         );
+    }
+
+    onLayerClick(layerKey, featureKeys) {
+        if (this.props.onLayerClick) {
+            this.props.onLayerClick(this.props.mapKey, layerKey, featureKeys);
+        }
     }
 }
 
