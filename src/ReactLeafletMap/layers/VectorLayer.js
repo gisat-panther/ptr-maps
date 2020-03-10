@@ -5,11 +5,17 @@ import PropTypes from 'prop-types';
 import _ from "lodash";
 import constants from "../../constants";
 
+import {Context} from "@gisatcz/ptr-core";
+const HoverContext = Context.getContext('HoverContext');
+
 class VectorLayer extends React.PureComponent {
+    static contextType = HoverContext;
+
     static propTypes = {
         layerKey: PropTypes.string,
         features: PropTypes.array,
         selected: PropTypes.object,
+        hovered: PropTypes.object,
         style: PropTypes.object,
         onClick: PropTypes.func
     };
@@ -20,7 +26,7 @@ class VectorLayer extends React.PureComponent {
             layerKey: utils.uuid()
         };
 
-        this.setStyle = this.setStyle.bind(this);
+        this.getStyle = this.getStyle.bind(this);
         this.onEachFeature = this.onEachFeature.bind(this);
     }
 
@@ -34,11 +40,16 @@ class VectorLayer extends React.PureComponent {
         }
     }
 
-    setStyle(feature) {
+    getStyle(feature, hovered) {
         const defaultStyle = mapStyle.getStyleObject(feature.properties, this.props.style);
         const selectedStyle = this.getSelectedStyle(feature.properties);
 
-        const style = {...defaultStyle, ...selectedStyle};
+        let hoveredStyle = null;
+        if (hovered) {
+            hoveredStyle = this.getHoveredStyle();
+        }
+
+        const style = {...defaultStyle, ...selectedStyle, ...hoveredStyle};
 
         return {
             color: style.outlineColor,
@@ -66,14 +77,44 @@ class VectorLayer extends React.PureComponent {
         }
     }
 
+    getHoveredStyle() {
+        if (this.props.hovered && this.props.hovered.style) {
+            return mapStyle.getStyleObject(null, this.props.hovered.style, true);
+        } else {
+            return constants.vectorLayerDefaultHoveredFeatureStyle;
+        }
+    }
+
     onEachFeature(feature, layer){
+        const fid = feature.properties[this.props.fidColumnName];
+
         layer.on({
             click: (e) => {
-                const fid = feature.properties[this.props.fidColumnName];
+                layer.bringToFront();
 
                 if (this.props.onClick) {
                     this.props.onClick(this.props.layerKey, [fid]);
                 }
+            },
+            mousemove: (e) => {
+                if (this.context && this.context.onHover) {
+                    layer.bringToFront();
+                    this.context.onHover([fid], {
+                        popup: {
+                            x: e.originalEvent.pageX,
+                            y: e.originalEvent.pageY,
+                            fidColumnName: this.props.fidColumnName,
+                            data: feature.properties
+                        }
+                    });
+                }
+                e.target.setStyle(this.getStyle(feature, true));
+            },
+            mouseout: (e) => {
+                if (this.context && this.context.onHoverOut) {
+                    this.context.onHoverOut();
+                }
+                e.target.setStyle(this.getStyle(feature));
             }
         })
     }
@@ -84,7 +125,7 @@ class VectorLayer extends React.PureComponent {
                 key={this.state.layerKey}
                 opacity={this.props.opacity || 1}
                 data={this.props.features}
-                style={this.setStyle}
+                style={this.getStyle}
                 onEachFeature={this.onEachFeature}
             />
         );

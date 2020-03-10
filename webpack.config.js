@@ -64,5 +64,10 @@ module.exports = {
         "react-leaflet": "react-leaflet",
         "uri-templates": "uri-templates",
         "webworldwind-esa": "webworldwind-esa"
+    },
+    resolve: {
+        alias: {
+            "@gisatcz/ptr-core": "C:/Users/pvlach/DATA/ptr-core",
+        }
     }
 };

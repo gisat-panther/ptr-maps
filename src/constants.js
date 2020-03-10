@@ -12,8 +12,13 @@ const vectorLayerDefaultFeatureStyle = {
 const vectorLayerDefaultSelectedFeatureStyle = {
 	outlineWidth: 3,
 	outlineColor: "#ff0000",
-	outlineOpacity: 1,
-	fillOpacity: 0,
+	outlineOpacity: 1
+};
+
+const vectorLayerDefaultHoveredFeatureStyle = {
+	outlineWidth: 2,
+	outlineColor: "#00ffff",
+	outlineOpacity: 1
 };
 
 const vectorLayerHighlightedFeatureStyle = {
@@ -27,5 +32,6 @@ export default {
 	zoomCoefficient,
 	vectorLayerDefaultFeatureStyle,
 	vectorLayerHighlightedFeatureStyle,
-	vectorLayerDefaultSelectedFeatureStyle
+	vectorLayerDefaultSelectedFeatureStyle,
+	vectorLayerDefaultHoveredFeatureStyle
 }
