@@ -2,10 +2,13 @@ import React from 'react';
 import {mapStyle, utils} from '@gisatcz/ptr-utils';
 import {GeoJSON, withLeaflet } from 'react-leaflet';
 import PropTypes from 'prop-types';
+import _ from "lodash";
+import constants from "../../constants";
 
 class VectorLayer extends React.PureComponent {
     static propTypes = {
         features: PropTypes.array,
+        selected: PropTypes.object,
         style: PropTypes.object
     };
 
@@ -29,13 +32,34 @@ class VectorLayer extends React.PureComponent {
     }
 
     setStyle(feature) {
-        const style = mapStyle.getStyleObject(feature.properties, this.props.style);
+        const defaultStyle = mapStyle.getStyleObject(feature.properties, this.props.style);
+        const selectedStyle = this.getSelectedStyle(feature.properties);
+
+        const style = {...defaultStyle, ...selectedStyle};
+
         return {
             color: style.outlineColor,
             weight: style.outlineWidth,
             opacity: style.outlineOpacity,
             fillColor: style.fill,
             fillOpacity: style.fillOpacity
+        }
+    }
+
+    getSelectedStyle(featureProperties) {
+        if (this.props.selected) {
+            const featureKey = featureProperties[this.props.fidColumnName];
+            let style = null;
+
+            _.forIn(this.props.selected, (selection, key) => {
+                if (selection.keys && _.includes(selection.keys, featureKey)) {
+                    style = selection.style || constants.vectorLayerDefaultSelectedFeatureStyle;
+                }
+            });
+
+            return mapStyle.getStyleObject(featureProperties, style, true);
+        } else {
+            return null;
         }
     }
 

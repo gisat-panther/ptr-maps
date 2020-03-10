@@ -9,6 +9,13 @@ const vectorLayerDefaultFeatureStyle = {
 	strokeWidth: 2,
 };
 
+const vectorLayerDefaultSelectedFeatureStyle = {
+	outlineWidth: 3,
+	outlineColor: "#ff0000",
+	outlineOpacity: 1,
+	fillOpacity: 0,
+};
+
 const vectorLayerHighlightedFeatureStyle = {
 	strokeColor: "#00FFFF",
 	strokeWidth: 2,
@@ -19,5 +26,6 @@ export default {
 	defaultLevelsRange,
 	zoomCoefficient,
 	vectorLayerDefaultFeatureStyle,
-	vectorLayerHighlightedFeatureStyle
+	vectorLayerHighlightedFeatureStyle,
+	vectorLayerDefaultSelectedFeatureStyle
 }

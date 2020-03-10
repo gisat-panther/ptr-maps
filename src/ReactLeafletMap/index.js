@@ -100,6 +100,7 @@ class ReactLeafletMap extends React.PureComponent {
                 key={i}
                 opacity={layer.opacity || 1}
                 features={o.features}
+                selected={o.selected}
                 style={o.style}
                 fidColumnName={o.fidColumnName}
             />

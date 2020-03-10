@@ -1,13 +1,7 @@
 import WorldWind from 'webworldwind-esa';
 import utils from '@gisatcz/ptr-utils';
 import _ from 'lodash';
-
-let DEFAULT_SELECTED_STYLE = {
-	outlineWidth: 3,
-	outlineColor: "#ff0000",
-	outlineOpacity: 1,
-	fillOpacity: 0,
-};
+import constants from "../../constants";
 
 /**
  * @param layer {Object}
@@ -121,7 +115,7 @@ class VectorLayer extends WorldWind.RenderableLayer {
 	}
 
 	applySelectedStyle(renderable, definition) {
-		const style = {...DEFAULT_SELECTED_STYLE, ...utils.mapStyle.getStyleObject(null, definition, true)};
+		const style = {...constants.vectorLayerDefaultSelectedFeatureStyle, ...utils.mapStyle.getStyleObject(null, definition, true)};
 		this.setRenderableStyle(renderable, style);
 	}
 
@@ -144,7 +138,7 @@ class VectorLayer extends WorldWind.RenderableLayer {
 
 			_.forIn(this.pantherProps.selected, (selection, key) => {
 				if (selection.keys && _.includes(selection.keys, featureKey)) {
-					style = selection.style || DEFAULT_SELECTED_STYLE;
+					style = selection.style || constants.vectorLayerDefaultSelectedFeatureStyle;
 				}
 			});
 
