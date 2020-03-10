@@ -1,8 +1,9 @@
 import React from 'react';
-import { Map, GeoJSON, TileLayer, WMSTileLayer } from 'react-leaflet';
+import { Map, GeoJSON, WMSTileLayer, TileLayer } from 'react-leaflet';
 import PropTypes from 'prop-types';
 import viewHelpers from "../LeafletMap/viewHelpers";
 import viewUtils from "../viewUtils";
+import VectorLayer from "./layers/VectorLayer";
 
 class ReactLeafletMap extends React.PureComponent {
     static propTypes = {
@@ -95,10 +96,12 @@ class ReactLeafletMap extends React.PureComponent {
     getVectorLayer(layer, i) {
         const o = layer.options;
         return (
-            <GeoJSON
+            <VectorLayer
                 key={i}
                 opacity={layer.opacity || 1}
-                data={o.features}
+                features={o.features}
+                style={o.style}
+                fidColumnName={o.fidColumnName}
             />
         );
     }
