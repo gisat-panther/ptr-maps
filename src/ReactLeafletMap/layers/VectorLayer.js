@@ -97,8 +97,8 @@ class VectorLayer extends React.PureComponent {
                 }
             },
             mousemove: (e) => {
+                layer.bringToFront();
                 if (this.context && this.context.onHover) {
-                    layer.bringToFront();
                     this.context.onHover([fid], {
                         popup: {
                             x: e.originalEvent.pageX,
