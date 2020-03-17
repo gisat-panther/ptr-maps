@@ -1,8 +1,9 @@
 import React from 'react';
 import {mapStyle, utils} from '@gisatcz/ptr-utils';
-import {GeoJSON, withLeaflet } from 'react-leaflet';
+import {CircleMarker, GeoJSON, withLeaflet} from 'react-leaflet';
 import PropTypes from 'prop-types';
 import _ from "lodash";
+import L from "leaflet";
 import constants from "../../constants";
 
 import {Context} from "@gisatcz/ptr-core";
@@ -17,6 +18,7 @@ class VectorLayer extends React.PureComponent {
         selected: PropTypes.object,
         hovered: PropTypes.object,
         style: PropTypes.object,
+        pointSizeInMeters: PropTypes.bool,
         onClick: PropTypes.func
     };
 
@@ -28,6 +30,7 @@ class VectorLayer extends React.PureComponent {
 
         this.getStyle = this.getStyle.bind(this);
         this.onEachFeature = this.onEachFeature.bind(this);
+        this.pointToLayer = this.pointToLayer.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -51,13 +54,21 @@ class VectorLayer extends React.PureComponent {
 
         const style = {...defaultStyle, ...selectedStyle, ...hoveredStyle};
 
-        return {
+        // convert style to leaflet definitions
+        let finalStyle = {
             color: style.outlineColor,
             weight: style.outlineWidth,
             opacity: style.outlineOpacity,
             fillColor: style.fill,
             fillOpacity: style.fillOpacity
+        };
+
+        // for point features, set radius
+        if (feature.geometry.type === 'Point' && style.size) {
+            finalStyle.radius = style.size;
         }
+
+        return finalStyle;
     }
 
     getSelectedStyle(featureProperties) {
@@ -119,6 +130,17 @@ class VectorLayer extends React.PureComponent {
         })
     }
 
+    // render points
+    pointToLayer(feature, coord) {
+        const options = this.getStyle(feature);
+
+        if (this.props.pointSizeInMeters) {
+            return L.circle(coord, options);
+        } else {
+            return L.circleMarker(coord, options);
+        }
+    }
+
     render() {
         return (
             <GeoJSON
@@ -127,6 +149,7 @@ class VectorLayer extends React.PureComponent {
                 data={this.props.features}
                 style={this.getStyle}
                 onEachFeature={this.onEachFeature}
+                pointToLayer={this.pointToLayer}
             />
         );
     }
