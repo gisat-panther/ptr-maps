@@ -115,7 +115,7 @@ class SimpleLayersControl extends React.PureComponent {
 
 		if (layer.thumbnail) {
 			// TODO check type of thumbnail
-			style.backgroundImage = `url(${require('./img/' + layer.thumbnail + '.png')})`;
+			// style.backgroundImage = `url(${require('./img/' + layer.thumbnail + '.png')})`;
 		}
 
 		return (
