@@ -5,10 +5,14 @@ import L from "leaflet";
 import viewHelpers from "../LeafletMap/viewHelpers";
 import viewUtils from "../viewUtils";
 import VectorLayer from "./layers/VectorLayer";
+import _ from "lodash";
 
 class ReactLeafletMap extends React.PureComponent {
     static propTypes = {
-        backgroundLayer: PropTypes.object,
+        backgroundLayer: PropTypes.oneOfType([
+            PropTypes.object,
+            PropTypes.array
+        ]),
         mapKey: PropTypes.string.isRequired,
         onLayerClick: PropTypes.func,
         onViewChange: PropTypes.func,
@@ -52,7 +56,10 @@ class ReactLeafletMap extends React.PureComponent {
     }
 
     render() {
-        const backgroundLayer = this.getLayerByType(this.props.backgroundLayer);
+        // fix for backward compatibility
+        const backgroundLayersSource = _.isArray(this.props.backgroundLayer) ? this.props.backgroundLayer : [this.props.backgroundLayer];
+
+        const backgroundLayers = backgroundLayersSource && backgroundLayersSource.map((layer, i) => this.getLayerByType(layer, i));
         const layers = this.props.layers && this.props.layers.map((layer, i) => this.getLayerByType(layer, i));
         const view = viewHelpers.getLeafletViewportFromViewParams(this.props.view);
 
@@ -66,7 +73,7 @@ class ReactLeafletMap extends React.PureComponent {
                 zoomControl={false}
                 attributionControl={false}
             >
-                {backgroundLayer}
+                {backgroundLayers}
                 {layers}
                 {this.props.children}
             </Map>
@@ -74,7 +81,7 @@ class ReactLeafletMap extends React.PureComponent {
     }
 
     getLayerByType(layer, i) {
-        if (layer.type){
+        if (layer && layer.type){
             switch (layer.type) {
                 case 'wmts':
                     return this.getTileLayer(layer);
@@ -91,9 +98,16 @@ class ReactLeafletMap extends React.PureComponent {
     }
 
     getTileLayer(layer) {
+        let url = layer.options.url;
+
+        // fix for backward compatibility
+        if (layer.options.urls) {
+            url = layer.options.urls[0];
+        }
+
         return (
             <TileLayer
-                url={layer.options.url}
+                url={url}
             />
         );
     }
