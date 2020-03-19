@@ -1,10 +1,12 @@
 const BUNDLE = process.env.BUNDLE === 'true';
 
+const assetsExtensions = 'png|svg|ico|jpg|jpeg|wof';
+
 const path = require('path'),
 	glob = require("glob"),
 	fs = require("fs")
 
-glob("src/**/*.*(scss|css)", {}, function (er, files) {
+glob(`src/**/*.*(${assetsExtensions})`, {}, function (er, files) {
 	files.forEach(function (file) {
 		const parsedPath = path.parse(file);
 		const relativePath = parsedPath.dir.split("src/")[1];
