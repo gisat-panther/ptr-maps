@@ -1,5 +1,6 @@
 import babel from "rollup-plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
+import alias from "@rollup/plugin-alias";
 import filesize from "rollup-plugin-filesize";
 import sass from 'rollup-plugin-sass';
 
@@ -19,7 +20,7 @@ const lodashExternal = [
   'lodash/find',
   'lodash/each',
   'lodash/indexOf',
-]
+];
 
 export default {
   input: "src/index.js",
@@ -62,5 +63,12 @@ export default {
       output: true,
     }),
     filesize(),
+
+    // TODO figure out dev and prod version
+    // alias({
+    //   entries: [
+    //     { find: '@gisatcz/ptr-state', replacement: 'C:/Users/pvlach/DATA/ptr-state' }
+    //   ]
+    // })
   ]
 };
