@@ -1,6 +1,6 @@
 {
   "name": "@gisatcz/ptr-maps",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Panther FE maps",
   "keywords": [
     "panther",
@@ -33,7 +33,7 @@
     "react": "16.12.0",
     "react-leaflet": "2.6.1",
     "uri-templates": "0.2.0",
-    "webworldwind-esa": "1.0.2"
+    "webworldwind-esa": "1.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
