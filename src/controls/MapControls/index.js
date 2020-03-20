@@ -23,6 +23,18 @@ class MapControls extends React.PureComponent {
 		this.headingIncrement = 1.0;
 		this.zoomIncrement = 0.04;
 		this.exaggerationIncrement = 1;
+
+		this.state = {
+			resetHeadingDisabled: false
+		}
+	}
+
+	componentDidUpdate(prevProps, prevState, snapshot) {
+		if (this.state.resetHeadingDisabled && (!this.props.view.heading || this.props.heading === "360")) {
+			this.setState({
+				resetHeadingDisabled: false
+			})
+		}
 	}
 
 	handleTiltUp() {
@@ -65,6 +77,9 @@ class MapControls extends React.PureComponent {
 
 	handleResetHeading() {
 		this.props.resetHeading(this.props.mapKey);
+		this.setState({
+			resetHeadingDisabled: true
+		})
 	}
 
 	handleExaggeratePlus() {
@@ -148,7 +163,10 @@ class MapControls extends React.PureComponent {
 							>
 								<Icon icon='rotate-right'/>
 							</HoldButton>
-							<HoldButton onClick={() => {this.handleResetHeading()}}>
+							<HoldButton
+								onClick={() => {this.handleResetHeading()}}
+								disabled={this.state.resetHeadingDisabled}
+							>
 								<Icon style={{transform: `rotate(${this.props.view ? -this.props.view.heading : 0}deg)`}} icon='north-arrow'/>
 							</HoldButton>
 							<HoldButton

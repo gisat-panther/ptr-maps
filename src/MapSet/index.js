@@ -49,7 +49,7 @@ class MapSet extends React.PureComponent {
 				if (child && typeof child === "object"
 					&& (child.type === Map || child.type === this.props.connectedMapComponent || child.type === PresentationMap)
 					&& child.props.mapKey === props.activeMapKey) {
-					this.state.mapViews[child.mapKey] = mapUtils.mergeViews(mapConstants.defaultMapView, props.view, child.props.view);
+					this.state.mapViews[child.props.mapKey] = mapUtils.mergeViews(mapConstants.defaultMapView, props.view, child.props.view);
 				}
 			});
 		}
@@ -131,6 +131,13 @@ class MapSet extends React.PureComponent {
 		}
 	}
 
+	onResetHeading() {
+		mapUtils.resetHeading(
+			this.state.mapViews[this.state.activeMapKey].heading,
+			(heading) => this.onViewChange(this.state.activeMapKey, {heading})
+		);
+	}
+
 	/**
 	 * Called in uncontrolled map set
 	 * @param key
@@ -161,15 +168,17 @@ class MapSet extends React.PureComponent {
 	}
 
 	renderControls() {
-		let updateView, resetHeading, view;
+		let updateView, resetHeading, view, mapKey;
 		if (this.props.stateMapSetKey) {
 			updateView = this.props.updateView;
 			resetHeading = this.props.resetHeading;
 			view = this.props.activeMapView || this.props.view;
+			mapKey = this.props.activeMapKey;
 		} else {
 			updateView = this.onViewChange.bind(this, null);
-			resetHeading = () => {}; //TODO
+			resetHeading = this.onResetHeading.bind(this);
 			view = mapUtils.mergeViews(this.state.view, this.state.mapViews[this.state.activeMapKey]);
+			mapKey = this.state.activeMapKey;
 		}
 
 
@@ -179,7 +188,8 @@ class MapSet extends React.PureComponent {
 					...child.props,
 					view,
 					updateView,
-					resetHeading
+					resetHeading,
+					mapKey
 				});
 			}
 		});

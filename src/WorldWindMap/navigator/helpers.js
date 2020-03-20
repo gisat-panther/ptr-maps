@@ -45,27 +45,27 @@ function update(wwd, view) {
 		shouldRedraw = true;
 	}
 
-	if (wwdUpdate.tilt && state.tilt !== wwdUpdate.tilt){
+	if ((wwdUpdate.tilt || wwdUpdate.tilt === 0) && state.tilt !== wwdUpdate.tilt){
 		state.tilt = wwdUpdate.tilt;
 		shouldRedraw = true;
 	}
 
-	if (wwdUpdate.roll && state.roll !== wwdUpdate.roll){
+	if ((wwdUpdate.roll || wwdUpdate.roll === 0) && state.roll !== wwdUpdate.roll){
 		state.roll = wwdUpdate.roll;
 		shouldRedraw = true;
 	}
 
-	if (wwdUpdate.heading && state.heading !== wwdUpdate.heading){
+	if ((wwdUpdate.heading || wwdUpdate.heading === 0) && state.heading !== wwdUpdate.heading){
 		state.heading = wwdUpdate.heading;
 		shouldRedraw = true;
 	}
 
-	if (wwdUpdate.lookAtLocation && wwdUpdate.lookAtLocation.latitude && state.lookAtLocation.latitude !== wwdUpdate.lookAtLocation.latitude){
+	if (wwdUpdate.lookAtLocation && (wwdUpdate.lookAtLocation.latitude || wwdUpdate.lookAtLocation.latitude === 0) && state.lookAtLocation.latitude !== wwdUpdate.lookAtLocation.latitude){
 		state.lookAtLocation.latitude = wwdUpdate.lookAtLocation.latitude;
 		shouldRedraw = true;
 	}
 
-	if (wwdUpdate.lookAtLocation && wwdUpdate.lookAtLocation.longitude && state.lookAtLocation.longitude !== wwdUpdate.lookAtLocation.longitude){
+	if (wwdUpdate.lookAtLocation && (wwdUpdate.lookAtLocation.longitude || wwdUpdate.lookAtLocation.latitude === 0) && state.lookAtLocation.longitude !== wwdUpdate.lookAtLocation.longitude){
 		state.lookAtLocation.longitude = wwdUpdate.lookAtLocation.longitude;
 		shouldRedraw = true;
 	}
