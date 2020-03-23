@@ -105,14 +105,19 @@ class VectorLayer extends React.PureComponent {
 
         layer.on({
             click: (e) => {
-                layer.bringToFront();
+                if (feature.geometry.type !== "Point") {
+                    layer.bringToFront();
+                }
 
                 if (this.props.onClick) {
                     this.props.onClick(this.props.layerKey, [fid]);
                 }
             },
             mousemove: (e) => {
-                layer.bringToFront();
+                if (feature.geometry.type !== "Point") {
+                    layer.bringToFront();
+                }
+
                 if (this.context && this.context.onHover) {
                     this.context.onHover([fid], {
                         popup: {
