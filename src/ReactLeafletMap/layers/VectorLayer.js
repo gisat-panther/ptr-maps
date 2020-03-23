@@ -64,8 +64,12 @@ class VectorLayer extends React.PureComponent {
         };
 
         // for point features, set radius
-        if (feature.geometry.type === 'Point' && style.size) {
-            finalStyle.radius = style.size;
+        if (feature.geometry.type === 'Point') {
+            if (style.size) {
+                finalStyle.radius = style.size;
+            } else if (style.volume) {
+                finalStyle.radius = Math.sqrt(style.volume/Math.PI);
+            }
         }
 
         return finalStyle;
@@ -101,14 +105,19 @@ class VectorLayer extends React.PureComponent {
 
         layer.on({
             click: (e) => {
-                layer.bringToFront();
+                if (feature.geometry.type !== "Point") {
+                    layer.bringToFront();
+                }
 
                 if (this.props.onClick) {
                     this.props.onClick(this.props.layerKey, [fid]);
                 }
             },
             mousemove: (e) => {
-                layer.bringToFront();
+                if (feature.geometry.type !== "Point") {
+                    layer.bringToFront();
+                }
+
                 if (this.context && this.context.onHover) {
                     this.context.onHover([fid], {
                         popup: {
