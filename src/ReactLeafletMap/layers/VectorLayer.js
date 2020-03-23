@@ -1,12 +1,13 @@
 import React from 'react';
 import {mapStyle, utils} from '@gisatcz/ptr-utils';
-import {CircleMarker, GeoJSON, withLeaflet} from 'react-leaflet';
+import {Circle, CircleMarker, GeoJSON, LayerGroup, Pane, withLeaflet} from 'react-leaflet';
 import PropTypes from 'prop-types';
 import _ from "lodash";
 import L from "leaflet";
 import constants from "../../constants";
 
 import {Context} from "@gisatcz/ptr-core";
+import * as turf from "@turf/turf";
 const HoverContext = Context.getContext('HoverContext');
 
 class VectorLayer extends React.PureComponent {
@@ -43,7 +44,7 @@ class VectorLayer extends React.PureComponent {
         }
     }
 
-    getStyle(feature, hovered) {
+    getStyle(feature, hovered, isDiagram) {
         const defaultStyle = mapStyle.getStyleObject(feature.properties, this.props.style);
         const selectedStyle = this.getSelectedStyle(feature.properties);
 
@@ -54,7 +55,10 @@ class VectorLayer extends React.PureComponent {
 
         const style = {...defaultStyle, ...selectedStyle, ...hoveredStyle};
 
-        // convert style to leaflet definitions
+        return isDiagram ? this.getDiagramStyle(style) : this.getFeatureStyle(feature, style);
+    }
+
+    getFeatureStyle(feature, style) {
         let finalStyle = {
             color: style.outlineColor,
             weight: style.outlineWidth,
@@ -70,6 +74,24 @@ class VectorLayer extends React.PureComponent {
             } else if (style.volume) {
                 finalStyle.radius = Math.sqrt(style.volume/Math.PI);
             }
+        }
+
+        return finalStyle;
+    }
+
+    getDiagramStyle(style) {
+        let finalStyle = {
+            color: style.diagramOutlineColor,
+            weight: style.diagramOutlineWidth,
+            opacity: style.diagramOutlineOpacity,
+            fillColor: style.diagramFill,
+            fillOpacity: style.diagramFillOpacity
+        };
+
+        if (style.diagramSize) {
+            finalStyle.radius = style.diagramSize;
+        } else if (style.diagramVolume) {
+            finalStyle.radius = Math.sqrt(style.diagramVolume/Math.PI);
         }
 
         return finalStyle;
@@ -151,16 +173,60 @@ class VectorLayer extends React.PureComponent {
     }
 
     render() {
+        const diagrams = this.props.type === 'diagram' ? this.renderDiagramLayer() : null;
+
         return (
-            <GeoJSON
-                key={this.state.layerKey}
-                opacity={this.props.opacity || 1}
-                data={this.props.features}
-                style={this.getStyle}
-                onEachFeature={this.onEachFeature}
-                pointToLayer={this.pointToLayer}
-            />
+            <>
+                <GeoJSON
+                    key={this.state.layerKey}
+                    opacity={this.props.opacity || 1}
+                    data={this.props.features}
+                    style={this.getStyle}
+                    onEachFeature={this.onEachFeature}
+                    pointToLayer={this.pointToLayer}
+                />
+                {diagrams}
+            </>
         );
+    }
+
+    renderDiagramLayer() {
+        return (
+            <Pane>
+                <LayerGroup>
+                    {this.renderDiagrams()}
+                </LayerGroup>
+            </Pane>
+        );
+    }
+
+    renderDiagrams() {
+        let diagrams = [];
+        _.forEach(this.props.features, (feature) => {
+            const centroid = turf.centerOfMass(feature.geometry);
+            const turfCoordinates = centroid && centroid.geometry && centroid.geometry.coordinates;
+            if (turfCoordinates) {
+                const style = this.getStyle(feature, false, true);
+                diagrams.push({
+                    feature,
+                    center: [turfCoordinates[1], turfCoordinates[0]],
+                    style,
+                    radius: style.radius
+                });
+            }
+        });
+
+        const sortedDiagrams = _.orderBy(diagrams, ['radius'], ['desc']);
+
+        return sortedDiagrams.map((diagram, i) => {
+            return (
+                <Circle
+                    key={i}
+                    center={diagram.center}
+                    {...diagram.style}
+                />
+            );
+        });
     }
 }
 

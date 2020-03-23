@@ -88,6 +88,7 @@ class ReactLeafletMap extends React.PureComponent {
                 case 'wms':
                     return this.getWmsTileLayer(layer, i);
                 case 'vector':
+                case 'diagram':
                     return this.getVectorLayer(layer, i);
                 default:
                     return null;
@@ -132,6 +133,7 @@ class ReactLeafletMap extends React.PureComponent {
         return (
             <VectorLayer
                 key={i}
+                type={layer.type}
                 layerKey={layer.key}
                 opacity={layer.opacity || 1}
                 features={o.features}
