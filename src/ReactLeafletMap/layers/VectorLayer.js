@@ -64,8 +64,12 @@ class VectorLayer extends React.PureComponent {
         };
 
         // for point features, set radius
-        if (feature.geometry.type === 'Point' && style.size) {
-            finalStyle.radius = style.size;
+        if (feature.geometry.type === 'Point') {
+            if (style.size) {
+                finalStyle.radius = style.size;
+            } else if (style.volume) {
+                finalStyle.radius = Math.sqrt(style.volume/Math.PI);
+            }
         }
 
         return finalStyle;
