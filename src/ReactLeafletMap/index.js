@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, GeoJSON, WMSTileLayer, TileLayer } from 'react-leaflet';
+import { Map, GeoJSON, WMSTileLayer, TileLayer, Pane } from 'react-leaflet';
 import PropTypes from 'prop-types';
 import L from "leaflet";
 import viewHelpers from "../LeafletMap/viewHelpers";
@@ -60,7 +60,7 @@ class ReactLeafletMap extends React.PureComponent {
         const backgroundLayersSource = _.isArray(this.props.backgroundLayer) ? this.props.backgroundLayer : [this.props.backgroundLayer];
 
         const backgroundLayers = backgroundLayersSource && backgroundLayersSource.map((layer, i) => this.getLayerByType(layer, i));
-        const layers = this.props.layers && this.props.layers.map((layer, i) => this.getLayerByType(layer, i));
+        const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane>{this.getLayerByType(layer, i)}</Pane>);
         const view = viewHelpers.getLeafletViewportFromViewParams(this.props.view);
 
         return (
