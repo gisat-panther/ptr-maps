@@ -1,13 +1,12 @@
 import React from 'react';
 import {mapStyle, utils} from '@gisatcz/ptr-utils';
-import {Circle, CircleMarker, GeoJSON, LayerGroup, Pane, withLeaflet} from 'react-leaflet';
+import {GeoJSON, withLeaflet} from 'react-leaflet';
 import PropTypes from 'prop-types';
 import _ from "lodash";
 import L from "leaflet";
 import constants from "../../constants";
 
 import {Context} from "@gisatcz/ptr-core";
-import * as turf from "@turf/turf";
 const HoverContext = Context.getContext('HoverContext');
 
 class VectorLayer extends React.PureComponent {
@@ -44,9 +43,9 @@ class VectorLayer extends React.PureComponent {
         }
     }
 
-    getStyle(feature, hovered, isDiagram) {
+    getStyle(feature, hovered) {
         const defaultStyle = mapStyle.getStyleObject(feature.properties, this.props.style);
-        const selectedStyle = this.getSelectedStyle(feature.properties);
+        const selectedStyle = this.props.selected ? this.getSelectedStyle(feature.properties) : {};
 
         let hoveredStyle = null;
         if (hovered) {
@@ -55,7 +54,7 @@ class VectorLayer extends React.PureComponent {
 
         const style = {...defaultStyle, ...selectedStyle, ...hoveredStyle};
 
-        return isDiagram ? this.getDiagramStyle(style) : this.getFeatureStyle(feature, style);
+        return this.getFeatureStyle(feature, style);
     }
 
     getFeatureStyle(feature, style) {
@@ -79,36 +78,20 @@ class VectorLayer extends React.PureComponent {
         return finalStyle;
     }
 
-    getDiagramStyle(style) {
-        let finalStyle = {
-            color: style.diagramOutlineColor,
-            weight: style.diagramOutlineWidth,
-            opacity: style.diagramOutlineOpacity,
-            fillColor: style.diagramFill,
-            fillOpacity: style.diagramFillOpacity
-        };
-
-        if (style.diagramSize) {
-            finalStyle.radius = style.diagramSize;
-        } else if (style.diagramVolume) {
-            finalStyle.radius = Math.sqrt(style.diagramVolume/Math.PI);
-        }
-
-        return finalStyle;
-    }
-
     getSelectedStyle(featureProperties) {
         if (this.props.selected) {
             const featureKey = featureProperties[this.props.fidColumnName];
             let style = null;
 
+            // TODO solve for more than one selection
             _.forIn(this.props.selected, (selection, key) => {
                 if (selection.keys && _.includes(selection.keys, featureKey)) {
-                    style = selection.style || constants.vectorLayerDefaultSelectedFeatureStyle;
+                    const styleDef = selection.style || constants.vectorLayerDefaultSelectedFeatureStyle;
+                    style = {"rules":[{"styles": [styleDef]}]};
                 }
             });
 
-            return mapStyle.getStyleObject(featureProperties, style, true);
+            return style ? mapStyle.getStyleObject(featureProperties, style, true) : null;
         } else {
             return null;
         }
@@ -116,7 +99,8 @@ class VectorLayer extends React.PureComponent {
 
     getHoveredStyle() {
         if (this.props.hovered && this.props.hovered.style) {
-            return mapStyle.getStyleObject(null, this.props.hovered.style, true);
+            const style = {"rules":[{"styles": [this.props.hovered.style]}]};
+            return mapStyle.getStyleObject(null, style, true);
         } else {
             return constants.vectorLayerDefaultHoveredFeatureStyle;
         }
@@ -127,18 +111,14 @@ class VectorLayer extends React.PureComponent {
 
         layer.on({
             click: (e) => {
-                if (feature.geometry.type !== "Point") {
-                    layer.bringToFront();
-                }
+                layer.bringToFront();
 
                 if (this.props.onClick) {
                     this.props.onClick(this.props.layerKey, [fid]);
                 }
             },
             mousemove: (e) => {
-                if (feature.geometry.type !== "Point") {
-                    layer.bringToFront();
-                }
+                layer.bringToFront();
 
                 if (this.context && this.context.onHover) {
                     this.context.onHover([fid], {
@@ -173,60 +153,16 @@ class VectorLayer extends React.PureComponent {
     }
 
     render() {
-        const diagrams = this.props.type === 'diagram' ? this.renderDiagramLayer() : null;
-
         return (
-            <>
-                <GeoJSON
-                    key={this.state.layerKey}
-                    opacity={this.props.opacity || 1}
-                    data={this.props.features}
-                    style={this.getStyle}
-                    onEachFeature={this.onEachFeature}
-                    pointToLayer={this.pointToLayer}
-                />
-                {diagrams}
-            </>
+            <GeoJSON
+                key={this.state.layerKey}
+                opacity={this.props.opacity || 1}
+                data={this.props.features}
+                style={this.getStyle}
+                onEachFeature={this.onEachFeature}
+                pointToLayer={this.pointToLayer}
+            />
         );
-    }
-
-    renderDiagramLayer() {
-        return (
-            <Pane>
-                <LayerGroup>
-                    {this.renderDiagrams()}
-                </LayerGroup>
-            </Pane>
-        );
-    }
-
-    renderDiagrams() {
-        let diagrams = [];
-        _.forEach(this.props.features, (feature) => {
-            const centroid = turf.centerOfMass(feature.geometry);
-            const turfCoordinates = centroid && centroid.geometry && centroid.geometry.coordinates;
-            if (turfCoordinates) {
-                const style = this.getStyle(feature, false, true);
-                diagrams.push({
-                    feature,
-                    center: [turfCoordinates[1], turfCoordinates[0]],
-                    style,
-                    radius: style.radius
-                });
-            }
-        });
-
-        const sortedDiagrams = _.orderBy(diagrams, ['radius'], ['desc']);
-
-        return sortedDiagrams.map((diagram, i) => {
-            return (
-                <Circle
-                    key={i}
-                    center={diagram.center}
-                    {...diagram.style}
-                />
-            );
-        });
     }
 }
 

@@ -6,6 +6,7 @@ import viewHelpers from "../LeafletMap/viewHelpers";
 import viewUtils from "../viewUtils";
 import VectorLayer from "./layers/VectorLayer";
 import _ from "lodash";
+import DiagramLayer from "./layers/DiagramLayer";
 
 class ReactLeafletMap extends React.PureComponent {
     static propTypes = {
@@ -88,8 +89,9 @@ class ReactLeafletMap extends React.PureComponent {
                 case 'wms':
                     return this.getWmsTileLayer(layer, i);
                 case 'vector':
-                case 'diagram':
                     return this.getVectorLayer(layer, i);
+                case 'diagram':
+                    return this.getDiagramLayer(layer, i);
                 default:
                     return null;
             }
@@ -132,6 +134,25 @@ class ReactLeafletMap extends React.PureComponent {
         const o = layer.options;
         return (
             <VectorLayer
+                key={i}
+                type={layer.type}
+                layerKey={layer.key}
+                opacity={layer.opacity || 1}
+                features={o.features}
+                selected={o.selected}
+                hovered={o.hovered}
+                style={o.style}
+                pointSizeInMeters={o.pointSizeInMeters}
+                fidColumnName={o.fidColumnName}
+                onClick={this.onLayerClick}
+            />
+        );
+    }
+
+    getDiagramLayer(layer, i) {
+        const o = layer.options;
+        return (
+            <DiagramLayer
                 key={i}
                 type={layer.type}
                 layerKey={layer.key}

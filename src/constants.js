@@ -15,10 +15,22 @@ const vectorLayerDefaultSelectedFeatureStyle = {
 	outlineOpacity: 1
 };
 
+const vectorLayerDefaultSelectedDiagramStyle = {
+	diagramOutlineWidth: 3,
+	diagramOutlineColor: "#ff0000",
+	diagramOutlineOpacity: 1
+};
+
 const vectorLayerDefaultHoveredFeatureStyle = {
 	outlineWidth: 2,
 	outlineColor: "#00ffff",
 	outlineOpacity: 1
+};
+
+const vectorLayerDefaultHoveredDiagramStyle = {
+	diagramOutlineWidth: 2,
+	diagramOutlineColor: "#00ffff",
+	diagramOutlineOpacity: 1
 };
 
 const vectorLayerHighlightedFeatureStyle = {
@@ -33,5 +45,7 @@ export default {
 	vectorLayerDefaultFeatureStyle,
 	vectorLayerHighlightedFeatureStyle,
 	vectorLayerDefaultSelectedFeatureStyle,
-	vectorLayerDefaultHoveredFeatureStyle
+	vectorLayerDefaultSelectedDiagramStyle,
+	vectorLayerDefaultHoveredFeatureStyle,
+	vectorLayerDefaultHoveredDiagramStyle
 }
