@@ -95,6 +95,7 @@ class VectorLayer extends React.PureComponent {
         if (features) {
             // TODO what about layers with mixed geometry type?
             const isPointLayer = features[0].geometry.type === "Point";
+            const isPolygonLayer = features[0].geometry.type === "Polygon" || features[0].geometry.type === "MultiPolygon";
 
             let data = [];
             _.forEach(features, (feature) => {
@@ -146,7 +147,14 @@ class VectorLayer extends React.PureComponent {
             // sort points by size to display smaller points on the top
             if (isPointLayer) {
                 return _.orderBy(data, ['defaultStyle.radius'], ['desc']);
-            } else {
+            }
+
+            // sort polygons - selected to the top
+            else if (isPolygonLayer && this.props.selected) {
+                return _.orderBy(data, ['selected'], ['asc']);
+            }
+
+            else {
                 return data;
             }
 
@@ -160,15 +168,15 @@ class VectorLayer extends React.PureComponent {
 
         return data ? (
             <Pane>
-                {data.map((item, index) => this.renderFeature(item, index))}
+                {data.map((item) => this.renderFeature(item))}
             </Pane>
         ) : null;
     }
 
-    renderFeature(data, index) {
+    renderFeature(data) {
         return (
             <Feature
-                key={index}
+                key={data.fid}
                 onClick={this.onFeatureClick}
                 fid={data.fid}
                 fidColumnName={this.props.fidColumnName}
