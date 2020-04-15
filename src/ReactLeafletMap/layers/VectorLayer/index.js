@@ -28,31 +28,9 @@ class VectorLayer extends React.PureComponent {
         return mapStyle.getStyleObject(feature.properties, this.props.style);
     }
 
-    getHoveredStyleObject(styleDefinition) {
-        if (styleDefinition) {
-            const style = {"rules":[{"styles": [styleDefinition]}]};
-            return mapStyle.getStyleObject(null, style, true);
-        } else {
-            return constants.vectorLayerDefaultHoveredFeatureStyle;
-        }
-    }
-
-    getSelectedStyleObject(styleDefinition) {
-        if (styleDefinition) {
-            const style = {"rules":[{"styles": [styleDefinition]}]};
-            return mapStyle.getStyleObject(null, style, true);
-        } else {
-            return constants.vectorLayerDefaultSelectedFeatureStyle;
-        }
-    }
-
-    getSelectedHoveredStyleObject(styleDefinition) {
-        if (styleDefinition) {
-            const style = {"rules":[{"styles": [styleDefinition]}]};
-            return mapStyle.getStyleObject(null, style, true);
-        } else {
-            return constants.vectorLayerDefaultSelectedHoveredFeatureStyle;
-        }
+    getAccentedStyleObject(styleDefinition, fallbackStyleDefinition) {
+        const style = {"rules":[{"styles": [styleDefinition || fallbackStyleDefinition]}]};
+        return mapStyle.getStyleObject(null, style, true);
     }
 
     getFeatureDefaultStyle(feature, defaultStyleObject) {
@@ -121,13 +99,13 @@ class VectorLayer extends React.PureComponent {
                 const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
 
                 // Prepare hovered style
-                const hoveredStyleObject = this.getHoveredStyleObject(this.props.hovered && this.props.hovered.style);
+                const hoveredStyleObject = this.getAccentedStyleObject(this.props.hovered && this.props.hovered.style, constants.vectorLayerDefaultHoveredFeatureStyle);
                 const hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
 
                 // Prepare selected and selected hovered style, if selected
                 if (selected) {
-                    const selectedStyleObject = this.getSelectedStyleObject(selected.style);
-                    const selectedHoveredStyleObject = this.getSelectedHoveredStyleObject(selected.hoveredStyle)
+                    const selectedStyleObject = this.getAccentedStyleObject(selected.style, constants.vectorLayerDefaultSelectedFeatureStyle);
+                    const selectedHoveredStyleObject = this.getAccentedStyleObject(selected.hoveredStyle, constants.vectorLayerDefaultSelectedHoveredFeatureStyle)
                     selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
                     selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
                 }
