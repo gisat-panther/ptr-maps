@@ -1,12 +1,13 @@
 import React from 'react';
 import {mapStyle, utils} from '@gisatcz/ptr-utils';
-import {withLeaflet} from 'react-leaflet';
+import {Pane, withLeaflet} from 'react-leaflet';
 import PropTypes from 'prop-types';
 import _ from "lodash";
 import constants from "../../../constants";
 
 import * as turf from "@turf/turf";
-import DiagramFeature from "./DiagramFeature";
+import Diagram from "./Diagram";
+import Area from "./Area";
 
 class DiagramLayer extends React.PureComponent {
     static propTypes = {
@@ -21,10 +22,6 @@ class DiagramLayer extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
-            layerKey: utils.uuid()
-        };
-
         this.getStyle = this.getStyle.bind(this);
         this.onFeatureClick = this.onFeatureClick.bind(this);
     }
@@ -160,18 +157,42 @@ class DiagramLayer extends React.PureComponent {
 
         return (
             data ? (
-                data.map((item, index) => this.renderDiagramFeature(item, index))
+                <>
+                    <Pane>
+                        {data.map((item, index) => this.renderArea(item, index))}
+                    </Pane>
+                    <Pane>
+                        {data.map((item, index) => this.renderDiagram(item, index))}
+                    </Pane>
+                </>
             ) : null
         );
     }
 
-    renderDiagramFeature(data, index) {
+    renderArea(data, index) {
         return (
-            <DiagramFeature
+            <Area
                 key={index}
                 onClick={this.onFeatureClick}
                 fidColumnName={this.props.fidColumnName}
-                {...data}
+                defaultStyle={data.areaDefaultStyle}
+                hoveredStyle={data.areaHoveredStyle}
+                leafletCoordinates={data.areaLeafletCoordinates}
+                feature={data.feature}
+            />
+        );
+    }
+
+    renderDiagram(data, index) {
+        return (
+            <Diagram
+                key={index}
+                onClick={this.onFeatureClick}
+                fidColumnName={this.props.fidColumnName}
+                defaultStyle={data.diagramDefaultStyle}
+                hoveredStyle={data.diagramHoveredStyle}
+                leafletCoordinates={data.diagramLeafletCoordinates}
+                feature={data.feature}
             />
         );
     }

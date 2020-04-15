@@ -5,18 +5,15 @@ import _ from "lodash";
 import {Context} from "@gisatcz/ptr-core";
 const HoverContext = Context.getContext('HoverContext');
 
-class DiagramFeature extends React.PureComponent {
+class Area extends React.PureComponent {
     static contextType = HoverContext;
 
     static propTypes = {
         feature: PropTypes.object,
         fidColumnName: PropTypes.string,
-        areaDefaultStyle: PropTypes.object,
-        areaHoveredStyle: PropTypes.object,
-        areaLeafletCoordinates: PropTypes.array,
-        diagramDefaultStyle: PropTypes.object,
-        diagramHoveredStyle: PropTypes.object,
-        diagramLeafletCoordinates: PropTypes.array
+        defaultStyle: PropTypes.object,
+        hoveredStyle: PropTypes.object,
+        leafletCoordinates: PropTypes.array
     };
 
     constructor(props) {
@@ -27,14 +24,26 @@ class DiagramFeature extends React.PureComponent {
         this.onMouseOut = this.onMouseOut.bind(this);
 
         this.state = {
-            areaStyle: props.areaDefaultStyle,
-            diagramStyle: props.diagramDefaultStyle
+            style: props.defaultStyle
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const fid = this.props.feature.properties[this.props.fidColumnName];
+        if (this.context && this.context.hoveredItems && _.indexOf(this.context.hoveredItems, fid) !== -1) {
+            this.setState({
+                style: this.props.hoveredStyle
+            });
+        } else if (this.state.style !== this.props.defaultStyle) {
+            this.setState({
+                style: this.props.defaultStyle
+            });
         }
     }
 
     onClick(event) {
-        if (event.target && event.target._layers) {
-            _.forEach(event.target._layers, layer => layer.bringToFront());
+        if (event.target) {
+            event.target.bringToFront();
         }
 
         const fid = this.props.feature.properties[this.props.fidColumnName];
@@ -45,8 +54,8 @@ class DiagramFeature extends React.PureComponent {
 
     onMouseMove(event) {
         // show feature on the top of others
-        if (event.target && event.target._layers) {
-            _.forEach(event.target._layers, layer => layer.bringToFront());
+        if (event.target) {
+            event.target.bringToFront();
         }
 
         if (this.context && this.context.onHover) {
@@ -61,10 +70,9 @@ class DiagramFeature extends React.PureComponent {
             });
         }
 
-        if (this.state.areaStyle !== this.props.areaHoveredStyle || this.state.diagramStyle !== this.props.diagramHoveredStyle) {
+        if (this.state.style !== this.props.hoveredStyle) {
             this.setState({
-                areaStyle: this.props.areaHoveredStyle,
-                diagramStyle: this.props.diagramHoveredStyle
+                style: this.props.hoveredStyle
             });
         }
     }
@@ -74,45 +82,23 @@ class DiagramFeature extends React.PureComponent {
             this.context.onHoverOut();
         }
 
-        if (this.state.areaStyle !== this.props.areaDefaultStyle || this.state.diagramStyle !== this.props.diagramDefaultStyle) {
+        if (this.state.style !== this.props.defaultStyle) {
             this.setState({
-                areaStyle: this.props.areaDefaultStyle,
-                diagramStyle: this.props.diagramDefaultStyle
+                style: this.props.defaultStyle
             });
         }
     }
 
     render() {
         return (
-            <FeatureGroup
+            <Polygon
                 onMouseMove={this.onMouseMove}
                 onMouseOut={this.onMouseOut}
-            >
-                {this.renderGeometry()}
-                {this.renderDiagram()}
-            </FeatureGroup>
-        );
-    }
-
-    renderGeometry() {
-        return (
-            <Polygon
-                positions={this.props.areaLeafletCoordinates}
-                {...this.state.areaStyle}
+                positions={this.props.leafletCoordinates}
+                {...this.state.style}
             />
-        );
-    }
-
-    renderDiagram() {
-        return (
-            <Pane>
-                <Circle
-                    center={this.props.diagramLeafletCoordinates}
-                    {...this.state.diagramStyle}
-                />
-            </Pane>
         );
     }
 }
 
-export default withLeaflet(DiagramFeature);
+export default withLeaflet(Area);
