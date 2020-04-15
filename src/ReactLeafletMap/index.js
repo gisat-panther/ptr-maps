@@ -142,7 +142,7 @@ class ReactLeafletMap extends React.PureComponent {
                 selected={o.selected}
                 hovered={o.hovered}
                 style={o.style}
-                pointSizeInMeters={o.pointSizeInMeters}
+                pointAsMarker={o.pointAsMarker}
                 fidColumnName={o.fidColumnName}
                 onClick={this.onLayerClick}
             />
@@ -161,7 +161,6 @@ class ReactLeafletMap extends React.PureComponent {
                 selected={o.selected}
                 hovered={o.hovered}
                 style={o.style}
-                pointSizeInMeters={o.pointSizeInMeters}
                 fidColumnName={o.fidColumnName}
                 onClick={this.onLayerClick}
             />
