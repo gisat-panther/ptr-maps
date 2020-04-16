@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {Circle, Polygon, CircleMarker} from 'react-leaflet';
 
 import {Context} from "@gisatcz/ptr-core";
+import _ from "lodash";
 const HoverContext = Context.getContext('HoverContext');
 
 class Feature extends React.PureComponent {
@@ -30,21 +31,16 @@ class Feature extends React.PureComponent {
         this.fid = props.fid;
 
         this.state = {
-            hovered: false,
-            style: props.selected ? props.selectedStyle : props.defaultStyle
+            hovered: false
         }
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.selected) {
-            if (this.state.hovered && this.state.style !== this.props.selectedHoveredStyle) {
-                this.setState({style: this.props.selectedHoveredStyle});
-            }
-        } else {
-            if (this.state.hovered && this.state.style !== this.props.hoveredStyle) {
-                this.setState({style: this.props.hoveredStyle});
-            } else if (!this.state.hovered && this.state.style !== this.props.defaultStyle) {
-                this.setState({style: this.props.defaultStyle});
+        if (this.context && this.context.hoveredItems) {
+            if (!this.state.hovered && _.indexOf(this.context.hoveredItems, this.fid) !== -1) {
+                this.setState({hovered: true});
+            } else if (this.state.hovered && _.indexOf(this.context.hoveredItems, this.fid) === -1) {
+                this.setState({hovered: false});
             }
         }
     }
@@ -71,37 +67,19 @@ class Feature extends React.PureComponent {
             });
         }
 
-        if (this.props.selected) {
-            this.setState({
-                hovered: true,
-                style: this.props.selectedHoveredStyle
-            });
-        } else if (this.state.style !== this.props.hoveredStyle) {
-            this.setState({
-                hovered: true,
-                style: this.props.hoveredStyle
-            });
-        }
+        this.setState({hovered: true});
     }
 
     onMouseOut(event) {
+        if (!this.props.selected) {
+            this.showOnBottom(event.target);
+        }
+
         if (this.context && this.context.onHoverOut) {
             this.context.onHoverOut();
         }
 
-        if (this.props.selected) {
-            this.setState({
-                hovered: false,
-                style: this.props.selectedStyle
-            });
-        } else if (this.state.style !== this.props.defaultStyle) {
-            this.showOnBottom(event.target);
-
-            this.setState({
-                hovered: false,
-                style: this.props.defaultStyle
-            });
-        }
+        this.setState({hovered: false});
     }
 
     /**
@@ -125,31 +103,41 @@ class Feature extends React.PureComponent {
     }
 
     render() {
+        let style = this.props.defaultStyle;
+
+        if (this.props.selected && this.state.hovered) {
+            style = this.props.selectedHoveredStyle;
+        } else if (this.state.hovered) {
+            style = this.props.hoveredStyle;
+        } else if (this.props.selected) {
+            style = this.props.selectedStyle;
+        }
+
         // TODO add support for other geometry types
         switch (this.props.type) {
             case "Polygon":
             case "MultiPolygon":
-                return this.renderPolygon();
+                return this.renderPolygon(style);
             case "Point":
-                return this.renderPoint();
+                return this.renderPoint(style);
             default:
                 return null;
         }
     }
 
-    renderPolygon() {
+    renderPolygon(style) {
         return (
             <Polygon
                 onClick={this.onClick}
                 onMouseMove={this.onMouseMove}
                 onMouseOut={this.onMouseOut}
                 positions={this.props.leafletCoordinates}
-                {...this.state.style}
+                {...style}
             />
         );
     }
 
-    renderPoint() {
+    renderPoint(style) {
         if (this.props.pointAsMarker) {
             return (
                 <CircleMarker
@@ -157,7 +145,7 @@ class Feature extends React.PureComponent {
                     onMouseMove={this.onMouseMove}
                     onMouseOut={this.onMouseOut}
                     center={this.props.leafletCoordinates}
-                    {...this.state.style}
+                    {...style}
                 />
             );
         } else {
@@ -167,7 +155,7 @@ class Feature extends React.PureComponent {
                     onMouseMove={this.onMouseMove}
                     onMouseOut={this.onMouseOut}
                     center={this.props.leafletCoordinates}
-                    {...this.state.style}
+                    {...style}
                 />
             );
         }
