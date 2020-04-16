@@ -24,6 +24,7 @@ class Feature extends React.PureComponent {
     constructor(props) {
         super(props);
 
+        this.onAdd = this.onAdd.bind(this);
         this.onClick = this.onClick.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseOut = this.onMouseOut.bind(this);
@@ -38,15 +39,25 @@ class Feature extends React.PureComponent {
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.context && this.context.hoveredItems) {
             if (!this.state.hovered && _.indexOf(this.context.hoveredItems, this.fid) !== -1) {
+                this.showOnTop();
                 this.setState({hovered: true});
             } else if (this.state.hovered && _.indexOf(this.context.hoveredItems, this.fid) === -1) {
+                if (!this.props.selected) {
+                    this.showOnBottom();
+                }
                 this.setState({hovered: false});
             }
         }
     }
 
-    onClick(event) {
-        this.showOnTop(event.target);
+    onAdd(event) {
+        if (event.target) {
+            this.leafletFeature = event.target;
+        }
+    }
+
+    onClick() {
+        this.showOnTop();
 
         if (this.props.onClick && this.fid) {
             this.props.onClick(this.fid);
@@ -54,7 +65,7 @@ class Feature extends React.PureComponent {
     }
 
     onMouseMove(event) {
-        this.showOnTop(event.target);
+        this.showOnTop();
 
         if (this.fid && this.context && this.context.onHover) {
             this.context.onHover([this.fid], {
@@ -70,9 +81,9 @@ class Feature extends React.PureComponent {
         this.setState({hovered: true});
     }
 
-    onMouseOut(event) {
+    onMouseOut() {
         if (!this.props.selected) {
-            this.showOnBottom(event.target);
+            this.showOnBottom();
         }
 
         if (this.context && this.context.onHoverOut) {
@@ -84,21 +95,19 @@ class Feature extends React.PureComponent {
 
     /**
      * Show feature on the top of others, if it's not a point
-     * @param leafletFeature {Object}
      */
-    showOnTop(leafletFeature) {
-        if (leafletFeature && this.props.type !== "Point") {
-            leafletFeature.bringToFront();
+    showOnTop() {
+        if (this.leafletFeature && this.props.type !== "Point") {
+            this.leafletFeature.bringToFront();
         }
     }
 
     /**
      * Show feature in the bottom, if it's a polygon
-     * @param leafletFeature {Object}
      */
-    showOnBottom(leafletFeature) {
-        if (leafletFeature && (this.props.type === "Polygon" || this.props.type === "MultiPolygon")) {
-            leafletFeature.bringToBack();
+    showOnBottom() {
+        if (this.leafletFeature && (this.props.type === "Polygon" || this.props.type === "MultiPolygon")) {
+            this.leafletFeature.bringToBack();
         }
     }
 
@@ -128,6 +137,7 @@ class Feature extends React.PureComponent {
     renderPolygon(style) {
         return (
             <Polygon
+                onAdd={this.onAdd}
                 onClick={this.onClick}
                 onMouseMove={this.onMouseMove}
                 onMouseOut={this.onMouseOut}
@@ -141,6 +151,7 @@ class Feature extends React.PureComponent {
         if (this.props.pointAsMarker) {
             return (
                 <CircleMarker
+                    onAdd={this.onAdd}
                     onClick={this.onClick}
                     onMouseMove={this.onMouseMove}
                     onMouseOut={this.onMouseOut}
@@ -151,6 +162,7 @@ class Feature extends React.PureComponent {
         } else {
             return (
                 <Circle
+                    onAdd={this.onAdd}
                     onClick={this.onClick}
                     onMouseMove={this.onMouseMove}
                     onMouseOut={this.onMouseOut}
