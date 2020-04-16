@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _ from "lodash";
 import * as turf from "@turf/turf";
 import {mapStyle} from '@gisatcz/ptr-utils';
-import {Pane, withLeaflet} from 'react-leaflet';
+import {Pane} from 'react-leaflet';
 
 import constants from "../../../constants";
 import Feature from "../Feature";
@@ -146,15 +146,15 @@ class VectorLayer extends React.PureComponent {
 
         return data ? (
             <Pane>
-                {data.map((item) => this.renderFeature(item))}
+                {data.map((item, index) => this.renderFeature(item, index))}
             </Pane>
         ) : null;
     }
 
-    renderFeature(data) {
+    renderFeature(data, index) {
         return (
             <Feature
-                key={data.fid}
+                key={data.fid || index}
                 onClick={this.onFeatureClick}
                 fid={data.fid}
                 fidColumnName={this.props.fidColumnName}
@@ -172,4 +172,4 @@ class VectorLayer extends React.PureComponent {
     }
 }
 
-export default withLeaflet(VectorLayer);
+export default VectorLayer;

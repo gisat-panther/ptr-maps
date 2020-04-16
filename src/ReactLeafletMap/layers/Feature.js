@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Circle, Polygon, withLeaflet, CircleMarker} from 'react-leaflet';
+import {Circle, Polygon, CircleMarker} from 'react-leaflet';
 
 import {Context} from "@gisatcz/ptr-core";
 const HoverContext = Context.getContext('HoverContext');
@@ -115,7 +115,7 @@ class Feature extends React.PureComponent {
     }
 
     /**
-     * Show feature in the bottom
+     * Show feature in the bottom, if it's a polygon
      * @param leafletFeature {Object}
      */
     showOnBottom(leafletFeature) {
@@ -174,4 +174,4 @@ class Feature extends React.PureComponent {
     }
 }
 
-export default withLeaflet(Feature);
+export default Feature;

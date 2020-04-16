@@ -13,7 +13,10 @@ class MapControls extends React.PureComponent {
 		resetHeading: PropTypes.func,
 		mapKey:PropTypes.string,
 		zoomOnly: PropTypes.bool,
-		levelsBased: PropTypes.bool
+		levelsBased: PropTypes.oneOfType([
+			PropTypes.bool,
+			PropTypes.array
+		])
 	};
 
 	constructor() {
