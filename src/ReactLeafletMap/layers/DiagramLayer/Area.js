@@ -1,5 +1,5 @@
 import React from 'react';
-import {Circle, Polygon, FeatureGroup, Pane, withLeaflet} from 'react-leaflet';
+import {Polygon, withLeaflet} from 'react-leaflet';
 import PropTypes from 'prop-types';
 import _ from "lodash";
 import {Context} from "@gisatcz/ptr-core";

@@ -1,5 +1,5 @@
 import React from 'react';
-import {mapStyle, utils} from '@gisatcz/ptr-utils';
+import {mapStyle} from '@gisatcz/ptr-utils';
 import {Pane, withLeaflet} from 'react-leaflet';
 import PropTypes from 'prop-types';
 import _ from "lodash";

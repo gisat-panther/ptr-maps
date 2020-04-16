@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, GeoJSON, WMSTileLayer, TileLayer, Pane } from 'react-leaflet';
+import { Map, WMSTileLayer, TileLayer, Pane } from 'react-leaflet';
 import PropTypes from 'prop-types';
 import L from "leaflet";
 import viewHelpers from "../LeafletMap/viewHelpers";
