@@ -1,67 +1,27 @@
 import React from 'react';
-import {mapStyle} from '@gisatcz/ptr-utils';
-import {Pane, withLeaflet} from 'react-leaflet';
-import PropTypes from 'prop-types';
 import _ from "lodash";
+import {Pane} from 'react-leaflet';
+import * as turf from "@turf/turf";
 import constants from "../../../constants";
 
-import * as turf from "@turf/turf";
-import Diagram from "./Diagram";
-import Area from "./Area";
+import VectorLayer from "../VectorLayer";
+import Feature from "../Feature";
 
-class DiagramLayer extends React.PureComponent {
-    static propTypes = {
-        layerKey: PropTypes.string,
-        features: PropTypes.array,
-        selected: PropTypes.object,
-        hovered: PropTypes.object,
-        style: PropTypes.object,
-        pointSizeInMeters: PropTypes.bool,
-        onClick: PropTypes.func
-    };
-
+class DiagramLayer extends VectorLayer {
     constructor(props) {
         super(props);
-        this.getStyle = this.getStyle.bind(this);
-        this.onFeatureClick = this.onFeatureClick.bind(this);
     }
 
-    getStyle(feature, hovered, isDiagram) {
-        const defaultStyle = mapStyle.getStyleObject(feature.properties, this.props.style);
-        const selectedStyle = this.props.selected ? this.getSelectedStyle(feature.properties, isDiagram) : {};
-
-        let hoveredStyle = null;
-        if (hovered) {
-            hoveredStyle = this.getHoveredStyle(isDiagram);
-        }
-
-        const style = {...defaultStyle, ...selectedStyle, ...hoveredStyle};
-
-        return isDiagram ? this.getDiagramStyle(style) : this.getFeatureStyle(feature, style);
+    getDiagramDefaultStyle(feature, defaultStyleObject) {
+        return this.getDiagramLeafletStyle(feature, defaultStyleObject);
     }
 
-    getFeatureStyle(feature, style) {
-        let finalStyle = {
-            color: style.outlineColor,
-            weight: style.outlineWidth,
-            opacity: style.outlineOpacity,
-            fillColor: style.fill,
-            fillOpacity: style.fillOpacity
-        };
-
-        // for point features, set radius
-        if (feature.geometry.type === 'Point') {
-            if (style.size) {
-                finalStyle.radius = style.size;
-            } else if (style.volume) {
-                finalStyle.radius = Math.sqrt(style.volume/Math.PI);
-            }
-        }
-
-        return finalStyle;
+    getDiagramAccentedStyle(feature, defaultStyleObject, accentedStyleObject) {
+        const style = {...defaultStyleObject, ...accentedStyleObject};
+        return this.getDiagramLeafletStyle(feature, style);
     }
 
-    getDiagramStyle(style) {
+    getDiagramLeafletStyle(feature, style) {
         let finalStyle = {
             color: style.diagramOutlineColor,
             weight: style.diagramOutlineWidth,
@@ -79,46 +39,26 @@ class DiagramLayer extends React.PureComponent {
         return finalStyle;
     }
 
-    getSelectedStyle(featureProperties, isDiagram) {
-        if (this.props.selected) {
-            const featureKey = featureProperties[this.props.fidColumnName];
-            let style = null;
-
-            // TODO solve for more than one selection
-            _.forIn(this.props.selected, (selection, key) => {
-                if (selection.keys && _.includes(selection.keys, featureKey)) {
-                    const styleDef = selection.style || (isDiagram ? constants.vectorLayerDefaultSelectedDiagramStyle : constants.vectorLayerDefaultSelectedFeatureStyle);
-                    style = {"rules":[{"styles": [styleDef]}]};
-                }
-            });
-
-            return style ? mapStyle.getStyleObject(featureProperties, style, true) : null;
-        } else {
-            return null;
-        }
-    }
-
-    getHoveredStyle(isDiagram) {
-        if (this.props.hovered && this.props.hovered.style) {
-            const style = {"rules":[{"styles": [this.props.hovered.style]}]};
-            return mapStyle.getStyleObject(null, style, true);
-        } else {
-            return isDiagram ? constants.vectorLayerDefaultHoveredDiagramStyle : constants.vectorLayerDefaultHoveredFeatureStyle;
-        }
-    }
-
-    onFeatureClick(fid) {
-        if (this.props.onClick) {
-            this.props.onClick(this.props.layerKey, [fid])
-        }
-    }
-
     prepareData(features) {
         if (features) {
             let data = [];
 
             _.forEach(features, (feature) => {
+                const fid = this.props.fidColumnName && feature.properties[this.props.fidColumnName];
                 const centroid = turf.centerOfMass(feature.geometry);
+
+                let selected = null;
+                let areaSelectedStyle = null;
+                let diagramSelectedStyle = null;
+                let areaSelectedHoveredStyle = null;
+                let diagramSelectedHoveredStyle = null;
+                if (this.props.selected && fid) {
+                    _.forIn(this.props.selected, (selection, key) => {
+                        if (selection.keys && _.includes(selection.keys, fid)) {
+                            selected = selection;
+                        }
+                    });
+                }
 
                 // Flip coordinates due to different leaflet implementation
                 const flippedFeature = turf.flip(feature);
@@ -128,20 +68,42 @@ class DiagramLayer extends React.PureComponent {
                 const areaLeafletCoordinates = flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
 
                 // Prepare default styles
-                const areaDefaultStyle = this.getStyle(feature, false);
-                const diagramDefaultStyle = this.getStyle(feature, false, true);
+                const defaultStyleObject = this.getDefaultStyleObject(feature);
+                const areaDefaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
+                const diagramDefaultStyle = this.getDiagramDefaultStyle(feature, defaultStyleObject);
 
                 // Prepare hovered styles
-                const areaHoveredStyle = this.getStyle(feature, true);
-                const diagramHoveredStyle = this.getStyle(feature, true, true);
+                const hoveredStyleObject = this.getAccentedStyleObject(this.props.hovered && this.props.hovered.style, constants.vectorLayerDefaultHoveredFeatureStyle);
+                const hoveredDiagramStyleObject = this.getAccentedStyleObject(this.props.hovered && this.props.hovered.style, constants.vectorLayerDefaultHoveredDiagramStyle);
+                const areaHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+                const diagramHoveredStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, hoveredDiagramStyleObject);
+
+                // Prepare selected and selected hovered style, if selected
+                if (selected) {
+                    const selectedStyleObject = this.getAccentedStyleObject(selected.style, constants.vectorLayerDefaultSelectedFeatureStyle);
+                    const selectedHoveredStyleObject = this.getAccentedStyleObject(selected.hoveredStyle, constants.vectorLayerDefaultSelectedHoveredFeatureStyle)
+                    areaSelectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
+                    areaSelectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+
+                    const diagramSelectedStyleObject = this.getAccentedStyleObject(selected.style, constants.vectorLayerDefaultSelectedDiagramStyle);
+                    const diagramSelectedHoveredStyleObject = this.getAccentedStyleObject(selected.hoveredStyle, constants.vectorLayerDefaultSelectedHoveredDiagramStyle)
+                    diagramSelectedStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, diagramSelectedStyleObject);
+                    diagramSelectedHoveredStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, diagramSelectedHoveredStyleObject);
+                }
 
                 data.push({
                     feature,
+                    fid,
+                    selected: !!selected,
                     areaDefaultStyle,
                     areaHoveredStyle,
+                    areaSelectedStyle,
+                    areaSelectedHoveredStyle,
                     areaLeafletCoordinates,
                     diagramDefaultStyle,
                     diagramHoveredStyle,
+                    diagramSelectedStyle,
+                    diagramSelectedHoveredStyle,
                     diagramLeafletCoordinates
                 });
             });
@@ -154,12 +116,16 @@ class DiagramLayer extends React.PureComponent {
 
     render() {
         const data = this.prepareData(this.props.features);
+        let sortedPolygons = data;
+        if (this.props.selected) {
+            sortedPolygons =  _.orderBy(data, ['selected'], ['asc']);
+        }
 
         return (
             data ? (
                 <>
                     <Pane>
-                        {data.map((item, index) => this.renderArea(item, index))}
+                        {sortedPolygons.map((item, index) => this.renderArea(item, index))}
                     </Pane>
                     <Pane>
                         {data.map((item, index) => this.renderDiagram(item, index))}
@@ -171,12 +137,17 @@ class DiagramLayer extends React.PureComponent {
 
     renderArea(data, index) {
         return (
-            <Area
-                key={index}
+            <Feature
+                key={data.fid || index}
+                fid={data.fid}
                 onClick={this.onFeatureClick}
                 fidColumnName={this.props.fidColumnName}
+                type={data.feature.geometry.type}
                 defaultStyle={data.areaDefaultStyle}
                 hoveredStyle={data.areaHoveredStyle}
+                selectedStyle={data.areaSelectedStyle}
+                selectedHoveredStyle={data.areaSelectedHoveredStyle}
+                selected={data.selected}
                 leafletCoordinates={data.areaLeafletCoordinates}
                 feature={data.feature}
             />
@@ -185,12 +156,17 @@ class DiagramLayer extends React.PureComponent {
 
     renderDiagram(data, index) {
         return (
-            <Diagram
-                key={index}
+            <Feature
+                key={data.fid || index}
+                fid={data.fid}
                 onClick={this.onFeatureClick}
                 fidColumnName={this.props.fidColumnName}
+                type="Point"
                 defaultStyle={data.diagramDefaultStyle}
                 hoveredStyle={data.diagramHoveredStyle}
+                selectedStyle={data.diagramSelectedStyle}
+                selectedHoveredStyle={data.diagramSelectedHoveredStyle}
+                selected={data.selected}
                 leafletCoordinates={data.diagramLeafletCoordinates}
                 feature={data.feature}
             />
@@ -198,4 +174,4 @@ class DiagramLayer extends React.PureComponent {
     }
 }
 
-export default withLeaflet(DiagramLayer);
+export default DiagramLayer;
