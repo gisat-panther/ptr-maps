@@ -2,13 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Circle, Polygon, CircleMarker} from 'react-leaflet';
 
-import {Context} from "@gisatcz/ptr-core";
-import _ from "lodash";
-const HoverContext = Context.getContext('HoverContext');
+import ContextWrapper from "./ContextWrapper";
 
 class Feature extends React.PureComponent {
-    static contextType = HoverContext;
-
     static propTypes = {
         feature: PropTypes.object,
         fid: PropTypes.string,
@@ -37,11 +33,11 @@ class Feature extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.context && this.context.hoveredItems) {
-            if (!this.state.hovered && _.indexOf(this.context.hoveredItems, this.fid) !== -1) {
+        if (this.props.hasOwnProperty('hoveredFromContext')) {
+            if (this.props.hoveredFromContext && !this.state.hovered) {
                 this.showOnTop();
                 this.setState({hovered: true});
-            } else if (this.state.hovered && _.indexOf(this.context.hoveredItems, this.fid) === -1) {
+            } else if (!this.props.hoveredFromContext && this.state.hovered) {
                 if (!this.props.selected) {
                     this.showOnBottom();
                 }
@@ -67,8 +63,8 @@ class Feature extends React.PureComponent {
     onMouseMove(event) {
         this.showOnTop();
 
-        if (this.fid && this.context && this.context.onHover) {
-            this.context.onHover([this.fid], {
+        if (this.fid && this.props.changeContext) {
+            this.props.changeContext([this.fid], {
                 popup: {
                     x: event.originalEvent.pageX,
                     y: event.originalEvent.pageY,
@@ -78,7 +74,9 @@ class Feature extends React.PureComponent {
             });
         }
 
-        this.setState({hovered: true});
+        if (!this.state.hovered) {
+            this.setState({hovered: true});
+        }
     }
 
     onMouseOut() {
@@ -86,8 +84,8 @@ class Feature extends React.PureComponent {
             this.showOnBottom();
         }
 
-        if (this.context && this.context.onHoverOut) {
-            this.context.onHoverOut();
+        if (this.props.changeContext) {
+            this.props.changeContext(null);
         }
 
         this.setState({hovered: false});
@@ -174,4 +172,4 @@ class Feature extends React.PureComponent {
     }
 }
 
-export default Feature;
+export default ContextWrapper(Feature);

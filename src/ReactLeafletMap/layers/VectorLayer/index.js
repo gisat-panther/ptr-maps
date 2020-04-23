@@ -6,7 +6,7 @@ import {mapStyle} from '@gisatcz/ptr-utils';
 import {Pane} from 'react-leaflet';
 
 import constants from "../../../constants";
-import Feature from "../Feature";
+import Feature from "./Feature";
 
 class VectorLayer extends React.PureComponent {
     static propTypes = {

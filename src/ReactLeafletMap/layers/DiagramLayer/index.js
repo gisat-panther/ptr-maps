@@ -5,7 +5,7 @@ import * as turf from "@turf/turf";
 import constants from "../../../constants";
 
 import VectorLayer from "../VectorLayer";
-import Feature from "../Feature";
+import Feature from "../VectorLayer/Feature";
 
 class DiagramLayer extends VectorLayer {
     constructor(props) {
