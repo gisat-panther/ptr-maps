@@ -24,6 +24,7 @@ class Feature extends React.PureComponent {
         this.onClick = this.onClick.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseOut = this.onMouseOut.bind(this);
+        this.onAdd = this.onAdd.bind(this);
 
         this.fid = props.fid;
 
