@@ -8,6 +8,8 @@ import VectorLayer from "./layers/VectorLayer";
 import _ from "lodash";
 import DiagramLayer from "./layers/DiagramLayer";
 
+import './style.scss';
+
 class ReactLeafletMap extends React.PureComponent {
     static propTypes = {
         backgroundLayer: PropTypes.oneOfType([

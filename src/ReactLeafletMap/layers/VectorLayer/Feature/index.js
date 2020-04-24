@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Circle, Polygon, CircleMarker} from 'react-leaflet';
+import {Circle, Polygon, CircleMarker, Marker} from 'react-leaflet';
 
 import ContextWrapper from "./ContextWrapper";
+import icon from "./icon";
 
 class Feature extends React.PureComponent {
     static propTypes = {
@@ -20,7 +21,6 @@ class Feature extends React.PureComponent {
     constructor(props) {
         super(props);
 
-        this.onAdd = this.onAdd.bind(this);
         this.onClick = this.onClick.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseOut = this.onMouseOut.bind(this);
@@ -147,16 +147,7 @@ class Feature extends React.PureComponent {
 
     renderPoint(style) {
         if (this.props.pointAsMarker) {
-            return (
-                <CircleMarker
-                    onAdd={this.onAdd}
-                    onClick={this.onClick}
-                    onMouseMove={this.onMouseMove}
-                    onMouseOut={this.onMouseOut}
-                    center={this.props.leafletCoordinates}
-                    {...style}
-                />
-            );
+            return this.renderShape(style);
         } else {
             return (
                 <Circle
@@ -169,6 +160,20 @@ class Feature extends React.PureComponent {
                 />
             );
         }
+    }
+
+    renderShape(style) {
+        return (
+            <Marker
+                position={this.props.leafletCoordinates}
+                icon={icon.get(style)}
+                onAdd={this.onAdd}
+                onClick={this.onClick}
+                onMouseMove={this.onMouseMove}
+                onMouseOut={this.onMouseOut}
+                style={{textTransform: 'uppercase'}}
+            />
+        );
     }
 }
 

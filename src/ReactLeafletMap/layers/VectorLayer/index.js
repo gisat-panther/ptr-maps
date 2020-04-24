@@ -60,6 +60,10 @@ class VectorLayer extends React.PureComponent {
             }
         }
 
+        if (style.shape) {
+            finalStyle.shape = style.shape;
+        }
+
         return finalStyle;
     }
 
