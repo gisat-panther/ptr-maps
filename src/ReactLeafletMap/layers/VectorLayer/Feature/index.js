@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Circle, Polygon, CircleMarker, Marker} from 'react-leaflet';
+import {Circle, Polygon, Marker} from 'react-leaflet';
 
 import ContextWrapper from "./ContextWrapper";
 import icon from "./icon";
+import {utils} from "@gisatcz/ptr-utils";
 
 class Feature extends React.PureComponent {
     static propTypes = {
@@ -28,6 +29,10 @@ class Feature extends React.PureComponent {
 
         this.fid = props.fid;
 
+        if (props.type === "Point" && props.pointAsMarker) {
+            this.iconId = utils.uuid();
+        }
+
         this.state = {
             hovered: false
         }
@@ -44,7 +49,20 @@ class Feature extends React.PureComponent {
                 }
                 this.setState({hovered: false});
             }
+        } else if (this.props.type === "Point") {
+
+            // onMouseOut is not triggered, if icon has been detached from DOM and marker style remains hovered-looking. This will fix it:
+            const self = this;
+            setTimeout(() => {
+                const domElement = document.getElementById(self.iconId);
+                const matches = domElement.matches('.ptr-leaflet-map-icon:hover');
+
+                if (self.state.hovered && !matches) {
+                    self.setState({hovered: false});
+                }
+            }, 100);
         }
+
     }
 
     onAdd(event) {
@@ -167,12 +185,11 @@ class Feature extends React.PureComponent {
         return (
             <Marker
                 position={this.props.leafletCoordinates}
-                icon={icon.get(style)}
+                icon={icon.get(style, this.iconId)}
                 onAdd={this.onAdd}
                 onClick={this.onClick}
                 onMouseMove={this.onMouseMove}
                 onMouseOut={this.onMouseOut}
-                style={{textTransform: 'uppercase'}}
             />
         );
     }

@@ -5,7 +5,7 @@ import {mapStyle} from "@gisatcz/ptr-utils";
  * @param style {Object} Leaflet style definition
  * @return {L.divIcon}
  */
-function get(style) {
+function get(style, id) {
     let iconStyle;
     switch (style.shape) {
         case 'square':
@@ -26,7 +26,8 @@ function get(style) {
 
     return new L.divIcon({
         iconAnchor: [style.radius, style.radius],
-        html: '<div style="' + styleString + '"/>'
+        className: "ptr-leaflet-map-icon",
+        html: '<div class="ptr-leaflet-map-icon" id="' + id + '" style="' + styleString + '"/>'
     });
 }
 
