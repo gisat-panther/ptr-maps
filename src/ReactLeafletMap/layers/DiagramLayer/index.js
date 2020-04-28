@@ -16,19 +16,30 @@ class DiagramLayer extends VectorLayer {
         return this.getDiagramLeafletStyle(feature, defaultStyleObject);
     }
 
-    getDiagramAccentedStyle(feature, defaultStyleObject, accentedStyleObject) {
-        const style = {...defaultStyleObject, ...accentedStyleObject};
+    getDiagramAccentedStyle(feature, defaultStyleObject, styleDefinition) {
+        const style = {...defaultStyleObject, ...styleDefinition};
         return this.getDiagramLeafletStyle(feature, style);
     }
 
     getDiagramLeafletStyle(feature, style) {
-        let finalStyle = {
-            color: style.diagramOutlineColor,
-            weight: style.diagramOutlineWidth,
-            opacity: style.diagramOutlineOpacity,
-            fillColor: style.diagramFill,
-            fillOpacity: style.diagramFillOpacity
-        };
+        let finalStyle = {};
+
+        finalStyle.color = style.diagramOutlineColor ? style.diagramOutlineColor : null;
+        finalStyle.weight = style.diagramOutlineWidth ? style.diagramOutlineWidth : 0;
+        finalStyle.opacity = style.diagramOutlineOpacity ? style.diagramOutlineOpacity : 1;
+        finalStyle.fillOpacity = style.diagramFillOpacity ? style.diagramFillOpacity : 1;
+        finalStyle.fillColor = style.diagramFill
+
+        if (!style.diagramFill) {
+            finalStyle.fillColor = null;
+            finalStyle.fillOpacity = 0;
+        }
+
+        if (!style.diagramOutlineColor || !style.diagramOutlineWidth) {
+            finalStyle.color = null;
+            finalStyle.opacity = 0;
+            finalStyle.weight = 0;
+        }
 
         if (style.diagramSize) {
             finalStyle.radius = style.diagramSize;
@@ -73,22 +84,18 @@ class DiagramLayer extends VectorLayer {
                 const diagramDefaultStyle = this.getDiagramDefaultStyle(feature, defaultStyleObject);
 
                 // Prepare hovered styles
-                const hoveredStyleObject = this.getAccentedStyleObject(this.props.hovered && this.props.hovered.style, constants.vectorLayerDefaultHoveredFeatureStyle);
-                const hoveredDiagramStyleObject = this.getAccentedStyleObject(this.props.hovered && this.props.hovered.style, constants.vectorLayerDefaultHoveredDiagramStyle);
-                const areaHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
-                const diagramHoveredStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, hoveredDiagramStyleObject);
+                const hoveredStyleDefinition = (this.props.hovered && this.props.hovered.style) || {...constants.vectorFeatureStyle.hovered, ...constants.diagramStyle.hovered};
+                const areaHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleDefinition);
+                const diagramHoveredStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, hoveredStyleDefinition);
 
                 // Prepare selected and selected hovered style, if selected
                 if (selected) {
-                    const selectedStyleObject = this.getAccentedStyleObject(selected.style, constants.vectorLayerDefaultSelectedFeatureStyle);
-                    const selectedHoveredStyleObject = this.getAccentedStyleObject(selected.hoveredStyle, constants.vectorLayerDefaultSelectedHoveredFeatureStyle)
-                    areaSelectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
-                    areaSelectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
-
-                    const diagramSelectedStyleObject = this.getAccentedStyleObject(selected.style, constants.vectorLayerDefaultSelectedDiagramStyle);
-                    const diagramSelectedHoveredStyleObject = this.getAccentedStyleObject(selected.hoveredStyle, constants.vectorLayerDefaultSelectedHoveredDiagramStyle)
-                    diagramSelectedStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, diagramSelectedStyleObject);
-                    diagramSelectedHoveredStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, diagramSelectedHoveredStyleObject);
+                    const selectedStyleDefinition = selected.style || {...constants.vectorFeatureStyle.selected, ...constants.diagramStyle.selected};
+                    const selectedHoveredStyleDefinition = selected.hoveredStyle || {...constants.vectorFeatureStyle.selectedHovered, ...constants.diagramStyle.selectedHovered};
+                    areaSelectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleDefinition);
+                    areaSelectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleDefinition);
+                    diagramSelectedStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, selectedStyleDefinition);
+                    diagramSelectedHoveredStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleDefinition);
                 }
 
                 data.push({

@@ -2,6 +2,12 @@ const numberOfLevels = 18;
 const defaultLevelsRange = [1,18];
 const zoomCoefficient = 500;
 
+/* TODO obsolete, remain due to backward compatibility */
+const vectorLayerHighlightedFeatureStyle = {
+	strokeColor: "#00FFFF",
+	strokeWidth: 2,
+};
+
 const vectorLayerDefaultFeatureStyle = {
 	fillColor: null,
 	fillOpacity: 0,
@@ -9,58 +15,85 @@ const vectorLayerDefaultFeatureStyle = {
 	strokeWidth: 2,
 };
 
-const vectorLayerDefaultSelectedFeatureStyle = {
+/* Vector feature basic style */
+const defaultVectorFeatureStyle = {
+	fill: "#ffffff",
+	fillOpacity: 0.8,
+	outlineColor: "#000000",
+	outlineWidth: 2,
+	outlineOpacity: 1
+};
+
+const selectedVectorFeatureStyle = {
 	outlineWidth: 3,
 	outlineColor: "#ff00ff",
 	outlineOpacity: 1
 };
 
-const vectorLayerDefaultSelectedDiagramStyle = {
-	diagramOutlineWidth: 2,
-	diagramOutlineColor: "#ff00ff",
-	diagramOutlineOpacity: 1
-};
-
-const vectorLayerDefaultHoveredFeatureStyle = {
+const hoveredVectorFeatureStyle = {
 	outlineWidth: 3,
 	outlineColor: "#00ffff",
 	outlineOpacity: 1
 };
 
-const vectorLayerDefaultHoveredDiagramStyle = {
-	diagramOutlineWidth: 2,
-	diagramOutlineColor: "#00ffff",
-	diagramOutlineOpacity: 1
-};
-
-const vectorLayerDefaultSelectedHoveredFeatureStyle = {
+const selectedHoveredVectorFeatureStyle = {
 	outlineWidth: 3,
 	outlineColor: "#8800ff",
 	outlineOpacity: 1
 };
 
-const vectorLayerDefaultSelectedHoveredDiagramStyle = {
+const vectorFeatureStyle = {
+	default: defaultVectorFeatureStyle,
+	defaultFull: {rules: [{styles: [defaultVectorFeatureStyle]}]},
+	hovered: hoveredVectorFeatureStyle,
+	selected: selectedVectorFeatureStyle,
+	selectedHovered: selectedHoveredVectorFeatureStyle
+}
+
+/* Diagram basic style */
+const defaultDiagramStyle = {
+	diagramFill: "#87c7ff",
+	diagramFillOpacity: 1,
+	diagramOutlineColor: "#3b80ff",
+	diagramOutlineWidth: 1,
+	diagramOutlineOpacity: 1
+};
+
+const selectedDiagramStyle = {
+	diagramOutlineWidth: 2,
+	diagramOutlineColor: "#ff00ff",
+	diagramOutlineOpacity: 1
+};
+
+const hoveredDiagramStyle = {
+	diagramOutlineWidth: 2,
+	diagramOutlineColor: "#00ffff",
+	diagramOutlineOpacity: 1
+};
+
+const selectedHoveredDiagramStyle = {
 	diagramOutlineWidth: 2,
 	diagramOutlineColor: "#8800ff",
 	diagramOutlineOpacity: 1
 };
 
-// Obsolete?
-const vectorLayerHighlightedFeatureStyle = {
-	strokeColor: "#00FFFF",
-	strokeWidth: 2,
-};
+const diagramStyle = {
+	default: defaultDiagramStyle,
+	defaultFull: {rules: {styles: [defaultDiagramStyle]}},
+	hovered: hoveredDiagramStyle,
+	selected: selectedDiagramStyle,
+	selectedHovered: selectedHoveredDiagramStyle
+}
 
 export default {
 	numberOfLevels,
 	defaultLevelsRange,
 	zoomCoefficient,
+
+	diagramStyle,
+	vectorFeatureStyle,
+
+	// obsolete
 	vectorLayerDefaultFeatureStyle,
 	vectorLayerHighlightedFeatureStyle,
-	vectorLayerDefaultSelectedFeatureStyle,
-	vectorLayerDefaultSelectedDiagramStyle,
-	vectorLayerDefaultHoveredFeatureStyle,
-	vectorLayerDefaultHoveredDiagramStyle,
-	vectorLayerDefaultSelectedHoveredFeatureStyle,
-	vectorLayerDefaultSelectedHoveredDiagramStyle
 }

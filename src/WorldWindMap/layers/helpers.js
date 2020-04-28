@@ -8,7 +8,7 @@ import LargeDataLayer from "./LargeDataLayerSource/LargeDataLayer";
 import _ from "lodash";
 import {mapStyle} from '@gisatcz/ptr-utils';
 
-function getLayerByType(layerDefinition, wwd, onHover, onClick){
+function getLayerByType(layerDefinition, wwd, onHover, onClick, pointAsMarker){
 	if (layerDefinition.type){
 		switch (layerDefinition.type){
 			case "worldwind":
@@ -34,7 +34,7 @@ function getLayerByType(layerDefinition, wwd, onHover, onClick){
 			case "wms":
 				return new WmsLayer(layerDefinition);
 			case "vector":
-				return getVectorLayer(layerDefinition, wwd, onHover, onClick);
+				return getVectorLayer(layerDefinition, wwd, onHover, onClick, pointAsMarker);
 			default:
 				return null;
 		}
@@ -43,7 +43,7 @@ function getLayerByType(layerDefinition, wwd, onHover, onClick){
 	}
 }
 
-function getVectorLayer(layerDefinition, wwd, onHover, onClick) {
+function getVectorLayer(layerDefinition, wwd, onHover, onClick, pointAsMarker) {
 	const url = layerDefinition.options && layerDefinition.options.url;
 	const numOfFeatures = layerDefinition.options && layerDefinition.options.features && layerDefinition.options.features.length;
 	const key = layerDefinition.key || 'Vector layer';
@@ -58,7 +58,7 @@ function getVectorLayer(layerDefinition, wwd, onHover, onClick) {
 	};
 
 	// TODO better deciding
-	if (url || numOfFeatures > 499) {
+	if (url || pointAsMarker) {
 		options.pointHoverBuffer = mapStyle.DEFAULT_SIZE; // in px TODO pass pointHoverBuffer
 		return new LargeDataLayer(wwd, options, layerDefinition);
 	} else {

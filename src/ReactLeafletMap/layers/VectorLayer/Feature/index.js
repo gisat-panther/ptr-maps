@@ -49,13 +49,13 @@ class Feature extends React.PureComponent {
                 }
                 this.setState({hovered: false});
             }
-        } else if (this.props.type === "Point") {
+        } else if (this.iconId) {
 
             // onMouseOut is not triggered, if icon has been detached from DOM and marker style remains hovered-looking. This will fix it:
             const self = this;
             setTimeout(() => {
                 const domElement = document.getElementById(self.iconId);
-                const matches = domElement.matches('.ptr-leaflet-map-icon:hover');
+                const matches = domElement && domElement.matches('.ptr-leaflet-map-icon:hover');
 
                 if (self.state.hovered && !matches) {
                     self.setState({hovered: false});

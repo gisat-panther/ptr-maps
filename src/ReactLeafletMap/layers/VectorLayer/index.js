@@ -5,8 +5,8 @@ import * as turf from "@turf/turf";
 import {mapStyle} from '@gisatcz/ptr-utils';
 import {Pane} from 'react-leaflet';
 
-import constants from "../../../constants";
 import Feature from "./Feature";
+import constants from "../../../constants";
 
 class VectorLayer extends React.PureComponent {
     static propTypes = {
@@ -25,31 +25,38 @@ class VectorLayer extends React.PureComponent {
     }
 
     getDefaultStyleObject(feature) {
-        return mapStyle.getStyleObject(feature.properties, this.props.style);
+        return mapStyle.getStyleObject(feature.properties, this.props.style || constants.vectorFeatureStyle.defaultFull);
     }
 
-    getAccentedStyleObject(styleDefinition, fallbackStyleDefinition) {
-        const style = {"rules":[{"styles": [styleDefinition || fallbackStyleDefinition]}]};
-        return mapStyle.getStyleObject(null, style, true);
-    }
 
     getFeatureDefaultStyle(feature, defaultStyleObject) {
         return this.getFeatureLeafletStyle(feature, defaultStyleObject);
     }
 
-    getFeatureAccentedStyle(feature, defaultStyleObject, accentedStyleObject) {
-        const style = {...defaultStyleObject, ...accentedStyleObject};
+    getFeatureAccentedStyle(feature, defaultStyleObject, styleDefinition) {
+        const style = {...defaultStyleObject, ...styleDefinition};
         return this.getFeatureLeafletStyle(feature, style);
     }
 
     getFeatureLeafletStyle(feature, style) {
-        let finalStyle = {
-            color: style.outlineColor,
-            weight: style.outlineWidth,
-            opacity: style.outlineOpacity,
-            fillColor: style.fill,
-            fillOpacity: style.fillOpacity
-        };
+        let finalStyle = {};
+
+        finalStyle.color = style.outlineColor ? style.outlineColor : null;
+        finalStyle.weight = style.outlineWidth ? style.outlineWidth : 0;
+        finalStyle.opacity = style.outlineOpacity ? style.outlineOpacity : 1;
+        finalStyle.fillOpacity = style.fillOpacity ? style.fillOpacity : 1;
+        finalStyle.fillColor = style.fill;
+
+        if (!style.fill) {
+            finalStyle.fillColor = null;
+            finalStyle.fillOpacity = 0;
+        }
+
+        if (!style.outlineColor || !style.outlineWidth) {
+            finalStyle.color = null;
+            finalStyle.opacity = 0;
+            finalStyle.weight = 0;
+        }
 
         // for point features, set radius
         if (feature.geometry.type === 'Point') {
@@ -103,15 +110,15 @@ class VectorLayer extends React.PureComponent {
                 const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
 
                 // Prepare hovered style
-                const hoveredStyleObject = this.getAccentedStyleObject(this.props.hovered && this.props.hovered.style, constants.vectorLayerDefaultHoveredFeatureStyle);
-                const hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+                const hoveredStyleDefinition = (this.props.hovered && this.props.hovered.style) || constants.vectorFeatureStyle.hovered;
+                const hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleDefinition);
 
                 // Prepare selected and selected hovered style, if selected
                 if (selected) {
-                    const selectedStyleObject = this.getAccentedStyleObject(selected.style, constants.vectorLayerDefaultSelectedFeatureStyle);
-                    const selectedHoveredStyleObject = this.getAccentedStyleObject(selected.hoveredStyle, constants.vectorLayerDefaultSelectedHoveredFeatureStyle)
-                    selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
-                    selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+                    const selectedStyleDefinition = selected.style || constants.vectorFeatureStyle.selected;
+                    const selectedHoveredStyleDefinition = selected.hoveredStyle || constants.vectorFeatureStyle.selectedHovered;
+                    selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleDefinition);
+                    selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleDefinition);
                 }
 
                 data.push({
