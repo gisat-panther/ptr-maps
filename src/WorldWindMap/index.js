@@ -215,7 +215,7 @@ class WorldWindMap extends React.PureComponent {
 
 	onLayerHover(layerKey, featureKeys, x, y, popupContent, data, fidColumnName) {
 		// pass data to popup
-		if (this.context && this.context.onHover) {
+		if (this.context && this.context.onHover && featureKeys.length) {
 			this.context.onHover(featureKeys, {
 				popup: {
 					x,
@@ -235,13 +235,13 @@ class WorldWindMap extends React.PureComponent {
 	}
 
 	onWorldWindHover(renderables, event) {
-		if (renderables.length) {
+		// TODO can be hovered more than one renderable at one time?
+		if (renderables.length && renderables.length === 1) {
 			// TODO is this enough?
 			const layerPantherProps = renderables[0].parentLayer.pantherProps;
 
-			// TODO chceck if data should be returned in data property
-			const data = renderables.map(renderable => {return {data: renderable.userObject.userProperties}});
-			const featureKeys = data.map(renderable => renderable.data[layerPantherProps.fidColumnName]);
+			const data = renderables[0].userObject.userProperties;
+			const featureKeys = [data[layerPantherProps.fidColumnName]];
 
 			// TODO add support for touch events
 			if (event.type === 'mousedown') {

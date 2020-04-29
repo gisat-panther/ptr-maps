@@ -157,7 +157,7 @@ class LargeDataLayer extends TiledImageLayer {
 
 	onMouseMoveResult(data) {
 		if (this.pantherProps.onHover) {
-			let gids = data.points.map(point => point.data[this.pantherProps.fidColumnName]);
+			let gids = _.compact(data.points.map(point => point.data[this.pantherProps.fidColumnName]));
 			this.pantherProps.onHover(this.pantherProps.layerKey, gids, data.x, data.y, null, data.points, this.pantherProps.fidColumnName);
 		}
 	}
