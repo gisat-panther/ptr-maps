@@ -33,8 +33,8 @@ class VectorLayer extends React.PureComponent {
         return this.getFeatureLeafletStyle(feature, defaultStyleObject);
     }
 
-    getFeatureAccentedStyle(feature, defaultStyleObject, styleDefinition) {
-        const style = {...defaultStyleObject, ...styleDefinition};
+    getFeatureAccentedStyle(feature, defaultStyleObject, accentedStyleObject) {
+        const style = {...defaultStyleObject, ...accentedStyleObject};
         return this.getFeatureLeafletStyle(feature, style);
     }
 
@@ -110,15 +110,15 @@ class VectorLayer extends React.PureComponent {
                 const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
 
                 // Prepare hovered style
-                const hoveredStyleDefinition = (this.props.hovered && this.props.hovered.style) || constants.vectorFeatureStyle.hovered;
-                const hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleDefinition);
+                const hoveredStyleObject = (this.props.hovered && this.props.hovered.style) || constants.vectorFeatureStyle.hovered;
+                const hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
 
                 // Prepare selected and selected hovered style, if selected
                 if (selected) {
-                    const selectedStyleDefinition = selected.style || constants.vectorFeatureStyle.selected;
-                    const selectedHoveredStyleDefinition = selected.hoveredStyle || constants.vectorFeatureStyle.selectedHovered;
-                    selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleDefinition);
-                    selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleDefinition);
+                    const selectedStyleObject = selected.style || constants.vectorFeatureStyle.selected;
+                    const selectedHoveredStyleObject = selected.hoveredStyle || constants.vectorFeatureStyle.selectedHovered;
+                    selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
+                    selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
                 }
 
                 data.push({
