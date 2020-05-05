@@ -26,7 +26,7 @@ class VectorLayer extends WorldWind.RenderableLayer {
 			hovered: {...options.hovered},
 			selected: {...options.selected},
 			key: layer.key,
-			layerKey: layer.layerKey,
+			layerKey: options.layerKey,
 			onHover: options.onHover,
 			onClick: options.onClick,
 			style: options.style
@@ -47,22 +47,25 @@ class VectorLayer extends WorldWind.RenderableLayer {
 		const parser = new WorldWind.GeoJSONParser(geojson);
 
 		const shapeConfigurationCallback = (geometry, properties) => {
-			let style = utils.mapStyle.getStyleObject(properties, this.pantherProps.style);
-			return {userProperties: {...properties, style}}
+			const defaultStyleObject = utils.mapStyle.getStyleObject(properties, this.pantherProps.style  || constants.vectorFeatureStyle.defaultFull);
+			const defaultStyle = this.getStyleDefinition(defaultStyleObject);
+
+			const hoveredStyleObject = this.pantherProps.hovered && this.pantherProps.hovered.style || constants.vectorFeatureStyle.hovered;
+			const hoveredStyle = this.getStyleDefinition({...defaultStyleObject, ...hoveredStyleObject});
+
+			return {
+				userProperties: {
+					...properties,
+					defaultStyleObject,
+					defaultStyle,
+					hoveredStyleObject,
+					hoveredStyle
+				}
+			}
 		};
 
 		const renderablesAddCallback = (layer) => {
 			layer.renderables.forEach(renderable => {
-				let style = renderable.userProperties && renderable.userProperties.style;
-				let outlineRgb = utils.mapStyle.hexToRgb(style.outlineColor);
-				let fillRgb = utils.mapStyle.hexToRgb(style.fill);
-
-				renderable.userProperties.worldWindDefaultStyle = {
-					outlineWidth: style.outlineWidth,
-					outlineColor: new WorldWind.Color(outlineRgb.r / 255, outlineRgb.g / 256, outlineRgb.b / 256, style.outlineOpacity),
-					interiorColor: new WorldWind.Color(fillRgb.r/255, fillRgb.g/256, fillRgb.b/256, style.fillOpacity)
-				};
-
 				this.applyStyles(renderable);
 			});
 		};
@@ -77,75 +80,93 @@ class VectorLayer extends WorldWind.RenderableLayer {
 		this.renderables.forEach(renderable => {
 			const key = renderable.userProperties[this.pantherProps.fidColumnName];
 			if (_.includes(fids, key)) {
-				this.applyHoveredStyle(renderable);
+				const selection = this.getSelection(renderable);
+				if (selection){
+					const selectedHoveredStyleObject = selection.hoveredStyle || constants.vectorFeatureStyle.selectedHovered;
+					const selectedHoveredStyle = this.getStyleDefinition({...renderable.userProperties.defaultStyleObject, ...selectedHoveredStyleObject});
+					this.applyWorldWindStyles(renderable, selectedHoveredStyle);
+				} else {
+					this.applyWorldWindStyles(renderable, renderable.userProperties.hoveredStyle);
+				}
 			} else {
 				this.applyStyles(renderable);
 			}
 		});
 	}
 
-	applyStyles(renderable) {
-		this.applyRenderableDefaultStyle(renderable);
+	/**
+	 * Convert panther style definition to World Wind style definition
+	 * @param styleObject {Object}
+	 * @return {Object}
+	 */
+	getStyleDefinition(styleObject) {
+		let style = {};
 
-		let selectionStyle = this.getSelectionStyle(renderable);
-		if (selectionStyle) {
-			this.applySelectedStyle(renderable,selectionStyle)
-		}
-	}
-
-	applyRenderableDefaultStyle(renderable) {
-		renderable.attributes.outlineWidth = renderable.userProperties.worldWindDefaultStyle.outlineWidth;
-		renderable.attributes.outlineColor = renderable.userProperties.worldWindDefaultStyle.outlineColor;
-		renderable.attributes.interiorColor = renderable.userProperties.worldWindDefaultStyle.interiorColor;
-	}
-
-	applyHoveredStyle(renderable) {
-		let style = {
-			outlineWidth: 3,
-			outlineColor: "#ffaaaa",
-			outlineOpacity: 1,
-			fillOpacity: 0,
-		};
-
-		if (this.pantherProps.hovered && this.pantherProps.hovered.style) {
-			style = {...style, ...utils.mapStyle.getStyleObject(null, this.pantherProps.hovered.style, true)};
+		if (styleObject.fill) {
+			const fillRgb = utils.mapStyle.hexToRgb(styleObject.fill);
+			style.interiorColor = new WorldWind.Color(fillRgb.r/255, fillRgb.g/256, fillRgb.b/256, styleObject.fillOpacity || 1);
+		} else {
+			style.interiorColor = WorldWind.Color.TRANSPARENT;
 		}
 
-		this.setRenderableStyle(renderable, style);
-	}
-
-	applySelectedStyle(renderable, definition) {
-		const style = {...constants.vectorLayerDefaultSelectedFeatureStyle, ...utils.mapStyle.getStyleObject(null, definition, true)};
-		this.setRenderableStyle(renderable, style);
-	}
-
-	setRenderableStyle(renderable, style) {
-		let outlineRgb = utils.mapStyle.hexToRgb(style.outlineColor);
-
-		renderable.attributes.outlineWidth = style.outlineWidth;
-		renderable.attributes.outlineColor = new WorldWind.Color(outlineRgb.r/255, outlineRgb.g/256, outlineRgb.b/256, style.outlineOpacity);
-
-		if (style.fill) {
-			let fillRgb = utils.mapStyle.hexToRgb(style.fill);
-			renderable.attributes.interiorColor = new WorldWind.Color(fillRgb.r/255, fillRgb.g/256, fillRgb.b/256, style.fillOpacity);
+		if (styleObject.outlineColor && styleObject.outlineWidth) {
+			const outlineRgb = utils.mapStyle.hexToRgb(styleObject.outlineColor);
+			style.outlineColor = new WorldWind.Color(outlineRgb.r / 255, outlineRgb.g / 256, outlineRgb.b / 256, styleObject.outlineOpacity || 1);
+			style.outlineWidth = styleObject.outlineWidth;
+		} else {
+			style.outlineColor = WorldWind.Color.TRANSPARENT;
 		}
+
+		return style;
 	}
 
-	getSelectionStyle(renderable) {
+	/**
+	 * Get selection for feature
+	 * @param renderable {Object}
+	 * @return {Object}
+	 */
+	getSelection(renderable) {
 		if (this.pantherProps.selected) {
 			const featureKey = renderable.userProperties[this.pantherProps.fidColumnName];
-			let style = null;
+			let selectionDefintion = null;
 
 			_.forIn(this.pantherProps.selected, (selection, key) => {
 				if (selection.keys && _.includes(selection.keys, featureKey)) {
-					style = selection.style || constants.vectorLayerDefaultSelectedFeatureStyle;
+					selectionDefintion = selection
 				}
 			});
 
-			return style;
+			return selectionDefintion;
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * @param renderable {WorldWind.Renderable}
+	 */
+	applyStyles(renderable) {
+		const defaultStyleObject = renderable.userProperties.defaultStyleObject;
+		const selection = this.getSelection(renderable);
+
+		if (selection) {
+			const selectedStyleObject = selection.style || constants.vectorFeatureStyle.selected;
+			const selectedStyle = this.getStyleDefinition({...defaultStyleObject, ...selectedStyleObject});
+			this.applyWorldWindStyles(renderable, selectedStyle);
+
+		} else {
+			this.applyWorldWindStyles(renderable, renderable.userProperties.defaultStyle);
+		}
+	}
+
+	/**
+	 * @param renderable {WorldWind.Renderable}
+	 * @param style {Object}
+	 */
+	applyWorldWindStyles(renderable, style) {
+		renderable.attributes.outlineWidth = style.outlineWidth;
+		renderable.attributes.outlineColor = style.outlineColor;
+		renderable.attributes.interiorColor = style.interiorColor;
 	}
 }
 

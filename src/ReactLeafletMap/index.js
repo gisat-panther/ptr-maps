@@ -1,11 +1,14 @@
 import React from 'react';
-import { Map, GeoJSON, WMSTileLayer, TileLayer, Pane } from 'react-leaflet';
+import { Map, WMSTileLayer, TileLayer, Pane } from 'react-leaflet';
 import PropTypes from 'prop-types';
 import L from "leaflet";
 import viewHelpers from "../LeafletMap/viewHelpers";
 import viewUtils from "../viewUtils";
 import VectorLayer from "./layers/VectorLayer";
 import _ from "lodash";
+import DiagramLayer from "./layers/DiagramLayer";
+
+import './style.scss';
 
 class ReactLeafletMap extends React.PureComponent {
     static propTypes = {
@@ -60,7 +63,7 @@ class ReactLeafletMap extends React.PureComponent {
         const backgroundLayersSource = _.isArray(this.props.backgroundLayer) ? this.props.backgroundLayer : [this.props.backgroundLayer];
 
         const backgroundLayers = backgroundLayersSource && backgroundLayersSource.map((layer, i) => this.getLayerByType(layer, i));
-        const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane>{this.getLayerByType(layer, i)}</Pane>);
+        const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane key={layer.key || i}>{this.getLayerByType(layer, i)}</Pane>);
         const view = viewHelpers.getLeafletViewportFromViewParams(this.props.view);
 
         return (
@@ -84,11 +87,13 @@ class ReactLeafletMap extends React.PureComponent {
         if (layer && layer.type){
             switch (layer.type) {
                 case 'wmts':
-                    return this.getTileLayer(layer);
+                    return this.getTileLayer(layer, i);
                 case 'wms':
                     return this.getWmsTileLayer(layer, i);
                 case 'vector':
                     return this.getVectorLayer(layer, i);
+                case 'diagram':
+                    return this.getDiagramLayer(layer, i);
                 default:
                     return null;
             }
@@ -97,7 +102,7 @@ class ReactLeafletMap extends React.PureComponent {
         }
     }
 
-    getTileLayer(layer) {
+    getTileLayer(layer, i) {
         let url = layer.options.url;
 
         // fix for backward compatibility
@@ -107,6 +112,7 @@ class ReactLeafletMap extends React.PureComponent {
 
         return (
             <TileLayer
+                key={layer.key || i}
                 url={url}
             />
         );
@@ -117,7 +123,7 @@ class ReactLeafletMap extends React.PureComponent {
 
         return (
             <WMSTileLayer
-                key={i}
+                key={layer.key || i}
                 url={o.url}
                 layers={o.params && o.params.layers}
                 opacity={layer.opacity || 1}
@@ -131,14 +137,33 @@ class ReactLeafletMap extends React.PureComponent {
         const o = layer.options;
         return (
             <VectorLayer
-                key={i}
+                key={layer.key || i}
+                type={layer.type}
                 layerKey={layer.key}
                 opacity={layer.opacity || 1}
                 features={o.features}
                 selected={o.selected}
                 hovered={o.hovered}
                 style={o.style}
-                pointSizeInMeters={o.pointSizeInMeters}
+                pointAsMarker={o.pointAsMarker}
+                fidColumnName={o.fidColumnName}
+                onClick={this.onLayerClick}
+            />
+        );
+    }
+
+    getDiagramLayer(layer, i) {
+        const o = layer.options;
+        return (
+            <DiagramLayer
+                key={layer.key || i}
+                type={layer.type}
+                layerKey={layer.key}
+                opacity={layer.opacity || 1}
+                features={o.features}
+                selected={o.selected}
+                hovered={o.hovered}
+                style={o.style}
                 fidColumnName={o.fidColumnName}
                 onClick={this.onLayerClick}
             />
