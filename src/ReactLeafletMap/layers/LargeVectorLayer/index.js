@@ -22,21 +22,24 @@ class LargeVectorLayer extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.indexTree.load(this.props.features);
-        this.setState({
-            treeStateKey: utils.uuid()
-        });
+        this.indexFeatures();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         // TODO naive cleaning and populating whole tree on each change in features
         if (this.props.features !== prevProps.features) {
             this.indexTree.clear();
-            this.indexTree.load(this.props.features);
-            this.setState({
-                treeStateKey: utils.uuid()
-            });
+            this.indexFeatures();
         }
+    }
+
+    indexFeatures() {
+        console.log("Indexing...");
+        this.indexTree.load(this.props.features);
+        this.setState({
+            treeStateKey: utils.uuid()
+        });
+        console.log("Features indexed: ", this.props.features.length);
     }
 
     render() {
@@ -54,6 +57,7 @@ class LargeVectorLayer extends React.PureComponent {
             const foundFeatureCollection = this.indexTree.search(geoJsonBbox);
             const foundFeatures = foundFeatureCollection && foundFeatureCollection.features || [];
 
+            console.log("Features in current view: ", foundFeatures.length);
             // Add filtered features only to Vector layer
             const props = {...this.props, features: foundFeatures};
 
