@@ -83,8 +83,8 @@ class VectorLayer extends React.PureComponent {
     prepareData(features) {
         if (features) {
             // TODO what about layers with mixed geometry type?
-            const isPointLayer = features[0].geometry.type === "Point";
-            const isPolygonLayer = features[0].geometry.type === "Polygon" || features[0].geometry.type === "MultiPolygon";
+            const isPointLayer = features[0] && features[0].geometry.type === "Point";
+            const isPolygonLayer = features[0] && features[0].geometry.type === "Polygon" || features[0] && features[0].geometry.type === "MultiPolygon";
 
             let data = [];
             _.forEach(features, (feature) => {

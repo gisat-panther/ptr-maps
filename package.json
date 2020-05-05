@@ -26,6 +26,7 @@
     "@turf/turf": "5.1.6",
     "chroma-js": "2.1.0",
     "classnames": "2.2.6",
+    "geojson-rbush": "3.1.2",
     "js-quadtree": "2.0.1",
     "leaflet": "1.6.0",
     "lodash": "4.17.15",

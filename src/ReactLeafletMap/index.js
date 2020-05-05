@@ -7,6 +7,7 @@ import viewUtils from "../viewUtils";
 import VectorLayer from "./layers/VectorLayer";
 import _ from "lodash";
 import DiagramLayer from "./layers/DiagramLayer";
+import LargeVectorLayer from "./layers/LargeVectorLayer";
 
 import './style.scss';
 
@@ -92,6 +93,8 @@ class ReactLeafletMap extends React.PureComponent {
                     return this.getWmsTileLayer(layer, i);
                 case 'vector':
                     return this.getVectorLayer(layer, i);
+                case 'vector-large':
+                    return this.getLargeVectorLayer(layer, i);
                 case 'diagram':
                     return this.getDiagramLayer(layer, i);
                 default:
@@ -129,6 +132,27 @@ class ReactLeafletMap extends React.PureComponent {
                 opacity={layer.opacity || 1}
                 transparent={true}
                 format={o.params && o.params.imageFormat || 'image/png'}
+            />
+        );
+    }
+
+    getLargeVectorLayer(layer, i) {
+        const o = layer.options;
+        return (
+            <LargeVectorLayer
+                key={layer.key || i}
+                type={layer.type}
+                layerKey={layer.key}
+                opacity={layer.opacity || 1}
+                features={o.features}
+                selected={o.selected}
+                hovered={o.hovered}
+                style={o.style}
+                pointAsMarker={o.pointAsMarker}
+                fidColumnName={o.fidColumnName}
+                maxBoxRange={o.maxBoxRange}
+                view={this.props.view}
+                onClick={this.onLayerClick}
             />
         );
     }
