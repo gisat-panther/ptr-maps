@@ -39,7 +39,6 @@ class LargeVectorLayer extends React.PureComponent {
         this.setState({
             treeStateKey: utils.uuid()
         });
-        console.log("Features indexed: ", this.props.features.length);
     }
 
     render() {
@@ -57,7 +56,6 @@ class LargeVectorLayer extends React.PureComponent {
             const foundFeatureCollection = this.indexTree.search(geoJsonBbox);
             const foundFeatures = foundFeatureCollection && foundFeatureCollection.features || [];
 
-            console.log("Features in current view: ", foundFeatures.length);
             // Add filtered features only to Vector layer
             const props = {...this.props, features: foundFeatures};
 
