@@ -90,62 +90,64 @@ class VectorLayer extends React.PureComponent {
             let sortedPolygonFeatures = null;
 
             _.forEach(features, (feature) => {
-                const type = feature.geometry.type;
-                const fid = this.props.fidColumnName && feature.properties[this.props.fidColumnName];
+                const type = feature && feature.geometry && feature.geometry.type;
+                if (type) {
+                    const fid = this.props.fidColumnName && feature.properties[this.props.fidColumnName];
 
-                let selected = null;
-                let selectedStyle = null;
-                let selectedHoveredStyle = null;
-                if (this.props.selected && fid) {
-                    _.forIn(this.props.selected, (selection, key) => {
-                        if (selection.keys && _.includes(selection.keys, fid)) {
-                            selected = selection;
-                        }
-                    });
-                }
+                    let selected = null;
+                    let selectedStyle = null;
+                    let selectedHoveredStyle = null;
+                    if (this.props.selected && fid) {
+                        _.forIn(this.props.selected, (selection, key) => {
+                            if (selection.keys && _.includes(selection.keys, fid)) {
+                                selected = selection;
+                            }
+                        });
+                    }
 
-                // Flip coordinates due to different leaflet implementation
-                const flippedFeature = turf.flip(feature);
-                const leafletCoordinates = flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
+                    // Flip coordinates due to different leaflet implementation
+                    const flippedFeature = turf.flip(feature);
+                    const leafletCoordinates = flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
 
-                // Prepare default style
-                const defaultStyleObject = this.getDefaultStyleObject(feature);
-                const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
+                    // Prepare default style
+                    const defaultStyleObject = this.getDefaultStyleObject(feature);
+                    const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
 
-                // Prepare hovered style
-                const hoveredStyleObject = (this.props.hovered && this.props.hovered.style) || constants.vectorFeatureStyle.hovered;
-                const hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+                    // Prepare hovered style
+                    const hoveredStyleObject = (this.props.hovered && this.props.hovered.style) || constants.vectorFeatureStyle.hovered;
+                    const hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
 
-                // Prepare selected and selected hovered style, if selected
-                if (selected) {
-                    const selectedStyleObject = selected.style || constants.vectorFeatureStyle.selected;
-                    const selectedHoveredStyleObject = selected.hoveredStyle || constants.vectorFeatureStyle.selectedHovered;
-                    selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
-                    selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
-                }
+                    // Prepare selected and selected hovered style, if selected
+                    if (selected) {
+                        const selectedStyleObject = selected.style || constants.vectorFeatureStyle.selected;
+                        const selectedHoveredStyleObject = selected.hoveredStyle || constants.vectorFeatureStyle.selectedHovered;
+                        selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
+                        selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+                    }
 
-                const data = {
-                    feature,
-                    fid,
-                    selected: !!selected,
-                    defaultStyle,
-                    hoveredStyle,
-                    selectedStyle,
-                    selectedHoveredStyle,
-                    leafletCoordinates
-                };
+                    const data = {
+                        feature,
+                        fid,
+                        selected: !!selected,
+                        defaultStyle,
+                        hoveredStyle,
+                        selectedStyle,
+                        selectedHoveredStyle,
+                        leafletCoordinates
+                    };
 
-                switch (type) {
-                    case "Point":
-                    case "MultiPoint":
-                        pointFeatures.push(data);
-                        break;
-                    case "Polygon":
-                    case "MultiPolygon":
-                        polygonFeatures.push(data);
-                        break;
-                    default:
-                        break;
+                    switch (type) {
+                        case "Point":
+                        case "MultiPoint":
+                            pointFeatures.push(data);
+                            break;
+                        case "Polygon":
+                        case "MultiPolygon":
+                            polygonFeatures.push(data);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             });
 
