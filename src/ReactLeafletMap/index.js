@@ -150,7 +150,7 @@ class ReactLeafletMap extends React.PureComponent {
                 style={o.style}
                 pointAsMarker={o.pointAsMarker}
                 fidColumnName={o.fidColumnName}
-                maxBoxRange={o.maxBoxRange}
+                boxRangeRange={o.boxRangeRange}
                 view={this.props.view}
                 onClick={this.onLayerClick}
             />

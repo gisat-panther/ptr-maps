@@ -9,7 +9,7 @@ const geojsonRbush = require('geojson-rbush').default;
 
 class LargeVectorLayer extends React.PureComponent {
     static propTypes = {
-
+        boxRangeRange: PropTypes.array
     };
 
     constructor(props) {
@@ -41,8 +41,25 @@ class LargeVectorLayer extends React.PureComponent {
         });
     }
 
+    boxRangeFitsLimits() {
+        const props = this.props;
+        if (props.boxRangeRange) {
+            const minBoxRange = props.boxRangeRange[0];
+            const maxBoxRange = props.boxRangeRange[1];
+            if (minBoxRange && maxBoxRange) {
+                return minBoxRange <= props.view.boxRange && maxBoxRange >= props.view.boxRange;
+            } else if (minBoxRange) {
+                return minBoxRange <= props.view.boxRange;
+            } else if (maxBoxRange) {
+                return maxBoxRange >= props.view.boxRange;
+            }
+        } else {
+            return true;
+        }
+    }
+
     render() {
-        if (this.state.treeStateKey && this.props.maxBoxRange && this.props.maxBoxRange >= this.props.view.boxRange) {
+        if (this.state.treeStateKey && this.boxRangeFitsLimits()) {
             // Current view bounding box in leaflet format
             const bbox = this.props.leaflet.map.getBounds();
 
