@@ -7,7 +7,7 @@ import viewUtils from "../viewUtils";
 import VectorLayer from "./layers/VectorLayer";
 import _ from "lodash";
 import DiagramLayer from "./layers/DiagramLayer";
-import LargeVectorLayer from "./layers/LargeVectorLayer";
+import IndexedVectorLayer from "./layers/IndexedVectorLayer";
 
 import './style.scss';
 
@@ -25,6 +25,10 @@ class ReactLeafletMap extends React.PureComponent {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            view: null
+        }
 
         this.onLayerClick = this.onLayerClick.bind(this);
         this.onViewportChange = this.onViewportChange.bind(this);
@@ -54,9 +58,16 @@ class ReactLeafletMap extends React.PureComponent {
 
         const boxRange = viewUtils.getBoxRangeFromZoomLevelAndLatitude(viewport.zoom, center.lat);
 
+        // TODO for IndexedVectorLayer rerender (see IndexedVectorLayer render method)
+        let stateUpdate = {viewport};
+
         if (this.props.onViewChange) {
             this.props.onViewChange({center, boxRange});
+        } else {
+            stateUpdate.view = {center, boxRange};
         }
+
+        this.setState(stateUpdate);
     }
 
     render() {
@@ -65,7 +76,7 @@ class ReactLeafletMap extends React.PureComponent {
 
         const backgroundLayers = backgroundLayersSource && backgroundLayersSource.map((layer, i) => this.getLayerByType(layer, i));
         const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane key={layer.key || i}>{this.getLayerByType(layer, i)}</Pane>);
-        const view = viewHelpers.getLeafletViewportFromViewParams(this.props.view);
+        const view = viewHelpers.getLeafletViewportFromViewParams(this.state.view || this.props.view);
 
         return (
             <Map
@@ -92,11 +103,9 @@ class ReactLeafletMap extends React.PureComponent {
                 case 'wms':
                     return this.getWmsTileLayer(layer, i);
                 case 'vector':
-                    return this.getVectorLayer(layer, i);
-                case 'vector-large':
-                    return this.getLargeVectorLayer(layer, i);
+                    return this.getIndexedVectorLayer(layer, i);
                 case 'diagram':
-                    return this.getDiagramLayer(layer, i);
+                    return this.getIndexedVectorLayer(layer, i, true);
                 default:
                     return null;
             }
@@ -136,60 +145,18 @@ class ReactLeafletMap extends React.PureComponent {
         );
     }
 
-    getLargeVectorLayer(layer, i) {
-        const o = layer.options;
+    getIndexedVectorLayer(layer, i, isDiagram) {
         return (
-            <LargeVectorLayer
+            <IndexedVectorLayer
+                component={isDiagram ? DiagramLayer : VectorLayer}
                 key={layer.key || i}
                 type={layer.type}
                 layerKey={layer.key}
                 opacity={layer.opacity || 1}
-                features={o.features}
-                selected={o.selected}
-                hovered={o.hovered}
-                style={o.style}
-                pointAsMarker={o.pointAsMarker}
-                fidColumnName={o.fidColumnName}
-                boxRangeRange={o.boxRangeRange}
-                view={this.props.view}
+                view={this.state.view || this.props.view}
+                viewport={this.state.viewport}
                 onClick={this.onLayerClick}
-            />
-        );
-    }
-
-    getVectorLayer(layer, i) {
-        const o = layer.options;
-        return (
-            <VectorLayer
-                key={layer.key || i}
-                type={layer.type}
-                layerKey={layer.key}
-                opacity={layer.opacity || 1}
-                features={o.features}
-                selected={o.selected}
-                hovered={o.hovered}
-                style={o.style}
-                pointAsMarker={o.pointAsMarker}
-                fidColumnName={o.fidColumnName}
-                onClick={this.onLayerClick}
-            />
-        );
-    }
-
-    getDiagramLayer(layer, i) {
-        const o = layer.options;
-        return (
-            <DiagramLayer
-                key={layer.key || i}
-                type={layer.type}
-                layerKey={layer.key}
-                opacity={layer.opacity || 1}
-                features={o.features}
-                selected={o.selected}
-                hovered={o.hovered}
-                style={o.style}
-                fidColumnName={o.fidColumnName}
-                onClick={this.onLayerClick}
+                {...layer.options}
             />
         );
     }

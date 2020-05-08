@@ -1,15 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import VectorLayer from "../VectorLayer";
 import {withLeaflet} from "react-leaflet";
 import {utils} from "@gisatcz/ptr-utils";
 
 const geojsonRbush = require('geojson-rbush').default;
 
-class LargeVectorLayer extends React.PureComponent {
+class IndexedVectorLayer extends React.PureComponent {
     static propTypes = {
-        boxRangeRange: PropTypes.array
+        boxRangeRange: PropTypes.array,
+        component: PropTypes.func
     };
 
     constructor(props) {
@@ -34,7 +33,6 @@ class LargeVectorLayer extends React.PureComponent {
     }
 
     indexFeatures() {
-        console.log("Indexing...");
         this.indexTree.load(this.props.features);
         this.setState({
             treeStateKey: utils.uuid()
@@ -60,6 +58,8 @@ class LargeVectorLayer extends React.PureComponent {
 
     render() {
         if (this.state.treeStateKey && this.boxRangeFitsLimits()) {
+
+            // TODO if view was changed from outside, leaflet.map still has old bounds
             // Current view bounding box in leaflet format
             const bbox = this.props.leaflet.map.getBounds();
 
@@ -76,7 +76,7 @@ class LargeVectorLayer extends React.PureComponent {
             // Add filtered features only to Vector layer
             const props = {...this.props, features: foundFeatures};
 
-            return <VectorLayer {...props}/>
+            return React.createElement(this.props.component, props);
         } else {
             return null;
         }
@@ -84,4 +84,4 @@ class LargeVectorLayer extends React.PureComponent {
     }
 }
 
-export default withLeaflet(LargeVectorLayer);
+export default withLeaflet(IndexedVectorLayer);
