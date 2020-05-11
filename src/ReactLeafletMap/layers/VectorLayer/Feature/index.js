@@ -65,6 +65,12 @@ class Feature extends React.PureComponent {
 
     }
 
+    componentWillUnmount() {
+        if (this.props.changeContext) {
+            this.props.changeContext(null);
+        }
+    }
+
     onAdd(event) {
         if (event.target) {
             this.leafletFeature = event.target;
