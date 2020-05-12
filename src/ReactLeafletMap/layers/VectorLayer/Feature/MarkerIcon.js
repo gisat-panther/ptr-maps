@@ -56,6 +56,7 @@ class MarkerIcon extends L.DivIcon {
         });
         element.addEventListener("mousemove", this.onMouseMove);
         element.addEventListener("mouseout", this.onMouseOut);
+        element.addEventListener("click", this.onClick);
 
         return element;
     }
