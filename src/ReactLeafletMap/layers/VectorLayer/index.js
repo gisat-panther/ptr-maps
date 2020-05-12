@@ -82,71 +82,94 @@ class VectorLayer extends React.PureComponent {
 
     prepareData(features) {
         if (features) {
-            // TODO what about layers with mixed geometry type?
-            const isPointLayer = features[0].geometry.type === "Point";
-            const isPolygonLayer = features[0].geometry.type === "Polygon" || features[0].geometry.type === "MultiPolygon";
+            let pointFeatures = [];
+            let polygonFeatures = [];
+            // TODO lineFeatures
 
-            let data = [];
+            let sortedPointFeatures = null;
+            let sortedPolygonFeatures = null;
+
             _.forEach(features, (feature) => {
-                const fid = this.props.fidColumnName && feature.properties[this.props.fidColumnName];
+                const type = feature && feature.geometry && feature.geometry.type;
+                if (type) {
+                    const fid = this.props.fidColumnName && feature.properties[this.props.fidColumnName];
 
-                let selected = null;
-                let selectedStyle = null;
-                let selectedHoveredStyle = null;
-                if (this.props.selected && fid) {
-                    _.forIn(this.props.selected, (selection, key) => {
-                        if (selection.keys && _.includes(selection.keys, fid)) {
-                            selected = selection;
-                        }
-                    });
+                    let selected = null;
+                    let selectedStyle = null;
+                    let selectedHoveredStyle = null;
+                    if (this.props.selected && fid) {
+                        _.forIn(this.props.selected, (selection, key) => {
+                            if (selection.keys && _.includes(selection.keys, fid)) {
+                                selected = selection;
+                            }
+                        });
+                    }
+
+                    // Flip coordinates due to different leaflet implementation
+                    const flippedFeature = turf.flip(feature);
+                    const leafletCoordinates = flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
+
+                    // Prepare default style
+                    const defaultStyleObject = this.getDefaultStyleObject(feature);
+                    const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
+
+                    // Prepare hovered style
+                    const hoveredStyleObject = (this.props.hovered && this.props.hovered.style) || constants.vectorFeatureStyle.hovered;
+                    const hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+
+                    // Prepare selected and selected hovered style, if selected
+                    if (selected) {
+                        const selectedStyleObject = selected.style || constants.vectorFeatureStyle.selected;
+                        const selectedHoveredStyleObject = selected.hoveredStyle || constants.vectorFeatureStyle.selectedHovered;
+                        selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
+                        selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+                    }
+
+                    const data = {
+                        feature,
+                        fid,
+                        selected: !!selected,
+                        defaultStyle,
+                        hoveredStyle,
+                        selectedStyle,
+                        selectedHoveredStyle,
+                        leafletCoordinates
+                    };
+
+                    switch (type) {
+                        case "Point":
+                        case "MultiPoint":
+                            pointFeatures.push(data);
+                            break;
+                        case "Polygon":
+                        case "MultiPolygon":
+                            polygonFeatures.push(data);
+                            break;
+                        default:
+                            break;
+                    }
                 }
-
-                // Flip coordinates due to different leaflet implementation
-                const flippedFeature = turf.flip(feature);
-                const leafletCoordinates = flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
-
-                // Prepare default style
-                const defaultStyleObject = this.getDefaultStyleObject(feature);
-                const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
-
-                // Prepare hovered style
-                const hoveredStyleObject = (this.props.hovered && this.props.hovered.style) || constants.vectorFeatureStyle.hovered;
-                const hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
-
-                // Prepare selected and selected hovered style, if selected
-                if (selected) {
-                    const selectedStyleObject = selected.style || constants.vectorFeatureStyle.selected;
-                    const selectedHoveredStyleObject = selected.hoveredStyle || constants.vectorFeatureStyle.selectedHovered;
-                    selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
-                    selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
-                }
-
-                data.push({
-                    feature,
-                    fid,
-                    selected: !!selected,
-                    defaultStyle,
-                    hoveredStyle,
-                    selectedStyle,
-                    selectedHoveredStyle,
-                    leafletCoordinates
-                });
             });
 
-            // sort points by size to display smaller points on the top
-            if (isPointLayer) {
-                return _.orderBy(data, ['defaultStyle.radius'], ['desc']);
+            // sort point features by radius
+            if (pointFeatures.length) {
+                sortedPointFeatures = _.orderBy(pointFeatures, ['defaultStyle.radius'], ['desc']);
             }
 
-            // sort polygons - selected to the top
-            else if (isPolygonLayer && this.props.selected) {
-                return _.orderBy(data, ['selected'], ['asc']);
+            // sort polygon features, if selected
+            if (polygonFeatures.length) {
+                if (this.props.selected) {
+                    sortedPolygonFeatures = _.orderBy(polygonFeatures, ['selected'], ['asc']);
+                } else {
+                    sortedPolygonFeatures = polygonFeatures;
+                }
             }
 
-            else {
-                return data;
+            return {
+                polygons: sortedPolygonFeatures,
+                points: sortedPointFeatures,
+                lines: null
             }
-
         } else {
             return null;
         }
@@ -156,9 +179,17 @@ class VectorLayer extends React.PureComponent {
         const data = this.prepareData(this.props.features);
 
         return data ? (
-            <Pane>
-                {data.map((item, index) => this.renderFeature(item, index))}
-            </Pane>
+            <>
+                <Pane>
+                    {data.polygons ? (data.polygons.map((item, index) => this.renderFeature(item, index))) : null}
+                </Pane>
+                <Pane>
+                    {data.lines ? (data.lines.map((item, index) => this.renderFeature(item, index))) : null}
+                </Pane>
+                <Pane>
+                    {data.points ? (data.points.map((item, index) => this.renderFeature(item, index))) : null}
+                </Pane>
+            </>
         ) : null;
     }
 

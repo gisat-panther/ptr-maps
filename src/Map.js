@@ -72,6 +72,10 @@ class PresentationMap extends React.PureComponent {
 		if (!_.isEqual(view, this.state.view)) {
 			this.setState({view});
 		}
+
+		if (this.props.onViewChange) {
+			this.props.onViewChange(view);
+		}
 	}
 	
 	resetHeading() {

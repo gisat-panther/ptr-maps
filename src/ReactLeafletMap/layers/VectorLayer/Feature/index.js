@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {Circle, Polygon, Marker} from 'react-leaflet';
 
 import ContextWrapper from "./ContextWrapper";
-import icon from "./icon";
 import {utils} from "@gisatcz/ptr-utils";
+import MarkerIcon from "./MarkerIcon";
 
 class Feature extends React.PureComponent {
     static propTypes = {
@@ -49,20 +49,13 @@ class Feature extends React.PureComponent {
                 }
                 this.setState({hovered: false});
             }
-        } else if (this.iconId) {
-
-            // onMouseOut is not triggered, if icon has been detached from DOM and marker style remains hovered-looking. This will fix it:
-            const self = this;
-            setTimeout(() => {
-                const domElement = document.getElementById(self.iconId);
-                const matches = domElement && domElement.matches('.ptr-leaflet-map-icon:hover');
-
-                if (self.state.hovered && !matches) {
-                    self.setState({hovered: false});
-                }
-            }, 100);
         }
+    }
 
+    componentWillUnmount() {
+        if (this.props.changeContext) {
+            this.props.changeContext(null);
+        }
     }
 
     onAdd(event) {
@@ -85,8 +78,8 @@ class Feature extends React.PureComponent {
         if (this.fid && this.props.changeContext) {
             this.props.changeContext([this.fid], {
                 popup: {
-                    x: event.originalEvent.pageX,
-                    y: event.originalEvent.pageY,
+                    x: event.originalEvent ? event.originalEvent.pageX : event.pageX,
+                    y: event.originalEvent ? event.originalEvent.pageY : event.pageY,
                     fidColumnName: this.props.fidColumnName,
                     data: this.props.feature.properties
                 }
@@ -182,14 +175,25 @@ class Feature extends React.PureComponent {
     }
 
     renderShape(style) {
+        if (!this.icon) {
+            this.icon = new MarkerIcon(this.iconId, style, {
+                iconAnchor: [style.radius, style.radius],
+                onMouseMove: this.onMouseMove,
+                onMouseOut: this.onMouseOut,
+                onClick: this.onClick
+            });
+        }
+
+        // TODO style memoization
+        if (style) {
+            this.icon.setStyle(style);
+        }
+
         return (
             <Marker
                 position={this.props.leafletCoordinates}
-                icon={icon.get(style, this.iconId)}
+                icon={this.icon}
                 onAdd={this.onAdd}
-                onClick={this.onClick}
-                onMouseMove={this.onMouseMove}
-                onMouseOut={this.onMouseOut}
             />
         );
     }
