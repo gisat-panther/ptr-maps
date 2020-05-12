@@ -184,6 +184,7 @@ class Feature extends React.PureComponent {
             });
         }
 
+        // TODO style memoization
         if (style) {
             this.icon.setStyle(style);
         }
