@@ -65,7 +65,7 @@ function update(wwd, view) {
 		shouldRedraw = true;
 	}
 
-	if (wwdUpdate.lookAtLocation && (wwdUpdate.lookAtLocation.longitude || wwdUpdate.lookAtLocation.latitude === 0) && state.lookAtLocation.longitude !== wwdUpdate.lookAtLocation.longitude){
+	if (wwdUpdate.lookAtLocation && (wwdUpdate.lookAtLocation.longitude || wwdUpdate.lookAtLocation.longitude === 0) && state.lookAtLocation.longitude !== wwdUpdate.lookAtLocation.longitude){
 		state.lookAtLocation.longitude = wwdUpdate.lookAtLocation.longitude;
 		shouldRedraw = true;
 	}
@@ -94,10 +94,10 @@ function getWorldWindNavigatorFromViewParams(view) {
 
 	if (center) {
 		navigator.lookAtLocation = {};
-		if (center.lat) {
+		if (center.lat || center.lat === 0) {
 			navigator.lookAtLocation.latitude = center.lat;
 		}
-		if (center.lon) {
+		if (center.lon || center.lon === 0) {
 			navigator.lookAtLocation.longitude = center.lon;
 		}
 	}

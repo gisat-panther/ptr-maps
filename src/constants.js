@@ -1,6 +1,6 @@
 const numberOfLevels = 18;
 const defaultLevelsRange = [1,18];
-const zoomCoefficient = 500;
+const zoomCoefficient = 250;
 
 /* TODO obsolete, remain due to backward compatibility */
 const vectorLayerHighlightedFeatureStyle = {

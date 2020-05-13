@@ -239,7 +239,7 @@ class MapSet extends React.PureComponent {
 					maps.push(React.createElement(this.props.connectedMapComponent, {...props, mapComponent: this.props.mapComponent}));
 				} else if (typeof child === "object" && child.type === PresentationMap) {
 					// all presentational
-					maps.push(React.createElement(this.props.mapComponent, props, child.props.children));
+					maps.push(React.createElement(this.props.mapComponent || child.props.mapComponent, props, child.props.children));
 				}
 			});
 		}
