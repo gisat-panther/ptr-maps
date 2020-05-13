@@ -15,9 +15,9 @@ import LargeDataLayer from "./layers/LargeDataLayerSource/LargeDataLayer";
 
 import VectorLayer from "./layers/VectorLayer";
 
-import {Context, mapConstants} from "@gisatcz/ptr-core";
+import {mapConstants} from "@gisatcz/ptr-core";
+import Context from '@gisatcz/cross-package-react-context';
 const HoverContext = Context.getContext('HoverContext');
-
 const {WorldWindow, ElevationModel} = WorldWind;
 
 class WorldWindMap extends React.PureComponent {

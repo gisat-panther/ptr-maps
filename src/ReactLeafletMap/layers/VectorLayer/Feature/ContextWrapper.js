@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Context} from "@gisatcz/ptr-core";
+import Context from '@gisatcz/cross-package-react-context';
 import _ from "lodash";
 const HoverContext = Context.getContext('HoverContext');
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import L from 'leaflet';
 import _ from 'lodash';
 
-import {Context} from "@gisatcz/ptr-core";
+import Context from '@gisatcz/cross-package-react-context';
 import constants from "../../constants";
 const HoverContext = Context.getContext('HoverContext');
 
