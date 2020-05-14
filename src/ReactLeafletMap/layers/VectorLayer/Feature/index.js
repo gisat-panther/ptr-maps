@@ -138,6 +138,7 @@ class Feature extends React.PureComponent {
             case "MultiPolygon":
                 return this.renderPolygon(style);
             case "Point":
+            case "MultiPoint":
                 return this.renderPoint(style);
             case "LineString":
             case "MultiLineString":
@@ -183,6 +184,7 @@ class Feature extends React.PureComponent {
                     onAdd={this.onAdd}
                     onClick={this.onClick}
                     onMouseMove={this.onMouseMove}
+                    onMouseOver={this.onMouseMove}
                     onMouseOut={this.onMouseOut}
                     center={this.props.leafletCoordinates}
                     {...style}
@@ -197,6 +199,7 @@ class Feature extends React.PureComponent {
                 iconAnchor: [style.radius, style.radius],
                 onMouseMove: this.onMouseMove,
                 onMouseOut: this.onMouseOut,
+                onMouseOver: this.onMouseMove,
                 onClick: this.onClick
             });
         }
