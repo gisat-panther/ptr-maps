@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Circle, Polygon, Marker} from 'react-leaflet';
+import {Circle, Polygon, Marker, Polyline} from 'react-leaflet';
 
 import ContextWrapper from "./ContextWrapper";
 import {utils} from "@gisatcz/ptr-utils";
@@ -139,6 +139,9 @@ class Feature extends React.PureComponent {
                 return this.renderPolygon(style);
             case "Point":
                 return this.renderPoint(style);
+            case "LineString":
+            case "MultiLineString":
+                return this.renderLine(style);
             default:
                 return null;
         }
@@ -149,6 +152,20 @@ class Feature extends React.PureComponent {
             <Polygon
                 onAdd={this.onAdd}
                 onClick={this.onClick}
+                onMouseMove={this.onMouseMove}
+                onMouseOut={this.onMouseOut}
+                positions={this.props.leafletCoordinates}
+                {...style}
+            />
+        );
+    }
+
+    renderLine(style) {
+        return (
+            <Polyline
+                onAdd={this.onAdd}
+                onClick={this.onClick}
+                onMouseOver={this.onMouseMove}
                 onMouseMove={this.onMouseMove}
                 onMouseOut={this.onMouseOut}
                 positions={this.props.leafletCoordinates}
