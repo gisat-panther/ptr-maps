@@ -84,7 +84,7 @@ class VectorLayer extends React.PureComponent {
         if (features) {
             let pointFeatures = [];
             let polygonFeatures = [];
-            // TODO lineFeatures
+            let lineFeatures = [];
 
             let sortedPointFeatures = null;
             let sortedPolygonFeatures = null;
@@ -145,6 +145,9 @@ class VectorLayer extends React.PureComponent {
                         case "MultiPolygon":
                             polygonFeatures.push(data);
                             break;
+                        case "LineString":
+                        case "MultiLineString":
+                            lineFeatures.push(data);
                         default:
                             break;
                     }
@@ -168,7 +171,7 @@ class VectorLayer extends React.PureComponent {
             return {
                 polygons: sortedPolygonFeatures,
                 points: sortedPointFeatures,
-                lines: null
+                lines: lineFeatures
             }
         } else {
             return null;

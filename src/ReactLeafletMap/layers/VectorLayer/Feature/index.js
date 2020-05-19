@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Circle, Polygon, Marker} from 'react-leaflet';
+import {Circle, Polygon, Marker, Polyline} from 'react-leaflet';
 
 import ContextWrapper from "./ContextWrapper";
 import {utils} from "@gisatcz/ptr-utils";
@@ -138,7 +138,11 @@ class Feature extends React.PureComponent {
             case "MultiPolygon":
                 return this.renderPolygon(style);
             case "Point":
+            case "MultiPoint":
                 return this.renderPoint(style);
+            case "LineString":
+            case "MultiLineString":
+                return this.renderLine(style);
             default:
                 return null;
         }
@@ -157,6 +161,20 @@ class Feature extends React.PureComponent {
         );
     }
 
+    renderLine(style) {
+        return (
+            <Polyline
+                onAdd={this.onAdd}
+                onClick={this.onClick}
+                onMouseOver={this.onMouseMove}
+                onMouseMove={this.onMouseMove}
+                onMouseOut={this.onMouseOut}
+                positions={this.props.leafletCoordinates}
+                {...style}
+            />
+        );
+    }
+
     renderPoint(style) {
         if (this.props.pointAsMarker) {
             return this.renderShape(style);
@@ -166,6 +184,7 @@ class Feature extends React.PureComponent {
                     onAdd={this.onAdd}
                     onClick={this.onClick}
                     onMouseMove={this.onMouseMove}
+                    onMouseOver={this.onMouseMove}
                     onMouseOut={this.onMouseOut}
                     center={this.props.leafletCoordinates}
                     {...style}
@@ -180,6 +199,7 @@ class Feature extends React.PureComponent {
                 iconAnchor: [style.radius, style.radius],
                 onMouseMove: this.onMouseMove,
                 onMouseOut: this.onMouseOut,
+                onMouseOver: this.onMouseMove,
                 onClick: this.onClick
             });
         }

@@ -1,9 +1,25 @@
 import React from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {withLeaflet} from "react-leaflet";
 import {utils} from "@gisatcz/ptr-utils";
 
 const geojsonRbush = require('geojson-rbush').default;
+
+function getBbox(map, crs) {
+    const calculatedBbox = map.getBounds();
+    const northEastGeo = calculatedBbox._northEast;
+    const southWestGeo = calculatedBbox._southWest;
+    const northEastProjected = map.latLngToLayerPoint(northEastGeo);
+    const southWestProjected = map.latLngToLayerPoint(southWestGeo);
+    const corners = [
+        map.layerPointToLatLng([northEastProjected.x, northEastProjected.y]),
+        map.layerPointToLatLng([northEastProjected.x, southWestProjected.y]),
+        map.layerPointToLatLng([southWestProjected.x, northEastProjected.y]),
+        map.layerPointToLatLng([southWestProjected.x, southWestProjected.y])
+    ];
+    return [_.minBy(corners, 'lng').lng, _.minBy(corners, 'lat').lat, _.maxBy(corners, 'lng').lng, _.maxBy(corners, 'lat').lat];
+}
 
 class IndexedVectorLayer extends React.PureComponent {
     static propTypes = {
@@ -60,13 +76,11 @@ class IndexedVectorLayer extends React.PureComponent {
         if (this.state.treeStateKey && this.boxRangeFitsLimits()) {
 
             // TODO if view was changed from outside, leaflet.map still has old bounds
-            // Current view bounding box in leaflet format
-            const bbox = this.props.leaflet.map.getBounds();
-
             // Bounding box in GeoJSON format
+            const bbox = getBbox(this.props.leaflet.map, !!this.props.crs);
             const geoJsonBbox = {
                 type: "Feature",
-                bbox: [bbox._southWest.lng, bbox._southWest.lat, bbox._northEast.lng, bbox._northEast.lat]
+                bbox: bbox
             };
 
             // Find features in given bounding box
