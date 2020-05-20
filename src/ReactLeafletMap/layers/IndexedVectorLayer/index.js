@@ -6,7 +6,7 @@ import {utils} from "@gisatcz/ptr-utils";
 
 const geojsonRbush = require('geojson-rbush').default;
 
-function getBbox(map, crs) {
+function getBbox(map) {
     const calculatedBbox = map.getBounds();
     const northEastGeo = calculatedBbox._northEast;
     const southWestGeo = calculatedBbox._southWest;
@@ -77,7 +77,7 @@ class IndexedVectorLayer extends React.PureComponent {
 
             // TODO if view was changed from outside, leaflet.map still has old bounds
             // Bounding box in GeoJSON format
-            const bbox = getBbox(this.props.leaflet.map, !!this.props.crs);
+            const bbox = getBbox(this.props.leaflet.map);
             const geoJsonBbox = {
                 type: "Feature",
                 bbox: bbox

@@ -148,6 +148,7 @@ class VectorLayer extends React.PureComponent {
                         case "LineString":
                         case "MultiLineString":
                             lineFeatures.push(data);
+                            break;
                         default:
                             break;
                     }
