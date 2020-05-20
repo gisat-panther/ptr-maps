@@ -180,16 +180,17 @@ class VectorLayer extends React.PureComponent {
 
     render() {
         const data = this.prepareData(this.props.features);
+        const style = this.props.opacity ? {opacity: this.props.opacity} : null;
 
         return data ? (
             <>
-                <Pane>
+                <Pane style={style}>
                     {data.polygons ? (data.polygons.map((item, index) => this.renderFeature(item, index))) : null}
                 </Pane>
-                <Pane>
+                <Pane style={style}>
                     {data.lines ? (data.lines.map((item, index) => this.renderFeature(item, index))) : null}
                 </Pane>
-                <Pane>
+                <Pane style={style}>
                     {data.points ? (data.points.map((item, index) => this.renderFeature(item, index))) : null}
                 </Pane>
             </>
