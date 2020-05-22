@@ -180,7 +180,7 @@ class WorldWindMap extends React.PureComponent {
 	onNavigatorChange(event) {
 		if (event) {
 			const viewParams = navigator.getViewParamsFromWorldWindNavigator(event);
-			const changedViewParams = navigator.getChangedViewParams({...mapConstants.efaultMapView, ...this.props.view}, viewParams);
+			const changedViewParams = navigator.getChangedViewParams({...mapConstants.defaultMapView, ...this.props.view}, viewParams);
 
 			if(this.props.onViewChange) {
 				if (!_.isEmpty(changedViewParams)) {
@@ -254,6 +254,7 @@ class WorldWindMap extends React.PureComponent {
 	}
 
 	render() {
+		console.log("Render map", this.props.mapKey);
 		return (
 			<div className="ptr-map ptr-world-wind-map" onClick={this.onClick} onMouseOut={this.onMouseOut}>
 				<canvas className="ptr-world-wind-map-canvas" id={this.canvasId}>
