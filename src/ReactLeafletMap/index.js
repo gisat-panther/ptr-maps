@@ -19,6 +19,8 @@ class ReactLeafletMap extends React.PureComponent {
             PropTypes.object,
             PropTypes.array
         ]),
+        crs: PropTypes.string,
+        layers: PropTypes.array,
         mapKey: PropTypes.string.isRequired,
         onLayerClick: PropTypes.func,
         onViewChange: PropTypes.func,

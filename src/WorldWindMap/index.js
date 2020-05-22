@@ -39,7 +39,6 @@ class WorldWindMap extends React.PureComponent {
 		onLayerClick: PropTypes.func,
 		onViewChange: PropTypes.func,
 
-		pointAsMarker: PropTypes.bool,
 		elevationModel: PropTypes.string,
 	};
 
