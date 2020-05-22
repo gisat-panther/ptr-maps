@@ -37,7 +37,9 @@ class IndexedVectorLayer extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.indexFeatures();
+        if (this.props.features) {
+            this.indexFeatures();
+        }
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
