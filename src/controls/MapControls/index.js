@@ -9,6 +9,7 @@ class MapControls extends React.PureComponent {
 
 	static propTypes = {
 		view: PropTypes.object,
+		viewLimits: PropTypes.object,
 		updateView: PropTypes.func,
 		resetHeading: PropTypes.func,
 		mapKey:PropTypes.string,
@@ -95,6 +96,32 @@ class MapControls extends React.PureComponent {
 		// this.props.updateView(update, this.props.mapKey);
 	}
 
+	isZoomButtonActive(type) {
+		const definedLimits = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
+		const currentBoxRange = this.props.view && this.props.view.boxRange;
+
+		const limit = type === 'in' ? (definedLimits && definedLimits[0] || constants.minBoxRange) : (definedLimits && definedLimits[1] || constants.maxBoxRange);
+
+		if (this.props.levelsBased) {
+			const currentLevel = this.props.view && viewUtils.getZoomLevelFromView(this.props.view);
+			if (type === "in") {
+				const nextLevel = currentLevel + 1;
+				const nextLevelBoxRange = viewUtils.getBoxRangeFromZoomLevel(nextLevel);
+				return nextLevelBoxRange >= limit;
+			} else {
+				const nextLevel = currentLevel - 1;
+				const nextLevelBoxRange = viewUtils.getBoxRangeFromZoomLevel(nextLevel);
+				return nextLevelBoxRange <= limit;
+			}
+		} else {
+			if (type === "in") {
+				return currentBoxRange * (1 - this.zoomIncrement) >= limit;
+			} else {
+				return currentBoxRange * (1 + this.zoomIncrement) <= limit;
+			}
+		}
+	}
+
 	render () {
 		let currentZoomLevel = null;
 		let zoomInDisabled = false;
@@ -139,7 +166,7 @@ class MapControls extends React.PureComponent {
 						onMouseDown={200}
 						pressCallbackTimeout={20}
 						finite={false}
-						disabled={zoomInDisabled}
+						disabled={!this.isZoomButtonActive('in')}
 					>
 						<Icon icon='plus-thick'/>
 					</HoldButton>
@@ -149,7 +176,7 @@ class MapControls extends React.PureComponent {
 						onMouseDown={200}
 						pressCallbackTimeout={20}
 						finite={false}
-						disabled={zoomOutDisabled}
+						disabled={!this.isZoomButtonActive('out')}
 					>
 						<Icon icon='minus-thick'/>
 					</HoldButton>

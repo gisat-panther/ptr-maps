@@ -16,7 +16,7 @@ export default function(basicController, viewLimits) {
         let navigator = basicController.wwd.navigator;
 
         if (viewLimits && viewLimits.boxRangeRange) {
-            const minBoxRange = viewLimits.boxRangeRange[0] || 1;
+            const minBoxRange = viewLimits.boxRangeRange[0] || constants.minBoxRange;
             const maxBoxRange = viewLimits.boxRangeRange[1] || constants.maxBoxRange;
             if (navigator.range < minBoxRange) {
                 navigator.range = minBoxRange;
