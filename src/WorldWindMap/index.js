@@ -87,8 +87,8 @@ class WorldWindMap extends React.PureComponent {
 			let levelsRange = constants.defaultLevelsRange;
 			const boxRangeRange = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
 			if (boxRangeRange) {
-				const maxLevel = boxRangeRange[0] ?  viewUtils.getZoomLevelFromView({boxRange: boxRangeRange[0]}) : levelsRange[0];
-				const minLevel = boxRangeRange[1] ?  viewUtils.getZoomLevelFromView({boxRange: boxRangeRange[1]}) : levelsRange[1];
+				const maxLevel = boxRangeRange[0] ?  viewUtils.getZoomLevelFromView({boxRange: boxRangeRange[0]}) : levelsRange[1];
+				const minLevel = boxRangeRange[1] ?  viewUtils.getZoomLevelFromView({boxRange: boxRangeRange[1]}) : levelsRange[0];
 				levelsRange = [minLevel, maxLevel];
 			}
 
