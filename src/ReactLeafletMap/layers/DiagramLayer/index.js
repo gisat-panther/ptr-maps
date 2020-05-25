@@ -128,16 +128,18 @@ class DiagramLayer extends VectorLayer {
             sortedPolygons =  _.orderBy(data, ['selected'], ['asc']);
         }
 
+        const style = this.props.opacity ? {opacity: this.props.opacity} : null;
+
         return (
             data ? (
-                <>
+                <Pane style={style}>
                     <Pane>
                         {sortedPolygons.map((item, index) => this.renderArea(item, index))}
                     </Pane>
                     <Pane>
                         {data.map((item, index) => this.renderDiagram(item, index))}
                     </Pane>
-                </>
+                </Pane>
             ) : null
         );
     }

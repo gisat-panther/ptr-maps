@@ -46,6 +46,7 @@ export default {
     '@gisatcz/ptr-core',
     'leaflet',
     'leaflet/dist/leaflet.css',
+    'proj4leaflet',
     'react-leaflet',
     'react',
     'webworldwind-esa',

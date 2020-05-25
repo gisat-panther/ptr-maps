@@ -9,7 +9,10 @@ import MarkerIcon from "./MarkerIcon";
 class Feature extends React.PureComponent {
     static propTypes = {
         feature: PropTypes.object,
-        fid: PropTypes.string,
+        fid: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
         fidColumnName: PropTypes.string,
         defaultStyle: PropTypes.object,
         hoveredStyle: PropTypes.object,
