@@ -76,7 +76,7 @@ class ReactLeafletMap extends React.PureComponent {
             lon: viewport.center[1]
         };
 
-        const boxRange = viewUtils.getBoxRangeFromZoomLevelAndLatitude(viewport.zoom, center.lat);
+        const boxRange = viewUtils.getBoxRangeFromZoomLevel(viewport.zoom);
 
         // TODO for IndexedVectorLayer rerender (see IndexedVectorLayer render method)
         let stateUpdate = {viewport};

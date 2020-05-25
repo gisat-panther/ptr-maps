@@ -34,6 +34,7 @@ class WorldWindMap extends React.PureComponent {
 		]),
 		layers: PropTypes.array,
 		view: PropTypes.object,
+		viewLimits: PropTypes.object,
 
 		onClick: PropTypes.func,
 		onLayerClick: PropTypes.func,
@@ -57,7 +58,7 @@ class WorldWindMap extends React.PureComponent {
 	componentDidMount() {
 		this.wwd = new WorldWindow(this.canvasId, this.getElevationModel());
 
-		decorateWorldWindowController(this.wwd.worldWindowController);
+		decorateWorldWindowController(this.wwd.worldWindowController, this.props.viewLimits);
 		this.wwd.worldWindowController.onNavigatorChanged = this.onNavigatorChange.bind(this);
 
 		if (this.props.levelsBased) {
@@ -82,9 +83,17 @@ class WorldWindMap extends React.PureComponent {
 				zoomLevel--;
 			}
 
-			let levelsRange = this.props.levelsBased.length ? this.props.levelsBased : constants.defaultLevelsRange;
+			// let levelsRange = this.props.levelsBased.length ? this.props.levelsBased : constants.defaultLevelsRange;
+			let levelsRange = constants.defaultLevelsRange;
+			const boxRangeRange = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
+			if (boxRangeRange) {
+				const maxLevel = boxRangeRange[0] ?  viewUtils.getZoomLevelFromView({boxRange: boxRangeRange[0]}) : levelsRange[0];
+				const minLevel = boxRangeRange[1] ?  viewUtils.getZoomLevelFromView({boxRange: boxRangeRange[1]}) : levelsRange[1];
+				levelsRange = [minLevel, maxLevel];
+			}
+
 			if (zoomLevel <= levelsRange[1] && zoomLevel >= levelsRange[0]) {
-				const boxRange = viewUtils.getBoxRangeFromZoomLevelAndLatitude(zoomLevel);
+				const boxRange = viewUtils.getBoxRangeFromZoomLevel(zoomLevel);
 				if (this.props.onViewChange) {
 					this.props.onViewChange({
 						boxRange
