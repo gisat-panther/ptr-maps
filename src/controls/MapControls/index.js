@@ -123,19 +123,6 @@ class MapControls extends React.PureComponent {
 	}
 
 	render () {
-		let currentZoomLevel = null;
-		let zoomInDisabled = false;
-		let zoomOutDisabled = false;
-		if (this.props.levelsBased) {
-			if (this.props.view && this.props.view.boxRange) {
-				currentZoomLevel = viewUtils.getZoomLevelFromView(this.props.view);
-			}
-
-			let levelsRange = this.props.levelsBased.length ? this.props.levelsBased : constants.defaultLevelsRange;
-			zoomInDisabled = currentZoomLevel >= levelsRange[1];
-			zoomOutDisabled = currentZoomLevel <= levelsRange[0];
-		}
-
 		// TODO different controls for 2D
 		return (
 			<div className="ptr-map-controls">
