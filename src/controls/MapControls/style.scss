@@ -91,24 +91,6 @@
 	color: var(--accent50);
 }
 
-.ptr-map-controls .ptr-button .ptr-icon .line {
-	transition:
-			fill .2s ease-in-out;
-}
-
-.ptr-map-controls .ptr-button:hover .ptr-icon .line {
-	fill: var(--accent50);
-}
-
-
-.ptr-map-controls .ptr-button > .ptr-icon .line {
-	fill: currentColor;
-}
-
-.ptr-map-controls .ptr-button.disabled .ptr-icon .line{
-	color: var(--base35);
-}
-
 .ptr-map-controls .rotate-needle-control i {
 	/*transition: all .2s ease-in-out;*/
 	-webkit-transform: rotate(-45deg);
