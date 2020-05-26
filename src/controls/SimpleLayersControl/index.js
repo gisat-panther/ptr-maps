@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import {Icon, HoldButton} from '@gisatcz/ptr-atoms'
+import {Icon, Button} from '@gisatcz/ptr-atoms'
 
 import './style.scss';
 
+// TODO Refactor
 class SimpleLayersControl extends React.PureComponent {
 	static propTypes = {
 		activeLayer: PropTypes.object,
@@ -48,14 +49,13 @@ class SimpleLayersControl extends React.PureComponent {
 			open: this.state.open
 		});
 
-		// TODO replace HoldButton
 		return (
 			<div className={buttonClasses} onBlur={this.onBlur} ref={this.ref}>
-				<HoldButton
+				<Button
 					onClick={this.onControlButtonClick}
 				>
 					<Icon icon='layers'/>
-				</HoldButton>
+				</Button>
 				{this.renderMenu()}
 			</div>
 		);

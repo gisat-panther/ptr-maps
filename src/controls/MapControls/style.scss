@@ -22,19 +22,18 @@
 	margin-bottom: 0;
 }
 
-.ptr-map-controls.small {
-	bottom: 13px;
-}
-.ptr-map-controls.small .control {
-	margin-bottom: 5px;
-}
-.ptr-map-controls .control > button:focus,
-.ptr-map-controls .menu-control > button:focus {
+.ptr-map-controls .control > .ptr-button:focus,
+.ptr-map-controls .menu-control > .ptr-button:focus {
 	outline: none;
 }
 
-.ptr-map-controls .control > button,
-.ptr-map-controls .menu-control > button {
+.ptr-map-controls .control > .ptr-button:focus::after {
+	box-shadow: none;
+	border: 0;
+}
+
+.ptr-map-controls .control > .ptr-button,
+.ptr-map-controls .menu-control > .ptr-button {
 	padding: 0;
 	background: none;
 	border: 0;
@@ -53,7 +52,7 @@
 }
 
 
-.ptr-map-controls .control .hold-button {
+.ptr-map-controls .control .ptr-button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -73,47 +72,23 @@
 	color: var(--accent50);
 }
 
-.ptr-map-controls.small .control > button {
-	width: 1.6rem;
-	height: 1.6rem;
-	font-size: .975rem;
-}
-
-.ptr-map-controls .control > button:not(:first-child) {
+.ptr-map-controls .control > .ptr-button:not(:first-child) {
 	border-top: 1px solid rgba(0, 0, 0, .1);
 }
 
-.ptr-map-controls .control > button:first-child{
+.ptr-map-controls .control > .ptr-button:first-child{
 	border-top-right-radius: .3rem;
 	border-top-left-radius: .3rem;
 }
-.ptr-map-controls .control > button:last-child {
+.ptr-map-controls .control > .ptr-button:last-child {
 	border-bottom-right-radius: .3rem;
 	border-bottom-left-radius: .3rem;
 }
 
-.ptr-map-controls .control > button:hover,
-.ptr-map-controls .menu-control > button:hover {
+.ptr-map-controls .control > .ptr-button:hover,
+.ptr-map-controls .menu-control > .ptr-button:hover {
 	background-color: rgba(255, 255, 255, 1);
 	color: var(--accent50);
-}
-
-.ptr-map-controls .hold-button .ptr-icon .line {
-	transition:
-			fill .2s ease-in-out;
-}
-
-.ptr-map-controls .hold-button:hover .ptr-icon .line {
-	fill: var(--accent50);
-}
-
-
-.ptr-map-controls button > .ptr-icon .line {
-	fill: currentColor;
-}
-
-.ptr-map-controls button.disabled .ptr-icon .line{
-	color: var(--base35);
 }
 
 .ptr-map-controls .rotate-needle-control i {
@@ -126,7 +101,7 @@
 /*transform: rotate(-45deg);*/
 /*}*/
 
-.ptr-map-controls .tilt-control button {
+.ptr-map-controls .tilt-control .ptr-button {
 	/*	overflow: hidden;*/
 	background-position: center center;
 	background-size: 1.2rem;
