@@ -176,6 +176,7 @@ class ReactLeafletMap extends React.PureComponent {
                 opacity={layer.opacity || 1}
                 transparent={true}
                 format={o.params && o.params.imageFormat || 'image/png'}
+                crs={this.getCRS( o.params && o.params.crs || '')}
             />
         );
     }
