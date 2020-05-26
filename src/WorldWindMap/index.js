@@ -263,7 +263,6 @@ class WorldWindMap extends React.PureComponent {
 	}
 
 	render() {
-		console.log("Render map", this.props.mapKey);
 		return (
 			<div className="ptr-map ptr-world-wind-map" onClick={this.onClick} onMouseOut={this.onMouseOut}>
 				<canvas className="ptr-world-wind-map-canvas" id={this.canvasId}>

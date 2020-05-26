@@ -1,8 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
-import viewUtils from "../../viewUtils";
 import constants from "../../constants";
-import {Icon, HoldButton} from '@gisatcz/ptr-atoms';
+import {Icon, Button} from '@gisatcz/ptr-atoms';
 import './style.scss';
 
 class MapControls extends React.PureComponent {
@@ -70,7 +69,7 @@ class MapControls extends React.PureComponent {
 	}
 
 	handleZoomOut() {
-		let update = null;
+		let update;
 		if (this.props.levelsBased && this.props.view && this.props.view.boxRange) {
 			update = {boxRange: this.props.view.boxRange*2};
 		} else {
@@ -103,15 +102,10 @@ class MapControls extends React.PureComponent {
 		const limit = type === 'in' ? (definedLimits && definedLimits[0] || constants.minBoxRange) : (definedLimits && definedLimits[1] || constants.maxBoxRange);
 
 		if (this.props.levelsBased) {
-			const currentLevel = this.props.view && viewUtils.getZoomLevelFromView(this.props.view);
 			if (type === "in") {
-				const nextLevel = currentLevel + 1;
-				const nextLevelBoxRange = viewUtils.getBoxRangeFromZoomLevel(nextLevel);
-				return nextLevelBoxRange >= limit;
+				return currentBoxRange/2 >= limit;
 			} else {
-				const nextLevel = currentLevel - 1;
-				const nextLevelBoxRange = viewUtils.getBoxRangeFromZoomLevel(nextLevel);
-				return nextLevelBoxRange <= limit;
+				return currentBoxRange*2 <= limit;
 			}
 		} else {
 			if (type === "in") {
@@ -147,76 +141,58 @@ class MapControls extends React.PureComponent {
                         </HoldButton>
                     </div> */}
 				<div className="zoom-control control">
-					<HoldButton
-						pressCallback={() => {this.handleZoomIn()}}
+					<Button
+						onHold={() => {this.handleZoomIn()}}
 						onClick={() => {this.handleZoomIn()}}
-						onMouseDown={200}
-						pressCallbackTimeout={20}
-						finite={false}
 						disabled={!this.isZoomButtonActive('in')}
 					>
 						<Icon icon='plus-thick'/>
-					</HoldButton>
-					<HoldButton
-						pressCallback={() => {this.handleZoomOut()}}
+					</Button>
+					<Button
+						onHold={() => {this.handleZoomOut()}}
 						onClick={() => {this.handleZoomOut()}}
-						onMouseDown={200}
-						pressCallbackTimeout={20}
-						finite={false}
 						disabled={!this.isZoomButtonActive('out')}
 					>
 						<Icon icon='minus-thick'/>
-					</HoldButton>
+					</Button>
 				</div>
 				{!this.props.zoomOnly ? (
 					<>
 						<div className="rotate-control control">
-							<HoldButton
-								pressCallback={() => {this.handleHeadingRight()}}
+							<Button
+								onHold={() => {this.handleHeadingRight()}}
 								onClick={() => {this.handleHeadingRight()}}
-								onMouseDown={200}
-								pressCallbackTimeout={20}
-								finite={false}
 							>
 								<Icon icon='rotate-right'/>
-							</HoldButton>
-							<HoldButton
+							</Button>
+							<Button
 								onClick={() => {this.handleResetHeading()}}
 								disabled={this.state.resetHeadingDisabled}
 							>
 								<Icon style={{transform: `rotate(${this.props.view ? -this.props.view.heading : 0}deg)`}} icon='north-arrow'/>
-							</HoldButton>
-							<HoldButton
-								pressCallback={() => {this.handleHeadingLeft()}}
+							</Button>
+							<Button
+								onHold={() => {this.handleHeadingLeft()}}
 								onClick={() => {this.handleHeadingLeft()}}
-								onMouseDown={200}
-								pressCallbackTimeout={20}
-								finite={false}
 							>
 								<Icon icon='rotate-left'/>
-							</HoldButton>
+							</Button>
 						</div>
 						<div className="tilt-control control">
-							<HoldButton
+							<Button
 								className="tilt-more-control"
-								pressCallback={() => {this.handleTiltDown()}}
+								onHold={() => {this.handleTiltDown()}}
 								onClick={() => {this.handleTiltDown()}}
-								onMouseDown={200}
-								pressCallbackTimeout={20}
-								finite={false}
 							>
 								<Icon icon='tilt-more'/>
-							</HoldButton>
-							<HoldButton
+							</Button>
+							<Button
 								className="tilt-more-control"
-								pressCallback={() => {this.handleTiltUp()}}
+								onHold={() => {this.handleTiltUp()}}
 								onClick={() => {this.handleTiltUp()}}
-								onMouseDown={200}
-								pressCallbackTimeout={20}
-								finite={false}
 							>
 								<Icon icon='tilt-less'/>
-							</HoldButton>
+							</Button>
 						</div>
 					</>
 				) : null}
