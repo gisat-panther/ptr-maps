@@ -7,7 +7,6 @@ import constants from './constants';
  * @return {number} zoom level
  */
 function getZoomLevelFromView(view) {
-	let latitude = view.center.lat;
 	let coeff = (constants.zoomCoefficient*Math.abs(Math.cos(Math.PI/180)));
 	let zoomLevel = Math.floor(Math.log(view.boxRange/coeff) / Math.log(2));
 
@@ -18,12 +17,12 @@ function getZoomLevelFromView(view) {
 	return constants.numberOfLevels - zoomLevel;
 }
 
-function getBoxRangeFromZoomLevelAndLatitude(level, latitude) {
+function getBoxRangeFromZoomLevel(level) {
 	let coeff = (constants.zoomCoefficient*Math.abs(Math.cos(Math.PI/180)));
 	return coeff*Math.pow(2, constants.numberOfLevels - level);
 }
 
 export default {
-	getBoxRangeFromZoomLevelAndLatitude,
+	getBoxRangeFromZoomLevel,
 	getZoomLevelFromView
 }

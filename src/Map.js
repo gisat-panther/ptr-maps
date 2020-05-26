@@ -108,6 +108,7 @@ class PresentationMap extends React.PureComponent {
 							return React.cloneElement(child, {
 								...child.props,
 								view: this.props.stateMapKey ? this.props.view : (this.state.view || this.props.view),
+								viewLimits: this.props.viewLimits,
 								updateView: this.props.stateMapKey ? this.props.onViewChange : this.onViewChange,
 								resetHeading: this.props.stateMapKey ? this.props.resetHeading : this.resetHeading
 							});

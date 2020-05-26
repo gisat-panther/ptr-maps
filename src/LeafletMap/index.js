@@ -207,7 +207,7 @@ class LeafletMap extends React.PureComponent {
 	getBoxRange() {
 		let center = this.getCenter();
 		let zoomLevel = this.map.getZoom();
-		return viewUtils.getBoxRangeFromZoomLevelAndLatitude(zoomLevel, center.lat);
+		return viewUtils.getBoxRangeFromZoomLevel(zoomLevel);
 	}
 
 	render() {

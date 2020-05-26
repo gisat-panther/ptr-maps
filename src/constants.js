@@ -1,6 +1,8 @@
 const numberOfLevels = 18;
 const defaultLevelsRange = [1,18];
 const zoomCoefficient = 250;
+const maxBoxRange = 50000000;
+const minBoxRange = 1;
 
 /* TODO obsolete, remain due to backward compatibility */
 const vectorLayerHighlightedFeatureStyle = {
@@ -95,6 +97,8 @@ export default {
 	numberOfLevels,
 	defaultLevelsRange,
 	zoomCoefficient,
+	minBoxRange,
+	maxBoxRange,
 
 	diagramStyle,
 	vectorFeatureStyle,

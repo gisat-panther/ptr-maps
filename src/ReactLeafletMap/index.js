@@ -35,6 +35,18 @@ class ReactLeafletMap extends React.PureComponent {
             crs: this.getCRS(props.crs)
         }
 
+        this.minZoom = constants.defaultLevelsRange[0];
+        this.maxZoom = constants.defaultLevelsRange[1];
+        if (props.viewLimits && props.viewLimits.boxRangeRange) {
+            if (props.viewLimits.boxRangeRange[1]) {
+                this.minZoom = viewUtils.getZoomLevelFromView({boxRange: props.viewLimits.boxRangeRange[1]});
+            }
+
+            if (props.viewLimits.boxRangeRange[0]) {
+                this.maxZoom = viewUtils.getZoomLevelFromView({boxRange: props.viewLimits.boxRangeRange[0]});
+            }
+        }
+
         this.onLayerClick = this.onLayerClick.bind(this);
         this.onViewportChange = this.onViewportChange.bind(this);
     }
@@ -76,7 +88,7 @@ class ReactLeafletMap extends React.PureComponent {
             lon: viewport.center[1]
         };
 
-        const boxRange = viewUtils.getBoxRangeFromZoomLevelAndLatitude(viewport.zoom, center.lat);
+        const boxRange = viewUtils.getBoxRangeFromZoomLevel(viewport.zoom);
 
         // TODO for IndexedVectorLayer rerender (see IndexedVectorLayer render method)
         let stateUpdate = {viewport};
@@ -106,6 +118,8 @@ class ReactLeafletMap extends React.PureComponent {
                 center={view.center}
                 zoom={view.zoom}
                 zoomControl={false}
+                minZoom={this.minZoom} // non-dynamic prop
+                maxZoom={this.maxZoom} // non-dynamic prop
                 attributionControl={false}
                 crs={this.state.crs}
             >
