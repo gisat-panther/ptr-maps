@@ -7,8 +7,7 @@ import constants from './constants';
  * @return {number} zoom level
  */
 function getZoomLevelFromView(view) {
-	let coeff = (constants.zoomCoefficient*Math.abs(Math.cos(Math.PI/180)));
-	let zoomLevel = Math.floor(Math.log(view.boxRange/coeff) / Math.log(2));
+	let zoomLevel = Math.floor(Math.log(view.boxRange/constants.zoomCoefficient) / Math.log(2));
 
 	if (zoomLevel > constants.numberOfLevels) {
 		zoomLevel = constants.numberOfLevels;
@@ -18,8 +17,7 @@ function getZoomLevelFromView(view) {
 }
 
 function getBoxRangeFromZoomLevel(level) {
-	let coeff = (constants.zoomCoefficient*Math.abs(Math.cos(Math.PI/180)));
-	return coeff*Math.pow(2, constants.numberOfLevels - level);
+	return constants.zoomCoefficient*Math.pow(2, constants.numberOfLevels - level);
 }
 
 function getDefaultBoxRangeLimitsForLevelBasedMap(){
