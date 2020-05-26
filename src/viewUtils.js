@@ -22,7 +22,12 @@ function getBoxRangeFromZoomLevel(level) {
 	return coeff*Math.pow(2, constants.numberOfLevels - level);
 }
 
+function getDefaultBoxRangeLimitsForLevelBasedMap(){
+	return [getBoxRangeFromZoomLevel(constants.defaultLevelsRange[1]), getBoxRangeFromZoomLevel(constants.defaultLevelsRange[0])];
+}
+
 export default {
 	getBoxRangeFromZoomLevel,
+	getDefaultBoxRangeLimitsForLevelBasedMap,
 	getZoomLevelFromView
 }

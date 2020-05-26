@@ -1,21 +1,12 @@
+/* Constants for levels-based map view handling */
+/* TODO enable custom levels range */
 const numberOfLevels = 18;
 const defaultLevelsRange = [1,18];
 const zoomCoefficient = 250;
+
+/* Default box range limits */
 const maxBoxRange = 50000000;
 const minBoxRange = 1;
-
-/* TODO obsolete, remain due to backward compatibility */
-const vectorLayerHighlightedFeatureStyle = {
-	strokeColor: "#00FFFF",
-	strokeWidth: 2,
-};
-
-const vectorLayerDefaultFeatureStyle = {
-	fillColor: null,
-	fillOpacity: 0,
-	strokeColor: "#444",
-	strokeWidth: 2,
-};
 
 /* === STYLES === */
 /* Vector feature basic style */
@@ -92,6 +83,19 @@ const diagramStyle = {
 const projDefinitions = {
 	epsg5514: "+proj=krovak +lat_0=49.5 +lon_0=24.83333333333333 +alpha=30.28813972222222 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +towgs84=589,76,480,0,0,0,0 +units=m +no_defs"
 }
+
+/* TODO obsolete, remain due to backward compatibility */
+const vectorLayerHighlightedFeatureStyle = {
+	strokeColor: "#00FFFF",
+	strokeWidth: 2,
+};
+
+const vectorLayerDefaultFeatureStyle = {
+	fillColor: null,
+	fillOpacity: 0,
+	strokeColor: "#444",
+	strokeWidth: 2,
+};
 
 export default {
 	numberOfLevels,

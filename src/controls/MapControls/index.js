@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import constants from "../../constants";
 import {Icon, Button} from '@gisatcz/ptr-atoms';
 import './style.scss';
+import viewUtils from "../../viewUtils";
 
 class MapControls extends React.PureComponent {
 
@@ -99,18 +100,26 @@ class MapControls extends React.PureComponent {
 		const definedLimits = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
 		const currentBoxRange = this.props.view && this.props.view.boxRange;
 
-		const limit = type === 'in' ? (definedLimits && definedLimits[0] || constants.minBoxRange) : (definedLimits && definedLimits[1] || constants.maxBoxRange);
-
 		if (this.props.levelsBased) {
 			if (type === "in") {
+				let limit = viewUtils.getDefaultBoxRangeLimitsForLevelBasedMap(constants.minBoxRange)[0];
+				if (definedLimits && definedLimits[0] && definedLimits[0] > limit) {
+					limit = definedLimits[0];
+				}
 				return currentBoxRange/2 >= limit;
 			} else {
+				let limit = viewUtils.getDefaultBoxRangeLimitsForLevelBasedMap(constants.maxBoxRange)[1];
+				if (definedLimits && definedLimits[1] && definedLimits[1] < limit) {
+					limit = definedLimits[1];
+				}
 				return currentBoxRange*2 <= limit;
 			}
 		} else {
 			if (type === "in") {
+				const limit = definedLimits && definedLimits[0] || constants.minBoxRange;
 				return currentBoxRange * (1 - this.zoomIncrement) >= limit;
 			} else {
+				const limit = definedLimits && definedLimits[1] || constants.maxBoxRange;
 				return currentBoxRange * (1 + this.zoomIncrement) <= limit;
 			}
 		}
