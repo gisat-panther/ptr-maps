@@ -8,6 +8,9 @@ const zoomCoefficient = 250;
 const maxBoxRange = 50000000;
 const minBoxRange = 1;
 
+/** https://leafletjs.com/reference-1.6.0.html#map-overlaypane */
+const defaultLeafletPaneZindex = 400;
+
 /* === STYLES === */
 /* Vector feature basic style */
 const defaultVectorFeatureStyle = {
@@ -106,6 +109,8 @@ export default {
 
 	diagramStyle,
 	vectorFeatureStyle,
+
+	defaultLeafletPaneZindex,
 
 	projDefinitions,
 
