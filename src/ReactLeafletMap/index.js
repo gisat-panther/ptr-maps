@@ -105,9 +105,11 @@ class ReactLeafletMap extends React.PureComponent {
     render() {
         // fix for backward compatibility
         const backgroundLayersSource = _.isArray(this.props.backgroundLayer) ? this.props.backgroundLayer : [this.props.backgroundLayer];
-
+        const backgroundLayersZindex = constants.defaultLeafletPaneZindex + 1;
         const backgroundLayers = backgroundLayersSource && backgroundLayersSource.map((layer, i) => this.getLayerByType(layer, i));
-        const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane key={layer.key || i}>{this.getLayerByType(layer, i)}</Pane>);
+        
+        const baseLayersZindex = constants.defaultLeafletPaneZindex + 100;
+        const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane key={layer.key || i} style={{zIndex: baseLayersZindex + i}}>{this.getLayerByType(layer, i)}</Pane>);
         const view = viewHelpers.getLeafletViewportFromViewParams(this.state.view || this.props.view);
 
         return (
@@ -123,7 +125,7 @@ class ReactLeafletMap extends React.PureComponent {
                 attributionControl={false}
                 crs={this.state.crs}
             >
-                {backgroundLayers}
+                <Pane style={{zIndex: backgroundLayersZindex}}>{backgroundLayers}</Pane>
                 {layers}
                 {this.props.children}
             </Map>
