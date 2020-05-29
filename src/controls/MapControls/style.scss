@@ -32,11 +32,15 @@
 	border: 0;
 }
 
+
+
 .ptr-map-controls .control > .ptr-button,
 .ptr-map-controls .menu-control > .ptr-button {
 	padding: 0;
 	background: none;
 	border: 0;
+	border-radius: 0;
+	box-shadow: none;
 	user-select: none;
 	display: block;
 	width: 2rem;
@@ -89,6 +93,11 @@
 .ptr-map-controls .menu-control > .ptr-button:hover {
 	background-color: rgba(255, 255, 255, 1);
 	color: var(--accent50);
+}
+
+.ptr-map-controls .control > .ptr-button:not(.ghost):not(.invisible):not(.primary):not(.inverted):hover:after,
+.ptr-map-controls .control > .ptr-button:not(.ghost):not(.invisible):not(.primary):not(.inverted):hover:after {
+	background: none;
 }
 
 .ptr-map-controls .rotate-needle-control i {

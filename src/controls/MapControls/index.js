@@ -102,17 +102,27 @@ class MapControls extends React.PureComponent {
 
 		if (this.props.levelsBased) {
 			if (type === "in") {
-				let limit = viewUtils.getDefaultBoxRangeLimitsForLevelBasedMap(constants.minBoxRange)[0];
-				if (definedLimits && definedLimits[0] && definedLimits[0] > limit) {
-					limit = definedLimits[0];
+				let maxZoom = constants.defaultLevelsRange[1];
+				if (definedLimits && definedLimits[0]) {
+					let definedLimitAsLevel = viewUtils.getZoomLevelFromView({boxRange: definedLimits[0]});
+					if (definedLimitAsLevel < maxZoom) {
+						maxZoom = definedLimitAsLevel;
+					}
 				}
-				return currentBoxRange/2 >= limit;
+
+				const currentLevel = viewUtils.getZoomLevelFromView({boxRange: currentBoxRange});
+				return currentLevel < maxZoom;
 			} else {
-				let limit = viewUtils.getDefaultBoxRangeLimitsForLevelBasedMap(constants.maxBoxRange)[1];
-				if (definedLimits && definedLimits[1] && definedLimits[1] < limit) {
-					limit = definedLimits[1];
+				let minZoom = constants.defaultLevelsRange[0];
+				if (definedLimits && definedLimits[1]) {
+					let definedLimitAsLevel = viewUtils.getZoomLevelFromView({boxRange: definedLimits[1]});
+					if (definedLimitAsLevel > minZoom) {
+						minZoom = definedLimitAsLevel;
+					}
 				}
-				return currentBoxRange*2 <= limit;
+
+				const currentLevel = viewUtils.getZoomLevelFromView({boxRange: currentBoxRange});
+				return currentLevel > minZoom;
 			}
 		} else {
 			if (type === "in") {
