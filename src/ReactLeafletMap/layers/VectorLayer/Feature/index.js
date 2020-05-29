@@ -19,7 +19,10 @@ class Feature extends React.PureComponent {
         selectedStyle: PropTypes.object,
         selectedHoveredStyle: PropTypes.object,
         selected: PropTypes.bool,
-        leafletCoordinates: PropTypes.array
+        leafletCoordinates: PropTypes.array,
+        changeContext: PropTypes.func,
+        hoveredFromContext: PropTypes.bool,
+        interactive: PropTypes.bool
     };
 
     constructor(props) {
@@ -68,42 +71,48 @@ class Feature extends React.PureComponent {
     }
 
     onClick() {
-        this.showOnTop();
+        if (this.props.interactive) {
+            this.showOnTop();
 
-        if (this.props.onClick && this.fid) {
-            this.props.onClick(this.fid);
+            if (this.props.onClick && this.fid) {
+                this.props.onClick(this.fid);
+            }
         }
     }
 
     onMouseMove(event) {
-        this.showOnTop();
+        if (this.props.interactive) {
+            this.showOnTop();
 
-        if (this.fid && this.props.changeContext) {
-            this.props.changeContext([this.fid], {
-                popup: {
-                    x: event.originalEvent ? event.originalEvent.pageX : event.pageX,
-                    y: event.originalEvent ? event.originalEvent.pageY : event.pageY,
-                    fidColumnName: this.props.fidColumnName,
-                    data: this.props.feature.properties
-                }
-            });
-        }
+            if (this.fid && this.props.changeContext) {
+                this.props.changeContext([this.fid], {
+                    popup: {
+                        x: event.originalEvent ? event.originalEvent.pageX : event.pageX,
+                        y: event.originalEvent ? event.originalEvent.pageY : event.pageY,
+                        fidColumnName: this.props.fidColumnName,
+                        data: this.props.feature.properties
+                    }
+                });
+            }
 
-        if (!this.state.hovered) {
-            this.setState({hovered: true});
+            if (!this.state.hovered) {
+                this.setState({hovered: true});
+            }
         }
     }
 
     onMouseOut() {
-        if (!this.props.selected) {
-            this.showOnBottom();
-        }
+        if (this.props.interactive) {
+            if (!this.props.selected) {
+                this.showOnBottom();
+            }
 
-        if (this.props.changeContext) {
-            this.props.changeContext(null);
-        }
+            if (this.props.changeContext) {
+                this.props.changeContext(null);
+            }
 
-        this.setState({hovered: false});
+            this.setState({hovered: false});
+        }
     }
 
     /**
