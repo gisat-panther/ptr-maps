@@ -163,6 +163,7 @@ class Feature extends React.PureComponent {
     renderPolygon(style) {
         return (
             <Polygon
+                interactive={this.props.interactive}
                 onAdd={this.onAdd}
                 onClick={this.onClick}
                 onMouseMove={this.onMouseMove}
@@ -176,6 +177,7 @@ class Feature extends React.PureComponent {
     renderLine(style) {
         return (
             <Polyline
+                interactive={this.props.interactive}
                 onAdd={this.onAdd}
                 onClick={this.onClick}
                 onMouseOver={this.onMouseMove}
@@ -193,6 +195,7 @@ class Feature extends React.PureComponent {
         } else {
             return (
                 <Circle
+                    interactive={this.props.interactive}
                     onAdd={this.onAdd}
                     onClick={this.onClick}
                     onMouseMove={this.onMouseMove}
@@ -223,6 +226,7 @@ class Feature extends React.PureComponent {
 
         return (
             <Marker
+                interactive={this.props.interactive}
                 position={this.props.leafletCoordinates}
                 icon={this.icon}
                 onAdd={this.onAdd}
