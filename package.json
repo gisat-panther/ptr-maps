@@ -22,7 +22,7 @@
   "dependencies": {
     "@gisatcz/ptr-atoms": "1.3.0",
     "@gisatcz/ptr-utils": "1.3.0-alpha",
-    "@gisatcz/ptr-core": "1.3.0",
+    "@gisatcz/ptr-core": "1.3.2",
     "@gisatcz/cross-package-react-context": "0.0.1",
     "@turf/turf": "5.1.6",
     "chroma-js": "2.1.0",

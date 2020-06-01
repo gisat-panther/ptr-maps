@@ -8,6 +8,7 @@ import {mapConstants} from '@gisatcz/ptr-core';
 import MapGrid from '../MapGrid';
 
 import './style.scss';
+import MapWrapper from "../MapWrapper";
 
 class Map extends React.PureComponent {
 	render() {
@@ -31,7 +32,12 @@ class MapSet extends React.PureComponent {
 		mapComponent: PropTypes.func,
 		view: PropTypes.object,
 		stateMapSetKey: PropTypes.string,
-		sync: PropTypes.object
+		sync: PropTypes.object,
+		wrapper: PropTypes.oneOfType([
+			PropTypes.element,
+			PropTypes.bool
+		]),
+		wrapperOptions: PropTypes.object
 	};
 
 	constructor(props) {
@@ -213,7 +219,7 @@ class MapSet extends React.PureComponent {
 					// if (mapKey === this.state.activeMapKey) {
 					// 	props.wrapperClasses = "active";
 					// }
-					maps.push(React.createElement(this.props.connectedMapComponent, {...props, mapComponent: this.props.mapComponent}));
+					maps.push(this.renderMap(this.props.connectedMapComponent, {...props, mapComponent: this.props.mapComponent}, null, mapKey === this.props.activeMapKey));
 				});
 			}
 		} else {
@@ -230,21 +236,30 @@ class MapSet extends React.PureComponent {
 					mapKey
 				};
 
-				if (mapKey === this.state.activeMapKey) {
-					props.wrapperClasses = "active";
-				}
-
 				if (typeof child === "object" && (child.type === Map || child.type === this.props.connectedMapComponent)) {
 					// layers from state
-					maps.push(React.createElement(this.props.connectedMapComponent, {...props, mapComponent: this.props.mapComponent}));
+					maps.push(this.renderMap(this.props.connectedMapComponent, {...props, mapComponent: this.props.mapComponent}, null, mapKey === this.state.activeMapKey));
 				} else if (typeof child === "object" && child.type === PresentationMap) {
 					// all presentational
-					maps.push(React.createElement(this.props.mapComponent || child.props.mapComponent, props, child.props.children));
+					maps.push(this.renderMap(this.props.mapComponent || child.props.mapComponent, props, child.props.children, mapKey === this.state.activeMapKey));
 				}
 			});
 		}
 
 		return (<MapGrid>{maps}</MapGrid>);
+	}
+
+	renderMap(mapComponent, props, children, active) {
+		// TODO custom wrapper component
+		if (this.props.wrapper) {
+			return (
+				<MapWrapper {...props} {...this.props.wrapperOptions} active={active}>
+					{React.createElement(mapComponent, props, children)}
+				</MapWrapper>
+			);
+		} else {
+			return React.createElement(mapComponent, props, children);
+		}
 	}
 }
 
