@@ -19,9 +19,11 @@ class ReactLeafletMap extends React.PureComponent {
             PropTypes.object,
             PropTypes.array
         ]),
+        name: PropTypes.string,
         crs: PropTypes.string,
         layers: PropTypes.array,
         mapKey: PropTypes.string.isRequired,
+        onClick: PropTypes.func,
         onLayerClick: PropTypes.func,
         onViewChange: PropTypes.func,
         view: PropTypes.object
@@ -47,6 +49,7 @@ class ReactLeafletMap extends React.PureComponent {
             }
         }
 
+        this.onClick = this.onClick.bind(this);
         this.onLayerClick = this.onLayerClick.bind(this);
         this.onViewportChange = this.onViewportChange.bind(this);
     }
@@ -117,6 +120,7 @@ class ReactLeafletMap extends React.PureComponent {
                 id={this.props.mapKey}
                 className="ptr-map ptr-leaflet-map"
                 onViewportChanged={this.onViewportChange}
+                onClick={this.onClick}
                 center={view.center}
                 zoom={view.zoom}
                 zoomControl={false}
@@ -202,6 +206,12 @@ class ReactLeafletMap extends React.PureComponent {
     onLayerClick(layerKey, featureKeys) {
         if (this.props.onLayerClick) {
             this.props.onLayerClick(this.props.mapKey, layerKey, featureKeys);
+        }
+    }
+
+    onClick() {
+        if (this.props.onClick) {
+            this.props.onClick(this.props.view);
         }
     }
 }
