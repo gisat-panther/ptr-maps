@@ -23,10 +23,14 @@ class PresentationMap extends React.PureComponent {
 }
 
 class MapSet extends React.PureComponent {
+	static defaultProps = {
+		disableMapRemoval: false
+	}
 
 	static propTypes = {
 		activeMapKey: PropTypes.string,
 		activeMapView: PropTypes.object,
+		disableMapRemoval: PropTypes.bool,
 		mapSetKey: PropTypes.string,
 		maps: PropTypes.array,
 		mapComponent: PropTypes.func,
@@ -252,8 +256,13 @@ class MapSet extends React.PureComponent {
 	renderMap(mapComponent, props, children, active) {
 		// TODO custom wrapper component
 		if (this.props.wrapper) {
+			let wrapperOptions = this.props.wrapperOptions;
+			if (this.props.onMapRemove && !this.props.disableMapRemoval) {
+				wrapperOptions = {...this.props.wrapperOptions, onMapRemove: this.props.onMapRemove}
+			}
+
 			return (
-				<MapWrapper {...props} {...this.props.wrapperOptions} active={active}>
+				<MapWrapper {...props} {...wrapperOptions} active={active}>
 					{React.createElement(mapComponent, props, children)}
 				</MapWrapper>
 			);

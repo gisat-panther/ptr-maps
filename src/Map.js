@@ -115,7 +115,7 @@ class PresentationMap extends React.PureComponent {
 	}
 
 	renderContent(mapComponent, props, children) {
-		let map = React.createElement(mapComponent, props, children); //todo ptr-map-wrapper ?
+		let map = React.createElement(mapComponent, props, children);
 
 		if (!children) {
 			return map;

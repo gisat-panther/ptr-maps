@@ -48,13 +48,15 @@ class MapWrapper extends React.PureComponent {
     }
 
     renderCloseButton() {
+        let mapKey = this.props.stateMapKey || this.props.mapKey;
+
         return (
             <div className="ptr-map-wrapper-close-button">
                 <Button
                     icon="times"
                     inverted
                     invisible
-                    onClick={this.props.onMapRemove.bind(this, this.props.mapKey)}
+                    onClick={this.props.onMapRemove.bind(this, mapKey)}
                 />
             </div>
         );
