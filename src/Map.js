@@ -101,12 +101,13 @@ class PresentationMap extends React.PureComponent {
 				props.onViewChange = this.onViewChange;
 			}
 
-			// TODO custom wrapper component
 			if (wrapper) {
-				return (
-					<MapWrapper {...props} {...wrapperOptions}>
-						{this.renderContent(mapComponent, props, children)}
-					</MapWrapper>
+				const wrapperComponent = this.props.wrapper.prototype && this.props.wrapper.prototype.isReactComponent ? this.props.wrapper : MapWrapper;
+
+				return React.createElement(
+					wrapperComponent,
+					{...props, ...wrapperOptions},
+					React.createElement(mapComponent, props, children)
 				);
 			} else {
 				return this.renderContent(mapComponent, props, children);

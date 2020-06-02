@@ -245,7 +245,7 @@ class MapSet extends React.PureComponent {
 					maps.push(this.renderMap(this.props.connectedMapComponent, {...props, mapComponent: this.props.mapComponent}, null, mapKey === this.state.activeMapKey));
 				} else if (typeof child === "object" && child.type === PresentationMap) {
 					// all presentational
-					maps.push(this.renderMap(this.props.mapComponent || child.props.mapComponent, props, child.props.children, mapKey === this.state.activeMapKey));
+					maps.push(this.renderMap(this.props.mapComponent || child.props.mapComponent, props, child.props.children, mapKey === this.state.activeMapKey, true));
 				}
 			});
 		}
@@ -253,7 +253,7 @@ class MapSet extends React.PureComponent {
 		return (<MapGrid>{maps}</MapGrid>);
 	}
 
-	renderMap(mapComponent, props, children, active) {
+	renderMap(mapComponent, props, children, active, renderWrapper) {
 		// TODO custom wrapper component
 		if (this.props.wrapper) {
 			let wrapperOptions = this.props.wrapperOptions;
@@ -261,11 +261,19 @@ class MapSet extends React.PureComponent {
 				wrapperOptions = {...this.props.wrapperOptions, onMapRemove: this.props.onMapRemove}
 			}
 
-			return (
-				<MapWrapper {...props} {...wrapperOptions} active={active}>
-					{React.createElement(mapComponent, props, children)}
-				</MapWrapper>
-			);
+			const allProps = {...props, ...wrapperOptions, wrapper: this.props.wrapper, active};
+
+			// Render wrapper here, if mapComponent is final (framework-specific) map component
+			if (renderWrapper) {
+				const wrapperComponent = this.props.wrapper.prototype && this.props.wrapper.prototype.isReactComponent ? this.props.wrapper : MapWrapper;
+				return React.createElement(
+					wrapperComponent,
+					allProps,
+					React.createElement(mapComponent, props, children)
+				);
+			} else {
+				return React.createElement(mapComponent, allProps, children);
+			}
 		} else {
 			return React.createElement(mapComponent, props, children);
 		}
