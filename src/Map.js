@@ -107,7 +107,7 @@ class PresentationMap extends React.PureComponent {
 				return React.createElement(
 					wrapperComponent,
 					{...props, ...wrapperOptions},
-					React.createElement(mapComponent, props, children)
+					this.renderContent(mapComponent, props, children)
 				);
 			} else {
 				return this.renderContent(mapComponent, props, children);
