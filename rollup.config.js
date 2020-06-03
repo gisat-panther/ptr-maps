@@ -48,6 +48,7 @@ export default {
     'leaflet/dist/leaflet.css',
     'proj4leaflet',
     'react-leaflet',
+    'react-resize-detector',
     'react',
     'webworldwind-esa',
     'js-quadtree',
