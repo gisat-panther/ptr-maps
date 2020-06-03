@@ -1,4 +1,5 @@
 import constants from "./constants";
+import view from "./utils/view";
 import viewUtils from "./viewUtils";
 import GoToPlace from "./controls/GoToPlace";
 import MapGrid from "./MapGrid";
@@ -14,6 +15,7 @@ import WorldWindMap from "./WorldWindMap";
 
 export {
     constants,
+    view,
     viewUtils,
 
     GoToPlace,
@@ -33,6 +35,7 @@ export {
 
 export default {
     constants,
+    view,
     viewUtils,
 
     GoToPlace,

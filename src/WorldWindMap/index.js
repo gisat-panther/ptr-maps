@@ -168,7 +168,8 @@ class WorldWindMap extends React.PureComponent {
 	}
 
 	updateNavigator(defaultView) {
-		let currentView = defaultView || navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator);
+		const {width, height} = this.wwd.viewport;
+		let currentView = defaultView || navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator, width, height);
 		let nextView = {...currentView, ...this.props.view};
 		navigator.update(this.wwd, nextView);
 	}
@@ -189,7 +190,8 @@ class WorldWindMap extends React.PureComponent {
 
 	onNavigatorChange(event) {
 		if (event) {
-			const viewParams = navigator.getViewParamsFromWorldWindNavigator(event);
+			const {width, height} = this.wwd.viewport;
+			const viewParams = navigator.getViewParamsFromWorldWindNavigator(event, width, height);
 			const changedViewParams = navigator.getChangedViewParams({...mapConstants.defaultMapView, ...this.props.view}, viewParams);
 
 			if(this.props.onViewChange) {
@@ -211,7 +213,8 @@ class WorldWindMap extends React.PureComponent {
 
 	onClick() {
 		if (this.props.onClick) {
-			let currentView = navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator);
+			const {width, height} = this.wwd.viewport;
+			let currentView = navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator, width, height);
 			this.props.onClick(currentView);
 		}
 	}
