@@ -19,7 +19,7 @@ class PresentationMap extends React.PureComponent {
 			PropTypes.element,
 			PropTypes.bool
 		]),
-		wrapperOptions: PropTypes.object
+		wrapperProps: PropTypes.object
 	};
 
 	constructor(props) {
@@ -91,7 +91,7 @@ class PresentationMap extends React.PureComponent {
 	}
 
 	render() {
-		const {children, mapComponent, wrapper, wrapperOptions, ...props} = this.props;
+		const {children, mapComponent, wrapper, wrapperProps, ...props} = this.props;
 
 		if (!mapComponent) {
 			return (<Error centered>mapComponent not supplied to Map</Error>);
@@ -106,7 +106,7 @@ class PresentationMap extends React.PureComponent {
 
 				return React.createElement(
 					wrapperComponent,
-					{...props, ...wrapperOptions},
+					{...props, ...wrapperProps},
 					this.renderContent(mapComponent, props, children)
 				);
 			} else {
