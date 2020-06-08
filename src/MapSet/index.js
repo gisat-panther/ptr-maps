@@ -41,7 +41,7 @@ class MapSet extends React.PureComponent {
 			PropTypes.element,
 			PropTypes.bool
 		]),
-		wrapperOptions: PropTypes.object
+		wrapperProps: PropTypes.object
 	};
 
 	constructor(props) {
@@ -256,12 +256,12 @@ class MapSet extends React.PureComponent {
 	renderMap(mapComponent, props, children, active, renderWrapper) {
 		// TODO custom wrapper component
 		if (this.props.wrapper) {
-			let wrapperOptions = this.props.wrapperOptions;
+			let wrapperProps = this.props.wrapperProps;
 			if (this.props.onMapRemove && !this.props.disableMapRemoval) {
-				wrapperOptions = {...this.props.wrapperOptions, onMapRemove: this.props.onMapRemove}
+				wrapperProps = {...this.props.wrapperProps, onMapRemove: this.props.onMapRemove}
 			}
 
-			const allProps = {...props, ...wrapperOptions, wrapper: this.props.wrapper, active};
+			const allProps = {...props, ...wrapperProps, wrapper: this.props.wrapper, active};
 
 			// Render wrapper here, if mapComponent is final (framework-specific) map component
 			if (renderWrapper) {
