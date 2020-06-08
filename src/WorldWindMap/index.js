@@ -33,6 +33,7 @@ class WorldWindMap extends React.PureComponent {
 			PropTypes.array
 		]),
 		layers: PropTypes.array,
+		name: PropTypes.string,
 		view: PropTypes.object,
 		viewLimits: PropTypes.object,
 

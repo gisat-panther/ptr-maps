@@ -3,6 +3,7 @@ import { Map, WMSTileLayer, TileLayer, Pane } from 'react-leaflet';
 import PropTypes from 'prop-types';
 import L from "leaflet";
 import Proj from "proj4leaflet";
+import ReactResizeDetector from 'react-resize-detector';
 import viewHelpers from "../LeafletMap/viewHelpers";
 import viewUtils from "../viewUtils";
 import VectorLayer from "./layers/VectorLayer";
@@ -19,9 +20,11 @@ class ReactLeafletMap extends React.PureComponent {
             PropTypes.object,
             PropTypes.array
         ]),
+        name: PropTypes.string,
         crs: PropTypes.string,
         layers: PropTypes.array,
         mapKey: PropTypes.string.isRequired,
+        onClick: PropTypes.func,
         onLayerClick: PropTypes.func,
         onViewChange: PropTypes.func,
         view: PropTypes.object
@@ -47,6 +50,7 @@ class ReactLeafletMap extends React.PureComponent {
             }
         }
 
+        this.onClick = this.onClick.bind(this);
         this.onLayerClick = this.onLayerClick.bind(this);
         this.onViewportChange = this.onViewportChange.bind(this);
     }
@@ -102,6 +106,10 @@ class ReactLeafletMap extends React.PureComponent {
         this.setState(stateUpdate);
     }
 
+    onResize() {
+        this.leafletMap.invalidateSize();
+    }
+
     render() {
         // fix for backward compatibility
         const backgroundLayersSource = _.isArray(this.props.backgroundLayer) ? this.props.backgroundLayer : [this.props.backgroundLayer];
@@ -113,22 +121,26 @@ class ReactLeafletMap extends React.PureComponent {
         const view = viewHelpers.getLeafletViewportFromViewParams(this.state.view || this.props.view);
 
         return (
-            <Map
-                id={this.props.mapKey}
-                className="ptr-map ptr-leaflet-map"
-                onViewportChanged={this.onViewportChange}
-                center={view.center}
-                zoom={view.zoom}
-                zoomControl={false}
-                minZoom={this.minZoom} // non-dynamic prop
-                maxZoom={this.maxZoom} // non-dynamic prop
-                attributionControl={false}
-                crs={this.state.crs}
-            >
-                <Pane style={{zIndex: backgroundLayersZindex}}>{backgroundLayers}</Pane>
-                {layers}
-                {this.props.children}
-            </Map>
+            <ReactResizeDetector handleHeight handleWidth onResize={this.onResize.bind(this)}>
+                <Map
+                    id={this.props.mapKey}
+                    ref={map => {this.leafletMap = map && map.leafletElement}}
+                    className="ptr-map ptr-leaflet-map"
+                    onViewportChanged={this.onViewportChange}
+                    onClick={this.onClick}
+                    center={view.center}
+                    zoom={view.zoom}
+                    zoomControl={false}
+                    minZoom={this.minZoom} // non-dynamic prop
+                    maxZoom={this.maxZoom} // non-dynamic prop
+                    attributionControl={false}
+                    crs={this.state.crs}
+                >
+                    <Pane style={{zIndex: backgroundLayersZindex}}>{backgroundLayers}</Pane>
+                    {layers}
+                    {this.props.children}
+                </Map>
+            </ReactResizeDetector>
         );
     }
 
@@ -202,6 +214,12 @@ class ReactLeafletMap extends React.PureComponent {
     onLayerClick(layerKey, featureKeys) {
         if (this.props.onLayerClick) {
             this.props.onLayerClick(this.props.mapKey, layerKey, featureKeys);
+        }
+    }
+
+    onClick() {
+        if (this.props.onClick) {
+            this.props.onClick(this.props.view);
         }
     }
 }

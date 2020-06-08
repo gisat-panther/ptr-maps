@@ -5,6 +5,7 @@ import MapGrid from "./MapGrid";
 import MapControls from "./controls/MapControls";
 import MapSet, {MapSetMap, MapSetPresentationMap} from "./MapSet";
 import MapTools from "./controls/MapTools";
+import MapWrapper from "./MapWrapper";
 import LeafletMap from "./LeafletMap";
 import PresentationMap from "./Map";
 import ReactLeafletMap from "./ReactLeafletMap";
@@ -22,6 +23,7 @@ export {
     MapSetMap,
     MapSetPresentationMap,
     MapSet,
+    MapWrapper,
     LeafletMap,
     PresentationMap,
     ReactLeafletMap,
@@ -39,6 +41,7 @@ export default {
     MapSetMap,
     MapSetPresentationMap,
     MapSet,
+    MapWrapper,
     MapTools,
     LeafletMap,
     PresentationMap,

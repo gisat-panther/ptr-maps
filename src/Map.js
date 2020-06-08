@@ -4,6 +4,7 @@ import _ from "lodash";
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import {Error} from '@gisatcz/ptr-atoms';
 import {mapConstants} from '@gisatcz/ptr-core';
+import MapWrapper from "./MapWrapper";
 
 import './style.scss';
 
@@ -13,7 +14,12 @@ class PresentationMap extends React.PureComponent {
 		mapComponent: PropTypes.oneOfType([
 			PropTypes.element,
 			PropTypes.func
-		])
+		]),
+		wrapper: PropTypes.oneOfType([
+			PropTypes.element,
+			PropTypes.bool
+		]),
+		wrapperProps: PropTypes.object
 	};
 
 	constructor(props) {
@@ -85,38 +91,50 @@ class PresentationMap extends React.PureComponent {
 	}
 
 	render() {
-		const {children, mapComponent, ...props} = this.props;
+		const {children, mapComponent, wrapper, wrapperProps, ...props} = this.props;
 
 		if (!mapComponent) {
 			return (<Error centered>mapComponent not supplied to Map</Error>);
 		} else {
-
 			if (!props.stateMapKey) {
 				props.view = this.state.view || props.view;
 				props.onViewChange = this.onViewChange;
 			}
 
-			let map = React.createElement(mapComponent, props, children); //todo ptr-map-wrapper ?
+			if (wrapper) {
+				const wrapperComponent = this.props.wrapper.prototype && this.props.wrapper.prototype.isReactComponent ? this.props.wrapper : MapWrapper;
 
-			if (!children) {
-				return map;
-			} else {
-				return (
-					<div className="ptr-map-controls-wrapper">
-						{map}
-						{React.Children.map(children, child => {
-							return React.cloneElement(child, {
-								...child.props,
-								view: this.props.stateMapKey ? this.props.view : (this.state.view || this.props.view),
-								viewLimits: this.props.viewLimits,
-								updateView: this.props.stateMapKey ? this.props.onViewChange : this.onViewChange,
-								resetHeading: this.props.stateMapKey ? this.props.resetHeading : this.resetHeading
-							});
-						})}
-					</div>
+				return React.createElement(
+					wrapperComponent,
+					{...props, ...wrapperProps},
+					this.renderContent(mapComponent, props, children)
 				);
+			} else {
+				return this.renderContent(mapComponent, props, children);
 			}
+		}
+	}
 
+	renderContent(mapComponent, props, children) {
+		let map = React.createElement(mapComponent, props, children);
+
+		if (!children) {
+			return map;
+		} else {
+			return (
+				<div className="ptr-map-controls-wrapper">
+					{map}
+					{React.Children.map(children, child => {
+						return React.cloneElement(child, {
+							...child.props,
+							view: this.props.stateMapKey ? this.props.view : (this.state.view || this.props.view),
+							viewLimits: this.props.viewLimits,
+							updateView: this.props.stateMapKey ? this.props.onViewChange : this.onViewChange,
+							resetHeading: this.props.stateMapKey ? this.props.resetHeading : this.resetHeading
+						});
+					})}
+				</div>
+			);
 		}
 	}
 
