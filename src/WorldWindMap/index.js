@@ -9,7 +9,8 @@ import layersHelpers from './layers/helpers';
 import navigator from './navigator/helpers';
 
 import './style.scss';
-import viewUtils from "../viewUtils";
+import viewUtils from "../utils/view";
+
 import constants from "../constants";
 import LargeDataLayer from "./layers/LargeDataLayerSource/LargeDataLayer";
 
@@ -17,6 +18,7 @@ import VectorLayer from "./layers/VectorLayer";
 
 import {mapConstants} from "@gisatcz/ptr-core";
 import Context from '@gisatcz/cross-package-react-context';
+import ReactResizeDetector from "react-resize-detector";
 const HoverContext = Context.getContext('HoverContext');
 const {WorldWindow, ElevationModel} = WorldWind;
 
@@ -48,12 +50,21 @@ class WorldWindMap extends React.PureComponent {
 		super(props);
 		this.canvasId = utils.uuid();
 
+		this.state = {
+			width: null,
+			height: null
+		}
+
 		this.onClick = this.onClick.bind(this);
 		this.onLayerHover = this.onLayerHover.bind(this);
 		this.onWorldWindHover =  this.onWorldWindHover.bind(this);
 		this.onLayerClick = this.onLayerClick.bind(this);
 		this.onMouseOut = this.onMouseOut.bind(this);
+		this.onResize = this.onResize.bind(this);
 		this.onZoomLevelsBased = this.onZoomLevelsBased.bind(this);
+
+		this.onZoomLevelsBasedTimeout = null;
+		this.onZoomLevelsBasedStep = 0;
 	}
 
 	componentDidMount() {
@@ -75,32 +86,51 @@ class WorldWindMap extends React.PureComponent {
 
 	onZoomLevelsBased(e) {
 		e.preventDefault();
+
 		if (e.wheelDelta) {
-			let zoomLevel = viewUtils.getZoomLevelFromView(this.props.view);
+			this.onZoomLevelsBasedStep += e.wheelDelta;
 
-			if (e.wheelDelta > 0) {
-				zoomLevel++;
-			} else {
-				zoomLevel--;
+			if (this.onZoomLevelsBasedTimeout) {
+				clearTimeout(this.onZoomLevelsBasedTimeout);
 			}
 
-			// let levelsRange = this.props.levelsBased.length ? this.props.levelsBased : constants.defaultLevelsRange;
-			let levelsRange = constants.defaultLevelsRange;
-			const boxRangeRange = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
-			if (boxRangeRange) {
-				const maxLevel = boxRangeRange[0] ?  viewUtils.getZoomLevelFromView({boxRange: boxRangeRange[0]}) : levelsRange[1];
-				const minLevel = boxRangeRange[1] ?  viewUtils.getZoomLevelFromView({boxRange: boxRangeRange[1]}) : levelsRange[0];
-				levelsRange = [minLevel, maxLevel];
-			}
+			this.onZoomLevelsBasedTimeout = setTimeout(() => {
+				let zoomLevel = viewUtils.getZoomLevelFromBoxRange(this.props.view.boxRange, this.state.width, this.state.height);
 
-			if (zoomLevel <= levelsRange[1] && zoomLevel >= levelsRange[0]) {
-				const boxRange = viewUtils.getBoxRangeFromZoomLevel(zoomLevel);
-				if (this.props.onViewChange) {
-					this.props.onViewChange({
-						boxRange
-					});
+				if (this.onZoomLevelsBasedStep > 300) {
+					zoomLevel += 3;
+				} else if (this.onZoomLevelsBasedStep > 150) {
+					zoomLevel += 2;
+				} else if (this.onZoomLevelsBasedStep > 0) {
+					zoomLevel ++;
+				} else if (this.onZoomLevelsBasedStep < -300) {
+					zoomLevel -= 3;
+				} else if (this.onZoomLevelsBasedStep < -150) {
+					zoomLevel -= 2;
+				} else {
+					zoomLevel--;
 				}
-			}
+
+				let levelsRange = constants.defaultLevelsRange;
+				const boxRangeRange = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
+				if (boxRangeRange) {
+					const maxLevel = boxRangeRange[0] ? viewUtils.getZoomLevelFromBoxRange(boxRangeRange[0], this.state.width, this.state.height) : levelsRange[1];
+					const minLevel = boxRangeRange[1] ? viewUtils.getZoomLevelFromBoxRange(boxRangeRange[1], this.state.width, this.state.height) : levelsRange[0];
+					levelsRange = [minLevel, maxLevel];
+				}
+
+				if (zoomLevel <= levelsRange[1] && zoomLevel >= levelsRange[0]) {
+					const boxRange = viewUtils.getBoxRangeFromZoomLevel(zoomLevel, this.state.width, this.state.height);
+					if (this.props.onViewChange) {
+						this.props.onViewChange({
+							boxRange
+						});
+					}
+				}
+
+				this.onZoomLevelsBasedTimeout = null;
+				this.onZoomLevelsBasedStep = 0;
+			},50);
 		}
 	}
 
@@ -168,10 +198,13 @@ class WorldWindMap extends React.PureComponent {
 	}
 
 	updateNavigator(defaultView) {
-		const {width, height} = this.wwd.viewport;
+		const viewport = this.wwd.viewport;
+		let width = this.state.width || viewport.width;
+		let height = this.state.height || viewport.height;
+
 		let currentView = defaultView || navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator, width, height);
 		let nextView = {...currentView, ...this.props.view};
-		navigator.update(this.wwd, nextView);
+		navigator.update(this.wwd, nextView, width, height);
 	}
 
 	/**
@@ -190,8 +223,7 @@ class WorldWindMap extends React.PureComponent {
 
 	onNavigatorChange(event) {
 		if (event) {
-			const {width, height} = this.wwd.viewport;
-			const viewParams = navigator.getViewParamsFromWorldWindNavigator(event, width, height);
+			const viewParams = navigator.getViewParamsFromWorldWindNavigator(event, this.state.width, this.state.height);
 			const changedViewParams = navigator.getChangedViewParams({...mapConstants.defaultMapView, ...this.props.view}, viewParams);
 
 			if(this.props.onViewChange) {
@@ -266,15 +298,24 @@ class WorldWindMap extends React.PureComponent {
 		}
 	}
 
+	onResize(width, height) {
+		this.setState({
+			width, height
+		});
+		this.updateNavigator();
+	}
+
 	render() {
 		return (
-			<div className="ptr-map ptr-world-wind-map" onClick={this.onClick} onMouseOut={this.onMouseOut}>
-				<canvas className="ptr-world-wind-map-canvas" id={this.canvasId}>
-					Your browser does not support HTML5 Canvas.
-				</canvas>
-			</div>
+			<>
+				<ReactResizeDetector handleHeight handleWidth onResize={this.onResize}/>
+				<div className="ptr-map ptr-world-wind-map" onClick={this.onClick} onMouseOut={this.onMouseOut}>
+					<canvas className="ptr-world-wind-map-canvas" id={this.canvasId}>
+						Your browser does not support HTML5 Canvas.
+					</canvas>
+				</div>
+			</>
 		);
-
 	}
 }
 

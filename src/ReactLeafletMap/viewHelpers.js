@@ -1,4 +1,4 @@
-import viewUtils from '../viewUtils';
+import viewUtils from '../utils/view';
 
 const defaultView = {
 	center: {
@@ -8,7 +8,7 @@ const defaultView = {
 	zoom: 12
 };
 
-function getLeafletViewFromViewParams(view) {
+function getLeafletViewFromViewParams(view, width, height) {
 	let leafletView = {...defaultView};
 
 	if (view) {
@@ -23,15 +23,15 @@ function getLeafletViewFromViewParams(view) {
 		}
 
 		if (view.boxRange) {
-			leafletView.zoom = viewUtils.getZoomLevelFromView(view);
+			leafletView.zoom = viewUtils.getZoomLevelFromBoxRange(view.boxRange, width, height);
 		}
 	}
 
 	return leafletView;
 }
 
-function getLeafletViewportFromViewParams(view) {
-	const leafletView = getLeafletViewFromViewParams(view);
+function getLeafletViewportFromViewParams(view, width, height) {
+	const leafletView = getLeafletViewFromViewParams(view, width, height);
 
 	return {
 		zoom: leafletView.zoom,
@@ -39,11 +39,11 @@ function getLeafletViewportFromViewParams(view) {
 	};
 }
 
-function update(map, view) {
+function update(map, view, width, height) {
 	let stateCenter = map.getCenter();
 	let stateZoom = map.getZoom();
 
-	let leafletUpdate = getLeafletViewFromViewParams(view);
+	let leafletUpdate = getLeafletViewFromViewParams(view, width, height);
 
 	if (stateCenter.lat !== leafletUpdate.center.lat || stateCenter.lng !== leafletUpdate.center.lng || stateZoom !== leafletUpdate.zoom){
 		map.setView(leafletUpdate.center || stateCenter, leafletUpdate.zoom || stateZoom);
@@ -51,7 +51,6 @@ function update(map, view) {
 }
 
 export default {
-	getLeafletViewFromViewParams,
 	getLeafletViewportFromViewParams,
 	update
 }
