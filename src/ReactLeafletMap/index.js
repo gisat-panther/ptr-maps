@@ -31,6 +31,17 @@ class ReactLeafletMap extends React.PureComponent {
         view: PropTypes.object
     };
 
+    static getDerivedStateFromProps(props, state) {
+        if (state.width && state.height) {
+            return {
+                leafletView: viewHelpers.getLeafletViewportFromViewParams(props.view, state.width, state.height)
+            }
+        }
+
+        // Return null if the state hasn't changed
+        return null;
+    }
+
     constructor(props) {
         super(props);
 
@@ -41,7 +52,7 @@ class ReactLeafletMap extends React.PureComponent {
 
         this.onClick = this.onClick.bind(this);
         this.onLayerClick = this.onLayerClick.bind(this);
-        this.onViewportChange = this.onViewportChange.bind(this);
+        this.onViewportChanged = this.onViewportChanged.bind(this);
         this.onResize = this.onResize.bind(this);
     }
 
@@ -91,33 +102,35 @@ class ReactLeafletMap extends React.PureComponent {
         }
     }
 
-    onViewportChange(viewport) {
-        const change = {};
-        // viewport.center could be undefined
-        if(viewport && viewport.center) {
-            const center = {
-                lat: viewport.center[0],
-                lon: viewport.center[1]
-            };
-            change['center'] = center;
+    onViewportChanged(viewport) {
+        if (viewport) {
+            let change = {};
+
+            if (viewport.center && (viewport.center[0] !== this.state.leafletView.center[0] || viewport.center[1] !== this.state.leafletView.center[1])) {
+                change.center = {
+                    lat: viewport.center[0],
+                    lon: viewport.center[1]
+                }
+            }
+
+            if (viewport.hasOwnProperty('zoom') && Number.isFinite(viewport.zoom) && viewport.zoom !== this.state.leafletView.zoom) {
+                change.boxRange = viewUtils.getBoxRangeFromZoomLevel(viewport.zoom, this.state.width, this.state.height);
+            }
+
+            if (!_.isEmpty(change) && this.props.onViewChange && !this.hasResized()) {
+                this.props.onViewChange(change);
+            }
+
+            // TODO for IndexedVectorLayer rerender (see IndexedVectorLayer render method)
+            this.setState({viewport});
         }
+    }
 
-        // viewport.zoom could be undefined
-        if(viewport && viewport.hasOwnProperty('zoom')) {
-            const boxRange = viewUtils.getBoxRangeFromZoomLevel(viewport.zoom, this.state.width, this.state.height);
-            change['boxRange'] = boxRange;
-        }
-
-        // TODO for IndexedVectorLayer rerender (see IndexedVectorLayer render method)
-        let stateUpdate = {viewport};
-
-        if (this.props.onViewChange) {
-            this.props.onViewChange(change);
-        } else {
-            stateUpdate.view = change;
-        }
-
-        this.setState(stateUpdate);
+    hasResized() {
+        const {x,y} = this.leafletMap._size;
+        const widthChange = Math.abs(x - this.state.width) > 1;
+        const heightChange = Math.abs(y - this.state.height) > 1;
+        return widthChange || heightChange;
     }
 
     onResize(width, height) {
@@ -130,14 +143,20 @@ class ReactLeafletMap extends React.PureComponent {
         }
 
         this.setState({
-            width, height
+            width, height, leafletView: viewHelpers.getLeafletViewportFromViewParams(this.props.view, this.state.width, this.state.height)
         });
     }
 
     render() {
         return (
             <>
-                <ReactResizeDetector handleHeight handleWidth onResize={this.onResize}/>
+                <ReactResizeDetector
+                    handleHeight
+                    handleWidth
+                    onResize={this.onResize}
+                    refreshMode="debounce"
+                    refreshRate={500}
+                />
                 {this.state.width && this.state.height ? this.renderMap() : null}
             </>
         );
@@ -152,17 +171,15 @@ class ReactLeafletMap extends React.PureComponent {
         const baseLayersZindex = constants.defaultLeafletPaneZindex + 100;
         const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane key={layer.key || i} style={{zIndex: baseLayersZindex + i}}>{this.getLayerByType(layer, i)}</Pane>);
 
-        const view = viewHelpers.getLeafletViewportFromViewParams(this.state.view || this.props.view, this.state.width, this.state.height);
-
         return (
             <Map
                 id={this.props.mapKey}
                 ref={map => {this.leafletMap = map && map.leafletElement}}
                 className="ptr-map ptr-leaflet-map"
-                onViewportChanged={this.onViewportChange}
+                onViewportChanged={this.onViewportChanged}
                 onClick={this.onClick}
-                center={view.center}
-                zoom={view.zoom}
+                center={this.state.leafletView.center}
+                zoom={this.state.leafletView.zoom}
                 zoomControl={false}
                 minZoom={this.minZoom} // non-dynamic prop
                 maxZoom={this.maxZoom} // non-dynamic prop

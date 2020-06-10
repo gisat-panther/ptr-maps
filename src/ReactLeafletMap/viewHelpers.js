@@ -1,33 +1,16 @@
 import viewUtils from '../utils/view';
-
-const defaultView = {
-	center: {
-		lat: 50,
-		lng: 15
-	},
-	zoom: 12
-};
+import {mapConstants} from '@gisatcz/ptr-core';
 
 function getLeafletViewFromViewParams(view, width, height) {
-	let leafletView = {...defaultView};
+	const completeView = {...mapConstants.defaultMapView, ...view}
 
-	if (view) {
-		if (view.center) {
-			if (view.center.lat || view.center.lat === 0) {
-				leafletView.center.lat = view.center.lat;
-			}
-
-			if (view.center.lon || view.center.lon === 0) {
-				leafletView.center.lng = view.center.lon;
-			}
+	return {
+		zoom: viewUtils.getZoomLevelFromBoxRange(completeView.boxRange, width, height),
+		center: {
+			lat: completeView.center.lat,
+			lng: completeView.center.lon
 		}
-
-		if (view.boxRange) {
-			leafletView.zoom = viewUtils.getZoomLevelFromBoxRange(view.boxRange, width, height);
-		}
-	}
-
-	return leafletView;
+	};
 }
 
 function getLeafletViewportFromViewParams(view, width, height) {
