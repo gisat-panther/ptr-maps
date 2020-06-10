@@ -98,7 +98,7 @@ class ReactLeafletMap extends React.PureComponent {
         }
         
         // viewport.zoom could be undefined
-        if(viewport && viewport.hasOwnProperty('zoom')) {
+        if(viewport && viewport.hasOwnProperty('zoom') && Number.isFinite(viewport.zoom)) {
             const boxRange = viewUtils.getBoxRangeFromZoomLevel(viewport.zoom);
             change['boxRange'] = boxRange;
         }
