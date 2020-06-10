@@ -87,29 +87,24 @@ class ReactLeafletMap extends React.PureComponent {
     }
 
     onViewportChange(viewport) {
-        let center = null;
-
+        const change = {};
         // viewport.center could be undefined
         if(viewport && viewport.hasOwnProperty('center') && viewport.center) {
-            center = {
+            const center = {
                 lat: viewport.center[0],
                 lon: viewport.center[1]
             };
+            change['center'] = center;
         }
         
-        let boxRange = null;
         // viewport.zoom could be undefined
         if(viewport && viewport.hasOwnProperty('zoom') && Number.isFinite(viewport.zoom)) {
-            boxRange = viewUtils.getBoxRangeFromZoomLevel(viewport.zoom);
+            const boxRange = viewUtils.getBoxRangeFromZoomLevel(viewport.zoom);
+            change['boxRange'] = boxRange;
         }
 
         // TODO for IndexedVectorLayer rerender (see IndexedVectorLayer render method)
         let stateUpdate = {viewport};
-
-        const change = {
-            ...center && {center: center},
-            ...boxRange && {boxRange: boxRange},
-        }
 
         if (this.props.onViewChange) {
             this.props.onViewChange(change);
