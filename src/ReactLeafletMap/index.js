@@ -89,7 +89,7 @@ class ReactLeafletMap extends React.PureComponent {
     onViewportChange(viewport) {
         const change = {};
         // viewport.center could be undefined
-        if(viewport && viewport.hasOwnProperty('center') && viewport.center) {
+        if(viewport && viewport.center) {
             const center = {
                 lat: viewport.center[0],
                 lon: viewport.center[1]
@@ -98,7 +98,7 @@ class ReactLeafletMap extends React.PureComponent {
         }
         
         // viewport.zoom could be undefined
-        if(viewport && viewport.zoom) {
+        if(viewport && viewport.hasOwnProperty('zoom')) {
             const boxRange = viewUtils.getBoxRangeFromZoomLevel(viewport.zoom);
             change['boxRange'] = boxRange;
         }
