@@ -7,7 +7,7 @@ describe('utils/view', function () {
         it('return range part if width is bigger', function () {
             assert.equal(view.getBoxRangeFromWorldWindRange(10, 50, 10), 2);
             assert.equal(view.getBoxRangeFromWorldWindRange(10, 100, 10), 1);
-            assert.equal(view.getBoxRangeFromWorldWindRange(10, 50, 49), 10);
+            assert.equal(view.getBoxRangeFromWorldWindRange(10, 50, 49), 9.8);
         });
 
         it('return range if height is bigger', function () {
@@ -31,7 +31,7 @@ describe('utils/view', function () {
         it('return range multiple if width is bigger', function () {
             assert.equal(view.getWorldWindRangeFromBoxRange(10, 50, 10), 50);
             assert.equal(view.getWorldWindRangeFromBoxRange(10, 100, 10), 100);
-            assert.equal(view.getWorldWindRangeFromBoxRange(10, 50, 49), 10);
+            assert.equal(view.getWorldWindRangeFromBoxRange(10, 50, 25), 20);
         });
 
         it('return range if height is bigger', function () {
@@ -54,7 +54,7 @@ describe('utils/view', function () {
     describe('boxRangeToWorldWindRangeAndBack', function () {
         it('return the range value', function () {
             const boxRange1 = 10000;
-            const height1 = 49;
+            const height1 = 25;
             const width1 = 50;
 
             const range = view.getWorldWindRangeFromBoxRange(boxRange1, width1, height1);
