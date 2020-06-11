@@ -70,7 +70,7 @@ class WorldWindMap extends React.PureComponent {
 	componentDidMount() {
 		this.wwd = new WorldWindow(this.canvasId, this.getElevationModel());
 
-		decorateWorldWindowController(this.wwd.worldWindowController, this.props.viewLimits);
+		decorateWorldWindowController(this.wwd.worldWindowController, this.props.viewLimits, this.props.levelsBased);
 		this.wwd.worldWindowController.onNavigatorChanged = this.onNavigatorChange.bind(this);
 
 		if (this.props.levelsBased) {
@@ -113,6 +113,7 @@ class WorldWindMap extends React.PureComponent {
 
 				let levelsRange = constants.defaultLevelsRange;
 				const boxRangeRange = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
+
 				if (boxRangeRange) {
 					const maxLevel = boxRangeRange[0] ? viewUtils.getZoomLevelFromBoxRange(boxRangeRange[0], this.state.width, this.state.height) : levelsRange[1];
 					const minLevel = boxRangeRange[1] ? viewUtils.getZoomLevelFromBoxRange(boxRangeRange[1], this.state.width, this.state.height) : levelsRange[0];

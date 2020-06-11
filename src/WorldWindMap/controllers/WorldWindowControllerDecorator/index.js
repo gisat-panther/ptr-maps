@@ -11,20 +11,22 @@ const {
  * @param {WorldWind.WorldWindController} basicController
  * @param {Object} viewLimits
  */
-export default function(basicController, viewLimits) {
+export default function(basicController, viewLimits, levelsBased) {
     //Customized applyLimits function that call onNavigatorChanged on every execution
     const applyLimits = () => {
         let navigator = basicController.wwd.navigator;
         const {width, height} = basicController.wwd.viewport;
 
-        let minBoxRange = (viewLimits && viewLimits.boxRangeRange && viewLimits.boxRangeRange[0]) || constants.minBoxRange;
-        let maxBoxRange = (viewLimits && viewLimits.boxRangeRange && viewLimits.boxRangeRange[1]) || constants.maxBoxRange;
-        let currentRange = viewUtils.getBoxRangeFromWorldWindRange(navigator.range, width, height);
+        if (!levelsBased) {
+            let minBoxRange = (viewLimits && viewLimits.boxRangeRange && viewLimits.boxRangeRange[0]) || constants.minBoxRange;
+            let maxBoxRange = (viewLimits && viewLimits.boxRangeRange && viewLimits.boxRangeRange[1]) || constants.maxBoxRange;
+            let currentRange = viewUtils.getBoxRangeFromWorldWindRange(navigator.range, width, height);
 
-        if (currentRange < minBoxRange) {
-            navigator.range = viewUtils.getWorldWindRangeFromBoxRange(minBoxRange, width, height);
-        } else if (currentRange > maxBoxRange) {
-            navigator.range = viewUtils.getWorldWindRangeFromBoxRange(maxBoxRange, width, height);
+            if (currentRange < minBoxRange) {
+                navigator.range = viewUtils.getWorldWindRangeFromBoxRange(minBoxRange, width, height);
+            } else if (currentRange > maxBoxRange) {
+                navigator.range = viewUtils.getWorldWindRangeFromBoxRange(maxBoxRange, width, height);
+            }
         }
 
         // TODO apply other viewLimits params
