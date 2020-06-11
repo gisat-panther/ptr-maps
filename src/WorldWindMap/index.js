@@ -119,13 +119,19 @@ class WorldWindMap extends React.PureComponent {
 					levelsRange = [minLevel, maxLevel];
 				}
 
-				if (zoomLevel <= levelsRange[1] && zoomLevel >= levelsRange[0]) {
-					const boxRange = viewUtils.getBoxRangeFromZoomLevel(zoomLevel, this.state.width, this.state.height);
-					if (this.props.onViewChange) {
-						this.props.onViewChange({
-							boxRange
-						});
-					}
+				let finalZoomLevel = zoomLevel;
+				if (finalZoomLevel > levelsRange[1]) {
+					finalZoomLevel = levelsRange[1];
+				} else if (finalZoomLevel < levelsRange[0]) {
+					finalZoomLevel = levelsRange[0];
+				}
+
+
+				const boxRange = viewUtils.getBoxRangeFromZoomLevel(finalZoomLevel, this.state.width, this.state.height);
+				if (this.props.onViewChange) {
+					this.props.onViewChange({
+						boxRange
+					});
 				}
 
 				this.onZoomLevelsBasedTimeout = null;
@@ -302,6 +308,8 @@ class WorldWindMap extends React.PureComponent {
 		this.setState({
 			width, height
 		});
+		this.wwd.worldWindowController.mapWidth = width;
+		this.wwd.worldWindowController.mapHeight = height;
 		this.updateNavigator();
 	}
 

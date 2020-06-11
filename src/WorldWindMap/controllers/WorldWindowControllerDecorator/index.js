@@ -1,5 +1,6 @@
 import WorldWind from 'webworldwind-esa';
 import constants from "../../../constants";
+import viewUtils from "../../../utils/view";
 
 const {
     Angle,
@@ -14,19 +15,16 @@ export default function(basicController, viewLimits) {
     //Customized applyLimits function that call onNavigatorChanged on every execution
     const applyLimits = () => {
         let navigator = basicController.wwd.navigator;
+        const {width, height} = basicController.wwd.viewport;
 
-        if (viewLimits && viewLimits.boxRangeRange) {
-            const minBoxRange = viewLimits.boxRangeRange[0] || constants.minBoxRange;
-            const maxBoxRange = viewLimits.boxRangeRange[1] || constants.maxBoxRange;
-            if (navigator.range < minBoxRange) {
-                navigator.range = minBoxRange;
-            } else if (navigator.range > maxBoxRange) {
-                navigator.range = maxBoxRange;
-            }
+        let minBoxRange = (viewLimits && viewLimits.boxRangeRange && viewLimits.boxRangeRange[0]) || constants.minBoxRange;
+        let maxBoxRange = (viewLimits && viewLimits.boxRangeRange && viewLimits.boxRangeRange[1]) || constants.maxBoxRange;
+        let currentRange = viewUtils.getBoxRangeFromWorldWindRange(navigator.range, width, height);
 
-        } else {
-            // Clamp range to values greater than 1 in order to prevent degenerating to a first-person navigator when range is zero.
-            navigator.range = WWMath.clamp(navigator.range, 1, constants.maxBoxRange);
+        if (currentRange < minBoxRange) {
+            navigator.range = viewUtils.getWorldWindRangeFromBoxRange(minBoxRange, width, height);
+        } else if (currentRange > maxBoxRange) {
+            navigator.range = viewUtils.getWorldWindRangeFromBoxRange(maxBoxRange, width, height);
         }
 
         // TODO apply other viewLimits params

@@ -139,7 +139,7 @@ class ReactLeafletMap extends React.PureComponent {
         }
 
         if (!this.maxZoom && !this.minZoom) {
-            this.setZoomLevelsBounds()
+            this.setZoomLevelsBounds(width, height);
         }
 
         this.setState({
