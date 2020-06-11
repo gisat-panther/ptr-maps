@@ -52,7 +52,8 @@ class MapSet extends React.PureComponent {
 				view: mapUtils.mergeViews(mapConstants.defaultMapView, props.view),
 
 				activeMapKey: props.activeMapKey,
-				mapViews: {}
+				mapViews: {},
+				mapsDimensions: {}
 			};
 
 			_.forEach(this.props.children, child => {
@@ -62,6 +63,10 @@ class MapSet extends React.PureComponent {
 					this.state.mapViews[child.props.mapKey] = mapUtils.mergeViews(mapConstants.defaultMapView, props.view, child.props.view);
 				}
 			});
+		} else {
+			this.state = {
+				mapsDimensions: {}
+			}
 		}
 	}
 
@@ -164,6 +169,14 @@ class MapSet extends React.PureComponent {
 		}
 	}
 
+	onMapResize(mapKey, width, height) {
+		const mapsDimensions = {
+			...this.state.mapsDimensions,
+			[mapKey]: {width, height}
+		}
+		this.setState({mapsDimensions});
+	}
+
 	render() {
 		return (
 			<div className="ptr-map-set">
@@ -178,17 +191,19 @@ class MapSet extends React.PureComponent {
 	}
 
 	renderControls() {
-		let updateView, resetHeading, view, mapKey;
+		let updateView, resetHeading, view, mapKey, activeMapDimensions;
 		if (this.props.stateMapSetKey) {
 			updateView = this.props.updateView;
 			resetHeading = this.props.resetHeading;
 			view = this.props.activeMapView || this.props.view;
 			mapKey = this.props.activeMapKey;
+			activeMapDimensions = this.state.mapsDimensions && this.state.mapsDimensions[this.props.activeMapKey];
 		} else {
 			updateView = this.onViewChange.bind(this, null);
 			resetHeading = this.onResetHeading.bind(this);
 			view = mapUtils.mergeViews(this.state.view, this.state.mapViews[this.state.activeMapKey]);
 			mapKey = this.state.activeMapKey;
+			activeMapDimensions = this.state.mapsDimensions && this.state.mapsDimensions[this.state.activeMapKey];
 		}
 
 
@@ -199,7 +214,9 @@ class MapSet extends React.PureComponent {
 					view,
 					updateView,
 					resetHeading,
-					mapKey
+					mapKey,
+					mapWidth: activeMapDimensions && activeMapDimensions.width,
+					mapHeight: activeMapDimensions && activeMapDimensions.height
 				});
 			}
 		});
@@ -216,13 +233,10 @@ class MapSet extends React.PureComponent {
 				this.props.maps.map(mapKey => {
 					let props = {
 						key: mapKey,
-						stateMapKey: mapKey
+						stateMapKey: mapKey,
+						onResize: this.onMapResize.bind(this, mapKey)
 					};
 
-					// TODO
-					// if (mapKey === this.state.activeMapKey) {
-					// 	props.wrapperClasses = "active";
-					// }
 					maps.push(this.renderMap(this.props.connectedMapComponent, {...props, mapComponent: this.props.mapComponent}, null, mapKey === this.props.activeMapKey));
 				});
 			}
@@ -237,6 +251,7 @@ class MapSet extends React.PureComponent {
 					layers: mapUtils.mergeLayers(this.props.layers, layers),
 					onViewChange: this.onViewChange.bind(this, mapKey),
 					onClick: this.onMapClick.bind(this, mapKey),
+					onResize: this.onMapResize.bind(this, mapKey),
 					mapKey
 				};
 

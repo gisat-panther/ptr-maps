@@ -145,6 +145,10 @@ class ReactLeafletMap extends React.PureComponent {
         this.setState({
             width, height, leafletView: viewHelpers.getLeafletViewportFromViewParams(this.props.view, this.state.width, this.state.height)
         });
+
+        if (this.props.onResize) {
+            this.props.onResize(width, height);
+        }
     }
 
     render() {

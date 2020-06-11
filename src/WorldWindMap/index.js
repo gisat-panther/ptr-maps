@@ -307,9 +307,10 @@ class WorldWindMap extends React.PureComponent {
 		this.setState({
 			width, height
 		});
-		this.wwd.worldWindowController.mapWidth = width;
-		this.wwd.worldWindowController.mapHeight = height;
 		this.updateNavigator();
+		if (this.props.onResize) {
+			this.props.onResize(width, height);
+		}
 	}
 
 	render() {
