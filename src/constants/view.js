@@ -1,3 +1,5 @@
+/* Used to sync view between 3D and 2D projections. At average latitude is the distortion smallest.
+/* TODO configurable */
 const averageLatitude = 50;
 
 /* Constants for levels-based map view handling */
