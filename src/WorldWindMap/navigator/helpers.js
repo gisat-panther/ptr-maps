@@ -3,6 +3,7 @@ import viewUtils from "../../utils/view";
 function getChangedViewParams(prev, next) {
 		let changed = {};
 
+		// check for boxRange change, disregard if change is too small
 		if (prev.boxRange !== next.boxRange && Math.abs(prev.boxRange - next.boxRange) > 1){
 			changed.boxRange = next.boxRange;
 		}
