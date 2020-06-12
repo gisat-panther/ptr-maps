@@ -1,8 +1,10 @@
+import viewUtils from "../../utils/view";
 
 function getChangedViewParams(prev, next) {
 		let changed = {};
 
-		if (prev.boxRange !== next.boxRange){
+		// check for boxRange change, disregard if change is too small
+		if (prev.boxRange !== next.boxRange && Math.abs(prev.boxRange - next.boxRange) > 1){
 			changed.boxRange = next.boxRange;
 		}
 
@@ -34,9 +36,9 @@ function getChangedViewParams(prev, next) {
  * @param wwd {WorldWindow}
  * @param view {Object}
  */
-function update(wwd, view) {
+function update(wwd, view, width, height) {
 	let state = wwd.navigator;
-	let wwdUpdate = getWorldWindNavigatorFromViewParams(view);
+	let wwdUpdate = getWorldWindNavigatorFromViewParams(view, width, height);
 	
 	let shouldRedraw = false;
 
@@ -85,11 +87,11 @@ function update(wwd, view) {
  * @param view {Object}
  * @returns {WorldWind.Navigator}
  */
-function getWorldWindNavigatorFromViewParams(view) {
+function getWorldWindNavigatorFromViewParams(view, width, height) {
 	let {center, boxRange, ...navigator} = view;
 
 	if (boxRange) {
-		navigator.range = boxRange;
+		navigator.range = viewUtils.getWorldWindRangeFromBoxRange(boxRange, width, height);
 	}
 
 	if (center) {
@@ -106,12 +108,12 @@ function getWorldWindNavigatorFromViewParams(view) {
 }
 
 
-function getViewParamsFromWorldWindNavigator(navigator) {
+function getViewParamsFromWorldWindNavigator(navigator, width, height) {
 	let view = {};
 	let {lookAtLocation, range} = navigator;
 
 	if (range) {
-		view.boxRange = range;
+		view.boxRange = viewUtils.getBoxRangeFromWorldWindRange(range, width, height);
 	}
 
 	if (lookAtLocation) {

@@ -2,8 +2,8 @@ import React from "react";
 import PropTypes from 'prop-types';
 import constants from "../../constants";
 import {Icon, Button} from '@gisatcz/ptr-atoms';
+import viewUtils from "../../utils/view";
 import './style.scss';
-import viewUtils from "../../viewUtils";
 
 class MapControls extends React.PureComponent {
 
@@ -17,7 +17,9 @@ class MapControls extends React.PureComponent {
 		levelsBased: PropTypes.oneOfType([
 			PropTypes.bool,
 			PropTypes.array
-		])
+		]),
+		mapHeight: PropTypes.number,
+		mapWidth: PropTypes.number
 	};
 
 	constructor() {
@@ -62,7 +64,8 @@ class MapControls extends React.PureComponent {
 	handleZoomIn() {
 		let update = null;
 		if (this.props.levelsBased && this.props.view && this.props.view.boxRange) {
-			update = {boxRange: this.props.view.boxRange/2};
+			// remove 1 from box range to prevent rounding issues
+			update = {boxRange: (this.props.view.boxRange - 1)/2};
 		} else {
 			update = {boxRange: this.props.view.boxRange * (1 - this.zoomIncrement)};
 		}
@@ -72,7 +75,8 @@ class MapControls extends React.PureComponent {
 	handleZoomOut() {
 		let update;
 		if (this.props.levelsBased && this.props.view && this.props.view.boxRange) {
-			update = {boxRange: this.props.view.boxRange*2};
+			// add 1 to box range to prevent rounding issues
+			update = {boxRange: this.props.view.boxRange*2 + 1};
 		} else {
 			update = {boxRange: this.props.view.boxRange * (1 + this.zoomIncrement)};
 		}
@@ -101,27 +105,27 @@ class MapControls extends React.PureComponent {
 		const currentBoxRange = this.props.view && this.props.view.boxRange;
 
 		if (this.props.levelsBased) {
+			const currentLevel = viewUtils.getZoomLevelFromBoxRange(currentBoxRange, this.props.mapWidth, this.props.mapHeight);
+
 			if (type === "in") {
 				let maxZoom = constants.defaultLevelsRange[1];
 				if (definedLimits && definedLimits[0]) {
-					let definedLimitAsLevel = viewUtils.getZoomLevelFromView({boxRange: definedLimits[0]});
+					let definedLimitAsLevel = viewUtils.getZoomLevelFromBoxRange(definedLimits[0], this.props.mapWidth, this.props.mapHeight);
 					if (definedLimitAsLevel < maxZoom) {
 						maxZoom = definedLimitAsLevel;
 					}
 				}
 
-				const currentLevel = viewUtils.getZoomLevelFromView({boxRange: currentBoxRange});
 				return currentLevel < maxZoom;
 			} else {
 				let minZoom = constants.defaultLevelsRange[0];
 				if (definedLimits && definedLimits[1]) {
-					let definedLimitAsLevel = viewUtils.getZoomLevelFromView({boxRange: definedLimits[1]});
+					let definedLimitAsLevel = viewUtils.getZoomLevelFromBoxRange(definedLimits[1], this.props.mapWidth, this.props.mapHeight);
 					if (definedLimitAsLevel > minZoom) {
 						minZoom = definedLimitAsLevel;
 					}
 				}
 
-				const currentLevel = viewUtils.getZoomLevelFromView({boxRange: currentBoxRange});
 				return currentLevel > minZoom;
 			}
 		} else {

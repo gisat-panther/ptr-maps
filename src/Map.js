@@ -24,15 +24,19 @@ class PresentationMap extends React.PureComponent {
 
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			width: null,
+			height: null
+		}
 		
 		if (!props.stateMapKey) {
-			this.state = {
-				view: {...mapConstants.defaultMapView, ...props.view}
-			};
+			this.state.view = {...mapConstants.defaultMapView, ...props.view};
 		}
 		
 		this.onViewChange = this.onViewChange.bind(this);
 		this.resetHeading = this.resetHeading.bind(this);
+		this.onResize = this.onResize.bind(this);
 	}
 	
 	componentDidMount() {
@@ -90,12 +94,18 @@ class PresentationMap extends React.PureComponent {
 		}));
 	}
 
+	onResize(width, height) {
+		this.setState({width, height});
+	}
+
 	render() {
 		const {children, mapComponent, wrapper, wrapperProps, ...props} = this.props;
 
 		if (!mapComponent) {
 			return (<Error centered>mapComponent not supplied to Map</Error>);
 		} else {
+			props.onResize = this.onResize;
+
 			if (!props.stateMapKey) {
 				props.view = this.state.view || props.view;
 				props.onViewChange = this.onViewChange;
@@ -130,7 +140,9 @@ class PresentationMap extends React.PureComponent {
 							view: this.props.stateMapKey ? this.props.view : (this.state.view || this.props.view),
 							viewLimits: this.props.viewLimits,
 							updateView: this.props.stateMapKey ? this.props.onViewChange : this.onViewChange,
-							resetHeading: this.props.stateMapKey ? this.props.resetHeading : this.resetHeading
+							resetHeading: this.props.stateMapKey ? this.props.resetHeading : this.resetHeading,
+							mapWidth: this.state.width,
+							mapHeight: this.state.height
 						});
 					})}
 				</div>
