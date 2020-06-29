@@ -71,7 +71,7 @@ class Feature extends React.PureComponent {
     }
 
     onClick() {
-        if (this.props.interactive) {
+        if (this.props.hoverable) {
             this.showOnTop();
 
             if (this.props.onClick && this.fid) {
@@ -81,7 +81,7 @@ class Feature extends React.PureComponent {
     }
 
     onMouseMove(event) {
-        if (this.props.interactive) {
+        if (this.props.hoverable) {
             this.showOnTop();
 
             if (this.fid && this.props.changeContext) {
@@ -102,7 +102,7 @@ class Feature extends React.PureComponent {
     }
 
     onMouseOut() {
-        if (this.props.interactive) {
+        if (this.props.hoverable) {
             if (!this.props.selected) {
                 this.showOnBottom();
             }
@@ -163,7 +163,7 @@ class Feature extends React.PureComponent {
     renderPolygon(style) {
         return (
             <Polygon
-                interactive={this.props.interactive}
+                interactive={this.props.hoverable}
                 onAdd={this.onAdd}
                 onClick={this.onClick}
                 onMouseMove={this.onMouseMove}
@@ -177,7 +177,7 @@ class Feature extends React.PureComponent {
     renderLine(style) {
         return (
             <Polyline
-                interactive={this.props.interactive}
+                interactive={this.props.hoverable}
                 onAdd={this.onAdd}
                 onClick={this.onClick}
                 onMouseOver={this.onMouseMove}
@@ -195,7 +195,7 @@ class Feature extends React.PureComponent {
         } else {
             return (
                 <Circle
-                    interactive={this.props.interactive}
+                    interactive={this.props.hoverable}
                     onAdd={this.onAdd}
                     onClick={this.onClick}
                     onMouseMove={this.onMouseMove}
@@ -226,7 +226,7 @@ class Feature extends React.PureComponent {
 
         return (
             <Marker
-                interactive={this.props.interactive}
+                interactive={this.props.hoverable}
                 position={this.props.leafletCoordinates}
                 icon={this.icon}
                 onAdd={this.onAdd}

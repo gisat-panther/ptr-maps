@@ -91,6 +91,8 @@ class VectorLayer extends React.PureComponent {
 
             _.forEach(features, (feature) => {
                 const type = feature && feature.geometry && feature.geometry.type;
+                const hoverable = this.props.hovered;
+
                 if (type) {
                     const fid = this.props.fidColumnName && feature.properties[this.props.fidColumnName];
 
@@ -114,8 +116,12 @@ class VectorLayer extends React.PureComponent {
                     const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
 
                     // Prepare hovered style
-                    const hoveredStyleObject = (this.props.hovered && this.props.hovered.style) || constants.vectorFeatureStyle.hovered;
-                    const hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+                    let hoveredStyleObject, hoveredStyle;
+
+                    if (hoverable) {
+                        hoveredStyleObject = (this.props.hovered && this.props.hovered.style) || constants.vectorFeatureStyle.hovered;
+                        hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+                    }
 
                     // Prepare selected and selected hovered style, if selected
                     if (selected) {
@@ -128,9 +134,10 @@ class VectorLayer extends React.PureComponent {
                     const data = {
                         feature,
                         fid,
+                        hoverable,
                         selected: !!selected,
                         defaultStyle,
-                        hoveredStyle,
+                        hoveredStyle: hoverable && hoveredStyle,
                         selectedStyle,
                         selectedHoveredStyle,
                         leafletCoordinates
@@ -210,6 +217,7 @@ class VectorLayer extends React.PureComponent {
                 type={data.feature.geometry.type}
                 pointAsMarker={this.props.pointAsMarker}
                 selected={data.selected}
+                hoverable={data.hoverable}
                 defaultStyle={data.defaultStyle}
                 hoveredStyle={data.hoveredStyle}
                 selectedStyle={data.selectedStyle}

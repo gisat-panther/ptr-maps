@@ -31,8 +31,8 @@ export default function contextWrapper(WrappedFeature) {
             }
 
             // TODO interactive without context case?
-            if (this.context) {
-                return <WrappedFeature {...this.props} interactive changeContext={this.changeContext} hoveredFromContext={this.hoveredFromContext}/>;
+            if (this.context && this.props.hoverable) {
+                return <WrappedFeature {...this.props} changeContext={this.changeContext} hoveredFromContext={this.hoveredFromContext}/>;
             } else {
                 return <WrappedFeature {...this.props}/>;
             }
