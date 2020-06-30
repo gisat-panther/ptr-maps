@@ -91,7 +91,6 @@ class VectorLayer extends React.PureComponent {
 
             _.forEach(features, (feature) => {
                 const type = feature && feature.geometry && feature.geometry.type;
-                const hoverable = this.props.hovered;
 
                 if (type) {
                     const fid = this.props.fidColumnName && feature.properties[this.props.fidColumnName];
@@ -116,28 +115,34 @@ class VectorLayer extends React.PureComponent {
                     const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
 
                     // Prepare hovered style
-                    let hoveredStyleObject, hoveredStyle;
-
-                    if (hoverable) {
-                        hoveredStyleObject = (this.props.hovered && this.props.hovered.style) || constants.vectorFeatureStyle.hovered;
+                    let hoveredStyleObject = null;
+                    let hoveredStyle = null;
+                    if (this.props.hovered?.style) {
+                        hoveredStyleObject = this.props.hovered.style === "default" ? constants.vectorFeatureStyle.hovered : this.props.hovered.style;
                         hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
                     }
 
                     // Prepare selected and selected hovered style, if selected
                     if (selected) {
-                        const selectedStyleObject = selected.style || constants.vectorFeatureStyle.selected;
-                        const selectedHoveredStyleObject = selected.hoveredStyle || constants.vectorFeatureStyle.selectedHovered;
-                        selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
-                        selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+                        let selectedStyleObject, selectedHoveredStyleObject = null;
+                        if (selected.style) {
+                            selectedStyleObject = selected.style === "default" ? constants.vectorFeatureStyle.selected : selected.style;
+                            selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
+                        }
+                        if (selected.hoveredStyle) {
+                            selectedHoveredStyleObject = selected.hoveredStyle === "default" ? constants.vectorFeatureStyle.selectedHovered : selected.hoveredStyle;
+                            selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+                        }
                     }
 
                     const data = {
                         feature,
                         fid,
-                        hoverable,
+                        hoverable: this.props.hoverable,
+                        selectable: this.props.selectable,
                         selected: !!selected,
                         defaultStyle,
-                        hoveredStyle: hoverable && hoveredStyle,
+                        hoveredStyle,
                         selectedStyle,
                         selectedHoveredStyle,
                         leafletCoordinates
@@ -217,6 +222,7 @@ class VectorLayer extends React.PureComponent {
                 type={data.feature.geometry.type}
                 pointAsMarker={this.props.pointAsMarker}
                 selected={data.selected}
+                selectable={data.selectable}
                 hoverable={data.hoverable}
                 defaultStyle={data.defaultStyle}
                 hoveredStyle={data.hoveredStyle}

@@ -293,9 +293,9 @@ class WorldWindMap extends React.PureComponent {
 			const featureKeys = [data[layerPantherProps.fidColumnName]];
 
 			// TODO add support for touch events
-			if (event.type === 'mousedown') {
+			if (event.type === 'mousedown' && layerPantherProps.selectable) {
 				this.onLayerClick(layerPantherProps.layerKey, featureKeys);
-			} else {
+			} else if (layerPantherProps.hoverable) {
 				this.onLayerHover(layerPantherProps.layerKey, featureKeys, event.pageX, event.pageY, <div>{featureKeys.join(",")}</div>, data, layerPantherProps.fidColumnName);
 			}
 		} else if (this.context && this.context.onHoverOut){
