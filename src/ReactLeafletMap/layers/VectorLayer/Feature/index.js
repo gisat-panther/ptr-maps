@@ -14,6 +14,8 @@ class Feature extends React.PureComponent {
             PropTypes.number
         ]),
         fidColumnName: PropTypes.string,
+        hoverable: PropTypes.bool,
+        selectable: PropTypes.bool,
         defaultStyle: PropTypes.object,
         hoveredStyle: PropTypes.object,
         selectedStyle: PropTypes.object,
@@ -71,7 +73,7 @@ class Feature extends React.PureComponent {
     }
 
     onClick() {
-        if (this.props.interactive) {
+        if (this.props.selectable) {
             this.showOnTop();
 
             if (this.props.onClick && this.fid) {
@@ -81,7 +83,7 @@ class Feature extends React.PureComponent {
     }
 
     onMouseMove(event) {
-        if (this.props.interactive) {
+        if (this.props.hoverable) {
             this.showOnTop();
 
             if (this.fid && this.props.changeContext) {
@@ -102,7 +104,7 @@ class Feature extends React.PureComponent {
     }
 
     onMouseOut() {
-        if (this.props.interactive) {
+        if (this.props.hoverable) {
             if (!this.props.selected) {
                 this.showOnBottom();
             }
@@ -136,11 +138,11 @@ class Feature extends React.PureComponent {
     render() {
         let style = this.props.defaultStyle;
 
-        if (this.props.selected && this.state.hovered) {
+        if (this.props.selected && this.state.hovered && this.props.selectedHoveredStyle) {
             style = this.props.selectedHoveredStyle;
-        } else if (this.state.hovered) {
+        } else if (this.state.hovered && this.props.hoveredStyle) {
             style = this.props.hoveredStyle;
-        } else if (this.props.selected) {
+        } else if (this.props.selected && this.props.selectedStyle) {
             style = this.props.selectedStyle;
         }
 
@@ -163,7 +165,7 @@ class Feature extends React.PureComponent {
     renderPolygon(style) {
         return (
             <Polygon
-                interactive={this.props.interactive}
+                interactive={this.props.hoverable || this.props.selectable}
                 onAdd={this.onAdd}
                 onClick={this.onClick}
                 onMouseMove={this.onMouseMove}
@@ -177,7 +179,7 @@ class Feature extends React.PureComponent {
     renderLine(style) {
         return (
             <Polyline
-                interactive={this.props.interactive}
+                interactive={this.props.hoverable || this.props.selectable}
                 onAdd={this.onAdd}
                 onClick={this.onClick}
                 onMouseOver={this.onMouseMove}
@@ -195,7 +197,7 @@ class Feature extends React.PureComponent {
         } else {
             return (
                 <Circle
-                    interactive={this.props.interactive}
+                    interactive={this.props.hoverable || this.props.selectable}
                     onAdd={this.onAdd}
                     onClick={this.onClick}
                     onMouseMove={this.onMouseMove}
@@ -226,7 +228,7 @@ class Feature extends React.PureComponent {
 
         return (
             <Marker
-                interactive={this.props.interactive}
+                interactive={this.props.hoverable || this.props.selectable}
                 position={this.props.leafletCoordinates}
                 icon={this.icon}
                 onAdd={this.onAdd}

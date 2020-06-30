@@ -83,25 +83,37 @@ class DiagramLayer extends VectorLayer {
                 const areaDefaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
                 const diagramDefaultStyle = this.getDiagramDefaultStyle(feature, defaultStyleObject);
 
-                // Prepare hovered styles
-                const hoveredStyleObject = (this.props.hovered && this.props.hovered.style) || {...constants.vectorFeatureStyle.hovered, ...constants.diagramStyle.hovered};
-                const areaHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
-                const diagramHoveredStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+                // Prepare hovered style
+                let hoveredStyleObject = null;
+                let areaHoveredStyle = null;
+                let diagramHoveredStyle = null;
+                if (this.props.hovered?.style) {
+                    hoveredStyleObject = this.props.hovered.style === "default" ? {...constants.vectorFeatureStyle.hovered, ...constants.diagramStyle.hovered} : this.props.hovered.style;
+                    areaHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+                    diagramHoveredStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+                }
 
                 // Prepare selected and selected hovered style, if selected
                 if (selected) {
-                    const selectedStyleObject = selected.style || {...constants.vectorFeatureStyle.selected, ...constants.diagramStyle.selected};
-                    const selectedHoveredStyleObject = selected.hoveredStyle || {...constants.vectorFeatureStyle.selectedHovered, ...constants.diagramStyle.selectedHovered};
-                    areaSelectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
-                    areaSelectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
-                    diagramSelectedStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
-                    diagramSelectedHoveredStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+                    let selectedStyleObject, selectedHoveredStyleObject = null;
+                    if (selected.style) {
+                        selectedStyleObject = selected.style === "default" ? {...constants.vectorFeatureStyle.selected, ...constants.diagramStyle.selected} : selected.style;
+                        areaSelectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
+                        diagramSelectedStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
+                    }
+                    if (selected.hoveredStyle) {
+                        selectedHoveredStyleObject = selected.hoveredStyle === "default" ? {...constants.vectorFeatureStyle.selectedHovered, ...constants.diagramStyle.selectedHovered} : selected.hoveredStyle;
+                        areaSelectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+                        diagramSelectedHoveredStyle = this.getDiagramAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+                    }
                 }
 
                 data.push({
                     feature,
                     fid,
                     selected: !!selected,
+                    hoverable: this.props.hoverable,
+                    selectable: this.props.selectable,
                     areaDefaultStyle,
                     areaHoveredStyle,
                     areaSelectedStyle,
@@ -152,6 +164,8 @@ class DiagramLayer extends VectorLayer {
                 onClick={this.onFeatureClick}
                 fidColumnName={this.props.fidColumnName}
                 type={data.feature.geometry.type}
+                selectable={data.selectable}
+                hoverable={data.hoverable}
                 defaultStyle={data.areaDefaultStyle}
                 hoveredStyle={data.areaHoveredStyle}
                 selectedStyle={data.areaSelectedStyle}
@@ -171,6 +185,8 @@ class DiagramLayer extends VectorLayer {
                 onClick={this.onFeatureClick}
                 fidColumnName={this.props.fidColumnName}
                 type="Point"
+                selectable={data.selectable}
+                hoverable={data.hoverable}
                 defaultStyle={data.diagramDefaultStyle}
                 hoveredStyle={data.diagramHoveredStyle}
                 selectedStyle={data.diagramSelectedStyle}

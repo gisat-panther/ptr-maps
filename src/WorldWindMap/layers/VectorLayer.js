@@ -23,6 +23,8 @@ class VectorLayer extends WorldWind.RenderableLayer {
 		this.pantherProps = {
 			features: options.features || [],
 			fidColumnName: options.fidColumnName,
+			hoverable: options.hoverable,
+			selectable: options.selectable,
 			hovered: {...options.hovered},
 			selected: {...options.selected},
 			key: layer.key,
@@ -50,8 +52,11 @@ class VectorLayer extends WorldWind.RenderableLayer {
 			const defaultStyleObject = utils.mapStyle.getStyleObject(properties, this.pantherProps.style  || constants.vectorFeatureStyle.defaultFull);
 			const defaultStyle = this.getStyleDefinition(defaultStyleObject);
 
-			const hoveredStyleObject = this.pantherProps.hovered && this.pantherProps.hovered.style || constants.vectorFeatureStyle.hovered;
-			const hoveredStyle = this.getStyleDefinition({...defaultStyleObject, ...hoveredStyleObject});
+			let hoveredStyleObject, hoveredStyle;
+			if (this.pantherProps.hovered?.style) {
+				hoveredStyleObject = this.pantherProps.hovered.style === "default" ? constants.vectorFeatureStyle.hovered : this.pantherProps.hovered.style;
+				hoveredStyle = this.getStyleDefinition({...defaultStyleObject, ...hoveredStyleObject});
+			}
 
 			return {
 				userProperties: {
@@ -81,11 +86,11 @@ class VectorLayer extends WorldWind.RenderableLayer {
 			const key = renderable.userProperties[this.pantherProps.fidColumnName];
 			if (_.includes(fids, key)) {
 				const selection = this.getSelection(renderable);
-				if (selection){
-					const selectedHoveredStyleObject = selection.hoveredStyle || constants.vectorFeatureStyle.selectedHovered;
-					const selectedHoveredStyle = this.getStyleDefinition({...renderable.userProperties.defaultStyleObject, ...selectedHoveredStyleObject});
+				if (selection?.hoveredStyle){
+					let selectedHoveredStyleObject = selection.hoveredStyle === "default" ? constants.vectorFeatureStyle.selectedHovered : selection.hoveredStyle;
+					let selectedHoveredStyle = this.getStyleDefinition({...renderable.userProperties.defaultStyleObject, ...selectedHoveredStyleObject});
 					this.applyWorldWindStyles(renderable, selectedHoveredStyle);
-				} else {
+				} else if (renderable, renderable.userProperties.hoveredStyle) {
 					this.applyWorldWindStyles(renderable, renderable.userProperties.hoveredStyle);
 				}
 			} else {
@@ -149,8 +154,8 @@ class VectorLayer extends WorldWind.RenderableLayer {
 		const defaultStyleObject = renderable.userProperties.defaultStyleObject;
 		const selection = this.getSelection(renderable);
 
-		if (selection) {
-			const selectedStyleObject = selection.style || constants.vectorFeatureStyle.selected;
+		if (selection?.style) {
+			const selectedStyleObject = selection.style === "default" ? constants.vectorFeatureStyle.selected : selection.style;
 			const selectedStyle = this.getStyleDefinition({...defaultStyleObject, ...selectedStyleObject});
 			this.applyWorldWindStyles(renderable, selectedStyle);
 
