@@ -236,7 +236,7 @@ class ReactLeafletMap extends React.PureComponent {
     getWmsTileLayer(layer, i) {
         const o = layer.options;
         let layers = (o.params && o.params.layers) || '';
-        let crs = (o.params && o.params.crs) || null;
+        let crs = (o.params && o.params.crs && this.getCRS(o.params.crs)) || null;
         let imageFormat = (o.params && o.params.imageFormat) || 'image/png';
         const reservedParamsKeys = ['layers', 'crs', 'imageFormat', 'pane', 'maxZoom', 'styles'];
         let restParameters = (o.params && Object.entries(o.params).reduce((acc, [key, value]) => {
@@ -253,7 +253,7 @@ class ReactLeafletMap extends React.PureComponent {
                 key={layer.key || i}
                 url={o.url}
                 layers={layers}
-                crs={crs ? this.getCRS(crs) : null}
+                crs={crs}
                 opacity={layer.opacity || 1}
                 transparent={true}
                 format={imageFormat}
