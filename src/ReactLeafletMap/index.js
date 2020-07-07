@@ -252,12 +252,14 @@ class ReactLeafletMap extends React.PureComponent {
             <WMSLayer
                 key={layer.key || i}
                 url={o.url}
-                layers={layers}
                 crs={crs}
-                opacity={layer.opacity || 1}
-                transparent={true}
-                format={imageFormat}
-                {...restParameters}
+                params={{
+                    layers:layers,
+                    opacity:layer.opacity || 1,
+                    transparent:true,
+                    format:imageFormat,
+                    ...restParameters
+                }}
             />
         );
     }

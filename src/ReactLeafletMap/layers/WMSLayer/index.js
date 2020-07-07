@@ -6,34 +6,25 @@ import {GridLayer,withLeaflet } from 'react-leaflet';
 export const EVENTS_RE = /^on(.+)$/i
 class WMSTileLayer extends GridLayer {
   createLeafletElement(props) {
-    const { url, ...params } = props
-    const { leaflet: _l, ...options } = this.getOptions(params)
+    const { url, params, ...restParams } = props
+    const { leaflet: _l, ...options } = this.getOptions({
+      ...restParams,
+      ...params,
+    });
     return new TileLayer.WMS(url, options)
   }
 
   updateLeafletElement(fromProps, toProps) {
-    super.updateLeafletElement(fromProps, toProps)
+    super.updateLeafletElement(fromProps, toProps);
 
-    const { url: prevUrl, opacity: _po, zIndex: _pz, ...prevProps } = fromProps
-    const { leaflet: _pl, ...prevParams } = this.getOptions(prevProps)
-    const { url, opacity: _o, zIndex: _z, ...props } = toProps
-    const { leaflet: _l, ...params } = this.getOptions(props)
+    const { url: prevUrl } = fromProps;
+    const { url } = toProps;
 
     if (url !== prevUrl) {
       this.leafletElement.setUrl(url)
     }
-    if (!isEqual(params, prevParams)) {
-
-        const forbidenParams = ['pane', 'minZoom', 'maxZoom', 'crs'];
-        const filteredParams = Object.keys(params).reduce((options, key) => {
-        if (!forbidenParams.includes(key)) {
-            options[key] = params[key]
-        }
-        return options
-        }, {})
-
-
-      this.leafletElement.setParams(filteredParams)
+    if (!isEqual(fromProps.params, toProps.params)) {
+      this.leafletElement.setParams(toProps.params)
     }
   }
 
