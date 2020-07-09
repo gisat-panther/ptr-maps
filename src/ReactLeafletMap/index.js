@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, WMSTileLayer, TileLayer, Pane } from 'react-leaflet';
+import { Map, TileLayer, Pane } from 'react-leaflet';
 import PropTypes from 'prop-types';
 import L from "leaflet";
 import Proj from "proj4leaflet";
@@ -10,6 +10,7 @@ import VectorLayer from "./layers/VectorLayer";
 import _ from "lodash";
 import DiagramLayer from "./layers/DiagramLayer";
 import IndexedVectorLayer from "./layers/IndexedVectorLayer";
+import WMSLayer from "./layers/WMSLayer";
 
 import './style.scss';
 import 'leaflet/dist/leaflet.css';
@@ -234,16 +235,31 @@ class ReactLeafletMap extends React.PureComponent {
 
     getWmsTileLayer(layer, i) {
         const o = layer.options;
+        let layers = (o.params && o.params.layers) || '';
+        let crs = (o.params && o.params.crs && this.getCRS(o.params.crs)) || null;
+        let imageFormat = (o.params && o.params.imageFormat) || 'image/png';
+        const reservedParamsKeys = ['layers', 'crs', 'imageFormat', 'pane', 'maxZoom', 'styles'];
+        let restParameters = (o.params && Object.entries(o.params).reduce((acc, [key, value]) => {
+            if(reservedParamsKeys.includes(key)) {
+                return acc
+            } else {
+                acc[key] = value;
+                return acc;
+            }
+        }, {})) || {};
 
         return (
-            <WMSTileLayer
+            <WMSLayer
                 key={layer.key || i}
                 url={o.url}
-                layers={o.params && o.params.layers}
-                crs={o.params.crs ? this.getCRS(o.params.crs) : null}
-                opacity={layer.opacity || 1}
-                transparent={true}
-                format={o.params && o.params.imageFormat || 'image/png'}
+                crs={crs}
+                params={{
+                    layers:layers,
+                    opacity:layer.opacity || 1,
+                    transparent:true,
+                    format:imageFormat,
+                    ...restParameters
+                }}
             />
         );
     }
