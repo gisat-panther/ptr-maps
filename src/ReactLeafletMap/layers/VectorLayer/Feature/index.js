@@ -5,6 +5,7 @@ import {Circle, Polygon, Marker, Polyline} from 'react-leaflet';
 import ContextWrapper from "./ContextWrapper";
 import {utils} from "@gisatcz/ptr-utils";
 import MarkerIcon from "./MarkerIcon";
+import * as turf from "@turf/turf";
 
 class Feature extends React.PureComponent {
     static propTypes = {
@@ -21,11 +22,24 @@ class Feature extends React.PureComponent {
         selectedStyle: PropTypes.object,
         selectedHoveredStyle: PropTypes.object,
         selected: PropTypes.bool,
-        leafletCoordinates: PropTypes.array,
         changeContext: PropTypes.func,
         hoveredFromContext: PropTypes.bool,
         interactive: PropTypes.bool
     };
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.feature) {
+            const flippedFeature = turf.flip(props.feature);
+            const leafletCoordinates = flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
+
+            return {
+                leafletCoordinates
+            }
+        }
+
+        // Return null if the state hasn't changed
+        return null;
+    }
 
     constructor(props) {
         super(props);
@@ -38,7 +52,7 @@ class Feature extends React.PureComponent {
         this.fid = props.fid;
 
         if (props.type === "Point" && props.pointAsMarker) {
-            this.iconId = utils.uuid();
+            this.iconId = this.props.fid ? this.props.fid + "_icon" : utils.uuid();
         }
 
         this.state = {
@@ -170,7 +184,7 @@ class Feature extends React.PureComponent {
                 onClick={this.onClick}
                 onMouseMove={this.onMouseMove}
                 onMouseOut={this.onMouseOut}
-                positions={this.props.leafletCoordinates}
+                positions={this.state.leafletCoordinates}
                 {...style}
             />
         );
@@ -185,7 +199,7 @@ class Feature extends React.PureComponent {
                 onMouseOver={this.onMouseMove}
                 onMouseMove={this.onMouseMove}
                 onMouseOut={this.onMouseOut}
-                positions={this.props.leafletCoordinates}
+                positions={this.state.leafletCoordinates}
                 {...style}
             />
         );
@@ -203,7 +217,7 @@ class Feature extends React.PureComponent {
                     onMouseMove={this.onMouseMove}
                     onMouseOver={this.onMouseMove}
                     onMouseOut={this.onMouseOut}
-                    center={this.props.leafletCoordinates}
+                    center={this.state.leafletCoordinates}
                     {...style}
                 />
             );
@@ -213,23 +227,25 @@ class Feature extends React.PureComponent {
     renderShape(style) {
         if (!this.icon) {
             this.icon = new MarkerIcon(this.iconId, style, {
-                iconAnchor: [style.radius, style.radius],
+                iconAnchor: style.radius ? [style.radius, style.radius] : null,
                 onMouseMove: this.onMouseMove,
                 onMouseOut: this.onMouseOut,
                 onMouseOver: this.onMouseMove,
                 onClick: this.onClick
             });
+
+            this.icon.setStyle(style);
         }
 
-        // TODO style memoization
-        if (style) {
+        if (!_.isEqual(this.style, style)) {
+            this.style = style;
             this.icon.setStyle(style);
         }
 
         return (
             <Marker
                 interactive={this.props.hoverable || this.props.selectable}
-                position={this.props.leafletCoordinates}
+                position={this.state.leafletCoordinates}
                 icon={this.icon}
                 onAdd={this.onAdd}
             />
