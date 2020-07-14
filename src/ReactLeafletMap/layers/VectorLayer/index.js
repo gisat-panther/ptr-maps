@@ -7,6 +7,7 @@ import {Pane} from 'react-leaflet';
 
 import Feature from "./Feature";
 import constants from "../../../constants";
+import GeoJsonLayer from "./GeoJsonLayer";
 
 class VectorLayer extends React.PureComponent {
     static propTypes = {
@@ -190,6 +191,7 @@ class VectorLayer extends React.PureComponent {
         const data = this.prepareData(this.props.features);
         const style = this.props.opacity ? {opacity: this.props.opacity} : null;
 
+        // TODO rendering of big number of features as GeoJson is implemented for points only
         return data ? (
             <>
                 <Pane style={style}>
@@ -199,10 +201,26 @@ class VectorLayer extends React.PureComponent {
                     {data.lines ? (data.lines.map((item, index) => this.renderFeature(item, index))) : null}
                 </Pane>
                 <Pane style={style}>
-                    {data.points ? (data.points.map((item, index) => this.renderFeature(item, index))) : null}
+                    {data.points ? this.renderPoints(data.points) : null}
                 </Pane>
             </>
         ) : null;
+    }
+
+    renderPoints(points) {
+        if (points.length > constants.maxFeaturesAsReactElement) {
+            // GeoJsonLayer doesn't get context
+            return (
+                <GeoJsonLayer
+                    features={points}
+                    onFeatureClick={this.onFeatureClick}
+                    fidColumnName={this.props.fidColumnName}
+                    pointAsMarker={this.props.pointAsMarker}
+                />
+            );
+        } else {
+            return points.map((item, index) => this.renderFeature(item, index));
+        }
     }
 
     renderFeature(data, index) {
