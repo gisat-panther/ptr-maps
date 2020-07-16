@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from "lodash";
 import * as turf from "@turf/turf";
-import {mapStyle} from '@gisatcz/ptr-utils';
+import {mapStyle, utils} from '@gisatcz/ptr-utils';
 import {Pane} from 'react-leaflet';
 
 import Feature from "./Feature";
 import constants from "../../../constants";
+import GeoJsonLayer from "./GeoJsonLayer";
 
 class VectorLayer extends React.PureComponent {
     static propTypes = {
@@ -21,6 +22,10 @@ class VectorLayer extends React.PureComponent {
 
     constructor(props) {
         super(props);
+
+        this.pointsPaneName = utils.uuid();
+        this.linesPaneName = utils.uuid();
+        this.polygonsPaneName = utils.uuid();
         this.onFeatureClick = this.onFeatureClick.bind(this);
     }
 
@@ -190,19 +195,37 @@ class VectorLayer extends React.PureComponent {
         const data = this.prepareData(this.props.features);
         const style = this.props.opacity ? {opacity: this.props.opacity} : null;
 
+        // TODO rendering of big number of features as GeoJson is implemented for points only
         return data ? (
             <>
-                <Pane style={style}>
+                <Pane style={style} name={this.polygonsPaneName}>
                     {data.polygons ? (data.polygons.map((item, index) => this.renderFeature(item, index))) : null}
                 </Pane>
-                <Pane style={style}>
+                <Pane style={style} name={this.linesPaneName}>
                     {data.lines ? (data.lines.map((item, index) => this.renderFeature(item, index))) : null}
                 </Pane>
-                <Pane style={style}>
-                    {data.points ? (data.points.map((item, index) => this.renderFeature(item, index))) : null}
+                <Pane style={style} name={this.pointsPaneName}>
+                    {data.points ? this.renderPoints(data.points) : null}
                 </Pane>
             </>
         ) : null;
+    }
+
+    renderPoints(points) {
+        if (points.length > constants.maxFeaturesAsReactElement) {
+            // GeoJsonLayer doesn't get context
+            return (
+                <GeoJsonLayer
+                    paneName={this.pointsPaneName}
+                    features={points}
+                    onFeatureClick={this.onFeatureClick}
+                    fidColumnName={this.props.fidColumnName}
+                    pointAsMarker={this.props.pointAsMarker}
+                />
+            );
+        } else {
+            return points.map((item, index) => this.renderFeature(item, index));
+        }
     }
 
     renderFeature(data, index) {

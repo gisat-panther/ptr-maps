@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Circle, Polygon, Marker, Polyline} from 'react-leaflet';
+import { shallowEqualObjects } from "shallow-equal";
 
 import ContextWrapper from "./ContextWrapper";
 import {utils} from "@gisatcz/ptr-utils";
@@ -52,7 +53,7 @@ class Feature extends React.PureComponent {
         this.fid = props.fid;
 
         if (props.type === "Point" && props.pointAsMarker) {
-            this.iconId = this.props.fid ? this.props.fid + "_icon" : utils.uuid();
+            this.iconId = this.props.fid ? `${this.props.fid}_icon` : utils.uuid();
         }
 
         this.state = {
@@ -237,7 +238,7 @@ class Feature extends React.PureComponent {
             this.icon.setStyle(style);
         }
 
-        if (!_.isEqual(this.style, style)) {
+        if (!shallowEqualObjects(this.style, style)) {
             this.style = style;
             this.icon.setStyle(style);
         }

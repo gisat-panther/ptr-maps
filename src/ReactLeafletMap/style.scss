@@ -28,3 +28,7 @@
 .ptr-leaflet-map .leaflet-pane {
   will-change: transform;
 }
+
+.ptr-leaflet-map .leaflet-overlay-pane {
+  z-index: 500;
+}

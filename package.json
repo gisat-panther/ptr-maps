@@ -1,6 +1,6 @@
 {
   "name": "@gisatcz/ptr-maps",
-  "version": "1.3.0-alpha.19",
+  "version": "1.3.0-alpha.20",
   "description": "Panther FE maps",
   "keywords": [
     "panther",
@@ -30,12 +30,13 @@
     "geojson-rbush": "3.1.2",
     "js-quadtree": "2.0.1",
     "leaflet": "1.6.0",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "proj4leaflet": "1.0.2",
     "prop-types": "15.7.2",
     "react": "16.13.1",
     "react-leaflet": "2.6.3",
     "react-resize-detector": "4.2.3",
+    "shallow-equal": "1.2.1",
     "uri-templates": "0.2.0",
     "webworldwind-esa": "1.0.3"
   },

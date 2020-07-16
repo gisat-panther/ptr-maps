@@ -5,6 +5,8 @@ import view from "./view";
 /** https://leafletjs.com/reference-1.6.0.html#map-overlaypane */
 const defaultLeafletPaneZindex = 400;
 
+/* Max number of features rendered as React element in leaflet vector layer  */
+const maxFeaturesAsReactElement = 100;
 
 // Projections
 const projDefinitions = {
@@ -12,6 +14,7 @@ const projDefinitions = {
 }
 
 export default {
+    maxFeaturesAsReactElement,
     defaultLeafletPaneZindex,
     projDefinitions,
     ...styles,
