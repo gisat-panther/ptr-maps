@@ -52,7 +52,7 @@ class Feature extends React.PureComponent {
         this.fid = props.fid;
 
         if (props.type === "Point" && props.pointAsMarker) {
-            this.iconId = this.props.fid ? this.props.fid + "_icon" : utils.uuid();
+            this.iconId = this.props.fid ? `${this.props.fid}_icon` : utils.uuid();
         }
 
         this.state = {
