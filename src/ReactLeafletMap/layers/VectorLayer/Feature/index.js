@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Circle, Polygon, Marker, Polyline} from 'react-leaflet';
+import { shallowEqualObjects } from "shallow-equal";
 
 import ContextWrapper from "./ContextWrapper";
 import {utils} from "@gisatcz/ptr-utils";
@@ -237,7 +238,7 @@ class Feature extends React.PureComponent {
             this.icon.setStyle(style);
         }
 
-        if (!_.isEqual(this.style, style)) {
+        if (!shallowEqualObjects(this.style, style)) {
             this.style = style;
             this.icon.setStyle(style);
         }
