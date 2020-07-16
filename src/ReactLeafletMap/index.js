@@ -123,7 +123,9 @@ class ReactLeafletMap extends React.PureComponent {
             }
 
             // TODO for IndexedVectorLayer rerender (see IndexedVectorLayer render method)
-            this.setState({viewport});
+            if (!_.isEqual(viewport, this.state.viewport)) {
+                this.setState({viewport});
+            }
         }
     }
 
@@ -218,7 +220,7 @@ class ReactLeafletMap extends React.PureComponent {
     }
 
     getTileLayer(layer, i) {
-        let url = layer.options.url;
+        let {url, ...restOptions} = layer.options;
 
         // fix for backward compatibility
         if (layer.options.urls) {
@@ -229,6 +231,7 @@ class ReactLeafletMap extends React.PureComponent {
             <TileLayer
                 key={layer.key || i}
                 url={url}
+                {...restOptions}
             />
         );
     }

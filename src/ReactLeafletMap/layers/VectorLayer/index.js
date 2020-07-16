@@ -106,10 +106,6 @@ class VectorLayer extends React.PureComponent {
                         });
                     }
 
-                    // Flip coordinates due to different leaflet implementation
-                    const flippedFeature = turf.flip(feature);
-                    const leafletCoordinates = flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
-
                     // Prepare default style
                     const defaultStyleObject = this.getDefaultStyleObject(feature);
                     const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
@@ -144,8 +140,7 @@ class VectorLayer extends React.PureComponent {
                         defaultStyle,
                         hoveredStyle,
                         selectedStyle,
-                        selectedHoveredStyle,
-                        leafletCoordinates
+                        selectedHoveredStyle
                     };
 
                     switch (type) {
@@ -217,7 +212,6 @@ class VectorLayer extends React.PureComponent {
                 onClick={this.onFeatureClick}
                 fid={data.fid}
                 fidColumnName={this.props.fidColumnName}
-                leafletCoordinates={data.leafletCoordinates}
                 feature={data.feature}
                 type={data.feature.geometry.type}
                 pointAsMarker={this.props.pointAsMarker}
