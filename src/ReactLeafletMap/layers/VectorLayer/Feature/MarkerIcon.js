@@ -1,4 +1,5 @@
 import L from "leaflet";
+import _ from "lodash";
 import {mapStyle} from "@gisatcz/ptr-utils";
 
 /**
