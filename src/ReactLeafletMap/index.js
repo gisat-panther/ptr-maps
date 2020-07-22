@@ -256,6 +256,7 @@ class ReactLeafletMap extends React.PureComponent {
                 key={layer.key || i}
                 url={o.url}
                 crs={crs}
+                singleTile={o.singleTile === true}
                 params={{
                     layers:layers,
                     opacity:layer.opacity || 1,
