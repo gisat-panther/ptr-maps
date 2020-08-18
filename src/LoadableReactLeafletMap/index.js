@@ -1,11 +1,11 @@
 import React from "react";
 import Loadable from 'react-loadable';
 import {isServer} from '@gisatcz/ptr-core';
-import PresentationEmpty from './presentationEmpty';
+import PresentationEmpty from '../LoadableMap/presentationEmpty';
 
 const LoadableReactLeafletMap = Loadable({
     loader: () => {
-        return isServer ? import('./presentationEmpty') : import('../ReactLeafletMap')},
+        return isServer ? import('../LoadableMap/presentationEmpty') : import('../ReactLeafletMap')},
     render(loaded, props) {
         let ReactLeafletMap = loaded.default;
         return <ReactLeafletMap {...props}/>

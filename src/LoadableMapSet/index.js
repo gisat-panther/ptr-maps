@@ -1,11 +1,11 @@
 import React from "react";
 import Loadable from 'react-loadable';
 import {isServer} from '@gisatcz/ptr-core';
-import PresentationEmpty from './presentationEmpty';
+import PresentationEmpty from '../LoadableMap/presentationEmpty';
 
 const LoadableMapSet = Loadable({
     loader: () => {
-        return isServer ? import('./presentationEmpty') : import('../MapSet/index.js')},
+        return isServer ? import('../LoadableMap/presentationEmpty') : import('../MapSet/index.js')},
     render(loaded, props) {
         let MapSet = loaded.default;
         return <MapSet {...props}/>

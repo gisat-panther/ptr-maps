@@ -5,7 +5,7 @@ import PresentationEmpty from './presentationEmpty';
 
 const LoadableMap = Loadable({
     loader: () => {
-        return isServer ? import('./presentationEmpty') : import('../Map')},
+        return isServer ? import('../LoadableMap/presentationEmpty') : import('../Map')},
     render(loaded, props) {
         let PresentationMap = loaded.default;
         return <PresentationMap {...props}/>
