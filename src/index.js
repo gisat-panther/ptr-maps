@@ -11,11 +11,25 @@ import ReactLeafletMap from "./ReactLeafletMap";
 import SimpleLayersControl from "./controls/SimpleLayersControl";
 import WorldWindMap from "./WorldWindMap";
 
+//loadable
+import LoadableMapControls from "./controls/LoadableMapControls";
+import LoadableMapSet from "./LoadableMapSet";
+import LoadableReactLeafletMap from "./LoadableReactLeafletMap";
+import LoadableMap from "./LoadableMap";
+
+LoadableMapControls
+
 export {
     constants,
     view,
 
     GoToPlace,
+
+    LoadableMapControls,
+    LoadableMapSet,
+    LoadableReactLeafletMap,
+    LoadableMap,
+
     MapControls,
     MapGrid,
     MapTools,
@@ -34,6 +48,12 @@ export default {
     view,
 
     GoToPlace,
+
+    LoadableMapControls,
+    LoadableMapSet,
+    LoadableReactLeafletMap,
+    LoadableMap,
+
     MapControls,
     MapGrid,
     MapSetMap,
