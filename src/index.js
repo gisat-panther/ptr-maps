@@ -17,8 +17,6 @@ import LoadableMapSet from "./LoadableMapSet";
 import LoadableReactLeafletMap from "./LoadableReactLeafletMap";
 import LoadableMap from "./LoadableMap";
 
-LoadableMapControls
-
 export {
     constants,
     view,
