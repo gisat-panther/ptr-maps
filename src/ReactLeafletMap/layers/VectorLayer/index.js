@@ -195,37 +195,40 @@ class VectorLayer extends React.PureComponent {
         const data = this.prepareData(this.props.features);
         const style = this.props.opacity ? {opacity: this.props.opacity} : null;
 
-        // TODO rendering of big number of features as GeoJson is implemented for points only
         return data ? (
             <>
                 <Pane style={style} name={this.polygonsPaneName}>
-                    {data.polygons ? (data.polygons.map((item, index) => this.renderFeature(item, index))) : null}
+                    {data.polygons?.length ? this.renderFeatures(data.polygons) : null}
                 </Pane>
                 <Pane style={style} name={this.linesPaneName}>
-                    {data.lines ? (data.lines.map((item, index) => this.renderFeature(item, index))) : null}
+                    {data.lines?.length ? this.renderFeatures(data.lines) : null}
                 </Pane>
                 <Pane style={style} name={this.pointsPaneName}>
-                    {data.points ? this.renderPoints(data.points) : null}
+                    {data.points?.length ? this.renderFeatures(data.points) : null}
                 </Pane>
             </>
         ) : null;
     }
 
-    renderPoints(points) {
-        if (points.length > constants.maxFeaturesAsReactElement) {
+    renderFeatures(features) {
+        if (features.length > constants.maxFeaturesAsReactElement) {
             // GeoJsonLayer doesn't get context
-            return (
-                <GeoJsonLayer
-                    paneName={this.pointsPaneName}
-                    features={points}
-                    onFeatureClick={this.onFeatureClick}
-                    fidColumnName={this.props.fidColumnName}
-                    pointAsMarker={this.props.pointAsMarker}
-                />
-            );
+            return this.renderGeoJson(features);
         } else {
-            return points.map((item, index) => this.renderFeature(item, index));
+            return features.map((item, index) => this.renderFeature(item, index));
         }
+    }
+
+    renderGeoJson(features) {
+        return (
+            <GeoJsonLayer
+                paneName={this.pointsPaneName}
+                features={features}
+                onFeatureClick={this.onFeatureClick}
+                fidColumnName={this.props.fidColumnName}
+                pointAsMarker={this.props.pointAsMarker}
+            />
+        );
     }
 
     renderFeature(data, index) {
