@@ -40,6 +40,9 @@ class GeoJsonLayer extends React.PureComponent {
 
     onEachFeature(feature, layer){
         const fid = feature.properties[this.props.fidColumnName] || feature.id;
+        const geometryType = feature.geometry.type;
+        const isPolygon = geometryType === "Polygon" || geometryType === "MultiPolygon";
+        const isLine = geometryType === "Line" || geometryType === "LineString";
 
         layer.on({
             click: (e) => {
@@ -54,6 +57,10 @@ class GeoJsonLayer extends React.PureComponent {
                     } else {
                         e.target.setStyle(feature.hoveredStyle);
                     }
+
+                    if (isPolygon ||isLine) {
+                        layer.bringToFront();
+                    }
                 }
             },
             mouseout: (e) => {
@@ -62,6 +69,10 @@ class GeoJsonLayer extends React.PureComponent {
                         e.target.setStyle(feature.selectedStyle);
                     } else {
                         e.target.setStyle(feature.defaultStyle);
+                    }
+
+                    if ((isLine || isPolygon) && !feature.selected) {
+                        layer.bringToBack();
                     }
                 }
             }
