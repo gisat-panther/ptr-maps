@@ -1,5 +1,4 @@
 import {assert} from 'chai';
-import constants from "../../src/constants";
 import view from "../../src/utils/view";
 
 describe('utils/view', function () {

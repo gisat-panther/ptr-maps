@@ -11,7 +11,6 @@ import navigator from './navigator/helpers';
 import './style.scss';
 import viewUtils from "../utils/view";
 
-import constants from "../constants";
 import LargeDataLayer from "./layers/LargeDataLayerSource/LargeDataLayer";
 
 import VectorLayer from "./layers/VectorLayer";
@@ -111,7 +110,7 @@ class WorldWindMap extends React.PureComponent {
 					zoomLevel--;
 				}
 
-				let levelsRange = constants.defaultLevelsRange;
+				let levelsRange = mapConstants.defaultLevelsRange;
 				const boxRangeRange = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
 				const maxLevel = boxRangeRange && boxRangeRange[0] ? viewUtils.getZoomLevelFromBoxRange(boxRangeRange[0], this.state.width, this.state.height) : levelsRange[1];
 				const minLevel = boxRangeRange && boxRangeRange[1] ? viewUtils.getZoomLevelFromBoxRange(boxRangeRange[1], this.state.width, this.state.height) : levelsRange[0];

@@ -1,5 +1,4 @@
 import styles from "./styles";
-import view from "./view";
 
 // Frameworks
 /** https://leafletjs.com/reference-1.6.0.html#map-overlaypane */
@@ -18,5 +17,4 @@ export default {
     defaultLeafletPaneZindex,
     projDefinitions,
     ...styles,
-    ...view
 }

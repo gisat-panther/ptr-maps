@@ -1,4 +1,4 @@
-import constants from "../constants"; //remove
+import {mapConstants} from "@gisatcz/ptr-core";
 
 /**
  * Convert Web World Wind range to Panther boxRange
@@ -46,7 +46,7 @@ function getBoxRangeFromZoomLevel(level, width, height) {
  * @return {number} Size of 1 px in meters
  */
 function getPixelSizeFromZoomLevel(level) {
-    return constants.pixelSizeInLevels[level];
+    return mapConstants.pixelSizeInLevels[level];
 }
 
 export default {
