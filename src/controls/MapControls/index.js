@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from 'prop-types';
 import {mapConstants} from "gisatcz/ptr-core";
 import {Icon, Button} from '@gisatcz/ptr-atoms';
-import viewUtils from "../../utils/view";
+import {map as mapUtils} from '@gisatcz/ptr-utils';
 import './style.scss';
 
 class MapControls extends React.PureComponent {
@@ -105,12 +105,12 @@ class MapControls extends React.PureComponent {
 		const currentBoxRange = this.props.view && this.props.view.boxRange;
 
 		if (this.props.levelsBased) {
-			const currentLevel = viewUtils.getZoomLevelFromBoxRange(currentBoxRange, this.props.mapWidth, this.props.mapHeight);
+			const currentLevel = mapUtils.getZoomLevelFromBoxRange(currentBoxRange, this.props.mapWidth, this.props.mapHeight);
 
 			if (type === "in") {
 				let maxZoom = mapConstants.defaultLevelsRange[1];
 				if (definedLimits && definedLimits[0]) {
-					let definedLimitAsLevel = viewUtils.getZoomLevelFromBoxRange(definedLimits[0], this.props.mapWidth, this.props.mapHeight);
+					let definedLimitAsLevel = mapUtils.getZoomLevelFromBoxRange(definedLimits[0], this.props.mapWidth, this.props.mapHeight);
 					if (definedLimitAsLevel < maxZoom) {
 						maxZoom = definedLimitAsLevel;
 					}
@@ -120,7 +120,7 @@ class MapControls extends React.PureComponent {
 			} else {
 				let minZoom = mapConstants.defaultLevelsRange[0];
 				if (definedLimits && definedLimits[1]) {
-					let definedLimitAsLevel = viewUtils.getZoomLevelFromBoxRange(definedLimits[1], this.props.mapWidth, this.props.mapHeight);
+					let definedLimitAsLevel = mapUtils.getZoomLevelFromBoxRange(definedLimits[1], this.props.mapWidth, this.props.mapHeight);
 					if (definedLimitAsLevel > minZoom) {
 						minZoom = definedLimitAsLevel;
 					}

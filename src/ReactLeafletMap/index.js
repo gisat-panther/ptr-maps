@@ -5,6 +5,7 @@ import L from "leaflet";
 import Proj from "proj4leaflet";
 import ReactResizeDetector from 'react-resize-detector';
 import {mapConstants} from "gisatcz/ptr-core";
+import {map as mapUtils} from '@gisatcz/ptr-utils';
 
 import viewHelpers from "./viewHelpers";
 import viewUtils from "../utils/view";
@@ -96,11 +97,11 @@ class ReactLeafletMap extends React.PureComponent {
         this.maxZoom = mapConstants.defaultLevelsRange[1];
         if (props.viewLimits && props.viewLimits.boxRangeRange) {
             if (props.viewLimits.boxRangeRange[1]) {
-                this.minZoom = viewUtils.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[1], width, height);
+                this.minZoom = mapUtils.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[1], width, height);
             }
 
             if (props.viewLimits.boxRangeRange[0]) {
-                this.maxZoom = viewUtils.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[0], width, height);
+                this.maxZoom = mapUtils.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[0], width, height);
             }
         }
     }
