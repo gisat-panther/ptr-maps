@@ -80,32 +80,35 @@ describe('utils/view', function () {
         });
     });
 
-    describe('getZoomLevelFromPixelSize', function () {
-        const levelsPxSize = constants.pixelSizeInLevels;
+    describe('getBoxRangeFromZoomLevel', function () {
 
-        it('return 0 if pixel size is bigger then lowest level', function () {
-            const lowestLevelPxSize = levelsPxSize[0];
-            assert.equal(0, view.getZoomLevelFromPixelSize(lowestLevelPxSize + 1));
+        it('returns box range', function () {
+            const width = 600; //px
+            const height = 300; //px
+            const boxRange = view.getBoxRangeFromZoomLevel(0, width, height);
+    
+            assert.equal(boxRange, 30187175.77750529);
         });
-
-        it('return 0 if pixel size is between lowest and next level', function () {
-            const lowestLevelPxSize = levelsPxSize[0];
-            assert.equal(0, view.getZoomLevelFromPixelSize(lowestLevelPxSize - 1));
+    
+        it('returns box range', function () {
+            const width = 300; //px
+            const height = 600; //px
+            const boxRange = view.getBoxRangeFromZoomLevel(0, width, height);
+    
+            assert.equal(boxRange, 30187175.77750529);
         });
-
-        it('return 6 if pixel size is between 7th lowest and next level', function () {
-            const levelPxSize = levelsPxSize[6];
-            assert.equal(6, view.getZoomLevelFromPixelSize(levelPxSize - 1));
+    });
+    
+    describe('getPixelSizeFromZoomLevel', function () {
+    
+        it('returns pixel size for zero level in default latitude', function () {
+            const pixelSize = view.getPixelSizeFromZoomLevel(0);
+            assert.equal(pixelSize, 100623.9225916843);
         });
-
-        it('return 7 if pixel size is the same as 8th lowest level', function () {
-            const levelPxSize = levelsPxSize[7];
-            assert.equal(7, view.getZoomLevelFromPixelSize(levelPxSize));
-        });
-
-        it('return 24 if pixel size is lower then the highest level', function () {
-            const levelPxSize = levelsPxSize[levelsPxSize.length - 1];
-            assert.equal(levelsPxSize.length - 1, view.getZoomLevelFromPixelSize(levelPxSize - 0.00001));
+    
+        it('returns pixel size for 9-th level in default latitude', function () {
+            const pixelSize = view.getPixelSizeFromZoomLevel(9);
+            assert.equal(pixelSize, 196.53109881188323);
         });
     });
 });
