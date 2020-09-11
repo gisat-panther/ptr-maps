@@ -1,5 +1,3 @@
-import {mapConstants} from "@gisatcz/ptr-core";
-
 /**
  * Convert Web World Wind range to Panther boxRange
  * @param range {WorldWind.Navigator.range}
@@ -30,28 +28,8 @@ function getWorldWindRangeFromBoxRange(boxRange, width, height) {
     }
 }
 
-/**
- * @param level {number} zoom level
- * @param width {number} map width
- * @param height {number} map height
- * @return {number} Panther box range
- */
-function getBoxRangeFromZoomLevel(level, width, height) {
-    // remove 1 from box range to prevent rounding issues
-    return (Math.min(width, height) * getPixelSizeFromZoomLevel(level)) - 1;
-}
-
-/**
- * @param level {number} zoom level
- * @return {number} Size of 1 px in meters
- */
-function getPixelSizeFromZoomLevel(level) {
-    return mapConstants.pixelSizeInLevels[level];
-}
 
 export default {
     getBoxRangeFromWorldWindRange,
-    getBoxRangeFromZoomLevel,
-    getPixelSizeFromZoomLevel,
     getWorldWindRangeFromBoxRange,
 }

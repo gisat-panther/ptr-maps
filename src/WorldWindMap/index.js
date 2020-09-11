@@ -124,8 +124,7 @@ class WorldWindMap extends React.PureComponent {
 					finalZoomLevel = levelsRange[0];
 				}
 
-
-				const boxRange = viewUtils.getBoxRangeFromZoomLevel(finalZoomLevel, this.state.width, this.state.height);
+				const boxRange = mapUtils.getBoxRangeFromZoomLevel(finalZoomLevel, this.state.width, this.state.height);
 				if (this.props.onViewChange) {
 					this.props.onViewChange({
 						boxRange

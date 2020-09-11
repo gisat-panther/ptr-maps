@@ -78,36 +78,4 @@ describe('utils/view', function () {
             assert.equal(boxRange1, view.getBoxRangeFromWorldWindRange(range4, width4, height4));
         });
     });
-
-    describe('getBoxRangeFromZoomLevel', function () {
-
-        it('returns box range', function () {
-            const width = 600; //px
-            const height = 300; //px
-            const boxRange = view.getBoxRangeFromZoomLevel(0, width, height);
-    
-            assert.equal(boxRange, 30187175.77750529);
-        });
-    
-        it('returns box range', function () {
-            const width = 300; //px
-            const height = 600; //px
-            const boxRange = view.getBoxRangeFromZoomLevel(0, width, height);
-    
-            assert.equal(boxRange, 30187175.77750529);
-        });
-    });
-    
-    describe('getPixelSizeFromZoomLevel', function () {
-    
-        it('returns pixel size for zero level in default latitude', function () {
-            const pixelSize = view.getPixelSizeFromZoomLevel(0);
-            assert.equal(pixelSize, 100623.9225916843);
-        });
-    
-        it('returns pixel size for 9-th level in default latitude', function () {
-            const pixelSize = view.getPixelSizeFromZoomLevel(9);
-            assert.equal(pixelSize, 196.53109881188323);
-        });
-    });
 });

@@ -8,7 +8,6 @@ import {mapConstants} from "gisatcz/ptr-core";
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 
 import viewHelpers from "./viewHelpers";
-import viewUtils from "../utils/view";
 import VectorLayer from "./layers/VectorLayer";
 import _ from "lodash";
 import DiagramLayer from "./layers/DiagramLayer";
@@ -118,7 +117,7 @@ class ReactLeafletMap extends React.PureComponent {
             }
 
             if (viewport.hasOwnProperty('zoom') && Number.isFinite(viewport.zoom) && viewport.zoom !== this.state.leafletView.zoom) {
-                change.boxRange = viewUtils.getBoxRangeFromZoomLevel(viewport.zoom, this.state.width, this.state.height);
+                change.boxRange = mapUtils.getBoxRangeFromZoomLevel(viewport.zoom, this.state.width, this.state.height);
             }
 
             if (!_.isEmpty(change) && this.props.onViewChange && !this.hasResized()) {
