@@ -1,5 +1,5 @@
 import WorldWind from 'webworldwind-esa';
-import constants from "../../../constants";
+import {mapConstants} from 'gisatcz/ptr-core';
 import viewUtils from "../../../utils/view";
 
 const {
@@ -18,8 +18,8 @@ export default function(basicController, viewLimits, levelsBased) {
         const {width, height} = basicController.wwd.viewport;
 
         if (!levelsBased) {
-            let minBoxRange = (viewLimits && viewLimits.boxRangeRange && viewLimits.boxRangeRange[0]) || constants.minBoxRange;
-            let maxBoxRange = (viewLimits && viewLimits.boxRangeRange && viewLimits.boxRangeRange[1]) || constants.maxBoxRange;
+            let minBoxRange = (viewLimits && viewLimits.boxRangeRange && viewLimits.boxRangeRange[0]) || mapConstants.minBoxRange;
+            let maxBoxRange = (viewLimits && viewLimits.boxRangeRange && viewLimits.boxRangeRange[1]) || mapConstants.maxBoxRange;
             let currentRange = viewUtils.getBoxRangeFromWorldWindRange(navigator.range, width, height);
 
             if (currentRange < minBoxRange) {
