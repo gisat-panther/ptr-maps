@@ -95,6 +95,10 @@ class PresentationMap extends React.PureComponent {
 	}
 
 	onResize(width, height) {
+	    if (this.props.onResize) {
+	        this.props.onResize(width, height);
+        }
+
 		this.setState({width, height});
 	}
 
