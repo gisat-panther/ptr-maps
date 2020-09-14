@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import {CyclicPickController, utils} from '@gisatcz/ptr-utils';
+import {CyclicPickController, utils, map as mapUtils} from '@gisatcz/ptr-utils';
 
 import WorldWind from 'webworldwind-esa';
 import decorateWorldWindowController from './controllers/WorldWindowControllerDecorator';
@@ -11,7 +11,6 @@ import navigator from './navigator/helpers';
 import './style.scss';
 import viewUtils from "../utils/view";
 
-import constants from "../constants";
 import LargeDataLayer from "./layers/LargeDataLayerSource/LargeDataLayer";
 
 import VectorLayer from "./layers/VectorLayer";
@@ -95,7 +94,7 @@ class WorldWindMap extends React.PureComponent {
 			}
 
 			this.onZoomLevelsBasedTimeout = setTimeout(() => {
-				let zoomLevel = viewUtils.getZoomLevelFromBoxRange(this.props.view.boxRange, this.state.width, this.state.height);
+				let zoomLevel = mapUtils.getZoomLevelFromBoxRange(this.props.view.boxRange, this.state.width, this.state.height);
 
 				if (this.onZoomLevelsBasedStep > 300) {
 					zoomLevel += 3;
@@ -111,10 +110,10 @@ class WorldWindMap extends React.PureComponent {
 					zoomLevel--;
 				}
 
-				let levelsRange = constants.defaultLevelsRange;
+				let levelsRange = mapConstants.defaultLevelsRange;
 				const boxRangeRange = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
-				const maxLevel = boxRangeRange && boxRangeRange[0] ? viewUtils.getZoomLevelFromBoxRange(boxRangeRange[0], this.state.width, this.state.height) : levelsRange[1];
-				const minLevel = boxRangeRange && boxRangeRange[1] ? viewUtils.getZoomLevelFromBoxRange(boxRangeRange[1], this.state.width, this.state.height) : levelsRange[0];
+				const maxLevel = boxRangeRange && boxRangeRange[0] ? mapUtils.getZoomLevelFromBoxRange(boxRangeRange[0], this.state.width, this.state.height) : levelsRange[1];
+				const minLevel = boxRangeRange && boxRangeRange[1] ? mapUtils.getZoomLevelFromBoxRange(boxRangeRange[1], this.state.width, this.state.height) : levelsRange[0];
 
 				levelsRange = [minLevel, maxLevel];
 
@@ -125,8 +124,7 @@ class WorldWindMap extends React.PureComponent {
 					finalZoomLevel = levelsRange[0];
 				}
 
-
-				const boxRange = viewUtils.getBoxRangeFromZoomLevel(finalZoomLevel, this.state.width, this.state.height);
+				const boxRange = mapUtils.getBoxRangeFromZoomLevel(finalZoomLevel, this.state.width, this.state.height);
 				if (this.props.onViewChange) {
 					this.props.onViewChange({
 						boxRange

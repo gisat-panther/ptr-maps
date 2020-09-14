@@ -4,8 +4,10 @@ import PropTypes from 'prop-types';
 import L from "leaflet";
 import Proj from "proj4leaflet";
 import ReactResizeDetector from 'react-resize-detector';
+import {mapConstants} from "gisatcz/ptr-core";
+import {map as mapUtils} from '@gisatcz/ptr-utils';
+
 import viewHelpers from "./viewHelpers";
-import viewUtils from "../utils/view";
 import VectorLayer from "./layers/VectorLayer";
 import _ from "lodash";
 import DiagramLayer from "./layers/DiagramLayer";
@@ -90,15 +92,15 @@ class ReactLeafletMap extends React.PureComponent {
 
     setZoomLevelsBounds(width, height) {
         const props = this.props;
-        this.minZoom = constants.defaultLevelsRange[0];
-        this.maxZoom = constants.defaultLevelsRange[1];
+        this.minZoom = mapConstants.defaultLevelsRange[0];
+        this.maxZoom = mapConstants.defaultLevelsRange[1];
         if (props.viewLimits && props.viewLimits.boxRangeRange) {
             if (props.viewLimits.boxRangeRange[1]) {
-                this.minZoom = viewUtils.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[1], width, height);
+                this.minZoom = mapUtils.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[1], width, height);
             }
 
             if (props.viewLimits.boxRangeRange[0]) {
-                this.maxZoom = viewUtils.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[0], width, height);
+                this.maxZoom = mapUtils.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[0], width, height);
             }
         }
     }
@@ -115,7 +117,7 @@ class ReactLeafletMap extends React.PureComponent {
             }
 
             if (viewport.hasOwnProperty('zoom') && Number.isFinite(viewport.zoom) && viewport.zoom !== this.state.leafletView.zoom) {
-                change.boxRange = viewUtils.getBoxRangeFromZoomLevel(viewport.zoom, this.state.width, this.state.height);
+                change.boxRange = mapUtils.getBoxRangeFromZoomLevel(viewport.zoom, this.state.width, this.state.height);
             }
 
             if (!_.isEmpty(change) && this.props.onViewChange && !this.hasResized()) {

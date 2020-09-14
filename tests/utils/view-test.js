@@ -1,5 +1,4 @@
 import {assert} from 'chai';
-import constants from "../../src/constants";
 import view from "../../src/utils/view";
 
 describe('utils/view', function () {
@@ -77,35 +76,6 @@ describe('utils/view', function () {
 
             const range4 = view.getWorldWindRangeFromBoxRange(boxRange1, width4, height4);
             assert.equal(boxRange1, view.getBoxRangeFromWorldWindRange(range4, width4, height4));
-        });
-    });
-
-    describe('getZoomLevelFromPixelSize', function () {
-        const levelsPxSize = constants.pixelSizeInLevels;
-
-        it('return 0 if pixel size is bigger then lowest level', function () {
-            const lowestLevelPxSize = levelsPxSize[0];
-            assert.equal(0, view.getZoomLevelFromPixelSize(lowestLevelPxSize + 1));
-        });
-
-        it('return 0 if pixel size is between lowest and next level', function () {
-            const lowestLevelPxSize = levelsPxSize[0];
-            assert.equal(0, view.getZoomLevelFromPixelSize(lowestLevelPxSize - 1));
-        });
-
-        it('return 6 if pixel size is between 7th lowest and next level', function () {
-            const levelPxSize = levelsPxSize[6];
-            assert.equal(6, view.getZoomLevelFromPixelSize(levelPxSize - 1));
-        });
-
-        it('return 7 if pixel size is the same as 8th lowest level', function () {
-            const levelPxSize = levelsPxSize[7];
-            assert.equal(7, view.getZoomLevelFromPixelSize(levelPxSize));
-        });
-
-        it('return 24 if pixel size is lower then the highest level', function () {
-            const levelPxSize = levelsPxSize[levelsPxSize.length - 1];
-            assert.equal(levelsPxSize.length - 1, view.getZoomLevelFromPixelSize(levelPxSize - 0.00001));
         });
     });
 });

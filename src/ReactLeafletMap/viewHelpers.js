@@ -1,11 +1,11 @@
-import viewUtils from '../utils/view';
 import {mapConstants} from '@gisatcz/ptr-core';
+import {map as mapUtils} from '@gisatcz/ptr-utils';
 
 function getLeafletViewFromViewParams(view, width, height) {
 	const completeView = {...mapConstants.defaultMapView, ...view}
 
 	return {
-		zoom: viewUtils.getZoomLevelFromBoxRange(completeView.boxRange, width, height),
+		zoom: mapUtils.getZoomLevelFromBoxRange(completeView.boxRange, width, height),
 		center: {
 			lat: completeView.center.lat,
 			lng: completeView.center.lon
