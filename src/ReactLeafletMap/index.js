@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import L from "leaflet";
 import Proj from "proj4leaflet";
 import ReactResizeDetector from 'react-resize-detector';
-import {mapConstants} from "gisatcz/ptr-core";
+import {mapConstants} from "@gisatcz/ptr-core";
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 
 import viewHelpers from "./viewHelpers";

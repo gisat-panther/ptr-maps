@@ -1,5 +1,5 @@
 import WorldWind from 'webworldwind-esa';
-import {mapConstants} from 'gisatcz/ptr-core';
+import {mapConstants} from '@gisatcz/ptr-core';
 import viewUtils from "../../../utils/view";
 
 const {

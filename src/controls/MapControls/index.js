@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from 'prop-types';
-import {mapConstants} from "gisatcz/ptr-core";
+import {mapConstants} from "@gisatcz/ptr-core";
 import {Icon, Button} from '@gisatcz/ptr-atoms';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import './style.scss';

@@ -49,6 +49,7 @@ export default {
     'leaflet/dist/leaflet.css',
     'proj4leaflet',
     'react-leaflet',
+    'react-loadable',
     'react-resize-detector',
     'react',
     'shallow-equal',
