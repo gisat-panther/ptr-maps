@@ -121,6 +121,7 @@ class ReactLeafletMap extends React.PureComponent {
             }
 
             if (!_.isEmpty(change) && this.props.onViewChange && !this.hasResized()) {
+                change = mapUtils.view.ensureViewIntegrity(change);
                 this.props.onViewChange(change);
             }
 
