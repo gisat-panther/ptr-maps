@@ -9,7 +9,6 @@ import layersHelpers from './layers/helpers';
 import navigator from './navigator/helpers';
 
 import './style.scss';
-import viewUtils from "../utils/view";
 
 import LargeDataLayer from "./layers/LargeDataLayerSource/LargeDataLayer";
 
@@ -94,7 +93,7 @@ class WorldWindMap extends React.PureComponent {
 			}
 
 			this.onZoomLevelsBasedTimeout = setTimeout(() => {
-				let zoomLevel = mapUtils.getZoomLevelFromBoxRange(this.props.view.boxRange, this.state.width, this.state.height);
+				let zoomLevel = mapUtils.view.getZoomLevelFromBoxRange(this.props.view.boxRange, this.state.width, this.state.height);
 
 				if (this.onZoomLevelsBasedStep > 300) {
 					zoomLevel += 3;
@@ -112,8 +111,8 @@ class WorldWindMap extends React.PureComponent {
 
 				let levelsRange = mapConstants.defaultLevelsRange;
 				const boxRangeRange = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
-				const maxLevel = boxRangeRange && boxRangeRange[0] ? mapUtils.getZoomLevelFromBoxRange(boxRangeRange[0], this.state.width, this.state.height) : levelsRange[1];
-				const minLevel = boxRangeRange && boxRangeRange[1] ? mapUtils.getZoomLevelFromBoxRange(boxRangeRange[1], this.state.width, this.state.height) : levelsRange[0];
+				const maxLevel = boxRangeRange && boxRangeRange[0] ? mapUtils.view.getZoomLevelFromBoxRange(boxRangeRange[0], this.state.width, this.state.height) : levelsRange[1];
+				const minLevel = boxRangeRange && boxRangeRange[1] ? mapUtils.view.getZoomLevelFromBoxRange(boxRangeRange[1], this.state.width, this.state.height) : levelsRange[0];
 
 				levelsRange = [minLevel, maxLevel];
 
@@ -124,7 +123,7 @@ class WorldWindMap extends React.PureComponent {
 					finalZoomLevel = levelsRange[0];
 				}
 
-				const boxRange = mapUtils.getBoxRangeFromZoomLevel(finalZoomLevel, this.state.width, this.state.height);
+				const boxRange = mapUtils.view.getBoxRangeFromZoomLevel(finalZoomLevel, this.state.width, this.state.height);
 				if (this.props.onViewChange) {
 					this.props.onViewChange({
 						boxRange

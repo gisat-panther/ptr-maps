@@ -5,7 +5,7 @@ function getLeafletViewFromViewParams(view, width, height) {
 	const completeView = {...mapConstants.defaultMapView, ...view}
 
 	return {
-		zoom: mapUtils.getZoomLevelFromBoxRange(completeView.boxRange, width, height),
+		zoom: mapUtils.view.getZoomLevelFromBoxRange(completeView.boxRange, width, height),
 		center: {
 			lat: completeView.center.lat,
 			lng: completeView.center.lon

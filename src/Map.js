@@ -77,7 +77,7 @@ class PresentationMap extends React.PureComponent {
 	
 	onViewChange(update) {
 		let view = {...this.state.view, ...update};
-		view = mapUtils.ensureViewIntegrity(view);
+		view = mapUtils.view.ensureViewIntegrity(view);
 		
 		if (!_.isEqual(view, this.state.view)) {
 			this.setState({view});

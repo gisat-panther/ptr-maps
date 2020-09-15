@@ -96,11 +96,11 @@ class ReactLeafletMap extends React.PureComponent {
         this.maxZoom = mapConstants.defaultLevelsRange[1];
         if (props.viewLimits && props.viewLimits.boxRangeRange) {
             if (props.viewLimits.boxRangeRange[1]) {
-                this.minZoom = mapUtils.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[1], width, height);
+                this.minZoom = mapUtils.view.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[1], width, height);
             }
 
             if (props.viewLimits.boxRangeRange[0]) {
-                this.maxZoom = mapUtils.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[0], width, height);
+                this.maxZoom = mapUtils.view.getZoomLevelFromBoxRange(props.viewLimits.boxRangeRange[0], width, height);
             }
         }
     }
@@ -117,7 +117,7 @@ class ReactLeafletMap extends React.PureComponent {
             }
 
             if (viewport.hasOwnProperty('zoom') && Number.isFinite(viewport.zoom) && viewport.zoom !== this.state.leafletView.zoom) {
-                change.boxRange = mapUtils.getBoxRangeFromZoomLevel(viewport.zoom, this.state.width, this.state.height);
+                change.boxRange = mapUtils.view.getBoxRangeFromZoomLevel(viewport.zoom, this.state.width, this.state.height);
             }
 
             if (!_.isEmpty(change) && this.props.onViewChange && !this.hasResized()) {
