@@ -49,7 +49,7 @@ class MapSet extends React.PureComponent {
 
 		if (!props.stateMapSetKey) {
 			this.state = {
-				view: mapUtils.mergeViews(mapConstants.defaultMapView, props.view),
+				view: mapUtils.view.mergeViews(mapConstants.defaultMapView, props.view),
 
 				activeMapKey: props.activeMapKey,
 				mapViews: {},
@@ -60,7 +60,7 @@ class MapSet extends React.PureComponent {
 				if (child && typeof child === "object"
 					&& (child.type === Map || child.type === this.props.connectedMapComponent || child.type === PresentationMap)
 					&& child.props.mapKey === props.activeMapKey) {
-					this.state.mapViews[child.props.mapKey] = mapUtils.mergeViews(mapConstants.defaultMapView, props.view, child.props.view);
+					this.state.mapViews[child.props.mapKey] = mapUtils.view.mergeViews(mapConstants.defaultMapView, props.view, child.props.view);
 				}
 			});
 		} else {
@@ -110,26 +110,26 @@ class MapSet extends React.PureComponent {
 
 	onViewChange(mapKey, update) {
 		let syncUpdate;
-		update = mapUtils.ensureViewIntegrity(update);
+		update = mapUtils.view.ensureViewIntegrity(update);
 		mapKey = mapKey || this.state.activeMapKey;
 
 		if (this.props.sync) {
 			syncUpdate = _.pickBy(update, (updateVal, updateKey) => {
 				return this.props.sync[updateKey];
 			});
-			syncUpdate = mapUtils.ensureViewIntegrity(syncUpdate);
+			syncUpdate = mapUtils.view.ensureViewIntegrity(syncUpdate);
 		}
 
 		// merge views of all maps
 		let mapViews = _.mapValues(this.state.mapViews, view => {
-			return mapUtils.mergeViews(view, syncUpdate);
+			return mapUtils.view.mergeViews(view, syncUpdate);
 		});
 
 		// merge views of given map
-		mapViews[mapKey] = mapUtils.mergeViews(this.state.mapViews[mapKey], update);
+		mapViews[mapKey] = mapUtils.view.mergeViews(this.state.mapViews[mapKey], update);
 
 		if (syncUpdate && !_.isEmpty(syncUpdate)) {
-			const mergedView = mapUtils.mergeViews(this.state.view, syncUpdate);
+			const mergedView = mapUtils.view.mergeViews(this.state.view, syncUpdate);
 
 			this.setState({
 				view: mergedView,
@@ -201,7 +201,7 @@ class MapSet extends React.PureComponent {
 		} else {
 			updateView = this.onViewChange.bind(this, null);
 			resetHeading = this.onResetHeading.bind(this);
-			view = mapUtils.mergeViews(this.state.view, this.state.mapViews[this.state.activeMapKey]);
+			view = mapUtils.view.mergeViews(this.state.view, this.state.mapViews[this.state.activeMapKey]);
 			mapKey = this.state.activeMapKey;
 			activeMapDimensions = this.state.mapsDimensions && this.state.mapsDimensions[this.state.activeMapKey];
 		}
