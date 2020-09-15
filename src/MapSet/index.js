@@ -246,7 +246,7 @@ class MapSet extends React.PureComponent {
 				let props = {
 					...restProps,
 					key: index,
-					view: mapUtils.mergeViews(this.state.view, view, this.state.mapViews[mapKey]),
+					view: mapUtils.view.mergeViews(this.state.view, view, this.state.mapViews[mapKey]),
 					backgroundLayer: backgroundLayer || this.props.backgroundLayer,
 					layers: mapUtils.mergeLayers(this.props.layers, layers),
 					onViewChange: this.onViewChange.bind(this, mapKey),
