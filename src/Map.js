@@ -11,10 +11,21 @@ import './style.scss';
 class PresentationMap extends React.PureComponent {
 
 	static propTypes = {
+		backgroundLayer: PropTypes.object,
+		children: PropTypes.element,
+		layers: PropTypes.object,
 		mapComponent: PropTypes.oneOfType([
 			PropTypes.element,
 			PropTypes.func
 		]),
+		onMount: PropTypes.func,
+		onPropViewChange: PropTypes.func,
+		onResize: PropTypes.func,
+		onViewChange: PropTypes.func,
+		resetHeading: PropTypes.func,
+		stateMapKey: PropTypes.string,
+		view: PropTypes.object,
+		viewLimits: PropTypes.object,
 		wrapper: PropTypes.oneOfType([
 			PropTypes.element,
 			PropTypes.bool
@@ -35,29 +46,36 @@ class PresentationMap extends React.PureComponent {
 		}
 		
 		this.onViewChange = this.onViewChange.bind(this);
+		this.onPropViewChange = this.onPropViewChange.bind(this);
 		this.resetHeading = this.resetHeading.bind(this);
 		this.onResize = this.onResize.bind(this);
 	}
 	
 	componentDidMount() {
 		if (this.props.onMount) {
-			this.props.onMount();
+			this.props.onMount(this.state.width, this.state.height);
 		}
 	}
 	
 	componentDidUpdate(prevProps) {
 		const props = this.props;
 		if (props.view) {
+			const view = this.getValidView(props.view);
 			if (prevProps && prevProps.view) { //todo simplify
 				if (!_.isEqual(props.view, prevProps.view)) {
-					this.setState({
-						view: {...mapConstants.defaultMapView, ...props.view}
-					});
+					if(!this.props.stateMapKey) {
+						this.saveViewChange(view);
+					} else {
+						this.onPropViewChange(view);
+					}
 				}
 			} else {
-				this.setState({
-					view: {...mapConstants.defaultMapView, ...props.view}
-				});
+				if(!this.props.stateMapKey) {
+					this.saveViewChange(view);
+				} else {
+					debugger
+					this.onPropViewChange(view);
+				}
 			}
 		}
 
@@ -74,17 +92,44 @@ class PresentationMap extends React.PureComponent {
 			this.props.onUnmount();
 		}
 	}
+
+	onViewChangeDecorator(onViewChange) {
+		return (update) => {
+			onViewChange(update, this.state.width, this.state.height);
+		} 
+	}
+
+	getValidView(update) {
+		let view = {...mapConstants.defaultMapView, ...view};
+		if(this.state.view && !_.isEmpty(this.state.view)) {
+			view = {...this.state.view, ...update};
+		}
+		view = mapUtils.view.ensureViewIntegrity(view);
+		return view;
+	}
+
+	saveViewChange(view) {
+		if (!_.isEqual(view, this.state.view)) {
+			if(!this.props.stateMapKey) {
+				this.setState({view});
+			}
+		}
+	}
 	
 	onViewChange(update) {
-		let view = {...this.state.view, ...update};
-		view = mapUtils.view.ensureViewIntegrity(view);
-		
-		if (!_.isEqual(view, this.state.view)) {
-			this.setState({view});
-		}
+		const view = this.getValidView(update);
+		this.saveViewChange(view);
 
-		if (this.props.onViewChange) {
-			this.props.onViewChange(view);
+		if (!_.isEqual(view, this.state.view)) {
+			if (this.props.onViewChange && !this.props.stateMapKey) {
+				this.onViewChangeDecorator(this.props.onViewChange)(view);
+			}
+		}
+	}
+
+	onPropViewChange(view) {
+		if (this.props.stateMapKey && this.props.onPropViewChange) {
+			this.onViewChangeDecorator(this.props.onPropViewChange)(view);
 		}
 	}
 	
@@ -141,9 +186,9 @@ class PresentationMap extends React.PureComponent {
 					{React.Children.map(children, child => {
 						return React.cloneElement(child, {
 							...child.props,
-							view: this.props.stateMapKey ? this.props.view : (this.state.view || this.props.view),
+							view: props.view,
 							viewLimits: this.props.viewLimits,
-							updateView: this.props.stateMapKey ? this.props.onViewChange : this.onViewChange,
+							updateView: props.onViewChange,
 							resetHeading: this.props.stateMapKey ? this.props.resetHeading : this.resetHeading,
 							mapWidth: this.state.width,
 							mapHeight: this.state.height
