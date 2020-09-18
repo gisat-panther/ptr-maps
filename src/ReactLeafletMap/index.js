@@ -195,6 +195,7 @@ class ReactLeafletMap extends React.PureComponent {
                 maxZoom={this.maxZoom} // non-dynamic prop
                 attributionControl={false}
                 crs={this.state.crs}
+                animate={false}
             >
                 <Pane style={{zIndex: backgroundLayersZindex}}>{backgroundLayers}</Pane>
                 {layers}
