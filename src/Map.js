@@ -64,14 +64,14 @@ class PresentationMap extends React.PureComponent {
 			if (prevProps && prevProps.view) { //todo simplify
 				if (!_.isEqual(props.view, prevProps.view)) {
 					if(!this.props.stateMapKey) {
-						this.saveViewChange(view);
+						this.saveViewChange(view, false);
 					} else {
 						this.onPropViewChange(view);
 					}
 				}
 			} else {
 				if(!this.props.stateMapKey) {
-					this.saveViewChange(view);
+					this.saveViewChange(view, true);
 				} else {
 					this.onPropViewChange(view);
 				}
@@ -107,8 +107,8 @@ class PresentationMap extends React.PureComponent {
 		return view;
 	}
 
-	saveViewChange(view) {
-		if (!_.isEqual(view, this.state.view)) {
+	saveViewChange(view, checkViewEquality) {
+		if (checkViewEquality && !_.isEqual(view, this.state.view)) {
 			if(!this.props.stateMapKey) {
 				this.setState({view});
 			}
@@ -117,7 +117,7 @@ class PresentationMap extends React.PureComponent {
 	
 	onViewChange(update) {
 		const view = this.getValidView(update);
-		this.saveViewChange(view);
+		this.saveViewChange(view, true);
 
 		if (!_.isEqual(view, this.state.view)) {
 			if (this.props.onViewChange && !this.props.stateMapKey) {
