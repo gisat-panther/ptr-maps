@@ -161,7 +161,7 @@ class PresentationMap extends React.PureComponent {
 			}
 
 			if (wrapper) {
-				const wrapperComponent = this.props.wrapper.prototype && this.props.wrapper.prototype.isReactComponent ? this.props.wrapper : MapWrapper;
+				const wrapperComponent = (this.props.wrapper.prototype && this.props.wrapper.prototype.isReactComponent) || typeof this.props.wrapper === 'function' ? this.props.wrapper : MapWrapper;
 
 				return React.createElement(
 					wrapperComponent,
