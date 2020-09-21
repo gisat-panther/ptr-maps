@@ -38,6 +38,7 @@ class MapSet extends React.PureComponent {
 		stateMapSetKey: PropTypes.string,
 		sync: PropTypes.object,
 		wrapper: PropTypes.oneOfType([
+			PropTypes.elementType,
 			PropTypes.element,
 			PropTypes.bool
 		]),
@@ -280,7 +281,7 @@ class MapSet extends React.PureComponent {
 
 			// Render wrapper here, if mapComponent is final (framework-specific) map component
 			if (renderWrapper) {
-				const wrapperComponent = this.props.wrapper.prototype && this.props.wrapper.prototype.isReactComponent ? this.props.wrapper : MapWrapper;
+				const wrapperComponent = (this.props.wrapper.prototype && this.props.wrapper.prototype.isReactComponent) || typeof this.props.wrapper === 'function' ? this.props.wrapper : MapWrapper;
 				return React.createElement(
 					wrapperComponent,
 					allProps,

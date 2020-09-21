@@ -27,6 +27,7 @@ class PresentationMap extends React.PureComponent {
 		view: PropTypes.object,
 		viewLimits: PropTypes.object,
 		wrapper: PropTypes.oneOfType([
+			PropTypes.elementType,
 			PropTypes.element,
 			PropTypes.bool
 		]),
@@ -160,7 +161,7 @@ class PresentationMap extends React.PureComponent {
 			}
 
 			if (wrapper) {
-				const wrapperComponent = this.props.wrapper.prototype && this.props.wrapper.prototype.isReactComponent ? this.props.wrapper : MapWrapper;
+				const wrapperComponent = (this.props.wrapper.prototype && this.props.wrapper.prototype.isReactComponent) || typeof this.props.wrapper === 'function' ? this.props.wrapper : MapWrapper;
 
 				return React.createElement(
 					wrapperComponent,
