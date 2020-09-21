@@ -38,6 +38,7 @@ class MapSet extends React.PureComponent {
 		stateMapSetKey: PropTypes.string,
 		sync: PropTypes.object,
 		wrapper: PropTypes.oneOfType([
+			PropTypes.elementType,
 			PropTypes.element,
 			PropTypes.bool
 		]),

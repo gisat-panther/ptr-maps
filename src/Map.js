@@ -27,6 +27,7 @@ class PresentationMap extends React.PureComponent {
 		view: PropTypes.object,
 		viewLimits: PropTypes.object,
 		wrapper: PropTypes.oneOfType([
+			PropTypes.elementType,
 			PropTypes.element,
 			PropTypes.bool
 		]),
