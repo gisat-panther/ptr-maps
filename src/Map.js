@@ -73,7 +73,6 @@ class PresentationMap extends React.PureComponent {
 				if(!this.props.stateMapKey) {
 					this.saveViewChange(view);
 				} else {
-					debugger
 					this.onPropViewChange(view);
 				}
 			}
