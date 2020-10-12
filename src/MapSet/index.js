@@ -30,6 +30,7 @@ class MapSet extends React.PureComponent {
 	static propTypes = {
 		activeMapKey: PropTypes.string,
 		activeMapView: PropTypes.object,
+		activeMapViewport: PropTypes.object,
 		disableMapRemoval: PropTypes.bool,
 		mapSetKey: PropTypes.string,
 		maps: PropTypes.array,
@@ -198,7 +199,7 @@ class MapSet extends React.PureComponent {
 			resetHeading = this.props.resetHeading;
 			view = this.props.activeMapView || this.props.view;
 			mapKey = this.props.activeMapKey;
-			activeMapDimensions = this.state.mapsDimensions && this.state.mapsDimensions[this.props.activeMapKey];
+			activeMapDimensions = this.props.activeMapViewport;
 		} else {
 			updateView = this.onViewChange.bind(this, null);
 			resetHeading = this.onResetHeading.bind(this);
