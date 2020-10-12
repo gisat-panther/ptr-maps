@@ -25,6 +25,7 @@ class PresentationMap extends React.PureComponent {
 		resetHeading: PropTypes.func,
 		stateMapKey: PropTypes.string,
 		view: PropTypes.object,
+		viewport: PropTypes.object,
 		viewLimits: PropTypes.object,
 		wrapper: PropTypes.oneOfType([
 			PropTypes.elementType,
@@ -190,8 +191,8 @@ class PresentationMap extends React.PureComponent {
 							viewLimits: this.props.viewLimits,
 							updateView: props.onViewChange,
 							resetHeading: this.props.stateMapKey ? this.props.resetHeading : this.resetHeading,
-							mapWidth: this.state.width,
-							mapHeight: this.state.height
+							mapWidth: this.props.stateMapKey ? this.props.viewport.width : this.state.width,
+							mapHeight: this.props.stateMapKey ? this.props.viewport.height : this.state.height,
 						});
 					})}
 				</div>
