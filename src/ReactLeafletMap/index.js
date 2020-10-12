@@ -278,7 +278,7 @@ class ReactLeafletMap extends React.PureComponent {
                 component={isDiagram ? DiagramLayer : VectorLayer}
                 key={layer.key || i}
                 type={layer.type}
-                layerKey={layer.key}
+                layerKey={layer.layerKey || layer.key}
                 opacity={layer.opacity || 1}
                 view={this.state.view || this.props.view}
                 viewport={this.state.viewport}
