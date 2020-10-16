@@ -134,8 +134,10 @@ class ReactLeafletMap extends React.PureComponent {
 
     hasResized() {
         const {x,y} = this.leafletMap._size;
-        const widthChange = Math.abs(x - this.state.width) > 1;
-        const heightChange = Math.abs(y - this.state.height) > 1;
+
+        // take into account only a significant change in size
+        const widthChange = Math.abs(x - this.state.width) > 5;
+        const heightChange = Math.abs(y - this.state.height) > 5;
         return widthChange || heightChange;
     }
 
