@@ -11,9 +11,12 @@ import './style.scss';
 class PresentationMap extends React.PureComponent {
 
 	static propTypes = {
-		backgroundLayer: PropTypes.object,
+		backgroundLayer: PropTypes.oneOfType([
+			PropTypes.array,
+			PropTypes.object
+		]),
 		children: PropTypes.element,
-		layers: PropTypes.object,
+		layers: PropTypes.array,
 		mapComponent: PropTypes.oneOfType([
 			PropTypes.element,
 			PropTypes.func
