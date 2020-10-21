@@ -2,6 +2,7 @@ import React from 'react';
 import {utils} from '@gisatcz/ptr-utils';
 import {GeoJSON, withLeaflet} from 'react-leaflet';
 import L from "leaflet";
+import helpers from "../helpers";
 
 class GeoJsonLayer extends React.PureComponent {
     static propTypes = {
@@ -29,13 +30,13 @@ class GeoJsonLayer extends React.PureComponent {
     }
 
     getStyle(feature) {
-        let style = feature.defaultStyle;
+    	const styles = helpers.calculateStyle(feature.feature, this.props.styleDefinition, this.props.hoveredStyleDefinition, feature.selected, feature.selectedStyleDefinition, feature.selectedHoveredStyleDefinition);
 
         if (feature.selected) {
-            style = feature.selectedStyle;
-        }
-
-        return style;
+            return styles.selected;
+        } else {
+        	return styles.default;
+		}
     }
 
     onEachFeature(feature, layer){
@@ -44,18 +45,20 @@ class GeoJsonLayer extends React.PureComponent {
         const isPolygon = geometryType === "Polygon" || geometryType === "MultiPolygon";
         const isLine = geometryType === "Line" || geometryType === "LineString";
 
+		const styles = helpers.calculateStyle(feature.feature, this.props.styleDefinition, this.props.hoveredStyleDefinition, feature.selected, feature.selectedStyleDefinition, feature.selectedHoveredStyleDefinition);
+
         layer.on({
             click: (e) => {
-                if (this.props.onFeatureClick && feature.selectable) {
+                if (this.props.onFeatureClick && this.props.selectable) {
                     this.props.onFeatureClick(fid);
                 }
             },
             mousemove: (e) => {
-                if (feature.hoverable) {
-                    if (feature.selected && feature.selectedHoveredStyle) {
-                        e.target.setStyle(feature.selectedHoveredStyle);
+                if (this.props.hoverable) {
+                    if (feature.selected && styles.selectedHovered) {
+                        e.target.setStyle(styles.selectedHovered);
                     } else {
-                        e.target.setStyle(feature.hoveredStyle);
+                        e.target.setStyle(styles.hovered);
                     }
 
                     if (isPolygon ||isLine) {
@@ -64,11 +67,11 @@ class GeoJsonLayer extends React.PureComponent {
                 }
             },
             mouseout: (e) => {
-                if (feature.hoverable) {
-                    if (feature.selected && feature.selectedStyle) {
-                        e.target.setStyle(feature.selectedStyle);
+                if (this.props.hoverable) {
+                    if (feature.selected && styles.selected) {
+                        e.target.setStyle(styles.selected);
                     } else {
-                        e.target.setStyle(feature.defaultStyle);
+                        e.target.setStyle(styles.default);
                     }
 
                     if ((isLine || isPolygon) && !feature.selected) {

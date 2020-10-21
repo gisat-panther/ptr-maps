@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from "lodash";
-import * as turf from "@turf/turf";
-import {mapStyle, utils} from '@gisatcz/ptr-utils';
+import {utils} from '@gisatcz/ptr-utils';
 import {Pane} from 'react-leaflet';
 
+import helpers from "./helpers";
 import Feature from "./Feature";
 import constants from "../../../constants";
 import GeoJsonLayer from "./GeoJsonLayer";
@@ -13,7 +13,9 @@ class VectorLayer extends React.PureComponent {
     static propTypes = {
         layerKey: PropTypes.string,
         features: PropTypes.array,
+		selectable: PropTypes.bool,
         selected: PropTypes.object,
+		hoverable: PropTypes.bool,
         hovered: PropTypes.object,
         style: PropTypes.object,
         pointAsMarker: PropTypes.bool,
@@ -27,56 +29,6 @@ class VectorLayer extends React.PureComponent {
         this.linesPaneName = utils.uuid();
         this.polygonsPaneName = utils.uuid();
         this.onFeatureClick = this.onFeatureClick.bind(this);
-    }
-
-    getDefaultStyleObject(feature) {
-        return mapStyle.getStyleObject(feature.properties, this.props.style || constants.vectorFeatureStyle.defaultFull);
-    }
-
-
-    getFeatureDefaultStyle(feature, defaultStyleObject) {
-        return this.getFeatureLeafletStyle(feature, defaultStyleObject);
-    }
-
-    getFeatureAccentedStyle(feature, defaultStyleObject, accentedStyleObject) {
-        const style = {...defaultStyleObject, ...accentedStyleObject};
-        return this.getFeatureLeafletStyle(feature, style);
-    }
-
-    getFeatureLeafletStyle(feature, style) {
-        let finalStyle = {};
-
-        finalStyle.color = style.outlineColor ? style.outlineColor : null;
-        finalStyle.weight = style.outlineWidth ? style.outlineWidth : 0;
-        finalStyle.opacity = style.outlineOpacity ? style.outlineOpacity : 1;
-        finalStyle.fillOpacity = style.fillOpacity ? style.fillOpacity : 1;
-        finalStyle.fillColor = style.fill;
-
-        if (!style.fill) {
-            finalStyle.fillColor = null;
-            finalStyle.fillOpacity = 0;
-        }
-
-        if (!style.outlineColor || !style.outlineWidth) {
-            finalStyle.color = null;
-            finalStyle.opacity = 0;
-            finalStyle.weight = 0;
-        }
-
-        // for point features, set radius
-        if (feature.geometry.type === 'Point') {
-            if (style.size) {
-                finalStyle.radius = style.size;
-            } else if (style.volume) {
-                finalStyle.radius = Math.sqrt(style.volume/Math.PI);
-            }
-        }
-
-        if (style.shape) {
-            finalStyle.shape = style.shape;
-        }
-
-        return finalStyle;
     }
 
     onFeatureClick(fid) {
@@ -101,8 +53,8 @@ class VectorLayer extends React.PureComponent {
                     const fid = this.props.fidColumnName && feature.properties[this.props.fidColumnName];
 
                     let selected = null;
-                    let selectedStyle = null;
-                    let selectedHoveredStyle = null;
+                    let defaultStyle = null;
+
                     if (this.props.selected && fid) {
                         _.forIn(this.props.selected, (selection, key) => {
                             if (selection.keys && _.includes(selection.keys, fid)) {
@@ -111,41 +63,18 @@ class VectorLayer extends React.PureComponent {
                         });
                     }
 
-                    // Prepare default style
-                    const defaultStyleObject = this.getDefaultStyleObject(feature);
-                    const defaultStyle = this.getFeatureDefaultStyle(feature, defaultStyleObject);
-
-                    // Prepare hovered style
-                    let hoveredStyleObject = null;
-                    let hoveredStyle = null;
-                    if (this.props.hovered?.style) {
-                        hoveredStyleObject = this.props.hovered.style === "default" ? constants.vectorFeatureStyle.hovered : this.props.hovered.style;
-                        hoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
-                    }
-
-                    // Prepare selected and selected hovered style, if selected
-                    if (selected) {
-                        let selectedStyleObject, selectedHoveredStyleObject = null;
-                        if (selected.style) {
-                            selectedStyleObject = selected.style === "default" ? constants.vectorFeatureStyle.selected : selected.style;
-                            selectedStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
-                        }
-                        if (selected.hoveredStyle) {
-                            selectedHoveredStyleObject = selected.hoveredStyle === "default" ? constants.vectorFeatureStyle.selectedHovered : selected.hoveredStyle;
-                            selectedHoveredStyle = this.getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
-                        }
-                    }
+                    if (type === "Point" || type === "MultiPoint") {
+                    	defaultStyle = helpers.getDefaultStyle(feature, this.props.style);
+                    	debugger;
+					}
 
                     const data = {
                         feature,
                         fid,
-                        hoverable: this.props.hoverable,
-                        selectable: this.props.selectable,
+						defaultStyle,
                         selected: !!selected,
-                        defaultStyle,
-                        hoveredStyle,
-                        selectedStyle,
-                        selectedHoveredStyle
+						selectedStyleDefinition: selected?.style,
+						selectedHoveredStyleDefinition: selected?.hoveredStyle,
                     };
 
                     switch (type) {
@@ -169,7 +98,7 @@ class VectorLayer extends React.PureComponent {
 
             // sort point features by radius
             if (pointFeatures.length) {
-                sortedPointFeatures = _.orderBy(pointFeatures, ['defaultStyle.radius'], ['desc']);
+                sortedPointFeatures = _.orderBy(pointFeatures, ['defaultStyle.radius', 'fid'], ['desc', 'asc']);
             }
 
             // sort polygon features, if selected
@@ -183,7 +112,7 @@ class VectorLayer extends React.PureComponent {
 
             return {
                 polygons: sortedPolygonFeatures,
-                points: sortedPointFeatures,
+                points: sortedPointFeatures || pointFeatures,
                 lines: lineFeatures
             }
         } else {
@@ -227,27 +156,34 @@ class VectorLayer extends React.PureComponent {
                 onFeatureClick={this.onFeatureClick}
                 fidColumnName={this.props.fidColumnName}
                 pointAsMarker={this.props.pointAsMarker}
+
+				selectable={this.props.selectable}
+				hoverable={this.props.hoverable}
+				styleDefinition={this.props.style}
+				hoveredStyleDefinition={this.props.hovered && this.props.hovered.style}
             />
         );
     }
 
     renderFeature(data, index) {
+    	const key = `${this.props.layerKey}_${data.fid || index}`;
+
         return (
             <Feature
-                key={data.fid || index}
+                key={key}
                 onClick={this.onFeatureClick}
                 fid={data.fid}
                 fidColumnName={this.props.fidColumnName}
                 feature={data.feature}
                 type={data.feature.geometry.type}
                 pointAsMarker={this.props.pointAsMarker}
+				selectable={this.props.selectable}
                 selected={data.selected}
-                selectable={data.selectable}
-                hoverable={data.hoverable}
-                defaultStyle={data.defaultStyle}
-                hoveredStyle={data.hoveredStyle}
-                selectedStyle={data.selectedStyle}
-                selectedHoveredStyle={data.selectedHoveredStyle}
+				selectedStyleDefinition={data.selectedStyleDefinition}
+				selectedHoveredStyleDefinition={data.selectedStyleDefinition}
+                hoverable={this.props.hoverable}
+				styleDefinition={this.props.style}
+				hoveredStyleDefinition={this.props.hovered && this.props.hovered.style}
             />
         );
     }

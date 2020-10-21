@@ -194,8 +194,8 @@ class PresentationMap extends React.PureComponent {
 							viewLimits: this.props.viewLimits,
 							updateView: props.onViewChange,
 							resetHeading: this.props.stateMapKey ? this.props.resetHeading : this.resetHeading,
-							mapWidth: this.props.stateMapKey ? this.props.viewport.width : this.state.width,
-							mapHeight: this.props.stateMapKey ? this.props.viewport.height : this.state.height,
+							mapWidth: this.props.stateMapKey ? this.props.viewport?.width : this.state.width,
+							mapHeight: this.props.stateMapKey ? this.props.viewport?.height : this.state.height,
 						});
 					})}
 				</div>

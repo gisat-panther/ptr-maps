@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {withLeaflet} from "react-leaflet";
+import memoize from "memoize-one";
 import {utils} from "@gisatcz/ptr-utils";
 
 const geojsonRbush = require('geojson-rbush').default;
@@ -30,24 +31,17 @@ class IndexedVectorLayer extends React.PureComponent {
     constructor(props) {
         super(props);
 
-        this.indexTree = geojsonRbush();
         this.state = {
             treeStateKey: null
         }
-    }
 
-    componentDidMount() {
-        if (this.props.features) {
-            this.indexFeatures();
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // TODO naive cleaning and populating whole tree on each change in features
-        if (this.props.features !== prevProps.features) {
-            this.indexTree.clear();
-            this.indexFeatures();
-        }
+		this.indexTree = geojsonRbush();
+        this.repopulateIndexTreeIfNeeded = memoize((features) => {
+        	if (features) {
+				this.indexTree.clear();
+				this.indexTree.load(features);
+			}
+		});
     }
 
     indexFeatures() {
@@ -75,7 +69,8 @@ class IndexedVectorLayer extends React.PureComponent {
     }
 
     render() {
-        if (this.state.treeStateKey && this.boxRangeFitsLimits()) {
+        if (this.props.features && this.boxRangeFitsLimits()) {
+        	this.repopulateIndexTreeIfNeeded(this.props.features);
 
             // TODO if view was changed from outside, leaflet.map still has old bounds
             // Bounding box in GeoJSON format
