@@ -211,7 +211,10 @@ class ReactLeafletMap extends React.PureComponent {
                 case 'vector':
                     return this.getIndexedVectorLayer(layer, i);
                 case 'diagram':
-                    return this.getIndexedVectorLayer(layer, i, true);
+                	return null;
+                	// TODO do not allow DiagramLayer for now
+					// TODO DiagramLayer has to be refactored
+                    // return this.getIndexedVectorLayer(layer, i, true);
                 default:
                     return null;
             }
