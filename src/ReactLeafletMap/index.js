@@ -124,11 +124,6 @@ class ReactLeafletMap extends React.PureComponent {
                 change = mapUtils.view.ensureViewIntegrity(change);
                 this.props.onViewChange(change);
             }
-
-            // TODO for IndexedVectorLayer rerender (see IndexedVectorLayer render method)
-            if (!_.isEqual(viewport, this.state.viewport)) {
-                this.setState({viewport});
-            }
         }
     }
 
@@ -283,7 +278,7 @@ class ReactLeafletMap extends React.PureComponent {
                 layerKey={layer.layerKey || layer.key}
                 opacity={layer.opacity || 1}
                 view={this.state.view || this.props.view}
-                viewport={this.state.viewport}
+				zoom={this.state.leafletView.zoom}
                 onClick={this.onLayerClick}
                 {...layer.options}
             />

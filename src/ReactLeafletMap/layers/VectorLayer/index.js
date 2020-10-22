@@ -65,7 +65,6 @@ class VectorLayer extends React.PureComponent {
 
                     if (type === "Point" || type === "MultiPoint") {
                     	defaultStyle = helpers.getDefaultStyle(feature, this.props.style);
-                    	debugger;
 					}
 
                     const data = {

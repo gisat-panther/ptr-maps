@@ -32,7 +32,7 @@ class IndexedVectorLayer extends React.PureComponent {
         super(props);
 
         this.state = {
-            treeStateKey: null
+            rerender: null
         }
 
 		this.indexTree = geojsonRbush();
@@ -44,12 +44,14 @@ class IndexedVectorLayer extends React.PureComponent {
 		});
     }
 
-    indexFeatures() {
-        this.indexTree.load(this.props.features);
-        this.setState({
-            treeStateKey: utils.uuid()
-        });
-    }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+    	// fix for map view controlled from outside of the map
+    	if (this.props.zoom !== prevProps.zoom && this.props.zoom !== this.props.leaflet?.map._zoom) {
+			this.setState({
+				reredner: utils.uuid()
+			});
+		}
+	}
 
     boxRangeFitsLimits() {
         const props = this.props;
@@ -72,7 +74,6 @@ class IndexedVectorLayer extends React.PureComponent {
         if (this.props.features && this.boxRangeFitsLimits()) {
         	this.repopulateIndexTreeIfNeeded(this.props.features);
 
-            // TODO if view was changed from outside, leaflet.map still has old bounds
             // Bounding box in GeoJSON format
             const bbox = getBbox(this.props.leaflet.map);
             const geoJsonBbox = {
