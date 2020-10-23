@@ -125,15 +125,27 @@ class VectorLayer extends React.PureComponent {
 
         return data ? (
             <>
-                <Pane style={style} name={this.polygonsPaneName}>
-                    {data.polygons?.length ? this.renderFeatures(data.polygons) : null}
-                </Pane>
-                <Pane style={style} name={this.linesPaneName}>
-                    {data.lines?.length ? this.renderFeatures(data.lines) : null}
-                </Pane>
-                <Pane style={style} name={this.pointsPaneName}>
-                    {data.points?.length ? this.renderFeatures(data.points) : null}
-                </Pane>
+				{
+					data.polygons?.length ? (
+						<Pane style={style} name={this.polygonsPaneName}>
+							{this.renderFeatures(data.polygons)}
+						</Pane>
+					) : null
+				}
+				{
+					data.lines?.length ? (
+						<Pane style={style} name={this.linesPaneName}>
+							{this.renderFeatures(data.lines)}
+						</Pane>
+					) : null
+				}
+				{
+					data.points?.length ? (
+						<Pane style={style} name={this.pointsPaneName}>
+							{this.renderFeatures(data.points)}
+						</Pane>
+					) : null
+				}
             </>
         ) : null;
     }
@@ -150,6 +162,7 @@ class VectorLayer extends React.PureComponent {
     renderGeoJson(features) {
         return (
             <GeoJsonLayer
+				layerKey={this.props.layerKey}
                 paneName={this.pointsPaneName}
                 features={features}
                 onFeatureClick={this.onFeatureClick}

@@ -93,6 +93,7 @@ class GeoJsonLayer extends React.PureComponent {
 
     render() {
         const features = this.props.features.map(item => {return {...item.feature, ...item}});
+		// console.log("GeoJson render, layerKey: ", this.props.layerKey)
 
         return (
             <GeoJSON
