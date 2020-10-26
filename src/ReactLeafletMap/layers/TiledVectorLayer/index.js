@@ -20,14 +20,15 @@ class TiledVectorLayer extends React.PureComponent {
 
 		if (tiles?.length) {
 			return tiles.map(tile => {
-				const layerKey = `${props.layerKey}_${tile.level}_${JSON.stringify(tile.tile)}`;
+				const uniqueLayerKey = `${props.uniqueLayerKey}_${tile.level}_${JSON.stringify(tile.tile)}`;
 
 				return (
 					<IndexedVectorLayer
 						{...props}
 						component={VectorLayer}
-						key={layerKey}
-						layerKey={layerKey}
+						key={uniqueLayerKey}
+						uniqueLayerKey={uniqueLayerKey}
+						layerKey={props.layerKey}
 						features={tile.features}
 					/>
 				);

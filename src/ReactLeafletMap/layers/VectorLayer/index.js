@@ -12,6 +12,7 @@ import GeoJsonLayer from "./GeoJsonLayer";
 class VectorLayer extends React.PureComponent {
     static propTypes = {
         layerKey: PropTypes.string,
+		uniqueLayerKey: PropTypes.string, // typically a combination of layerKey and data source key (or just layerKey, if no data source)
         features: PropTypes.array,
 		selectable: PropTypes.bool,
         selected: PropTypes.object,
@@ -163,6 +164,7 @@ class VectorLayer extends React.PureComponent {
         return (
             <GeoJsonLayer
 				layerKey={this.props.layerKey}
+				uniqueLayerKey={this.props.uniqueLayerKey}
                 paneName={this.pointsPaneName}
                 features={features}
                 onFeatureClick={this.onFeatureClick}
@@ -178,7 +180,7 @@ class VectorLayer extends React.PureComponent {
     }
 
     renderFeature(data, index) {
-    	const key = `${this.props.layerKey}_${data.fid || index}`;
+    	const key = `${this.props.uniqueLayerKey}_${data.fid || index}`;
 
         return (
             <Feature
