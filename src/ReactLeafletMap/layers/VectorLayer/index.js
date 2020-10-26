@@ -13,7 +13,10 @@ class VectorLayer extends React.PureComponent {
     static propTypes = {
         layerKey: PropTypes.string,
 		uniqueLayerKey: PropTypes.string, // typically a combination of layerKey and data source key (or just layerKey, if no data source)
+		renderAsGeoJson: PropTypes.bool, // Use Leaflet's GeoJSON layer to render vector features
         features: PropTypes.array,
+		fidColumnName: PropTypes.string,
+		omittedFeatureKeys: PropTypes.array,
 		selectable: PropTypes.bool,
         selected: PropTypes.object,
 		hoverable: PropTypes.bool,
@@ -152,7 +155,7 @@ class VectorLayer extends React.PureComponent {
     }
 
     renderFeatures(features) {
-        if (features.length > constants.maxFeaturesAsReactElement) {
+        if (this.props.renderAsGeoJson || features.length > constants.maxFeaturesAsReactElement) {
             // GeoJsonLayer doesn't get context
             return this.renderGeoJson(features);
         } else {
@@ -168,6 +171,7 @@ class VectorLayer extends React.PureComponent {
                 paneName={this.pointsPaneName}
                 features={features}
                 onFeatureClick={this.onFeatureClick}
+				omittedFeatureKeys={this.props.omittedFeatureKeys}
                 fidColumnName={this.props.fidColumnName}
                 pointAsMarker={this.props.pointAsMarker}
 

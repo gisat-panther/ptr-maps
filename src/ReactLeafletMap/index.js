@@ -303,6 +303,7 @@ class ReactLeafletMap extends React.PureComponent {
 				zoom={this.state.leafletView.zoom}
 				view={this.state.view || this.props.view}
 				onClick={this.onLayerClick}
+				renderAsGeoJson
 				{...layer.options}
 			/>
 		);

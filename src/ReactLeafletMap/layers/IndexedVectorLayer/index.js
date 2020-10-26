@@ -25,7 +25,8 @@ function getBbox(map) {
 class IndexedVectorLayer extends React.PureComponent {
     static propTypes = {
         boxRangeRange: PropTypes.array,
-        component: PropTypes.func
+        component: PropTypes.func,
+		omittedFeatureKeys: PropTypes.array
     };
 
     constructor(props) {

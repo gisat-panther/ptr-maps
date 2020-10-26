@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {utils} from '@gisatcz/ptr-utils';
 import {GeoJSON, withLeaflet} from 'react-leaflet';
 import L from "leaflet";
@@ -6,6 +7,7 @@ import helpers from "../helpers";
 
 class GeoJsonLayer extends React.PureComponent {
     static propTypes = {
+    	omittedFeatureKeys: PropTypes.array // list of feature keys that shouldn't be rendered
     };
 
     constructor(props) {
@@ -15,6 +17,7 @@ class GeoJsonLayer extends React.PureComponent {
         };
 
         this.getStyle = this.getStyle.bind(this);
+        this.filter = this.filter.bind(this);
         this.onEachFeature = this.onEachFeature.bind(this);
         this.pointToLayer = this.pointToLayer.bind(this);
     }
@@ -91,6 +94,15 @@ class GeoJsonLayer extends React.PureComponent {
         }
     }
 
+    filter(feature) {
+    	if (this.props.omittedFeatureKeys) {
+    		const featureKey = feature.id || feature.properties[this.props.fidColumnName];
+    		return !(featureKey && _.includes(this.props.omittedFeatureKeys, featureKey));
+		} else {
+    		return true;
+		}
+	}
+
     render() {
         const features = this.props.features.map(item => {return {...item.feature, ...item}});
 
@@ -101,6 +113,7 @@ class GeoJsonLayer extends React.PureComponent {
                 style={this.getStyle}
                 onEachFeature={this.onEachFeature}
                 pointToLayer={this.pointToLayer}
+				filter={this.filter}
             />
         );
     }
