@@ -210,11 +210,9 @@ class ReactLeafletMap extends React.PureComponent {
                 case 'wms':
                     return this.getWmsTileLayer(layer, i);
                 case 'vector':
-                	if (layer.options?.tiled) {
-                		return this.getTiledVectorLayer(layer, i);
-					} else {
-						return this.getIndexedVectorLayer(layer, i);
-					}
+					return this.getIndexedVectorLayer(layer, i);
+				case 'tiled-vector':
+					return this.getTiledVectorLayer(layer, i);
                 case 'diagram':
                 	return null;
                 	// TODO do not allow DiagramLayer for now
