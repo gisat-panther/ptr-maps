@@ -7,7 +7,7 @@ import VectorLayer from "../VectorLayer";
 
 class TiledVectorLayer extends React.PureComponent {
 	static propTypes = {
-
+		tiles: PropTypes.array
 	};
 
 	constructor(props) {
@@ -15,8 +15,7 @@ class TiledVectorLayer extends React.PureComponent {
 	}
 
 	render() {
-		const props = this.props;
-		const tiles = props.features;
+		const {tiles, ...props} = this.props;
 
 		if (tiles?.length) {
 			return tiles.map(tile => {
