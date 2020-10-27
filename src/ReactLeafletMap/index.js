@@ -281,8 +281,8 @@ class ReactLeafletMap extends React.PureComponent {
                 component={isDiagram ? DiagramLayer : VectorLayer}
                 key={layer.key || i}
                 type={layer.type}
-                layerKey={layer.layerKey}
-				uniqueLayerKey={layer.layerKey || layer.key}
+                layerKey={layer.layerKey || layer.key}
+				uniqueLayerKey={layer.key || i}
                 opacity={layer.opacity || 1}
                 view={this.state.view || this.props.view}
 				zoom={this.state.leafletView.zoom}
@@ -297,8 +297,8 @@ class ReactLeafletMap extends React.PureComponent {
     		<TiledVectorLayer
 				key={layer.key || i}
 				type={layer.type}
-				layerKey={layer.layerKey}
-				uniqueLayerKey={layer.layerKey || layer.key}
+				layerKey={layer.layerKey || layer.key}
+				uniqueLayerKey={layer.key || i}
 				opacity={layer.opacity || 1}
 				zoom={this.state.leafletView.zoom}
 				view={this.state.view || this.props.view}
