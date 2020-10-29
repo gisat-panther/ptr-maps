@@ -72,11 +72,13 @@ class IndexedVectorLayer extends React.PureComponent {
     }
 
     render() {
-        if (this.props.features && this.boxRangeFitsLimits()) {
-        	this.repopulateIndexTreeIfNeeded(this.props.features);
+    	const {view, zoom, component, ...props} = this.props;
+
+        if (props.features && this.boxRangeFitsLimits()) {
+        	this.repopulateIndexTreeIfNeeded(props.features);
 
             // Bounding box in GeoJSON format
-            const bbox = getBbox(this.props.leaflet.map);
+            const bbox = getBbox(props.leaflet.map);
             const geoJsonBbox = {
                 type: "Feature",
                 bbox: bbox
@@ -87,9 +89,11 @@ class IndexedVectorLayer extends React.PureComponent {
             const foundFeatures = foundFeatureCollection && foundFeatureCollection.features || [];
 
             // Add filtered features only to Vector layer
-            const props = {...this.props, features: foundFeatures};
+			if (props.features.length !== foundFeatures.length) {
+				props.features = foundFeatures;
+			}
 
-            return React.createElement(this.props.component, props);
+            return React.createElement(component, props);
         } else {
             return null;
         }
