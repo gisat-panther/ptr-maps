@@ -4,6 +4,7 @@ import {utils} from '@gisatcz/ptr-utils';
 import {GeoJSON, withLeaflet} from 'react-leaflet';
 import L from "leaflet";
 import helpers from "../helpers";
+import memoize from "memoize-one";
 
 class GeoJsonLayer extends React.PureComponent {
     static propTypes = {
@@ -12,24 +13,17 @@ class GeoJsonLayer extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
-            layerKey: utils.uuid()
-        };
 
         this.getStyle = this.getStyle.bind(this);
         this.filter = this.filter.bind(this);
         this.onEachFeature = this.onEachFeature.bind(this);
         this.pointToLayer = this.pointToLayer.bind(this);
-    }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // return new instance when features has been changed
-        // more: https://react-leaflet.js.org/docs/en/components#geojson
-        if (this.props.features !== prevProps.features) {
-            this.setState({
-                layerKey: utils.uuid()
-            })
-        }
+        this.getRenderId = memoize((features) => {
+			if (features) {
+				return utils.uuid();
+			}
+		});
     }
 
     getStyle(feature) {
@@ -106,9 +100,13 @@ class GeoJsonLayer extends React.PureComponent {
     render() {
         const features = this.props.features.map(item => {return {...item.feature, ...item}});
 
+        // generate new key on features change to return the new instance
+		// more: https://react-leaflet.js.org/docs/en/components#geojson
+		const key = this.getRenderId(this.props.features);
+
         return (
             <GeoJSON
-                key={this.state.layerKey}
+                key={key}
                 data={features}
                 style={this.getStyle}
                 onEachFeature={this.onEachFeature}
