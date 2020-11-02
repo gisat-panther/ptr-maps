@@ -18,6 +18,7 @@ import './style.scss';
 import 'leaflet/dist/leaflet.css';
 import constants from "../constants";
 import TiledVectorLayer from "./layers/TiledVectorLayer";
+import CanvasLayer from "./layers/CanvasLayer";
 
 class ReactLeafletMap extends React.PureComponent {
     static propTypes = {
@@ -213,6 +214,8 @@ class ReactLeafletMap extends React.PureComponent {
 					return this.getIndexedVectorLayer(layer, i);
 				case 'tiled-vector':
 					return this.getTiledVectorLayer(layer, i);
+				case 'canvas':
+					return this.getCanvasLayer(layer, i);
                 case 'diagram':
                 	return null;
                 	// TODO do not allow DiagramLayer for now
@@ -304,6 +307,35 @@ class ReactLeafletMap extends React.PureComponent {
 				view={this.state.view || this.props.view}
 				onClick={this.onLayerClick}
 				renderAsGeoJson
+				{...layer.options}
+			/>
+		);
+	}
+
+	getCanvasLayer(layer, i) {
+		// return (
+		// 	<CanvasLayer
+		// 		key={layer.key || i}
+		// 		type={layer.type}
+		// 		layerKey={layer.layerKey || layer.key}
+		// 		uniqueLayerKey={layer.key || i}
+		// 		opacity={layer.opacity || 1}
+		// 		onClick={this.onLayerClick}
+		// 		{...layer.options}
+		// 	/>
+		// );
+
+		return (
+			<IndexedVectorLayer
+				component={CanvasLayer}
+				key={layer.key || i}
+				type={layer.type}
+				layerKey={layer.layerKey || layer.key}
+				uniqueLayerKey={layer.key || i}
+				opacity={layer.opacity || 1}
+				view={this.state.view || this.props.view}
+				zoom={this.state.leafletView.zoom}
+				onClick={this.onLayerClick}
 				{...layer.options}
 			/>
 		);
