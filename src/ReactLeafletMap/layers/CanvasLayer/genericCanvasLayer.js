@@ -49,7 +49,15 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		this._canvas.height = resizeEvent.newSize.y;
 	},
 	//-------------------------------------------------------------
-	_onLayerDidMove: function () {
+	_onLayerDidMove: function (e) {
+		var topLeft = this._map.containerPointToLayerPoint([0, 0]);
+		if (topLeft.x !== this._topLeft?.x || topLeft.y !== this._topLeft.y) {
+			this._topLeft = topLeft;
+			L.DomUtil.setPosition(this._canvas, topLeft);
+			this.drawLayer();
+		}
+	},
+	_onLayerDidZoom: function (e) {
 		var topLeft = this._map.containerPointToLayerPoint([0, 0]);
 		L.DomUtil.setPosition(this._canvas, topLeft);
 		this.drawLayer();
@@ -59,7 +67,7 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		var events = {
 			resize: this._onLayerDidResize,
 			moveend: this._onLayerDidMove,
-			zoom: this._onLayerDidMove
+			zoom: this._onLayerDidZoom
 		};
 		if (this._map.options.zoomAnimation && L.Browser.any3d) {
 			events.zoomanim =  this._animateZoom;

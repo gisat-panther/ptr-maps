@@ -313,28 +313,13 @@ class ReactLeafletMap extends React.PureComponent {
 	}
 
 	getCanvasLayer(layer, i) {
-		// return (
-		// 	<CanvasLayer
-		// 		key={layer.key || i}
-		// 		type={layer.type}
-		// 		layerKey={layer.layerKey || layer.key}
-		// 		uniqueLayerKey={layer.key || i}
-		// 		opacity={layer.opacity || 1}
-		// 		onClick={this.onLayerClick}
-		// 		{...layer.options}
-		// 	/>
-		// );
-
 		return (
-			<IndexedVectorLayer
-				component={CanvasLayer}
+			<CanvasLayer
 				key={layer.key || i}
 				type={layer.type}
 				layerKey={layer.layerKey || layer.key}
 				uniqueLayerKey={layer.key || i}
 				opacity={layer.opacity || 1}
-				view={this.state.view || this.props.view}
-				zoom={this.state.leafletView.zoom}
 				onClick={this.onLayerClick}
 				{...layer.options}
 			/>
