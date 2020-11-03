@@ -14,12 +14,10 @@ class ReactCanvasLayer extends MapLayer {
 		// TODO
 		if (fromProps.selected !== toProps.selected) {
 			this.leafletElement.setProps(toProps);
-			this.leafletElement.needRedraw()
 		}
 
 		if (fromProps.features !== toProps.features) {
 			this.leafletElement.setProps(toProps);
-			this.leafletElement.needRedraw()
 		}
 	}
 }

@@ -1,6 +1,8 @@
+import _ from "lodash";
+
 import helpers from "../VectorLayer/helpers";
 import genericCanvasLayer from "./genericCanvasLayer";
-
+import shapes from "./shapes";
 
 const LeafletCanvasLayer = L.CanvasLayer.extend({
 	onLayerDidMount: function() {
@@ -32,25 +34,26 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 	onLayerClick: function(e) {
 		var mousePoint = e.containerPoint;
-		var LatLngBounds = L.latLngBounds(this._map.containerPointToLatLng(mousePoint.add(L.point(10, 10))),
-			this._map.containerPointToLatLng(mousePoint.subtract(L.point(10, 10))))
-		var BoundingBox = this.boundsToQuery(LatLngBounds)
 
 		const self = this;
 		this.features.forEach(feature => {
-			var coordinates = feature.geometry.coordinates;
+			const radius = feature.defaultStyle.size / 2;
+			var LatLngBounds = L.latLngBounds(this._map.containerPointToLatLng(mousePoint.add(L.point(radius, radius))),
+				this._map.containerPointToLatLng(mousePoint.subtract(L.point(radius, radius))))
+			var BoundingBox = this.boundsToQuery(LatLngBounds)
+			var coordinates = feature.original.geometry.coordinates;
 			var lat = coordinates[1];
 			var lng = coordinates[0];
 
 			if (self.isPointInsideBounds(lat, lng, BoundingBox)) {
-				self.props.onClick(self.props.layerKey, [feature.properties[self.props.fidColumnName]])
+				self.props.onClick(self.props.layerKey, [feature.original.properties[self.props.fidColumnName]])
 			}
 		});
 	},
 
 	setProps: function(data) {
 		this.props = data;
-		this.features = data.features;
+		this.features = this.prepareFeatures(data.features);
 		this.needRedraw();
 	},
 
@@ -64,34 +67,64 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 		this._map.getPane(paneName).appendChild(this._canvas);
 	},
 
-	onDrawLayer: function(params) {
+	prepareFeatures: function (features) {
 		const props = this.props;
 
-		let ctx = params.canvas.getContext('2d');
-		ctx.clearRect(0, 0, params.canvas.width, params.canvas.height);
-		let canvasOverlay = params.layer;
-
-		for (let i = 0; i < this.features.length; i++) {
-			const feature = this.features[i];
-			const coordinates = feature.geometry.coordinates;
+		let preparedFeatures = features.map(feature => {
+			const fid = feature.id || (props.fidColumnName && feature.properties[props.fidColumnName]);
 			const defaultStyle = helpers.getDefaultStyleObject(feature, props.style);
 
-			ctx.fillStyle = defaultStyle.fill;
+			let preparedFeature = {
+				original: feature,
+				defaultStyle
+			};
 
-			// TODO solve selections properly, just for testing for now
-			if (props.selected?.testSelection?.keys?.[0] === feature.properties[props.fidColumnName]) {
-				ctx.fillStyle = "#ff0000";
+			if (props.selected && fid) {
+				_.forIn(props.selected, (selection, key) => {
+					if (selection.keys && _.includes(selection.keys, fid)) {
+						preparedFeature.selected = true;
+						preparedFeature.selectedStyle = {...defaultStyle, ...helpers.getSelectedStyleObject(selection.style)}
+					}
+				});
 			}
 
-			ctx.lineWidth = defaultStyle.outlineWidth;
-			ctx.strokeStyle = defaultStyle.outlineColor;
-			ctx.globalAlpha = defaultStyle.fillOpacity || defaultStyle.outlineOpacity; // TODO solve opacity properly
-			const center = canvasOverlay._map.latLngToContainerPoint([coordinates[1], coordinates[0]]);
-			ctx.beginPath();
-			ctx.arc(center.x, center.y, defaultStyle.size/2, 0, Math.PI * 2);
-			ctx.fill();
-			ctx.stroke();
-			ctx.closePath();
+			return preparedFeature;
+		});
+
+		return _.orderBy(preparedFeatures, ['defaultStyle.size', 'fid'], ['desc', 'asc']);
+	},
+
+	onDrawLayer: function(params) {
+		let context = params.canvas.getContext('2d');
+
+		// clear whole layer
+		context.clearRect(0, 0, params.canvas.width, params.canvas.height);
+
+		// redraw all features
+		for (let i = 0; i < this.features.length; i++) {
+			this.drawFeature(context, params.layer, this.features[i]);
+		}
+	},
+
+	/**
+	 * @param ctx {Object} Canvas context
+	 * @param layer {Object}
+	 * @param feature {Object} Feature data
+	 */
+	drawFeature: function (ctx, layer, feature){
+		const geometry = feature.original.geometry;
+
+		// TODO currently supports points only
+		if (geometry.type === "Point") {
+			const coordinates = geometry.coordinates;
+			const center = layer._map.latLngToContainerPoint([coordinates[1], coordinates[0]]);
+			let style = feature.defaultStyle;
+
+			if (feature.selected) {
+				style = feature.selectedStyle;
+			}
+
+			shapes.draw(ctx, center, style);
 		}
 	}
 });

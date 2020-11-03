@@ -13,6 +13,14 @@ function getDefaultStyleObject(feature, styleDefinition) {
 }
 
 /**
+ * @param selectedStyleDefinition {Object} Panther style definition
+ * @return {Object}
+ */
+function getSelectedStyleObject(selectedStyleDefinition) {
+	return selectedStyleDefinition === "default" ? constants.vectorFeatureStyle.selected : selectedStyleDefinition
+}
+
+/**
  * @param feature {GeoJSONFeature}
  * @param defaultStyleObject {Object} Panther style definition
  * @return {Object}
@@ -104,10 +112,9 @@ const calculateStyle = (feature, styleDefinition, hoveredStyleDefinition, select
 	let selectedStyle = null;
 	let selectedHoveredStyle = null;
 	if (selected) {
-		let selectedStyleObject, selectedHoveredStyleObject = null;
+		let selectedHoveredStyleObject = null;
 		if (selectedStyleDefinition) {
-			selectedStyleObject = selectedStyleDefinition === "default" ? constants.vectorFeatureStyle.selected : selectedStyleDefinition;
-			selectedStyle = getFeatureAccentedStyle(feature, defaultStyleObject, selectedStyleObject);
+			selectedStyle = getFeatureAccentedStyle(feature, defaultStyleObject, getSelectedStyleObject(selectedStyleDefinition));
 		}
 		if (selectedHoveredStyleDefinition) {
 			selectedHoveredStyleObject = selectedHoveredStyleDefinition === "default" ? constants.vectorFeatureStyle.selectedHovered : selectedHoveredStyleDefinition;
@@ -134,5 +141,6 @@ export default {
 	getDefaultStyleObject,
 	getFeatureAccentedStyle,
 	getFeatureDefaultStyle,
-	getFeatureLeafletStyle
+	getFeatureLeafletStyle,
+	getSelectedStyleObject
 }
