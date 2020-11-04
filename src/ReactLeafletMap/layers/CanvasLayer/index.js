@@ -3,7 +3,7 @@ import LeafletCanvasLayer from './LeafletCanvasLayer';
 
 class ReactCanvasLayer extends MapLayer {
 	createLeafletElement(props) {
-		let layer = new LeafletCanvasLayer();
+		let layer = new LeafletCanvasLayer({paneName: props.uniqueLayerKey, paneZindex: props.zIndex});
 		layer.setProps(props);
 		return layer;
 	}

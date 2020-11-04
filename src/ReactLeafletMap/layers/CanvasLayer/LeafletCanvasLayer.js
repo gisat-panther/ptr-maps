@@ -59,16 +59,6 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 		this.needRedraw();
 	},
 
-	setPane: function(paneName) {
-		this._map.getPanes().overlayPane.removeChild(this._canvas);
-		var pane = this._map.getPane(paneName);
-
-		if (pane === undefined) {
-			this._map.createPane(paneName);
-		}
-		this._map.getPane(paneName).appendChild(this._canvas);
-	},
-
 	prepareFeatures: function (features) {
 		const props = this.props;
 

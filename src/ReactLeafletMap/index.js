@@ -178,7 +178,7 @@ class ReactLeafletMap extends React.PureComponent {
         const backgroundLayers = backgroundLayersSource && backgroundLayersSource.map((layer, i) => this.getLayerByType(layer, i));
 
         const baseLayersZindex = constants.defaultLeafletPaneZindex + 100;
-        const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane key={layer.key || i} style={{zIndex: baseLayersZindex + i}}>{this.getLayerByType(layer, i)}</Pane>);
+        const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane key={layer.key || i} style={{zIndex: baseLayersZindex + i}}>{this.getLayerByType(layer, i, baseLayersZindex + i)}</Pane>);
 
         return (
             <Map
@@ -203,7 +203,7 @@ class ReactLeafletMap extends React.PureComponent {
         );
     }
 
-    getLayerByType(layer, i) {
+    getLayerByType(layer, i, zIndex) {
         if (layer && layer.type){
             switch (layer.type) {
                 case 'wmts':
@@ -215,7 +215,7 @@ class ReactLeafletMap extends React.PureComponent {
 				case 'tiled-vector':
 					return this.getTiledVectorLayer(layer, i);
 				case 'canvas':
-					return this.getCanvasLayer(layer, i);
+					return this.getCanvasLayer(layer, i, zIndex);
                 case 'diagram':
                 	return null;
                 	// TODO do not allow DiagramLayer for now
@@ -312,7 +312,7 @@ class ReactLeafletMap extends React.PureComponent {
 		);
 	}
 
-	getCanvasLayer(layer, i) {
+	getCanvasLayer(layer, i, zIndex) {
 		return (
 			<CanvasLayer
 				key={layer.key || i}
@@ -320,6 +320,7 @@ class ReactLeafletMap extends React.PureComponent {
 				layerKey={layer.layerKey || layer.key}
 				uniqueLayerKey={layer.key || i}
 				onClick={this.onLayerClick}
+				zIndex={zIndex}
 				{...layer.options}
 			/>
 		);

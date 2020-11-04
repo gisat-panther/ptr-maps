@@ -24,6 +24,8 @@ L.DomUtil.setTransform = L.DomUtil.setTransform || function (el, offset, scale) 
 L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 	// -- initialized is called on prototype
 	initialize: function (options) {
+		this._paneName = options.paneName;
+		this._paneZindex = options.paneZindex;
 		this._map    = null;
 		this._canvas = null;
 		this._frame  = null;
@@ -88,8 +90,12 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		var animated = this._map.options.zoomAnimation && L.Browser.any3d;
 		L.DomUtil.addClass(this._canvas, 'leaflet-zoom-' + (animated ? 'animated' : 'hide'));
 
-
-		map._panes.overlayPane.appendChild(this._canvas);
+		var pane = this._map.getPane(this._paneName);
+		if (!pane) {
+			pane = this._map.createPane(this._paneName);
+			pane.style.zIndex = this._paneZindex;
+		}
+		pane.appendChild(this._canvas);
 
 		map.on(this.getEvents(),this);
 
@@ -107,7 +113,7 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 			L.Util.cancelAnimFrame(this._frame);
 		}
 
-		map.getPanes().overlayPane.removeChild(this._canvas);
+		map.getPane(this._paneName).removeChild(this._canvas);
 
 		map.off(this.getEvents(),this);
 
@@ -175,6 +181,6 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 	}
 });
 
-L.canvasLayer = function () {
-	return new L.CanvasLayer();
+L.canvasLayer = function (options) {
+	return new L.CanvasLayer(options);
 };
