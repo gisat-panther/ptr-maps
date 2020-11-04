@@ -30,12 +30,19 @@ function circle(context, center, style) {
 }
 
 function setPolygonStyle(context, style) {
-	context.fillStyle = style.fill;
-	context.lineWidth = style.outlineWidth;
-	context.strokeStyle = style.outlineColor;
-	context.globalAlpha = style.fillOpacity || style.outlineOpacity; // TODO solve opacity properly
-	context.fill();
-	context.stroke();
+	let opacity = style.fillOpacity || style.outlineOpacity || 1;
+	context.globalAlpha = opacity; // TODO solve opacity properly
+
+	if (style.fill && opacity) {
+		context.fillStyle = style.fill;
+		context.fill();
+	}
+
+	if (style.outlineColor && style.outlineWidth && opacity) {
+		context.lineWidth = style.outlineWidth;
+		context.strokeStyle = style.outlineColor;
+		context.stroke();
+	}
 }
 
 export default {
