@@ -49,7 +49,7 @@ class IndexedVectorLayer extends React.PureComponent {
     	// TODO fix for map view controlled from outside of the map
     	if (this.props.zoom !== prevProps.zoom && this.props.zoom !== this.props.leaflet?.map._zoom) {
 			this.setState({
-				reredner: utils.uuid()
+				rerender: utils.uuid()
 			});
 		}
 	}
