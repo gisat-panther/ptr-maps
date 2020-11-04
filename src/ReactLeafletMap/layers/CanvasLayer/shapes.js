@@ -1,3 +1,5 @@
+import colors from "../../../utils/colors";
+
 /**
  * Draw shape to the given canvas
  * @param context {Object} canvas context
@@ -30,17 +32,22 @@ function circle(context, center, style) {
 }
 
 function setPolygonStyle(context, style) {
-	let opacity = style.fillOpacity || style.outlineOpacity || 1;
-	context.globalAlpha = opacity; // TODO solve opacity properly
-
-	if (style.fill && opacity) {
+	if (style.fill) {
 		context.fillStyle = style.fill;
+		if (style.fillOpacity) {
+			context.fillStyle = colors.getHexCodeWithTransparency(style.fill, style.fillOpacity);
+		}
+
 		context.fill();
 	}
 
-	if (style.outlineColor && style.outlineWidth && opacity) {
+	if (style.outlineColor && style.outlineWidth) {
 		context.lineWidth = style.outlineWidth;
 		context.strokeStyle = style.outlineColor;
+		if (style.outlineOpacity) {
+			context.strokeStyle = colors.getHexCodeWithTransparency(style.outlineColor, style.outlineOpacity);
+		}
+
 		context.stroke();
 	}
 }
