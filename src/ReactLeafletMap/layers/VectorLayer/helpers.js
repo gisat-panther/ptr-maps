@@ -78,6 +78,7 @@ function getFeatureLeafletStyle(feature, style) {
  * @param feature {GeoJSONFeature}
  */
 const convertCoordinatesMemo = memoize((feature) => {
+	// TODO do we need turf for this?
 	const flippedFeature = turf.flip(feature);
 	return flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
 });
