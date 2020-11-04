@@ -33,22 +33,24 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 	},
 
 	onLayerClick: function(e) {
-		var mousePoint = e.containerPoint;
+		if (this.props.selectable) {
+			var mousePoint = e.containerPoint;
 
-		const self = this;
-		this.features.forEach(feature => {
-			const radius = feature.defaultStyle.size / 2;
-			var LatLngBounds = L.latLngBounds(this._map.containerPointToLatLng(mousePoint.add(L.point(radius, radius))),
-				this._map.containerPointToLatLng(mousePoint.subtract(L.point(radius, radius))))
-			var BoundingBox = this.boundsToQuery(LatLngBounds)
-			var coordinates = feature.original.geometry.coordinates;
-			var lat = coordinates[1];
-			var lng = coordinates[0];
+			const self = this;
+			this.features.forEach(feature => {
+				const radius = feature.defaultStyle.size / 2;
+				var LatLngBounds = L.latLngBounds(this._map.containerPointToLatLng(mousePoint.add(L.point(radius, radius))),
+					this._map.containerPointToLatLng(mousePoint.subtract(L.point(radius, radius))))
+				var BoundingBox = this.boundsToQuery(LatLngBounds)
+				var coordinates = feature.original.geometry.coordinates;
+				var lat = coordinates[1];
+				var lng = coordinates[0];
 
-			if (self.isPointInsideBounds(lat, lng, BoundingBox)) {
-				self.props.onClick(self.props.layerKey, [feature.original.properties[self.props.fidColumnName]])
-			}
-		});
+				if (self.isPointInsideBounds(lat, lng, BoundingBox)) {
+					self.props.onClick(self.props.layerKey, [feature.original.properties[self.props.fidColumnName]])
+				}
+			});
+		}
 	},
 
 	setProps: function(data) {
