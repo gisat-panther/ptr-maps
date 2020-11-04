@@ -17,7 +17,7 @@ function draw(context, center, style) {
 }
 
 function square(context, center, style) {
-	const a = style.size; // side length
+	const a = 2*style.size; // side length
 	context.beginPath();
 	context.rect(center.x - a/2, center.y - a/2, a, a);
 	setPolygonStyle(context, style);
@@ -26,7 +26,7 @@ function square(context, center, style) {
 
 function circle(context, center, style) {
 	context.beginPath();
-	context.arc(center.x, center.y, style.size/2, 0, Math.PI * 2);
+	context.arc(center.x, center.y, style.size, 0, Math.PI * 2);
 	setPolygonStyle(context, style);
 	context.closePath();
 }
