@@ -319,7 +319,6 @@ class ReactLeafletMap extends React.PureComponent {
 				type={layer.type}
 				layerKey={layer.layerKey || layer.key}
 				uniqueLayerKey={layer.key || i}
-				opacity={layer.opacity || 1}
 				onClick={this.onLayerClick}
 				{...layer.options}
 			/>
