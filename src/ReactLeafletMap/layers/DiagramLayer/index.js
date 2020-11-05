@@ -4,10 +4,10 @@ import {Pane} from 'react-leaflet';
 import * as turf from "@turf/turf";
 import constants from "../../../constants";
 
-import VectorLayer from "../VectorLayer";
-import Feature from "../VectorLayer/Feature";
+import SvgVectorLayer from "../SvgVectorLayer";
+import Feature from "../SvgVectorLayer/Feature";
 
-class DiagramLayer extends VectorLayer {
+class DiagramLayer extends SvgVectorLayer {
     constructor(props) {
         super(props);
     }

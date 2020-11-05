@@ -5,7 +5,7 @@ import {withLeaflet} from "react-leaflet";
 import memoize from "memoize-one";
 
 import IndexedVectorLayer from "../IndexedVectorLayer";
-import VectorLayer from "../VectorLayer";
+import SvgVectorLayer from "../SvgVectorLayer";
 
 /**
  * @param featureKeysGroupedByTileKey {Array} A collection of feature keys by tile key
@@ -95,7 +95,7 @@ class Tile extends React.PureComponent {
 		return (
 			<IndexedVectorLayer
 				{...props}
-				component={VectorLayer}
+				component={SvgVectorLayer}
 				key={tileKey}
 				uniqueLayerKey={tileKey}
 				omittedFeatureKeys={this.checkIdentity(omittedFeatureKeys)}

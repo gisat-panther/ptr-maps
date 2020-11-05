@@ -8,7 +8,7 @@ import {mapConstants} from "@gisatcz/ptr-core";
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 
 import viewHelpers from "./viewHelpers";
-import VectorLayer from "./layers/VectorLayer";
+import SvgVectorLayer from "./layers/SvgVectorLayer";
 import _ from "lodash";
 import DiagramLayer from "./layers/DiagramLayer";
 import IndexedVectorLayer from "./layers/IndexedVectorLayer";
@@ -18,7 +18,7 @@ import './style.scss';
 import 'leaflet/dist/leaflet.css';
 import constants from "../constants";
 import TiledVectorLayer from "./layers/TiledVectorLayer";
-import CanvasLayer from "./layers/CanvasLayer";
+import CanvasVectorLayer from "./layers/CanvasVectorLayer";
 
 class ReactLeafletMap extends React.PureComponent {
     static propTypes = {
@@ -214,7 +214,7 @@ class ReactLeafletMap extends React.PureComponent {
 					return this.getIndexedVectorLayer(layer, i);
 				case 'tiled-vector':
 					return this.getTiledVectorLayer(layer, i);
-				case 'canvas':
+				case 'canvas-vector':
 					return this.getCanvasLayer(layer, i, zIndex);
                 case 'diagram':
                 	return null;
@@ -281,7 +281,7 @@ class ReactLeafletMap extends React.PureComponent {
     getIndexedVectorLayer(layer, i, isDiagram) {
         return (
             <IndexedVectorLayer
-                component={isDiagram ? DiagramLayer : VectorLayer}
+                component={isDiagram ? DiagramLayer : SvgVectorLayer}
                 key={layer.key || i}
                 type={layer.type}
                 layerKey={layer.layerKey || layer.key}
@@ -314,7 +314,7 @@ class ReactLeafletMap extends React.PureComponent {
 
 	getCanvasLayer(layer, i, zIndex) {
 		return (
-			<CanvasLayer
+			<CanvasVectorLayer
 				key={layer.key || i}
 				type={layer.type}
 				layerKey={layer.layerKey || layer.key}

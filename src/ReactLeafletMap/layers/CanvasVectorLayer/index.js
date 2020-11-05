@@ -1,7 +1,7 @@
 import {MapLayer,withLeaflet } from 'react-leaflet';
 import LeafletCanvasLayer from './LeafletCanvasLayer';
 
-class ReactCanvasLayer extends MapLayer {
+class CanvasVectorLayer extends MapLayer {
 	createLeafletElement(props) {
 		let layer = new LeafletCanvasLayer({paneName: props.uniqueLayerKey, paneZindex: props.zIndex});
 		layer.setProps(props);
@@ -18,4 +18,4 @@ class ReactCanvasLayer extends MapLayer {
 	}
 }
 
-export default withLeaflet(ReactCanvasLayer)
+export default withLeaflet(CanvasVectorLayer)

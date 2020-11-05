@@ -1,7 +1,7 @@
 import _ from "lodash";
 import * as turf from "@turf/turf";
 
-import helpers from "../VectorLayer/helpers";
+import helpers from "../SvgVectorLayer/helpers";
 import genericCanvasLayer from "./genericCanvasLayer";
 import shapes from "./shapes";
 
