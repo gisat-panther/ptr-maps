@@ -211,16 +211,10 @@ class ReactLeafletMap extends React.PureComponent {
                 case 'wms':
                     return this.getWmsTileLayer(layer, i);
                 case 'vector':
-					return this.getIndexedVectorLayer(layer, i);
 				case 'tiled-vector':
-					return this.getTiledVectorLayer(layer, i);
 				case 'canvas-vector':
-					return this.getCanvasLayer(layer, i, zIndex);
-                case 'diagram':
-                	return null;
-                	// TODO do not allow DiagramLayer for now
-					// TODO DiagramLayer has to be refactored
-                    // return this.getIndexedVectorLayer(layer, i, true);
+				case 'diagram':
+					return this.getVectorLayer(layer, i, zIndex);
                 default:
                     return null;
             }
@@ -277,6 +271,45 @@ class ReactLeafletMap extends React.PureComponent {
             />
         );
     }
+
+    getVectorLayer(layer, i, zIndex) {
+    	const renderAs = layer.options?.renderAs;
+    	if (renderAs) {
+    		const boxRange  = this.state.view?.boxRange || this.props.view?.boxRange;
+    		const typeByRange = _.find(renderAs, (renderAsItem) => {
+    			const boxRangeRange = renderAsItem.boxRangeRange;
+
+    			// Current boxRange is in defined range
+    			return (boxRange > boxRangeRange[0] && boxRange <= boxRangeRange[1]) || (!boxRangeRange[0] && boxRange <= boxRangeRange[1]) || (boxRange > boxRangeRange[0] && !boxRangeRange[1]);
+			});
+
+    		if (typeByRange && typeByRange.type) {
+				return this.getVectorLayerByGivenType(typeByRange.type, layer, i, zIndex);
+			} else {
+				return this.getVectorLayerByGivenType(layer.type, layer, i, zIndex);
+			}
+		} else {
+			return this.getVectorLayerByGivenType(layer.type, layer, i, zIndex);
+		}
+	}
+
+	getVectorLayerByGivenType(type, layer, i, zIndex) {
+		switch (type) {
+			case 'vector':
+				return this.getIndexedVectorLayer(layer, i);
+			case 'tiled-vector':
+				return this.getTiledVectorLayer(layer, i);
+			case 'canvas-vector':
+				return this.getCanvasLayer(layer, i, zIndex);
+			case 'diagram':
+				return null;
+			// TODO do not allow DiagramLayer for now
+			// TODO DiagramLayer has to be refactored
+			// return this.getIndexedVectorLayer(layer, i, true);
+			default:
+				return null;
+		}
+	}
 
     getIndexedVectorLayer(layer, i, isDiagram) {
         return (
