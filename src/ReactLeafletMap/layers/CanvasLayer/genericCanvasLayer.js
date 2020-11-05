@@ -90,6 +90,9 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		var animated = this._map.options.zoomAnimation && L.Browser.any3d;
 		L.DomUtil.addClass(this._canvas, 'leaflet-zoom-' + (animated ? 'animated' : 'hide'));
 
+		var topLeft = this._map.containerPointToLayerPoint([0, 0]);
+		L.DomUtil.setPosition(this._canvas, topLeft);
+
 		var pane = this._map.getPane(this._paneName);
 		if (!pane) {
 			pane = this._map.createPane(this._paneName);
