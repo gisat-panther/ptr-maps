@@ -24,6 +24,7 @@ function getTileKey(uniqueLayerKey, tile) {
 function getFeatureKeysGroupedByTileKey(uniqueLayerKey, tiles, fidColumnName)  {
 	let groupedKeys = [];
 	_.forEach(tiles, tile => {
+		// TODO pass featureKeys or filters
 		groupedKeys.push({
 			tileKey: getTileKey(uniqueLayerKey, tile),
 			featureKeys: tile.features.map(feature => feature.id || feature.properties[fidColumnName])

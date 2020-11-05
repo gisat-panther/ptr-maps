@@ -24,6 +24,7 @@ function getFeatureKeysToOmit(featureKeysGroupedByTileKey, tileKey, features, fi
 		let renderedFeatureKeys = new Set();
 
 		// Iterate over sibling tiles that should be rendered earlier
+		// TODO don't iterate through features in each tile again
 		while (i < indexOfCurrentTile) {
 			const tile = featureKeysGroupedByTileKey[i];
 			_.forEach(tile.featureKeys, featureKey => {
@@ -34,7 +35,8 @@ function getFeatureKeysToOmit(featureKeysGroupedByTileKey, tileKey, features, fi
 
 		// Iterate over current tile's features to find which features are rendered already
 		_.forEach(features, feature => {
-			const featureKey = feature.id || feature.properties[fidColumnName];
+			// TODO feature.id
+			const featureKey = feature.properties[fidColumnName];
 			if (featureKey && renderedFeatureKeys.has(featureKey)) {
 				featureKeysToOmit.push(featureKey);
 			}
