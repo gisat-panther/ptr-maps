@@ -45,13 +45,16 @@ class IndexedVectorLayer extends React.PureComponent {
 		});
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-    	// TODO fix for map view controlled from outside of the map
-    	if (this.props.zoom !== prevProps.zoom && this.props.zoom !== this.props.leaflet?.map._zoom) {
-			this.setState({
-				rerender: utils.uuid()
-			});
-		}
+	componentDidUpdate(prevProps, prevState, snapshot) {
+		// TODO fix for map view controlled from outside of the map
+		setTimeout(() => {
+			const bbox = getBbox(this.props.leaflet.map);
+			if (JSON.stringify(this.bbox) !== JSON.stringify(bbox)) {
+				this.setState({
+					rerender: utils.uuid()
+				});
+			}
+		}, 20)
 	}
 
     boxRangeFitsLimits() {
@@ -77,12 +80,12 @@ class IndexedVectorLayer extends React.PureComponent {
         if (props.features && this.boxRangeFitsLimits()) {
         	this.repopulateIndexTreeIfNeeded(props.features);
 
-            // Bounding box in GeoJSON format
-            const bbox = getBbox(props.leaflet.map);
-            const geoJsonBbox = {
-                type: "Feature",
-                bbox: bbox
-            };
+			// Bounding box in GeoJSON format
+			this.bbox = getBbox(props.leaflet.map);
+			const geoJsonBbox = {
+				type: "Feature",
+				bbox: this.bbox
+			};
 
             // Find features in given bounding box
             const foundFeatureCollection = this.indexTree.search(geoJsonBbox);
