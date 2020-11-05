@@ -46,10 +46,10 @@ class IndexedVectorLayer extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-    	// fix for map view controlled from outside of the map
+    	// TODO fix for map view controlled from outside of the map
     	if (this.props.zoom !== prevProps.zoom && this.props.zoom !== this.props.leaflet?.map._zoom) {
 			this.setState({
-				reredner: utils.uuid()
+				rerender: utils.uuid()
 			});
 		}
 	}
