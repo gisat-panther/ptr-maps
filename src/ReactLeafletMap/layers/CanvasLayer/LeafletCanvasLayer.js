@@ -38,7 +38,7 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 			const self = this;
 			this.features.forEach(feature => {
-				const radius = feature.defaultStyle.size / 2;
+				const radius = feature.defaultStyle.size;
 				var LatLngBounds = L.latLngBounds(this._map.containerPointToLatLng(mousePoint.add(L.point(radius, radius))),
 					this._map.containerPointToLatLng(mousePoint.subtract(L.point(radius, radius))))
 				var BoundingBox = this.boundsToQuery(LatLngBounds)
@@ -94,29 +94,33 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 		// redraw all features
 		for (let i = 0; i < this.features.length; i++) {
-			this.drawFeature(context, params.layer, this.features[i]);
+			this.drawFeature(context, params.layer, params.canvas, this.features[i]);
 		}
 	},
 
 	/**
 	 * @param ctx {Object} Canvas context
 	 * @param layer {Object}
+	 * @param canvas {Object}
 	 * @param feature {Object} Feature data
 	 */
-	drawFeature: function (ctx, layer, feature){
+	drawFeature: function (ctx, layer, canvas, feature){
 		const geometry = feature.original.geometry;
 
 		// TODO currently supports points only
 		if (geometry.type === "Point") {
 			const coordinates = geometry.coordinates;
 			const center = layer._map.latLngToContainerPoint([coordinates[1], coordinates[0]]);
-			let style = feature.defaultStyle;
 
-			if (feature.selected) {
-				style = feature.selectedStyle;
+			if (center.x >= 0 && center.y >= 0 && center.x <= canvas.width && center.y <= canvas.height) {
+				let style = feature.defaultStyle;
+
+				if (feature.selected) {
+					style = feature.selectedStyle;
+				}
+
+				shapes.draw(ctx, center, style);
 			}
-
-			shapes.draw(ctx, center, style);
 		}
 	}
 });
