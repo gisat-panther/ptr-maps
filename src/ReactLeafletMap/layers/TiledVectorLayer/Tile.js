@@ -61,6 +61,8 @@ function checkIdentity(prev, next) {
 	} else if (!prevKeys || !nextKeys) {
 		return false;
 	} else {
+                 //performance suggestion
+                 // return prevKeys.sort().join(',') === nextKeys.sort().join(',')
 		return _.isEqual(prevKeys.sort(), nextKeys.sort());
 	}
 }
