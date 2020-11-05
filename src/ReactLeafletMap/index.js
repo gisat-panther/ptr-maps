@@ -17,6 +17,7 @@ import WMSLayer from "./layers/WMSLayer";
 import './style.scss';
 import 'leaflet/dist/leaflet.css';
 import constants from "../constants";
+import TiledVectorLayer from "./layers/TiledVectorLayer";
 
 class ReactLeafletMap extends React.PureComponent {
     static propTypes = {
@@ -124,11 +125,6 @@ class ReactLeafletMap extends React.PureComponent {
                 change = mapUtils.view.ensureViewIntegrity(change);
                 this.props.onViewChange(change);
             }
-
-            // TODO for IndexedVectorLayer rerender (see IndexedVectorLayer render method)
-            if (!_.isEqual(viewport, this.state.viewport)) {
-                this.setState({viewport});
-            }
         }
     }
 
@@ -214,9 +210,14 @@ class ReactLeafletMap extends React.PureComponent {
                 case 'wms':
                     return this.getWmsTileLayer(layer, i);
                 case 'vector':
-                    return this.getIndexedVectorLayer(layer, i);
+					return this.getIndexedVectorLayer(layer, i);
+				case 'tiled-vector':
+					return this.getTiledVectorLayer(layer, i);
                 case 'diagram':
-                    return this.getIndexedVectorLayer(layer, i, true);
+                	return null;
+                	// TODO do not allow DiagramLayer for now
+					// TODO DiagramLayer has to be refactored
+                    // return this.getIndexedVectorLayer(layer, i, true);
                 default:
                     return null;
             }
@@ -281,14 +282,32 @@ class ReactLeafletMap extends React.PureComponent {
                 key={layer.key || i}
                 type={layer.type}
                 layerKey={layer.layerKey || layer.key}
+				uniqueLayerKey={layer.key || i}
                 opacity={layer.opacity || 1}
                 view={this.state.view || this.props.view}
-                viewport={this.state.viewport}
+				zoom={this.state.leafletView.zoom}
                 onClick={this.onLayerClick}
                 {...layer.options}
             />
         );
     }
+
+	getTiledVectorLayer(layer, i) {
+    	return (
+    		<TiledVectorLayer
+				key={layer.key || i}
+				type={layer.type}
+				layerKey={layer.layerKey || layer.key}
+				uniqueLayerKey={layer.key || i}
+				opacity={layer.opacity || 1}
+				zoom={this.state.leafletView.zoom}
+				view={this.state.view || this.props.view}
+				onClick={this.onLayerClick}
+				renderAsGeoJson
+				{...layer.options}
+			/>
+		);
+	}
 
     onLayerClick(layerKey, featureKeys) {
         if (this.props.onLayerClick) {

@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {withLeaflet} from "react-leaflet";
+import memoize from "memoize-one";
 import {utils} from "@gisatcz/ptr-utils";
 
 const geojsonRbush = require('geojson-rbush').default;
@@ -24,38 +25,37 @@ function getBbox(map) {
 class IndexedVectorLayer extends React.PureComponent {
     static propTypes = {
         boxRangeRange: PropTypes.array,
-        component: PropTypes.func
+        component: PropTypes.func,
+		omittedFeatureKeys: PropTypes.array
     };
 
     constructor(props) {
         super(props);
 
-        this.indexTree = geojsonRbush();
         this.state = {
-            treeStateKey: null
+            rerender: null
         }
+
+		this.indexTree = geojsonRbush();
+        this.repopulateIndexTreeIfNeeded = memoize((features) => {
+        	if (features) {
+				this.indexTree.clear();
+				this.indexTree.load(features);
+			}
+		});
     }
 
-    componentDidMount() {
-        if (this.props.features) {
-            this.indexFeatures();
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // TODO naive cleaning and populating whole tree on each change in features
-        if (this.props.features !== prevProps.features) {
-            this.indexTree.clear();
-            this.indexFeatures();
-        }
-    }
-
-    indexFeatures() {
-        this.indexTree.load(this.props.features);
-        this.setState({
-            treeStateKey: utils.uuid()
-        });
-    }
+	componentDidUpdate(prevProps, prevState, snapshot) {
+		// TODO fix for map view controlled from outside of the map
+		setTimeout(() => {
+			const bbox = getBbox(this.props.leaflet.map);
+			if (JSON.stringify(this.bbox) !== JSON.stringify(bbox)) {
+				this.setState({
+					rerender: utils.uuid()
+				});
+			}
+		}, 20)
+	}
 
     boxRangeFitsLimits() {
         const props = this.props;
@@ -75,24 +75,28 @@ class IndexedVectorLayer extends React.PureComponent {
     }
 
     render() {
-        if (this.state.treeStateKey && this.boxRangeFitsLimits()) {
+    	const {view, zoom, component, ...props} = this.props;
 
-            // TODO if view was changed from outside, leaflet.map still has old bounds
-            // Bounding box in GeoJSON format
-            const bbox = getBbox(this.props.leaflet.map);
-            const geoJsonBbox = {
-                type: "Feature",
-                bbox: bbox
-            };
+        if (props.features && this.boxRangeFitsLimits()) {
+        	this.repopulateIndexTreeIfNeeded(props.features);
+
+			// Bounding box in GeoJSON format
+			this.bbox = getBbox(props.leaflet.map);
+			const geoJsonBbox = {
+				type: "Feature",
+				bbox: this.bbox
+			};
 
             // Find features in given bounding box
             const foundFeatureCollection = this.indexTree.search(geoJsonBbox);
             const foundFeatures = foundFeatureCollection && foundFeatureCollection.features || [];
 
             // Add filtered features only to Vector layer
-            const props = {...this.props, features: foundFeatures};
+			if (props.features.length !== foundFeatures.length) {
+				props.features = foundFeatures;
+			}
 
-            return React.createElement(this.props.component, props);
+            return React.createElement(component, props);
         } else {
             return null;
         }

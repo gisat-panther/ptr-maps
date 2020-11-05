@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Circle, Polygon, Marker, Polyline} from 'react-leaflet';
 import { shallowEqualObjects } from "shallow-equal";
+import {utils} from "@gisatcz/ptr-utils";
 
 import ContextWrapper from "./ContextWrapper";
-import {utils} from "@gisatcz/ptr-utils";
 import MarkerIcon from "./MarkerIcon";
-import * as turf from "@turf/turf";
+import helpers from "../helpers";
 
 class Feature extends React.PureComponent {
     static propTypes = {
@@ -17,30 +17,25 @@ class Feature extends React.PureComponent {
         ]),
         fidColumnName: PropTypes.string,
         hoverable: PropTypes.bool,
+		hoveredFromContext: PropTypes.bool,
+		hoveredStyleDefinition: PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.object
+		]),
         selectable: PropTypes.bool,
-        defaultStyle: PropTypes.object,
-        hoveredStyle: PropTypes.object,
-        selectedStyle: PropTypes.object,
-        selectedHoveredStyle: PropTypes.object,
         selected: PropTypes.bool,
+		selectedStyleDefinition: PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.object
+		]),
+		selectedHoveredStyleDefinition: PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.object
+		]),
         changeContext: PropTypes.func,
-        hoveredFromContext: PropTypes.bool,
-        interactive: PropTypes.bool
+        interactive: PropTypes.bool,
+		styleDefinition: PropTypes.object
     };
-
-    static getDerivedStateFromProps(props, state) {
-        if (props.feature) {
-            const flippedFeature = turf.flip(props.feature);
-            const leafletCoordinates = flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
-
-            return {
-                leafletCoordinates
-            }
-        }
-
-        // Return null if the state hasn't changed
-        return null;
-    }
 
     constructor(props) {
         super(props);
@@ -59,6 +54,9 @@ class Feature extends React.PureComponent {
         this.state = {
             hovered: false
         }
+
+        this.calculateStyles = helpers.calculateStylesMemo;
+        this.convertCoordinates = helpers.convertCoordinatesMemo;
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -151,33 +149,37 @@ class Feature extends React.PureComponent {
     }
 
     render() {
-        let style = this.props.defaultStyle;
+    	const props = this.props;
+    	const coordinates = this.convertCoordinates(props.feature);
+    	const styles = this.calculateStyles(props.feature, props.styleDefinition, props.hoveredStyleDefinition, props.selected, props.selectedStyleDefinition, props.selectedHoveredStyleDefinition);
 
-        if (this.props.selected && this.state.hovered && this.props.selectedHoveredStyle) {
-            style = this.props.selectedHoveredStyle;
-        } else if (this.state.hovered && this.props.hoveredStyle) {
-            style = this.props.hoveredStyle;
-        } else if (this.props.selected && this.props.selectedStyle) {
-            style = this.props.selectedStyle;
+        let style = styles.default;
+
+        if (props.selected && this.state.hovered && styles.selectedHovered) {
+            style = styles.selectedHovered;
+        } else if (this.state.hovered && styles.hovered) {
+			style = styles.hovered;
+		} else if (props.selected && styles.selected) {
+            style = styles.selected;
         }
 
         // TODO add support for other geometry types
         switch (this.props.type) {
             case "Polygon":
             case "MultiPolygon":
-                return this.renderPolygon(style);
+                return this.renderPolygon(coordinates, style);
             case "Point":
             case "MultiPoint":
-                return this.renderPoint(style);
+                return this.renderPoint(coordinates, style);
             case "LineString":
             case "MultiLineString":
-                return this.renderLine(style);
+                return this.renderLine(coordinates, style);
             default:
                 return null;
         }
     }
 
-    renderPolygon(style) {
+    renderPolygon(coordinates, style) {
         return (
             <Polygon
                 interactive={this.props.hoverable || this.props.selectable}
@@ -185,13 +187,13 @@ class Feature extends React.PureComponent {
                 onClick={this.onClick}
                 onMouseMove={this.onMouseMove}
                 onMouseOut={this.onMouseOut}
-                positions={this.state.leafletCoordinates}
+                positions={coordinates}
                 {...style}
             />
         );
     }
 
-    renderLine(style) {
+    renderLine(coordinates, style) {
         return (
             <Polyline
                 interactive={this.props.hoverable || this.props.selectable}
@@ -200,15 +202,15 @@ class Feature extends React.PureComponent {
                 onMouseOver={this.onMouseMove}
                 onMouseMove={this.onMouseMove}
                 onMouseOut={this.onMouseOut}
-                positions={this.state.leafletCoordinates}
+                positions={coordinates}
                 {...style}
             />
         );
     }
 
-    renderPoint(style) {
+    renderPoint(coordinates, style) {
         if (this.props.pointAsMarker) {
-            return this.renderShape(style);
+            return this.renderShape(coordinates, style);
         } else {
             return (
                 <Circle
@@ -218,14 +220,14 @@ class Feature extends React.PureComponent {
                     onMouseMove={this.onMouseMove}
                     onMouseOver={this.onMouseMove}
                     onMouseOut={this.onMouseOut}
-                    center={this.state.leafletCoordinates}
+                    center={coordinates}
                     {...style}
                 />
             );
         }
     }
 
-    renderShape(style) {
+    renderShape(coordinates, style) {
         if (!this.icon) {
             this.icon = new MarkerIcon(this.iconId, style, {
                 iconAnchor: style.radius ? [style.radius, style.radius] : null,
@@ -246,7 +248,7 @@ class Feature extends React.PureComponent {
         return (
             <Marker
                 interactive={this.props.hoverable || this.props.selectable}
-                position={this.state.leafletCoordinates}
+                position={coordinates}
                 icon={this.icon}
                 onAdd={this.onAdd}
             />

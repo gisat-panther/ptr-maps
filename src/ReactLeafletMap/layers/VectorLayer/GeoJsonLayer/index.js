@@ -1,41 +1,39 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {utils} from '@gisatcz/ptr-utils';
 import {GeoJSON, withLeaflet} from 'react-leaflet';
 import L from "leaflet";
+import helpers from "../helpers";
+import memoize from "memoize-one";
 
 class GeoJsonLayer extends React.PureComponent {
     static propTypes = {
+    	omittedFeatureKeys: PropTypes.array // list of feature keys that shouldn't be rendered
     };
 
     constructor(props) {
         super(props);
-        this.state = {
-            layerKey: utils.uuid()
-        };
 
         this.getStyle = this.getStyle.bind(this);
+        this.filter = this.filter.bind(this);
         this.onEachFeature = this.onEachFeature.bind(this);
         this.pointToLayer = this.pointToLayer.bind(this);
-    }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // return new instance when features has been changed
-        // more: https://react-leaflet.js.org/docs/en/components#geojson
-        if (this.props.features !== prevProps.features) {
-            this.setState({
-                layerKey: utils.uuid()
-            })
-        }
+        this.getRenderId = memoize((features) => {
+			if (features) {
+				return utils.uuid();
+			}
+		});
     }
 
     getStyle(feature) {
-        let style = feature.defaultStyle;
+    	const styles = helpers.calculateStyle(feature.feature, this.props.styleDefinition, this.props.hoveredStyleDefinition, feature.selected, feature.selectedStyleDefinition, feature.selectedHoveredStyleDefinition);
 
         if (feature.selected) {
-            style = feature.selectedStyle;
-        }
-
-        return style;
+            return styles.selected;
+        } else {
+        	return styles.default;
+		}
     }
 
     onEachFeature(feature, layer){
@@ -44,18 +42,20 @@ class GeoJsonLayer extends React.PureComponent {
         const isPolygon = geometryType === "Polygon" || geometryType === "MultiPolygon";
         const isLine = geometryType === "Line" || geometryType === "LineString";
 
+		const styles = helpers.calculateStyle(feature.feature, this.props.styleDefinition, this.props.hoveredStyleDefinition, feature.selected, feature.selectedStyleDefinition, feature.selectedHoveredStyleDefinition);
+
         layer.on({
             click: (e) => {
-                if (this.props.onFeatureClick && feature.selectable) {
+                if (this.props.onFeatureClick && this.props.selectable) {
                     this.props.onFeatureClick(fid);
                 }
             },
             mousemove: (e) => {
-                if (feature.hoverable) {
-                    if (feature.selected && feature.selectedHoveredStyle) {
-                        e.target.setStyle(feature.selectedHoveredStyle);
+                if (this.props.hoverable) {
+                    if (feature.selected && styles.selectedHovered) {
+                        e.target.setStyle(styles.selectedHovered);
                     } else {
-                        e.target.setStyle(feature.hoveredStyle);
+                        e.target.setStyle(styles.hovered);
                     }
 
                     if (isPolygon ||isLine) {
@@ -64,11 +64,11 @@ class GeoJsonLayer extends React.PureComponent {
                 }
             },
             mouseout: (e) => {
-                if (feature.hoverable) {
-                    if (feature.selected && feature.selectedStyle) {
-                        e.target.setStyle(feature.selectedStyle);
+                if (this.props.hoverable) {
+                    if (feature.selected && styles.selected) {
+                        e.target.setStyle(styles.selected);
                     } else {
-                        e.target.setStyle(feature.defaultStyle);
+                        e.target.setStyle(styles.default);
                     }
 
                     if ((isLine || isPolygon) && !feature.selected) {
@@ -88,16 +88,30 @@ class GeoJsonLayer extends React.PureComponent {
         }
     }
 
+    filter(feature) {
+    	if (this.props.omittedFeatureKeys) {
+    		const featureKey = feature.id || feature.properties[this.props.fidColumnName];
+    		return !(featureKey && _.includes(this.props.omittedFeatureKeys, featureKey));
+		} else {
+    		return true;
+		}
+	}
+
     render() {
         const features = this.props.features.map(item => {return {...item.feature, ...item}});
 
+        // generate new key on features change to return the new instance
+		// more: https://react-leaflet.js.org/docs/en/components#geojson
+		const key = this.getRenderId(this.props.features);
+
         return (
             <GeoJSON
-                key={this.state.layerKey}
+                key={key}
                 data={features}
                 style={this.getStyle}
                 onEachFeature={this.onEachFeature}
                 pointToLayer={this.pointToLayer}
+				filter={this.filter}
             />
         );
     }
