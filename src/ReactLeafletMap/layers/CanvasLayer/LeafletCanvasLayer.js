@@ -1,4 +1,5 @@
 import _ from "lodash";
+import * as turf from "@turf/turf";
 
 import helpers from "../VectorLayer/helpers";
 import genericCanvasLayer from "./genericCanvasLayer";
@@ -34,6 +35,7 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 	onLayerClick: function(e) {
 		if (this.props.selectable) {
+			var pointsInsideBounds = [];
 			var mousePoint = e.containerPoint;
 
 			const self = this;
@@ -47,9 +49,16 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 				var lng = coordinates[0];
 
 				if (self.isPointInsideBounds(lat, lng, BoundingBox)) {
-					self.props.onClick(self.props.layerKey, [feature.original.properties[self.props.fidColumnName]])
+					pointsInsideBounds.push(feature.original);
 				}
 			});
+
+			// select single point
+			if (pointsInsideBounds.length) {
+				const position = this._map.containerPointToLatLng(mousePoint);
+				const nearest = turf.nearestPoint(turf.point([position.lng, position.lat]), {type: "FeatureCollection", features: pointsInsideBounds});
+				self.props.onClick(self.props.layerKey, [nearest.properties[self.props.fidColumnName]]);
+			}
 		}
 	},
 
