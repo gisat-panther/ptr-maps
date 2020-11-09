@@ -12,7 +12,7 @@ import Tile from "./Tile";
  * @return {string}
  */
 function getTileKey(uniqueLayerKey, tile) {
-	return `${uniqueLayerKey}_${tile.level}_${JSON.stringify(tile.tile)}`;
+	return `${uniqueLayerKey}_${tile.level}_${typeof (tile.tile) === "string" ? tile.tile : JSON.stringify(tile.tile)}`;
 }
 
 /**
@@ -27,7 +27,7 @@ function getFeatureKeysGroupedByTileKey(uniqueLayerKey, tiles, fidColumnName)  {
 		// TODO pass featureKeys or filters
 		groupedKeys.push({
 			tileKey: getTileKey(uniqueLayerKey, tile),
-			featureKeys: tile.features.map(feature => feature.id || feature.properties[fidColumnName])
+			featureKeys: tile.features?.map(feature => feature.id || feature.properties[fidColumnName])
 		})
 	});
 
