@@ -276,31 +276,38 @@ class ReactLeafletMap extends React.PureComponent {
     	const renderAs = layer.options?.renderAs;
     	if (renderAs) {
     		const boxRange  = this.state.view?.boxRange || this.props.view?.boxRange;
-    		const typeByRange = _.find(renderAs, (renderAsItem) => {
+    		const renderAsData = _.find(renderAs, (renderAsItem) => {
     			const boxRangeRange = renderAsItem.boxRangeRange;
 
     			// Current boxRange is in defined range
     			return (boxRange > boxRangeRange[0] && boxRange <= boxRangeRange[1]) || (!boxRangeRange[0] && boxRange <= boxRangeRange[1]) || (boxRange > boxRangeRange[0] && !boxRangeRange[1]);
 			});
 
-    		if (typeByRange && typeByRange.type) {
-				return this.getVectorLayerByGivenType(typeByRange.type, layer, i, zIndex);
+    		if (renderAsData && renderAsData.type) {
+    			// TODO enable to define other layer options in renderAs
+				const options = {
+					...layer.options,
+					style: renderAsData.options?.style || layer.options?.style,
+					pointAsMarker: renderAsData.options?.hasOwnProperty("pointAsMarker") ? renderAsData.options.pointAsMarker : layer.options?.pointAsMarker,
+				}
+
+				return this.getVectorLayerByGivenType(renderAsData.type, layer, i, zIndex, options);
 			} else {
-				return this.getVectorLayerByGivenType(layer.type, layer, i, zIndex);
+				return this.getVectorLayerByGivenType(layer.type, layer, i, zIndex, layer.options);
 			}
 		} else {
-			return this.getVectorLayerByGivenType(layer.type, layer, i, zIndex);
+			return this.getVectorLayerByGivenType(layer.type, layer, i, zIndex, layer.options);
 		}
 	}
 
-	getVectorLayerByGivenType(type, layer, i, zIndex) {
+	getVectorLayerByGivenType(type, layer, i, zIndex, options) {
 		switch (type) {
 			case 'vector':
-				return this.getIndexedVectorLayer(layer, i);
+				return this.getIndexedVectorLayer(layer, i, false, options);
 			case 'tiled-vector':
-				return this.getTiledVectorLayer(layer, i);
+				return this.getTiledVectorLayer(layer, i, options);
 			case 'canvas-vector':
-				return this.getCanvasLayer(layer, i, zIndex);
+				return this.getCanvasLayer(layer, i, zIndex, options);
 			case 'diagram':
 				return null;
 			// TODO do not allow DiagramLayer for now
@@ -311,7 +318,7 @@ class ReactLeafletMap extends React.PureComponent {
 		}
 	}
 
-    getIndexedVectorLayer(layer, i, isDiagram) {
+    getIndexedVectorLayer(layer, i, isDiagram, options) {
         return (
             <IndexedVectorLayer
                 component={isDiagram ? DiagramLayer : SvgVectorLayer}
@@ -323,12 +330,12 @@ class ReactLeafletMap extends React.PureComponent {
                 view={this.state.view || this.props.view}
 				zoom={this.state.leafletView.zoom}
                 onClick={this.onLayerClick}
-                {...layer.options}
+                {...options}
             />
         );
     }
 
-	getTiledVectorLayer(layer, i) {
+	getTiledVectorLayer(layer, i, options) {
     	return (
     		<TiledVectorLayer
 				key={layer.key || i}
@@ -340,12 +347,12 @@ class ReactLeafletMap extends React.PureComponent {
 				view={this.state.view || this.props.view}
 				onClick={this.onLayerClick}
 				renderAsGeoJson
-				{...layer.options}
+				{...options}
 			/>
 		);
 	}
 
-	getCanvasLayer(layer, i, zIndex) {
+	getCanvasLayer(layer, i, zIndex, options) {
 		return (
 			<CanvasVectorLayer
 				key={layer.key || i}
@@ -354,7 +361,7 @@ class ReactLeafletMap extends React.PureComponent {
 				uniqueLayerKey={layer.key || i}
 				onClick={this.onLayerClick}
 				zIndex={zIndex}
-				{...layer.options}
+				{...options}
 			/>
 		);
 	}
