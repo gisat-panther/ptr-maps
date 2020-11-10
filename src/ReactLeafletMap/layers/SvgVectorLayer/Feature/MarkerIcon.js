@@ -94,7 +94,7 @@ class MarkerIcon extends L.DivIcon {
      * @return {Object} calculated style object
      */
     getCircleStyle(leafletStyle) {
-        return this.getSquareStyle(leafletStyle, null, leafletStyle.radius);
+        return this.getSquareStyle(leafletStyle, null, leafletStyle.radius/2);
     }
 
     /**
