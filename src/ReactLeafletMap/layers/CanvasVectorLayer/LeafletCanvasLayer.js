@@ -1,5 +1,6 @@
 import _ from "lodash";
 import * as turf from "@turf/turf";
+import {mapConstants} from "@gisatcz/ptr-core";
 
 import helpers from "../SvgVectorLayer/helpers";
 import genericCanvasLayer from "./genericCanvasLayer";
@@ -96,14 +97,18 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 	},
 
 	onDrawLayer: function(params) {
+		let pixelSizeInMeters = null;
 		let context = params.canvas.getContext('2d');
+		if (!params.layer.props.pointAsMarker) {
+			pixelSizeInMeters = mapConstants.getPixelSizeInLevelsForLatitude(mapConstants.pixelSizeInLevels, 0)[params.zoom];
+		}
 
 		// clear whole layer
 		context.clearRect(0, 0, params.canvas.width, params.canvas.height);
 
 		// redraw all features
 		for (let i = 0; i < this.features.length; i++) {
-			this.drawFeature(context, params.layer, params.canvas, this.features[i]);
+			this.drawFeature(context, params.layer, params.canvas, this.features[i], pixelSizeInMeters);
 		}
 	},
 
@@ -112,8 +117,9 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 	 * @param layer {Object}
 	 * @param canvas {Object}
 	 * @param feature {Object} Feature data
+	 * @param pixelSizeInMeters {number | null}
 	 */
-	drawFeature: function (ctx, layer, canvas, feature){
+	drawFeature: function (ctx, layer, canvas, feature, pixelSizeInMeters){
 		const geometry = feature.original.geometry;
 
 		// TODO currently supports points only
@@ -128,7 +134,7 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 					style = feature.selectedStyle;
 				}
 
-				shapes.draw(ctx, center, style);
+				shapes.draw(ctx, center, style, pixelSizeInMeters);
 			}
 		}
 	}
