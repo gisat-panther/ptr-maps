@@ -18,7 +18,7 @@ function draw(context, center, style, pixelSizeInMeters) {
 }
 
 function square(context, center, style, pixelSizeInMeters) {
-	const size = pixelSizeInMeters ? style.size/pixelSizeInMeters : style.size;
+	const size = getSize(style.size, pixelSizeInMeters);
 	const a = 2*size; // side length
 	context.beginPath();
 	context.rect(center.x - a/2, center.y - a/2, a, a);
@@ -28,8 +28,8 @@ function square(context, center, style, pixelSizeInMeters) {
 
 function circle(context, center, style, pixelSizeInMeters) {
 	context.beginPath();
-	const size = pixelSizeInMeters ? style.size/pixelSizeInMeters : style.size;
-	context.arc(center.x, center.y, size, 0, Math.PI * 2);
+	const size = getSize(style.size, pixelSizeInMeters);
+	context.arc(Math.floor(center.x), Math.floor(center.y), size, 0, Math.PI * 2);
 	setPolygonStyle(context, style);
 	context.closePath();
 }
@@ -53,6 +53,12 @@ function setPolygonStyle(context, style) {
 
 		context.stroke();
 	}
+}
+
+// helpers
+function getSize(definedSize, pixelSizeInMeters) {
+	let size = pixelSizeInMeters ? definedSize/pixelSizeInMeters : definedSize;
+	return size < 0.5 ? 0.5 : size;
 }
 
 export default {

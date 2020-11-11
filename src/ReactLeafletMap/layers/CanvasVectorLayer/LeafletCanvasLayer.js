@@ -97,19 +97,30 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 	},
 
 	onDrawLayer: function(params) {
-		let pixelSizeInMeters = null;
+		// let pixelSizeInMeters = null;
 		let context = params.canvas.getContext('2d');
+		// clear whole layer
+		context.clearRect(0, 0, params.canvas.width, params.canvas.height);
+		context.drawImage(this.renderOffScreen(params), 0, 0);
+	},
+
+	renderOffScreen: function(params) {
+		let pixelSizeInMeters = null;
+		var offScreenCanvas = document.createElement('canvas');
+		offScreenCanvas.width = params.canvas.width;
+		offScreenCanvas.height = params.canvas.height;
+		var context = offScreenCanvas.getContext("2d");
+
 		if (!params.layer.props.pointAsMarker) {
 			pixelSizeInMeters = mapConstants.getPixelSizeInLevelsForLatitude(mapConstants.pixelSizeInLevels, 0)[params.zoom];
 		}
-
-		// clear whole layer
-		context.clearRect(0, 0, params.canvas.width, params.canvas.height);
 
 		// redraw all features
 		for (let i = 0; i < this.features.length; i++) {
 			this.drawFeature(context, params.layer, params.canvas, this.features[i], pixelSizeInMeters);
 		}
+
+		return offScreenCanvas;
 	},
 
 	/**
