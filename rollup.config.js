@@ -80,7 +80,7 @@ export default {
     }),
     postcss({
       // modules: true,
-      extract: 'dist/style.css',
+      extract: 'style.css',
       plugins: [
         ...postcssUrl({
           basePath: [Paths.SRC, Paths.NODE_MODULES],
