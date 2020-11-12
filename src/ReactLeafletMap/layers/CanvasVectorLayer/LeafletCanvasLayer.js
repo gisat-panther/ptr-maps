@@ -4,7 +4,8 @@ import {mapConstants} from "@gisatcz/ptr-core";
 
 import helpers from "../SvgVectorLayer/helpers";
 import genericCanvasLayer from "./genericCanvasLayer";
-import shapes from "./shapes";
+import shapes from "./shapes/shapes";
+import polygons from "./shapes/polygons";
 
 const LeafletCanvasLayer = L.CanvasLayer.extend({
 	onLayerDidMount: function() {
@@ -37,20 +38,33 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 	onLayerClick: function(e) {
 		if (this.props.selectable) {
 			var pointsInsideBounds = [];
+			var selectedPolygons = [];
 			var mousePoint = e.containerPoint;
 
 			const self = this;
-			this.features.forEach(feature => {
-				const radius = feature.defaultStyle.size;
-				var LatLngBounds = L.latLngBounds(this._map.containerPointToLatLng(mousePoint.add(L.point(radius, radius))),
-					this._map.containerPointToLatLng(mousePoint.subtract(L.point(radius, radius))))
-				var BoundingBox = this.boundsToQuery(LatLngBounds)
-				var coordinates = feature.original.geometry.coordinates;
-				var lat = coordinates[1];
-				var lng = coordinates[0];
 
-				if (self.isPointInsideBounds(lat, lng, BoundingBox)) {
-					pointsInsideBounds.push(feature.original);
+			// TODO breakable loop?
+			this.features.forEach(feature => {
+				const type = feature.original.geometry.type;
+				if (type === "Point") {
+					const radius = feature.defaultStyle.size;
+					var LatLngBounds = L.latLngBounds(this._map.containerPointToLatLng(mousePoint.add(L.point(radius, radius))),
+						this._map.containerPointToLatLng(mousePoint.subtract(L.point(radius, radius))))
+					var BoundingBox = this.boundsToQuery(LatLngBounds)
+					var coordinates = feature.original.geometry.coordinates;
+					var lat = coordinates[1];
+					var lng = coordinates[0];
+
+					if (self.isPointInsideBounds(lat, lng, BoundingBox)) {
+						pointsInsideBounds.push(feature.original);
+					}
+				} else if (type === "Polygon" || type === "MultiPolygon") {
+					const point = this._map.containerPointToLatLng(L.point(mousePoint.x, mousePoint.y));
+					const pointFeature = turf.point([point.lng, point.lat]);
+					const insidePolygon = turf.booleanPointInPolygon(pointFeature, feature.original.geometry);
+					if (insidePolygon) {
+						selectedPolygons.push(feature);
+					}
 				}
 			});
 
@@ -59,7 +73,12 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 				const position = this._map.containerPointToLatLng(mousePoint);
 				const nearest = turf.nearestPoint(turf.point([position.lng, position.lat]), {type: "FeatureCollection", features: pointsInsideBounds});
 				self.props.onClick(self.props.layerKey, [nearest.properties[self.props.fidColumnName]]);
+			} else if (selectedPolygons.length) {
+				console.log(selectedPolygons.length);
+				self.props.onClick(self.props.layerKey, [selectedPolygons[0].original.properties[self.props.fidColumnName]]);
 			}
+
+			// TODO select single line
 		}
 	},
 
@@ -71,8 +90,12 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 	prepareFeatures: function (features) {
 		const props = this.props;
+		let pointFeatures = [];
+		let polygonFeatures = [];
+		// TODO line features
 
-		let preparedFeatures = features.map(feature => {
+		_.forEach(features, feature => {
+			const type = feature && feature.geometry && feature.geometry.type;
 			const fid = feature.id || (props.fidColumnName && feature.properties[props.fidColumnName]);
 			const defaultStyle = helpers.getDefaultStyleObject(feature, props.style);
 
@@ -90,18 +113,35 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 				});
 			}
 
-			return preparedFeature;
+			// TODO add support for multipoints
+			if (type === "Point") {
+				pointFeatures.push(preparedFeature);
+			} else if (type === "Polygon" || type === "MultiPolygon") {
+				polygonFeatures.push(preparedFeature);
+			}
 		});
 
-		return _.orderBy(preparedFeatures, ['defaultStyle.size', 'fid'], ['desc', 'asc']);
+		// TODO what if diferrent geometry types in one layer?
+		if (pointFeatures.length) {
+			return _.orderBy(pointFeatures, ['defaultStyle.size', 'fid'], ['desc', 'asc']);
+		} else if (polygonFeatures.length) {
+			if (props.selected) {
+				return _.orderBy(polygonFeatures, ['selected'], ['desc']);
+			} else {
+				return polygonFeatures;
+			}
+		} else {
+			return null;
+		}
 	},
 
 	onDrawLayer: function(params) {
-		// let pixelSizeInMeters = null;
-		let context = params.canvas.getContext('2d');
-		// clear whole layer
-		context.clearRect(0, 0, params.canvas.width, params.canvas.height);
-		context.drawImage(this.renderOffScreen(params), 0, 0);
+		if (this.features) {
+			let context = params.canvas.getContext('2d');
+			// clear whole layer
+			context.clearRect(0, 0, params.canvas.width, params.canvas.height);
+			context.drawImage(this.renderOffScreen(params), 0, 0);
+		}
 	},
 
 	renderOffScreen: function(params) {
@@ -132,9 +172,9 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 	 */
 	drawFeature: function (ctx, layer, canvas, feature, pixelSizeInMeters){
 		const geometry = feature.original.geometry;
+		const type = geometry.type;
 
-		// TODO currently supports points only
-		if (geometry.type === "Point") {
+		if (type === "Point") {
 			const coordinates = geometry.coordinates;
 			const center = layer._map.latLngToContainerPoint([coordinates[1], coordinates[0]]);
 
@@ -147,7 +187,35 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 				shapes.draw(ctx, center, style, pixelSizeInMeters);
 			}
+		} else if (type === "Polygon" || type === "MultiPolygon") {
+			let coordinates = null;
+			let style = feature.defaultStyle;
+
+			if (feature.selected) {
+				style = feature.selectedStyle;
+			}
+
+			if (type === "Polygon") {
+				coordinates = this.getPolygonCoordinates(geometry.coordinates, layer);
+				polygons.drawPolygon(ctx, coordinates, style);
+			} else {
+				coordinates = geometry.coordinates.map(polygon => this.getPolygonCoordinates(polygon, layer));
+				polygons.drawMultiPolygon(ctx, coordinates, style);
+			}
+
+			polygons.drawPolygon(ctx, coordinates, style);
 		}
+
+		// TODO lines
+	},
+
+	getPolygonCoordinates: function(polygon, layer) {
+		return polygon.map(linearRing => {
+			return linearRing.map(coordinates => {
+				// TODO do not add the same points again?
+				return layer._map.latLngToContainerPoint([coordinates[1], coordinates[0]]);
+			});
+		});
 	}
 });
 
