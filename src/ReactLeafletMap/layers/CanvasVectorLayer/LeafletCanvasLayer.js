@@ -6,6 +6,7 @@ import helpers from "../SvgVectorLayer/helpers";
 import genericCanvasLayer from "./genericCanvasLayer";
 import shapes from "./shapes/shapes";
 import polygons from "./shapes/polygons";
+import lines from "./shapes/lines";
 
 const LeafletCanvasLayer = L.CanvasLayer.extend({
 	onLayerDidMount: function() {
@@ -74,7 +75,6 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 				const nearest = turf.nearestPoint(turf.point([position.lng, position.lat]), {type: "FeatureCollection", features: pointsInsideBounds});
 				self.props.onClick(self.props.layerKey, [nearest.properties[self.props.fidColumnName]]);
 			} else if (selectedPolygons.length) {
-				console.log(selectedPolygons.length);
 				self.props.onClick(self.props.layerKey, [selectedPolygons[0].original.properties[self.props.fidColumnName]]);
 			}
 
@@ -92,7 +92,7 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 		const props = this.props;
 		let pointFeatures = [];
 		let polygonFeatures = [];
-		// TODO line features
+		let lineFeatures = [];
 
 		_.forEach(features, feature => {
 			const type = feature && feature.geometry && feature.geometry.type;
@@ -113,11 +113,13 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 				});
 			}
 
-			// TODO add support for multipoints
+			// TODO add support for multipoints and multilines
 			if (type === "Point") {
 				pointFeatures.push(preparedFeature);
 			} else if (type === "Polygon" || type === "MultiPolygon") {
 				polygonFeatures.push(preparedFeature);
+			} else if (type === "LineString") {
+				lineFeatures.push(preparedFeature);
 			}
 		});
 
@@ -129,6 +131,12 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 				return _.orderBy(polygonFeatures, ['selected'], ['desc']);
 			} else {
 				return polygonFeatures;
+			}
+		} else if (lineFeatures.length) {
+			if (props.selected) {
+				return _.orderBy(lineFeatures, ['selected'], ['desc']);
+			} else {
+				return lineFeatures;
 			}
 		} else {
 			return null;
@@ -174,6 +182,7 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 		const geometry = feature.original.geometry;
 		const type = geometry.type;
 
+		// TODO multipoints multilines
 		if (type === "Point") {
 			const coordinates = geometry.coordinates;
 			const center = layer._map.latLngToContainerPoint([coordinates[1], coordinates[0]]);
@@ -202,19 +211,27 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 				coordinates = geometry.coordinates.map(polygon => this.getPolygonCoordinates(polygon, layer));
 				polygons.drawMultiPolygon(ctx, coordinates, style);
 			}
+		} else if (type === "LineString") {
+			let coordinates = null;
+			let style = feature.defaultStyle;
 
-			polygons.drawPolygon(ctx, coordinates, style);
+			if (feature.selected) {
+				style = feature.selectedStyle;
+			}
+
+			coordinates = this.getLineCoordinates(geometry.coordinates, layer);
+			lines.drawLine(ctx, coordinates, style);
 		}
-
-		// TODO lines
 	},
 
 	getPolygonCoordinates: function(polygon, layer) {
-		return polygon.map(linearRing => {
-			return linearRing.map(coordinates => {
-				// TODO do not add the same points again?
-				return layer._map.latLngToContainerPoint([coordinates[1], coordinates[0]]);
-			});
+		return polygon.map(linearRing => this.getLineCoordinates(linearRing, layer));
+	},
+
+	getLineCoordinates: function (line, layer) {
+		return line.map(coordinates => {
+			// TODO do not add the same points again?
+			return layer._map.latLngToContainerPoint([coordinates[1], coordinates[0]]);
 		});
 	}
 });
