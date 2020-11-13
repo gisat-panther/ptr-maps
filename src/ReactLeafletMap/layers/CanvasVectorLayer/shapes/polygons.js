@@ -14,9 +14,9 @@ function drawPolygon(context, coordinates, style) {
 		const start = linearRing[0];
 		const rest = linearRing.slice(1);
 
-		context.moveTo(start.x, start.y);
+		context.moveTo(Math.floor(start.x), Math.floor(start.y));
 		rest.forEach(point => {
-			context.lineTo(point.x, point.y);
+			context.lineTo(Math.floor(point.x), Math.floor(point.y));
 		});
 
 		context.closePath();

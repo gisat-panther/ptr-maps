@@ -17,6 +17,7 @@ function setPolygonStyle(context, style) {
 			context.strokeStyle = colors.getHexCodeWithTransparency(style.outlineColor, style.outlineOpacity);
 		}
 
+		context.lineJoin = "round";
 		context.stroke();
 	}
 }
