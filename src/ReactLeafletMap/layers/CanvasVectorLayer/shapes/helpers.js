@@ -1,10 +1,10 @@
-import colors from "../../../../utils/colors";
+import chroma from  'chroma-js';
 
 function setPolygonStyle(context, style) {
 	if (style.fill) {
 		context.fillStyle = style.fill;
 		if (style.fillOpacity) {
-			context.fillStyle = colors.getHexCodeWithTransparency(style.fill, style.fillOpacity);
+			context.fillStyle = chroma(style.fill).alpha(style.fillOpacity).hex();
 		}
 
 		context.fill();
@@ -14,7 +14,7 @@ function setPolygonStyle(context, style) {
 		context.lineWidth = style.outlineWidth;
 		context.strokeStyle = style.outlineColor;
 		if (style.outlineOpacity) {
-			context.strokeStyle = colors.getHexCodeWithTransparency(style.outlineColor, style.outlineOpacity);
+			context.strokeStyle = chroma(style.outlineColor).alpha(style.outlineOpacity).hex();
 		}
 
 		context.lineJoin = "round";
@@ -27,7 +27,7 @@ function setLineStyle(context, style) {
 		context.lineWidth = style.outlineWidth;
 		context.strokeStyle = style.outlineColor;
 		if (style.outlineOpacity) {
-			context.strokeStyle = colors.getHexCodeWithTransparency(style.outlineColor, style.outlineOpacity);
+			context.strokeStyle = chroma(style.outlineColor).alpha(style.outlineOpacity).hex();
 		}
 
 		context.lineJoin = "round";
