@@ -9,7 +9,7 @@ import Feature from "./Feature";
 import constants from "../../../constants";
 import GeoJsonLayer from "./GeoJsonLayer";
 
-class VectorLayer extends React.PureComponent {
+class SvgVectorLayer extends React.PureComponent {
     static propTypes = {
         layerKey: PropTypes.string,
 		uniqueLayerKey: PropTypes.string, // typically a combination of layerKey and data source key (or just layerKey, if no data source)
@@ -207,4 +207,4 @@ class VectorLayer extends React.PureComponent {
     }
 }
 
-export default VectorLayer;
+export default SvgVectorLayer;

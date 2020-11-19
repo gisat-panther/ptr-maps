@@ -82,9 +82,10 @@ class GeoJsonLayer extends React.PureComponent {
     // render points
     pointToLayer(feature, coord) {
         if (this.props.pointAsMarker) {
+        	// TODO add other shapes
             return L.circleMarker(coord, {pane: this.props.paneName});
         } else {
-            return L.circle(coord);
+            return L.circle(coord, feature.defaultStyle);
         }
     }
 
