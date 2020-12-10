@@ -211,10 +211,12 @@ class ReactLeafletMap extends React.PureComponent {
                 case 'wms':
                     return this.getWmsTileLayer(layer, i);
                 case 'vector':
+                	return this.getVectorLayer(layer, i, zIndex);
 				case 'tiled-vector':
-				case 'canvas-vector':
+					return this.getTiledVectorLayer(layer, i);
+
+				// TODO refactor Diagram layer
 				case 'diagram':
-					return this.getVectorLayer(layer, i, zIndex);
                 default:
                     return null;
             }
@@ -222,6 +224,8 @@ class ReactLeafletMap extends React.PureComponent {
             return null
         }
     }
+
+
 
     getTileLayer(layer, i) {
         let {url, ...restOptions} = layer.options;
@@ -274,6 +278,8 @@ class ReactLeafletMap extends React.PureComponent {
 
     getVectorLayer(layer, i, zIndex) {
     	const renderAs = layer.options?.renderAs;
+    	let options = layer.options;
+
     	if (renderAs) {
     		const boxRange  = this.state.view?.boxRange || this.props.view?.boxRange;
     		const renderAsData = _.find(renderAs, (renderAsItem) => {
@@ -283,38 +289,28 @@ class ReactLeafletMap extends React.PureComponent {
     			return (boxRange > boxRangeRange[0] && boxRange <= boxRangeRange[1]) || (!boxRangeRange[0] && boxRange <= boxRangeRange[1]) || (boxRange > boxRangeRange[0] && !boxRangeRange[1]);
 			});
 
-    		if (renderAsData && renderAsData.type) {
+    		if (renderAsData) {
     			// TODO enable to define other layer options in renderAs
-				const options = {
-					...layer.options,
+				options = {
+					...options,
 					style: renderAsData.options?.style || layer.options?.style,
 					pointAsMarker: renderAsData.options?.hasOwnProperty("pointAsMarker") ? renderAsData.options.pointAsMarker : layer.options?.pointAsMarker,
+					renderingTechnique: renderAsData.options?.renderingTechnique || layer.options?.renderingTechnique
 				}
-
-				return this.getVectorLayerByGivenType(renderAsData.type, layer, i, zIndex, options);
-			} else {
-				return this.getVectorLayerByGivenType(layer.type, layer, i, zIndex, layer.options);
 			}
-		} else {
-			return this.getVectorLayerByGivenType(layer.type, layer, i, zIndex, layer.options);
 		}
+
+    	return this.getVectorLayerByRenderingTechnique(layer, i, zIndex, options);
 	}
 
-	getVectorLayerByGivenType(type, layer, i, zIndex, options) {
-		switch (type) {
-			case 'vector':
-				return this.getIndexedVectorLayer(layer, i, false, options);
-			case 'tiled-vector':
-				return this.getTiledVectorLayer(layer, i, options);
-			case 'canvas-vector':
+	getVectorLayerByRenderingTechnique(layer, i, zIndex, options) {
+    	const renderingTechique = options?.renderingTechnique;
+
+		switch (renderingTechique) {
+			case 'canvas':
 				return this.getCanvasLayer(layer, i, zIndex, options);
-			case 'diagram':
-				return null;
-			// TODO do not allow DiagramLayer for now
-			// TODO DiagramLayer has to be refactored
-			// return this.getIndexedVectorLayer(layer, i, true);
 			default:
-				return null;
+				return this.getIndexedVectorLayer(layer, i, false, options);
 		}
 	}
 
@@ -335,7 +331,7 @@ class ReactLeafletMap extends React.PureComponent {
         );
     }
 
-	getTiledVectorLayer(layer, i, options) {
+	getTiledVectorLayer(layer, i) {
     	return (
     		<TiledVectorLayer
 				key={layer.key || i}
@@ -347,7 +343,7 @@ class ReactLeafletMap extends React.PureComponent {
 				view={this.state.view || this.props.view}
 				onClick={this.onLayerClick}
 				renderAsGeoJson
-				{...options}
+				{...layer.options}
 			/>
 		);
 	}
