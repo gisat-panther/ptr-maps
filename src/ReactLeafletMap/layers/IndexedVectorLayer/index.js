@@ -46,6 +46,8 @@ class IndexedVectorLayer extends React.PureComponent {
     }
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
+		// console.log("options", prevProps.options === this.props.options);
+
 		// TODO fix for map view controlled from outside of the map
 		setTimeout(() => {
 			const bbox = getBbox(this.props.leaflet.map);
@@ -78,6 +80,7 @@ class IndexedVectorLayer extends React.PureComponent {
     	const {view, zoom, component, ...props} = this.props;
 
         if (props.features && this.boxRangeFitsLimits()) {
+        	// console.log("### Render Indexed");
         	this.repopulateIndexTreeIfNeeded(props.features);
 
 			// Bounding box in GeoJSON format

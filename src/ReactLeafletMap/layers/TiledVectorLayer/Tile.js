@@ -1,11 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import {withLeaflet} from "react-leaflet";
 import memoize from "memoize-one";
 
 import IndexedVectorLayer from "../IndexedVectorLayer";
-import SvgVectorLayer from "../SvgVectorLayer";
+import CanvasVectorLayer from "../CanvasVectorLayer";
 
 /**
  * @param featureKeysGroupedByTileKey {Array} A collection of feature keys by tile key
@@ -89,19 +88,31 @@ class Tile extends React.PureComponent {
 	}
 
 	render() {
-		const {tileKey, featureKeysGroupedByTileKey, ...props} = this.props;
+		const {tileKey, featureKeysGroupedByTileKey, component, ...props} = this.props;
 		const omittedFeatureKeys = this.getFeatureKeysToOmit(featureKeysGroupedByTileKey, tileKey, props.features, props.fidColumnName);
 
-		return (
-			<IndexedVectorLayer
-				{...props}
-				component={SvgVectorLayer}
-				key={tileKey}
-				uniqueLayerKey={tileKey}
-				omittedFeatureKeys={this.checkIdentity(omittedFeatureKeys)}
-			/>
-		);
+		if (component.type === CanvasVectorLayer) {
+			return (
+				<CanvasVectorLayer
+					{...props}
+					key={tileKey}
+					uniqueLayerKey={tileKey}
+					omittedFeatureKeys={this.checkIdentity(omittedFeatureKeys)}
+				/>
+			);
+		} else {
+			return (
+				<IndexedVectorLayer
+					{...props}
+					component={component}
+					key={tileKey}
+					uniqueLayerKey={tileKey}
+					omittedFeatureKeys={this.checkIdentity(omittedFeatureKeys)}
+					renderAsGeoJson // TODO always render as GeoJson for now
+				/>
+			);
+		}
 	}
 }
 
-export default withLeaflet(Tile);
+export default Tile;

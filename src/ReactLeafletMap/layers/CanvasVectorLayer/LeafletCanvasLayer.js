@@ -45,7 +45,7 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 			const self = this;
 
 			// TODO breakable loop?
-			this.features.forEach(feature => {
+			this.features?.forEach(feature => {
 				const type = feature.original.geometry.type;
 				if (type === "Point") {
 					const radius = feature.defaultStyle.size;

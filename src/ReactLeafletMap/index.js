@@ -8,17 +8,13 @@ import {mapConstants} from "@gisatcz/ptr-core";
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 
 import viewHelpers from "./viewHelpers";
-import SvgVectorLayer from "./layers/SvgVectorLayer";
 import _ from "lodash";
-import DiagramLayer from "./layers/DiagramLayer";
-import IndexedVectorLayer from "./layers/IndexedVectorLayer";
+import VectorLayer from "./layers/VectorLayer";
 import WMSLayer from "./layers/WMSLayer";
 
 import './style.scss';
 import 'leaflet/dist/leaflet.css';
 import constants from "../constants";
-import TiledVectorLayer from "./layers/TiledVectorLayer";
-import CanvasVectorLayer from "./layers/CanvasVectorLayer";
 
 class ReactLeafletMap extends React.PureComponent {
     static propTypes = {
@@ -211,12 +207,9 @@ class ReactLeafletMap extends React.PureComponent {
                 case 'wms':
                     return this.getWmsTileLayer(layer, i);
                 case 'vector':
-                	return this.getVectorLayer(layer, i, zIndex);
 				case 'tiled-vector':
-					return this.getTiledVectorLayer(layer, i);
-
-				// TODO refactor Diagram layer
 				case 'diagram':
+                	return this.getVectorLayer(layer, i, zIndex);
                 default:
                     return null;
             }
@@ -224,6 +217,23 @@ class ReactLeafletMap extends React.PureComponent {
             return null
         }
     }
+
+    getVectorLayer(layer, i, zIndex) {
+    	return (
+    		<VectorLayer
+				key={layer.key || i}
+				layerKey={layer.layerKey || layer.key}
+				uniqueLayerKey={layer.key || i}
+				onClick={this.onLayerClick}
+				opacity={layer.opacity || 1}
+				options={layer.options}
+				type={layer.type}
+				view={this.state.view || this.props.view}
+				zoom={this.state.leafletView.zoom}
+				zIndex={zIndex}
+			/>
+		);
+	}
 
 
 
@@ -275,92 +285,6 @@ class ReactLeafletMap extends React.PureComponent {
             />
         );
     }
-
-    getVectorLayer(layer, i, zIndex) {
-    	const renderAs = layer.options?.renderAs;
-    	let options = layer.options;
-
-    	if (renderAs) {
-    		const boxRange  = this.state.view?.boxRange || this.props.view?.boxRange;
-    		const renderAsData = _.find(renderAs, (renderAsItem) => {
-    			const boxRangeRange = renderAsItem.boxRangeRange;
-
-    			// Current boxRange is in defined range
-    			return (boxRange > boxRangeRange[0] && boxRange <= boxRangeRange[1]) || (!boxRangeRange[0] && boxRange <= boxRangeRange[1]) || (boxRange > boxRangeRange[0] && !boxRangeRange[1]);
-			});
-
-    		if (renderAsData) {
-    			// TODO enable to define other layer options in renderAs
-				options = {
-					...options,
-					style: renderAsData.options?.style || layer.options?.style,
-					pointAsMarker: renderAsData.options?.hasOwnProperty("pointAsMarker") ? renderAsData.options.pointAsMarker : layer.options?.pointAsMarker,
-					renderingTechnique: renderAsData.options?.renderingTechnique || layer.options?.renderingTechnique
-				}
-			}
-		}
-
-    	return this.getVectorLayerByRenderingTechnique(layer, i, zIndex, options);
-	}
-
-	getVectorLayerByRenderingTechnique(layer, i, zIndex, options) {
-    	const renderingTechique = options?.renderingTechnique;
-
-		switch (renderingTechique) {
-			case 'canvas':
-				return this.getCanvasLayer(layer, i, zIndex, options);
-			default:
-				return this.getIndexedVectorLayer(layer, i, false, options);
-		}
-	}
-
-    getIndexedVectorLayer(layer, i, isDiagram, options) {
-        return (
-            <IndexedVectorLayer
-                component={isDiagram ? DiagramLayer : SvgVectorLayer}
-                key={layer.key || i}
-                type={layer.type}
-                layerKey={layer.layerKey || layer.key}
-				uniqueLayerKey={layer.key || i}
-                opacity={layer.opacity || 1}
-                view={this.state.view || this.props.view}
-				zoom={this.state.leafletView.zoom}
-                onClick={this.onLayerClick}
-                {...options}
-            />
-        );
-    }
-
-	getTiledVectorLayer(layer, i) {
-    	return (
-    		<TiledVectorLayer
-				key={layer.key || i}
-				type={layer.type}
-				layerKey={layer.layerKey || layer.key}
-				uniqueLayerKey={layer.key || i}
-				opacity={layer.opacity || 1}
-				zoom={this.state.leafletView.zoom}
-				view={this.state.view || this.props.view}
-				onClick={this.onLayerClick}
-				renderAsGeoJson
-				{...layer.options}
-			/>
-		);
-	}
-
-	getCanvasLayer(layer, i, zIndex, options) {
-		return (
-			<CanvasVectorLayer
-				key={layer.key || i}
-				type={layer.type}
-				layerKey={layer.layerKey || layer.key}
-				uniqueLayerKey={layer.key || i}
-				onClick={this.onLayerClick}
-				zIndex={zIndex}
-				{...options}
-			/>
-		);
-	}
 
     onLayerClick(layerKey, featureKeys) {
         if (this.props.onLayerClick) {
