@@ -101,7 +101,8 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 			let preparedFeature = {
 				original: feature,
-				defaultStyle
+				defaultStyle,
+				fid
 			};
 
 			if (props.selected && fid) {
@@ -165,7 +166,12 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 		// redraw all features
 		for (let i = 0; i < this.features.length; i++) {
-			this.drawFeature(context, params.layer, params.canvas, this.features[i], pixelSizeInMeters);
+			const feature = this.features[i];
+			const omitFeature = this.props.omittedFeatureKeys?.length && _.includes(this.props.omittedFeatureKeys, feature.fid);
+
+			if (!omitFeature) {
+				this.drawFeature(context, params.layer, params.canvas, feature, pixelSizeInMeters);
+			}
 		}
 
 		return offScreenCanvas;
