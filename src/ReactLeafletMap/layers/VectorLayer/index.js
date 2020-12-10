@@ -10,7 +10,6 @@ import TiledVectorLayer from "../TiledVectorLayer";
 
 class VectorLayer extends React.PureComponent {
 	static propTypes = {
-		key: PropTypes.string,
 		layerKey: PropTypes.string,
 		uniqueLayerKey: PropTypes.oneOfType([
 			PropTypes.number,
