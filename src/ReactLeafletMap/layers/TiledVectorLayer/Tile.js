@@ -5,6 +5,7 @@ import memoize from "memoize-one";
 
 import IndexedVectorLayer from "../IndexedVectorLayer";
 import CanvasVectorLayer from "../CanvasVectorLayer";
+import SvgVectorLayer from "../SvgVectorLayer";
 
 /**
  * @param featureKeysGroupedByTileKey {Array} A collection of feature keys by tile key
@@ -78,10 +79,6 @@ class Tile extends React.PureComponent {
 			PropTypes.array,
 			PropTypes.string
 		]),
-		component: PropTypes.oneOfType([
-			PropTypes.func,
-			PropTypes.object
-		]),
 		featureKeysGroupedByTileKey: PropTypes.array // a collection of all tiles and their features for each tile in the layer
 	};
 
@@ -98,7 +95,7 @@ class Tile extends React.PureComponent {
 		const {tileKey, featureKeysGroupedByTileKey, component, ...props} = this.props;
 		const omittedFeatureKeys = this.getFeatureKeysToOmit(featureKeysGroupedByTileKey, tileKey, props.features, props.fidColumnName);
 
-		if (component.type === CanvasVectorLayer) {
+		if (props.renderingTechnique === 'canvas') {
 			return (
 				<CanvasVectorLayer
 					{...props}
@@ -111,7 +108,7 @@ class Tile extends React.PureComponent {
 			return (
 				<IndexedVectorLayer
 					{...props}
-					component={component}
+					component={SvgVectorLayer}
 					key={tileKey}
 					uniqueLayerKey={tileKey}
 					omittedFeatureKeys={this.checkIdentity(omittedFeatureKeys)}
