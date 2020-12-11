@@ -140,24 +140,26 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 	//------------------------------------------------------------------------------
 	drawLayer: function () {
 		// -- todo make the viewInfo properties  flat objects.
-		var size   = this._map.getSize();
-		var bounds = this._map.getBounds();
-		var zoom   = this._map.getZoom();
+		if (this._map) {
+			var size   = this._map.getSize();
+			var bounds = this._map.getBounds();
+			var zoom   = this._map.getZoom();
 
-		var center = this.LatLonToMercator(this._map.getCenter());
-		var corner = this.LatLonToMercator(this._map.containerPointToLatLng(this._map.getSize()));
+			var center = this.LatLonToMercator(this._map.getCenter());
+			var corner = this.LatLonToMercator(this._map.containerPointToLatLng(this._map.getSize()));
 
-		var del = this._delegate || this;
-		del.onDrawLayer && del.onDrawLayer( {
-			layer : this,
-			canvas: this._canvas,
-			bounds: bounds,
-			size: size,
-			zoom: zoom,
-			center : center,
-			corner : corner
-		});
-		this._frame = null;
+			var del = this._delegate || this;
+			del.onDrawLayer && del.onDrawLayer( {
+				layer : this,
+				canvas: this._canvas,
+				bounds: bounds,
+				size: size,
+				zoom: zoom,
+				center : center,
+				corner : corner
+			});
+			this._frame = null;
+		}
 	},
 	// -- L.DomUtil.setTransform from leaflet 1.0.0 to work on 0.0.7
 	//------------------------------------------------------------------------------

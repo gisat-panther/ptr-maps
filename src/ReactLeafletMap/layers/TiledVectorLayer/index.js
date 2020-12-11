@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import {withLeaflet} from "react-leaflet";
 import memoize from "memoize-one";
 
 import Tile from "./Tile";
@@ -39,7 +38,11 @@ class TiledVectorLayer extends React.PureComponent {
 		fidColumnName: PropTypes.string,
 		tiles: PropTypes.array,
 		layerKey: PropTypes.string,
-		uniqueLayerKey: PropTypes.string
+		uniqueLayerKey: PropTypes.string,
+		component: PropTypes.oneOfType([
+			PropTypes.func,
+			PropTypes.object
+		]),
 	};
 
 	constructor(props) {
@@ -75,4 +78,4 @@ class TiledVectorLayer extends React.PureComponent {
 	}
 }
 
-export default withLeaflet(TiledVectorLayer);
+export default TiledVectorLayer;

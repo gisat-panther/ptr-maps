@@ -12,7 +12,7 @@ class CanvasVectorLayer extends MapLayer {
 		super.updateLeafletElement(fromProps, toProps);
 
 		// TODO
-		if (fromProps.selected !== toProps.selected || fromProps.features !== toProps.features || fromProps.style !== toProps.style) {
+		if (fromProps.selected !== toProps.selected || fromProps.features !== toProps.features || fromProps.style !== toProps.style || fromProps.omittedFeatureKeys !== this.props.omittedFeatureKeys) {
 			this.leafletElement.setProps(toProps);
 		}
 	}

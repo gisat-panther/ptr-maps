@@ -45,40 +45,42 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 			const self = this;
 
 			// TODO breakable loop?
-			this.features.forEach(feature => {
-				const type = feature.original.geometry.type;
-				if (type === "Point") {
-					const radius = feature.defaultStyle.size;
-					var LatLngBounds = L.latLngBounds(this._map.containerPointToLatLng(mousePoint.add(L.point(radius, radius))),
-						this._map.containerPointToLatLng(mousePoint.subtract(L.point(radius, radius))))
-					var BoundingBox = this.boundsToQuery(LatLngBounds)
-					var coordinates = feature.original.geometry.coordinates;
-					var lat = coordinates[1];
-					var lng = coordinates[0];
+			if (_.isArray(this.features)) {
+				this.features.forEach(feature => {
+					const type = feature.original.geometry.type;
+					if (type === "Point") {
+						const radius = feature.defaultStyle.size;
+						var LatLngBounds = L.latLngBounds(this._map.containerPointToLatLng(mousePoint.add(L.point(radius, radius))),
+							this._map.containerPointToLatLng(mousePoint.subtract(L.point(radius, radius))))
+						var BoundingBox = this.boundsToQuery(LatLngBounds)
+						var coordinates = feature.original.geometry.coordinates;
+						var lat = coordinates[1];
+						var lng = coordinates[0];
 
-					if (self.isPointInsideBounds(lat, lng, BoundingBox)) {
-						pointsInsideBounds.push(feature.original);
+						if (self.isPointInsideBounds(lat, lng, BoundingBox)) {
+							pointsInsideBounds.push(feature.original);
+						}
+					} else if (type === "Polygon" || type === "MultiPolygon") {
+						const point = this._map.containerPointToLatLng(L.point(mousePoint.x, mousePoint.y));
+						const pointFeature = turf.point([point.lng, point.lat]);
+						const insidePolygon = turf.booleanPointInPolygon(pointFeature, feature.original.geometry);
+						if (insidePolygon) {
+							selectedPolygons.push(feature);
+						}
 					}
-				} else if (type === "Polygon" || type === "MultiPolygon") {
-					const point = this._map.containerPointToLatLng(L.point(mousePoint.x, mousePoint.y));
-					const pointFeature = turf.point([point.lng, point.lat]);
-					const insidePolygon = turf.booleanPointInPolygon(pointFeature, feature.original.geometry);
-					if (insidePolygon) {
-						selectedPolygons.push(feature);
-					}
+				});
+
+				// select single point
+				if (pointsInsideBounds.length) {
+					const position = this._map.containerPointToLatLng(mousePoint);
+					const nearest = turf.nearestPoint(turf.point([position.lng, position.lat]), {type: "FeatureCollection", features: pointsInsideBounds});
+					self.props.onClick(self.props.layerKey, [nearest.properties[self.props.fidColumnName]]);
+				} else if (selectedPolygons.length) {
+					self.props.onClick(self.props.layerKey, [selectedPolygons[0].original.properties[self.props.fidColumnName]]);
 				}
-			});
 
-			// select single point
-			if (pointsInsideBounds.length) {
-				const position = this._map.containerPointToLatLng(mousePoint);
-				const nearest = turf.nearestPoint(turf.point([position.lng, position.lat]), {type: "FeatureCollection", features: pointsInsideBounds});
-				self.props.onClick(self.props.layerKey, [nearest.properties[self.props.fidColumnName]]);
-			} else if (selectedPolygons.length) {
-				self.props.onClick(self.props.layerKey, [selectedPolygons[0].original.properties[self.props.fidColumnName]]);
+				// TODO select single line
 			}
-
-			// TODO select single line
 		}
 	},
 
@@ -101,7 +103,8 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 			let preparedFeature = {
 				original: feature,
-				defaultStyle
+				defaultStyle,
+				fid
 			};
 
 			if (props.selected && fid) {
@@ -165,7 +168,12 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 		// redraw all features
 		for (let i = 0; i < this.features.length; i++) {
-			this.drawFeature(context, params.layer, params.canvas, this.features[i], pixelSizeInMeters);
+			const feature = this.features[i];
+			const omitFeature = this.props.omittedFeatureKeys?.length && _.includes(this.props.omittedFeatureKeys, feature.fid);
+
+			if (!omitFeature) {
+				this.drawFeature(context, params.layer, params.canvas, feature, pixelSizeInMeters);
+			}
 		}
 
 		return offScreenCanvas;
