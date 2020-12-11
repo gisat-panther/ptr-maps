@@ -7,6 +7,7 @@ import DiagramLayer from "../DiagramLayer";
 import IndexedVectorLayer from "../IndexedVectorLayer";
 import SvgVectorLayer from "../SvgVectorLayer";
 import TiledVectorLayer from "../TiledVectorLayer";
+import view from "../../../utils/view";
 
 class VectorLayer extends React.PureComponent {
 	static propTypes = {
@@ -32,10 +33,7 @@ class VectorLayer extends React.PureComponent {
 		if (renderAs) {
 			const boxRange  = props.view?.boxRange;
 			const renderAsData = _.find(renderAs, (renderAsItem) => {
-				const boxRangeRange = renderAsItem.boxRangeRange;
-
-				// Current boxRange is in defined range
-				return (boxRange > boxRangeRange[0] && boxRange <= boxRangeRange[1]) || (!boxRangeRange[0] && boxRange <= boxRangeRange[1]) || (boxRange > boxRangeRange[0] && !boxRangeRange[1]);
+				return view.isBoxRangeInRange(boxRange, renderAsItem.boxRangeRange);
 			});
 
 			if (renderAsData) {
