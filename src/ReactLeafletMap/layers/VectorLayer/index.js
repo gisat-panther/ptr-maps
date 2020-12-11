@@ -50,44 +50,32 @@ class VectorLayer extends React.PureComponent {
 		return options;
 	}
 
-	getRenderComponent(renderingTechnique) {
-		switch (renderingTechnique) {
-			case 'canvas':
-				return CanvasVectorLayer;
-			case 'svg':
-			default:
-				return SvgVectorLayer;
-		}
-	}
-
 	render() {
 		const options = this.getOptions();
-		const renderComponent = this.getRenderComponent(options?.renderingTechnique);
 
 		// TODO handle type 'diagram'
 		if (this.props.type === 'tiled-vector') {
-			return this.renderTiledVectorLayer(options, renderComponent);
+			return this.renderTiledVectorLayer(options);
 		} else {
-			return this.renderBasicVectorLayer(options, renderComponent);
+			return this.renderBasicVectorLayer(options);
 		}
 	}
 
-	renderTiledVectorLayer(options, renderComponent) {
+	renderTiledVectorLayer(options) {
 		const {options: opt, ...props} = this.props;
 
 		return (
 			<TiledVectorLayer
-				component={renderComponent}
 				{...props}
 				{...options}
 			/>
 		);
 	}
 
-	renderBasicVectorLayer(options, renderComponent) {
+	renderBasicVectorLayer(options) {
 		const {options: opt, ...props} = this.props;
 
-		if (renderComponent.type === CanvasVectorLayer) {
+		if (options.renderingTechnique === 'canvas') {
 			return (
 				<CanvasVectorLayer
 					{...props}
@@ -97,7 +85,7 @@ class VectorLayer extends React.PureComponent {
 		} else {
 			return (
 				<IndexedVectorLayer
-					component={renderComponent}
+					component={SvgVectorLayer}
 					{...props}
 					{...options}
 				/>

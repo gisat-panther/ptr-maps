@@ -147,10 +147,10 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 	},
 
 	onDrawLayer: function(params) {
+		let context = params.canvas.getContext('2d');
+		context.clearRect(0, 0, params.canvas.width, params.canvas.height);
 		if (this.features) {
-			let context = params.canvas.getContext('2d');
 			// clear whole layer
-			context.clearRect(0, 0, params.canvas.width, params.canvas.height);
 			context.drawImage(this.renderOffScreen(params), 0, 0);
 		}
 	},
