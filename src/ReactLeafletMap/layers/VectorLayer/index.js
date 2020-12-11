@@ -24,10 +24,6 @@ class VectorLayer extends React.PureComponent {
 		zIndex: PropTypes.number
 	};
 
-	constructor(props) {
-		super(props);
-	}
-
 	getOptions() {
 		const props = this.props;
 		const renderAs = props.options?.renderAs;
