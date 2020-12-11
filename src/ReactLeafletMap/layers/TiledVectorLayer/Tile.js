@@ -78,6 +78,10 @@ class Tile extends React.PureComponent {
 			PropTypes.array,
 			PropTypes.string
 		]),
+		component: PropTypes.oneOfType([
+			PropTypes.func,
+			PropTypes.object
+		]),
 		featureKeysGroupedByTileKey: PropTypes.array // a collection of all tiles and their features for each tile in the layer
 	};
 

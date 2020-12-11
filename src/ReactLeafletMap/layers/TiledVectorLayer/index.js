@@ -38,7 +38,11 @@ class TiledVectorLayer extends React.PureComponent {
 		fidColumnName: PropTypes.string,
 		tiles: PropTypes.array,
 		layerKey: PropTypes.string,
-		uniqueLayerKey: PropTypes.string
+		uniqueLayerKey: PropTypes.string,
+		component: PropTypes.oneOfType([
+			PropTypes.func,
+			PropTypes.object
+		]),
 	};
 
 	constructor(props) {
