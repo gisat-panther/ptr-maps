@@ -9,7 +9,7 @@ import {mapStyle} from "@gisatcz/ptr-utils";
  * @param style {Object} Extended Leaflet style definition
  * @param options {Object}
  */
-class MarkerIcon extends L.DivIcon {
+class MarkerShape extends L.DivIcon {
     constructor(id, style, options) {
         super(options);
 
@@ -74,7 +74,7 @@ class MarkerIcon extends L.DivIcon {
 
     /**
      * Prepare element style by shape
-     * @param style {Object} Panther style definition
+     * @param style {Object} Leaflet style definition
      * @return {Object} calculated style object
      */
     getStyle(style) {
@@ -160,4 +160,4 @@ class MarkerIcon extends L.DivIcon {
     }
 }
 
-export default MarkerIcon;
+export default MarkerShape;

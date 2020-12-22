@@ -5,8 +5,10 @@ import { shallowEqualObjects } from "shallow-equal";
 import {utils} from "@gisatcz/ptr-utils";
 
 import ContextWrapper from "./ContextWrapper";
-import MarkerIcon from "./MarkerIcon";
+import MarkerShape from "./MarkerShape";
+import SvgMarkerShape from "./SvgMarkerShape";
 import helpers from "../helpers";
+import shapes from "../../../shapes";
 
 class Feature extends React.PureComponent {
     static propTypes = {
@@ -48,7 +50,7 @@ class Feature extends React.PureComponent {
         this.fid = props.fid;
 
         if (props.type === "Point" && props.pointAsMarker) {
-            this.iconId = this.props.fid ? `${this.props.fid}_icon` : utils.uuid();
+            this.shapeId = this.props.fid ? `${this.props.fid}_icon` : utils.uuid();
         }
 
         this.state = {
@@ -228,28 +230,63 @@ class Feature extends React.PureComponent {
     }
 
     renderShape(coordinates, style) {
-        if (!this.icon) {
-            this.icon = new MarkerIcon(this.iconId, style, {
-                iconAnchor: style.radius ? [style.radius, style.radius] : null,
-                onMouseMove: this.onMouseMove,
-                onMouseOut: this.onMouseOut,
-                onMouseOver: this.onMouseMove,
-                onClick: this.onClick
-            });
+        if (!this.shape) {
+        	let shape = null;
+        	let icon = null;
+        	const shapeKey = style.shape;
+        	const iconKey = style.icon;
 
-            this.icon.setStyle(style);
+        	if (shapeKey) {
+        		shape = shapes[shapeKey];
+			}
+
+        	if (iconKey) {
+        		icon = this.props.icons[iconKey];
+			}
+
+        	if (shape || icon) {
+				let anchorRatioX = 0.5;
+        		let anchorRatioY = 0.5;
+
+        		if (shape?.anchorPoint) {
+					anchorRatioX = shape.anchorPoint[0];
+					anchorRatioY = shape.anchorPoint[1];
+				} else if (!shape && icon?.anchorPoint) {
+					anchorRatioX = icon.anchorPoint[0];
+					anchorRatioY = icon.anchorPoint[1];
+				}
+
+				this.shape = new SvgMarkerShape(this.shapeId, style, {
+					iconAnchor: style.radius ? [2*style.radius*anchorRatioX, 2*style.radius*anchorRatioY] : null,
+					icon,
+					shape,
+					onMouseMove: this.onMouseMove,
+					onMouseOut: this.onMouseOut,
+					onMouseOver: this.onMouseMove,
+					onClick: this.onClick
+				});
+			} else {
+        		// TODO move these basic shapes to SvgMarkerShape
+				this.shape = new MarkerShape(this.shapeId, style, {
+					iconAnchor: style.radius ? [style.radius, style.radius] : null,
+					onMouseMove: this.onMouseMove,
+					onMouseOut: this.onMouseOut,
+					onMouseOver: this.onMouseMove,
+					onClick: this.onClick
+				});
+			}
         }
 
         if (!shallowEqualObjects(this.style, style)) {
             this.style = style;
-            this.icon.setStyle(style);
+            this.shape.setStyle(style);
         }
 
         return (
             <Marker
                 interactive={this.props.hoverable || this.props.selectable}
                 position={coordinates}
-                icon={this.icon}
+                icon={this.shape}
                 onAdd={this.onAdd}
             />
         );

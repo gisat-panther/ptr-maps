@@ -46,7 +46,7 @@ function getFeatureAccentedStyle(feature, defaultStyleObject, accentedStyleObjec
  * @return {Object} Leaflet style definition
  */
 function getFeatureLeafletStyle(feature, style) {
-	let finalStyle = {};
+	let {outlineColor, outlineWidth, outlineOpacity, fillOpacity, fill, size, volume, ...finalStyle} = style;
 
 	finalStyle.color = style.outlineColor ? style.outlineColor : null;
 	finalStyle.weight = style.outlineWidth ? style.outlineWidth : 0;
@@ -72,10 +72,6 @@ function getFeatureLeafletStyle(feature, style) {
 		} else if (style.volume) {
 			finalStyle.radius = Math.sqrt(style.volume/Math.PI);
 		}
-	}
-
-	if (style.shape) {
-		finalStyle.shape = style.shape;
 	}
 
 	return finalStyle;
