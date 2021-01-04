@@ -118,9 +118,17 @@ class ReactLeafletMap extends React.PureComponent {
                 change.boxRange = mapUtils.view.getBoxRangeFromZoomLevel(viewport.zoom, this.state.width, this.state.height);
             }
 
-            if (!_.isEmpty(change) && this.props.onViewChange && !this.hasResized()) {
-                change = mapUtils.view.ensureViewIntegrity(change);
-                this.props.onViewChange(change);
+            if (!_.isEmpty(change) && !this.hasResized()) {
+				change = mapUtils.view.ensureViewIntegrity(change);
+            	if (this.props.onViewChange) {
+					this.props.onViewChange(change);
+				}
+            	// just presentational map
+            	else {
+            		this.setState({
+						view: change
+					})
+				}
             }
         }
     }
