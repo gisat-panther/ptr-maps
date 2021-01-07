@@ -75,7 +75,9 @@ class SvgMarkerShape extends L.DivIcon {
 		let shape = null;
 		const style = this.getStyle(this.style);
 
-		if (this.shape) {
+		if (this.shape && this.icon) {
+			shape = this.getShapeWithIcon(this.shape, this.icon, style, this.style.weight);
+		} else if (this.shape) {
 			const props = this.shape.componentProps ? {...this.shape.componentProps, style} : {style};
 			shape = React.createElement(this.shape.component, props);
 		} else {
@@ -91,6 +93,21 @@ class SvgMarkerShape extends L.DivIcon {
 		return ReactDOMServer.renderToString(shape);
 	}
 
+	getShapeWithIcon(shape, icon, style, outlineWidth) {
+		let iconStyle = {strokeWidth: 0}; // TODO think about icons styling inside shape
+		const {iconFill, ...shapeStyle} = style;
+
+		if (iconFill) {
+			iconStyle.fill = iconFill;
+		}
+
+		const iconProps = this.icon.componentProps ? {...this.icon.componentProps, style: iconStyle} : {style: iconStyle};
+		const iconComponent = React.createElement(this.icon.component, iconProps);
+
+		const props = this.shape.componentProps ? {...this.shape.componentProps, style: shapeStyle} : {style: shapeStyle};
+		return React.createElement(this.shape.component, {...props, icon: iconComponent, outlineWidth});
+	}
+
 	/**
 	 * Prepare element style by shape
 	 * @param leafletStyle {Object} Leaflet style definition
@@ -99,8 +116,9 @@ class SvgMarkerShape extends L.DivIcon {
 	getStyle(leafletStyle) {
 		let style = {};
 		if (leafletStyle.radius) {
-			style.width = leafletStyle.radius * 2 + 'px';
-			style.height = leafletStyle.radius * 2 + 'px';
+			const size = leafletStyle.radius * 2 + (leafletStyle.weight || 0);
+			style.width = size + 'px';
+			style.height = size + 'px';
 		}
 
 		if (leafletStyle.fillColor) {

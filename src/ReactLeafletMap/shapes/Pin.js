@@ -1,22 +1,15 @@
 import React from 'react';
+import svg from "./svg";
 
-export default props => (
-	<svg
-		version="1.1"
-		xmlns="http://www.w3.org/2000/svg"
-		xmlnsXlink="http://www.w3.org/1999/xlink"
-		x="0px"
-		y="0px"
-		width="32px"
-		height="32px"
-		viewBox="0 0 32 32"
-		xmlSpace="preserve"
-		className={`ptr-map-shape ${props.className || ''}`}
-		style={props.style}
-	>
-		<g>
-			<path
-				d="M 15.5 1 A 10.5 10.50011 0 0 0 5 11.5 A 10.5 10.50011 0 0 0 7.2402344 17.978516 L 7.2363281 17.978516 C 7.243218 17.985879 7.2489813 17.992644 7.2558594 18 A 10.5 10.50011 0 0 0 8.1699219 19.005859 C 11.338438 22.540903 13.218801 25.524826 15.5 31 C 17.783066 25.520363 19.664692 22.536743 22.800781 19.044922 A 10.5 10.50011 0 0 0 23.636719 18.125 C 23.664079 18.095737 23.687296 18.06843 23.714844 18.039062 L 23.703125 18.039062 A 10.5 10.50011 0 0 0 26 11.5 A 10.5 10.50011 0 0 0 15.5 1 z "/>
+const Pin = props => {
+	return (
+		<g transform={`translate(${props.offset} ${props.offset + (props.offset/4)})`}>
+			<path vectorEffect="non-scaling-stroke" d="M 27,10.999999 C 26.999936,4.924849 22.075087,0 16,0 9.9249129,0 5.0000636,4.924849 5,10.999999 4.9998451,13.460703 6.2398215,15.834434 8.6666665,18.857143 11.093512,21.879851 13.424935,25.819509 16,32 18.614084,25.725879 20.878951,21.8993 23.333333,18.857143 25.787715,15.814985 26.999857,13.488539 27,10.999999 Z"/>
+			<g transform="translate(9 3.5) scale(0.4375 0.4375)">
+				{props.icon || null}
+			</g>
 		</g>
-	</svg>
-);
+	);
+};
+
+export default (props) => React.createElement(svg, props, Pin);

@@ -247,6 +247,7 @@ class Feature extends React.PureComponent {
         	if (shape || icon) {
 				let anchorRatioX = 0.5;
         		let anchorRatioY = 0.5;
+        		let anchorOffset = 0;
 
         		if (shape?.anchorPoint) {
 					anchorRatioX = shape.anchorPoint[0];
@@ -256,8 +257,12 @@ class Feature extends React.PureComponent {
 					anchorRatioY = icon.anchorPoint[1];
 				}
 
+        		if (style?.weight) {
+        			anchorOffset = style?.weight;
+				}
+
 				this.shape = new SvgMarkerShape(this.shapeId, style, {
-					iconAnchor: style.radius ? [2*style.radius*anchorRatioX, 2*style.radius*anchorRatioY] : null,
+					iconAnchor: style.radius ? [(2*style.radius + anchorOffset)*anchorRatioX, (2*style.radius + anchorOffset)*anchorRatioY] : null,
 					icon,
 					shape,
 					onMouseMove: this.onMouseMove,
