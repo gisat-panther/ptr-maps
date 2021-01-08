@@ -5,9 +5,9 @@ import { shallowEqualObjects } from "shallow-equal";
 import {utils} from "@gisatcz/ptr-utils";
 
 import ContextWrapper from "./ContextWrapper";
-import SvgMarkerShape from "./SvgMarkerShape";
+import MarkerShape from "./MarkerShape";
 import helpers from "../helpers";
-import shapes from "../../../shapes";
+import shapes from "./shapes";
 
 class Feature extends React.PureComponent {
     static propTypes = {
@@ -266,7 +266,7 @@ class Feature extends React.PureComponent {
 				}
 			}
 
-			this.shape = new SvgMarkerShape({
+			this.shape = new MarkerShape({
 				basicShape,
 				id: this.shapeId,
 				style,
