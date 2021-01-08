@@ -120,7 +120,7 @@ class MarkerShape extends L.DivIcon {
 	 */
 	getShape(style) {
 		const props = this.shape.componentProps ? {...this.shape.componentProps, style} : {style};
-		return React.createElement(this.shape.component, props);
+		return React.createElement(this.shape.component, {...props, outlineWidth: this.style.weight});
 	}
 
 	/**
