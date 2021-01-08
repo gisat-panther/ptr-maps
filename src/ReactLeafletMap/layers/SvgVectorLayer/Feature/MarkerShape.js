@@ -147,6 +147,8 @@ class MarkerShape extends L.DivIcon {
 
 		if (iconFill) {
 			iconStyle.fill = iconFill;
+		} else {
+			iconStyle.fill = shapeStyle.stroke;
 		}
 
 		const iconProps = this.icon.componentProps ? {...this.icon.componentProps, style: iconStyle} : {style: iconStyle};
