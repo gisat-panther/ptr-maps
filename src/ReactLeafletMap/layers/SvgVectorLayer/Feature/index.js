@@ -5,7 +5,6 @@ import { shallowEqualObjects } from "shallow-equal";
 import {utils} from "@gisatcz/ptr-utils";
 
 import ContextWrapper from "./ContextWrapper";
-import MarkerShape from "./MarkerShape";
 import SvgMarkerShape from "./SvgMarkerShape";
 import helpers from "../helpers";
 import shapes from "../../../shapes";
@@ -231,55 +230,54 @@ class Feature extends React.PureComponent {
 
     renderShape(coordinates, style) {
         if (!this.shape) {
-        	let shape = null;
-        	let icon = null;
-        	const shapeKey = style.shape;
-        	const iconKey = style.icon;
+			const shapeKey = style.shape;
+			const iconKey = style.icon;
+			let basicShape = true;
+			let anchorShift = 0; // shift of anchor in pixels
+			let anchorPositionX = 0.5; // relative anchor X position (0.5 means that the shape reference point is in the middle horizontally)
+			let anchorPositionY = 0.5; // relative anchor Y position
+			let shape, icon;
 
+			// find shape by key in the internal set of shapes
         	if (shapeKey) {
-        		shape = shapes[shapeKey];
+        		shape = shapes[shapeKey] || null;
 			}
 
+        	// find icon by key in the given set of icons
         	if (iconKey) {
-        		icon = this.props.icons[iconKey];
+        		icon = this.props.icons?.[iconKey] || null;
 			}
 
         	if (shape || icon) {
-				let anchorRatioX = 0.5;
-        		let anchorRatioY = 0.5;
-        		let anchorOffset = 0;
+        		basicShape = false;
 
+        		// get anchor positions from definitions, if exist
         		if (shape?.anchorPoint) {
-					anchorRatioX = shape.anchorPoint[0];
-					anchorRatioY = shape.anchorPoint[1];
+					anchorPositionX = shape.anchorPoint[0];
+					anchorPositionY = shape.anchorPoint[1];
 				} else if (!shape && icon?.anchorPoint) {
-					anchorRatioX = icon.anchorPoint[0];
-					anchorRatioY = icon.anchorPoint[1];
+					anchorPositionX = icon.anchorPoint[0];
+					anchorPositionY = icon.anchorPoint[1];
 				}
 
+        		// if outline, shift the anchor point
         		if (style?.weight) {
-        			anchorOffset = style?.weight;
+					anchorShift = style?.weight;
 				}
-
-				this.shape = new SvgMarkerShape(this.shapeId, style, {
-					iconAnchor: style.radius ? [(2*style.radius + anchorOffset)*anchorRatioX, (2*style.radius + anchorOffset)*anchorRatioY] : null,
-					icon,
-					shape,
-					onMouseMove: this.onMouseMove,
-					onMouseOut: this.onMouseOut,
-					onMouseOver: this.onMouseMove,
-					onClick: this.onClick
-				});
-			} else {
-        		// TODO move these basic shapes to SvgMarkerShape
-				this.shape = new MarkerShape(this.shapeId, style, {
-					iconAnchor: style.radius ? [style.radius, style.radius] : null,
-					onMouseMove: this.onMouseMove,
-					onMouseOut: this.onMouseOut,
-					onMouseOver: this.onMouseMove,
-					onClick: this.onClick
-				});
 			}
+
+			this.shape = new SvgMarkerShape({
+				basicShape,
+				id: this.shapeId,
+				style,
+				iconAnchor: style.radius ? [(2*style.radius + anchorShift) * anchorPositionX, (2*style.radius + anchorShift) * anchorPositionY] : null,
+				icon,
+				shape,
+				onMouseMove: this.onMouseMove,
+				onMouseOut: this.onMouseOut,
+				onMouseOver: this.onMouseMove,
+				onClick: this.onClick
+			});
         }
 
         if (!shallowEqualObjects(this.style, style)) {

@@ -1,32 +1,44 @@
 import L from "leaflet";
 import _ from "lodash";
-import {mapStyle} from "@gisatcz/ptr-utils";
-import {Icon} from "@gisatcz/ptr-atoms";
 import ReactDOMServer from "react-dom/server";
 import React from "react";
+import {mapStyle} from "@gisatcz/ptr-utils";
 
 /**
- * Extended Leaflet's DivIcon class. It enables to draw basic geometric shapes as icons.
+ * It enables to draw various shapes as marker icon.
  * @augments L.DivIcon
- * @param id {string} uuid
- * @param style {Object} Extended Leaflet style definition
- * @param options {Object}
+ * @param props {object}
+ * @param props.icon {Object} Icon definition
+ * @param props.icon.component {React.Component}
+ * @param props.icon.componentProps {React.Object} Additional icon component props
+ * @param props.id {string}
+ * @param props.iconAnchor {string} https://leafletjs.com/reference-1.7.1.html#icon-iconanchor
+ * @param props.onClick {function} onclick callback
+ * @param props.onMouseMove {function} mousemove callback
+ * @param props.onMouseOver {function} mouseover callback
+ * @param props.onMouseOut {function} mouseout callback
+ * @param props.shape {Object} Shape definition
+ * @param props.shape.component {React.Component}
+ * @param props.shape.componentProps {React.Object} Additional shape component props
+ * @param props.style {string} Extended Leaflet style (see getSvgStyle method for details)
  */
 class SvgMarkerShape extends L.DivIcon {
-	constructor(id, style, options) {
-		super(options);
+	constructor(props) {
+		super(props);
 
-		this.id = id;
-		this.style = style;
+		// Needed by L.DivIcon
+		this.iconAnchor = props.iconAnchor;
 
-		this.shape = options.shape;
-		this.icon = options.icon;
+		this.basicShape = props.basicShape;
+		this.id = props.id;
+		this.style = props.style;
+		this.shape = props.shape;
+		this.icon = props.icon;
 
-		this.iconAnchor = options.iconAnchor;
-		this.onMouseMove = options.onMouseMove;
-		this.onMouseOver = options.onMouseOver;
-		this.onMouseOut = options.onMouseOut;
-		this.onClick = options.onClick;
+		this.onMouseMove = props.onMouseMove;
+		this.onMouseOver = props.onMouseOver;
+		this.onMouseOut = props.onMouseOut;
+		this.onClick = props.onClick;
 	}
 
 	/**
@@ -55,7 +67,7 @@ class SvgMarkerShape extends L.DivIcon {
 			}
 		}
 
-		const html = this.getIconHtml();
+		const html = this.getShapeHtml();
 		if (html instanceof Element) {
 			div.appendChild(html);
 		} else {
@@ -68,32 +80,68 @@ class SvgMarkerShape extends L.DivIcon {
 	}
 
 	/**
-	 * Prepare html of the icon
-	 * @return {HTMLDivElement}
+	 * Prepare html of the icon based on shape and icon components
+	 * @return {string}
 	 */
-	getIconHtml() {
-		let shape = null;
-		const style = this.getStyle(this.style);
-
-		if (this.shape && this.icon) {
-			shape = this.getShapeWithIcon(this.shape, this.icon, style, this.style.weight);
-		} else if (this.shape) {
-			const props = this.shape.componentProps ? {...this.shape.componentProps, style} : {style};
-			shape = React.createElement(this.shape.component, props);
-		} else {
-			const iconStyle = {
-				...style,
-				fill: style.iconFill ? style.iconFill : style.fill
-			}
-
-			const props = this.icon.componentProps ? {...this.icon.componentProps, style: iconStyle} : {style: iconStyle};
-			shape = React.createElement(this.icon.component, props);
+	getShapeHtml() {
+		// Basic shape -> no need for svg
+		if (this.basicShape) {
+			const style = this.getCssStyle(this.style);
+			return ReactDOMServer.renderToString(<div style={style}/>);
 		}
 
-		return ReactDOMServer.renderToString(shape);
+		else {
+			let finalShape;
+			const style = this.getSvgStyle(this.style);
+
+			// Combined shape and icon
+			// Currently only shape="pin" is suitable for combination
+			if (this.shape && this.icon) {
+				finalShape = this.getShapeWithIcon(style);
+			}
+
+			// Just shape
+			else if (this.shape) {
+				finalShape = this.getShape(style);
+			}
+
+			// No shape, but icon? Use icon as shape
+			else if (this.icon) {
+				finalShape = this.getIcon(style);
+			}
+
+			return ReactDOMServer.renderToString(finalShape);
+		}
 	}
 
-	getShapeWithIcon(shape, icon, style, outlineWidth) {
+	/**
+	 * @param style {Object} style object suitable for SVG
+	 * @return {React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>}
+	 */
+	getShape(style) {
+		const props = this.shape.componentProps ? {...this.shape.componentProps, style} : {style};
+		return React.createElement(this.shape.component, props);
+	}
+
+	/**
+	 * @param style {Object} style object suitable for SVG
+	 * @return {React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>}
+	 */
+	getIcon(style) {
+		const iconStyle = {
+			...style,
+			fill: style.iconFill ? style.iconFill : style.fill
+		}
+
+		const props = this.icon.componentProps ? {...this.icon.componentProps, style: iconStyle} : {style: iconStyle};
+		return React.createElement(this.icon.component, props);
+	}
+
+	/**
+	 * @param style {Object} style object suitable for SVG
+	 * @return {React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>}
+	 */
+	getShapeWithIcon(style) {
 		let iconStyle = {strokeWidth: 0}; // TODO think about icons styling inside shape
 		const {iconFill, ...shapeStyle} = style;
 
@@ -105,15 +153,24 @@ class SvgMarkerShape extends L.DivIcon {
 		const iconComponent = React.createElement(this.icon.component, iconProps);
 
 		const props = this.shape.componentProps ? {...this.shape.componentProps, style: shapeStyle} : {style: shapeStyle};
-		return React.createElement(this.shape.component, {...props, icon: iconComponent, outlineWidth});
+		return React.createElement(this.shape.component, {...props, icon: iconComponent, outlineWidth: this.style.weight});
 	}
 
 	/**
-	 * Prepare element style by shape
+	 * Prepare element style
 	 * @param leafletStyle {Object} Leaflet style definition
-	 * @return {Object} calculated style object
+	 * @param leafletStyle.color {string} hex code of outline color
+	 * @param leafletStyle.fillColor {string} hex code of fill color
+	 * @param leafletStyle.fillOpacity {number} range from 0 to 1, where 0 is transparent and 1 is fully opaque
+	 * @param leafletStyle.icon {string} icon id
+	 * @param leafletStyle.iconFill {string} hex code of icon fill color
+	 * @param leafletStyle.opacity {number} Outline opacity. range from 0 to 1, where 0 is transparent and 1 is fully opaque
+	 * @param leafletStyle.radius {number} Shape radius is a half of shape height/width
+	 * @param leafletStyle.shape {string} shape id
+	 * @param leafletStyle.weight {number} outline width
+	 * @return {Object} calculated style object suitable for SVG
 	 */
-	getStyle(leafletStyle) {
+	getSvgStyle(leafletStyle) {
 		let style = {};
 		if (leafletStyle.radius) {
 			const size = leafletStyle.radius * 2 + (leafletStyle.weight || 0);
@@ -149,11 +206,83 @@ class SvgMarkerShape extends L.DivIcon {
 	}
 
 	/**
+	 * Prepare element style by shape
+	 * @param leafletStyle {Object} Leaflet style definition
+	 * @return {Object} calculated style object
+	 */
+	getCssStyle(leafletStyle) {
+		switch (leafletStyle.shape) {
+			case 'square':
+				return this.getSquareStyle(leafletStyle);
+			case 'diamond':
+				return this.getSquareStyle(leafletStyle,45);
+			case 'circle':
+			default:
+				return this.getCircleStyle(leafletStyle);
+		}
+	}
+
+	/**
+	 * @param leafletStyle {Object} Leaflet style definition
+	 * @return {Object} calculated style object
+	 */
+	getCircleStyle(leafletStyle) {
+		return this.getSquareStyle(leafletStyle, null, leafletStyle.radius);
+	}
+
+	/**
+	 * @param leafletStyle {Object} Leaflet style definition
+	 * @param rotation {number}
+	 * @param borderRadius {number}
+	 * @return {Object} calculated style object
+	 */
+	getSquareStyle(leafletStyle, rotation, borderRadius) {
+		let style = {};
+		if (leafletStyle.radius) {
+			style.width = leafletStyle.radius * 2 + 'px';
+			style.height = leafletStyle.radius * 2 + 'px';
+		}
+
+		if (leafletStyle.fillColor) {
+			if (leafletStyle.fillOpacity && leafletStyle.fillOpacity !== 1) {
+				const rgb = mapStyle.hexToRgb(leafletStyle.fillColor);
+				style['backgroundColor'] = `rgba(${rgb.r},${rgb.g},${rgb.b},${leafletStyle.fillOpacity})`;
+			} else {
+				style['backgroundColor'] = leafletStyle.fillColor;
+			}
+		}
+
+		if (leafletStyle.color) {
+			if (leafletStyle.opacity && leafletStyle.opacity !== 1) {
+				const rgb = mapStyle.hexToRgb(leafletStyle.color);
+				style['borderColor'] = `rgba(${rgb.r},${rgb.g},${rgb.b},${leafletStyle.opacity})`;
+			} else {
+				style['borderColor'] = leafletStyle.color;
+			}
+		}
+
+		if (leafletStyle.weight) {
+			style['borderStyle'] = 'solid';
+			style['borderWidth'] = leafletStyle.weight + 'px';
+		}
+
+		if (borderRadius) {
+			style['borderRadius'] = borderRadius + 'px';
+		}
+
+		if (rotation) {
+			style.transform = 'rotate(' + rotation + 'deg)';
+		}
+
+		return style;
+	}
+
+	/**
 	 * Set style of element
 	 * @param style {Object} Leaflet style definition
 	 */
 	setStyle(style) {
-		let shapeStyle = this.getStyle(style);
+		let shapeStyle = this.basicShape ? this.getCssStyle(style) : this.getSvgStyle(style);
 		let element = document.getElementById(this.id);
 		let shape = element?.children?.[0];
 
