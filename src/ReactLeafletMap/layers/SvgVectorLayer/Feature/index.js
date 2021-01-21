@@ -5,9 +5,7 @@ import { shallowEqualObjects } from "shallow-equal";
 import {utils} from "@gisatcz/ptr-utils";
 
 import ContextWrapper from "./ContextWrapper";
-import MarkerShape from "./MarkerShape";
 import helpers from "../helpers";
-import shapes from "./shapes";
 
 class Feature extends React.PureComponent {
     static propTypes = {
@@ -230,59 +228,18 @@ class Feature extends React.PureComponent {
 
     renderShape(coordinates, style) {
         if (!this.shape) {
-			const shapeKey = style.shape;
-			const iconKey = style.icon;
-			let basicShape = true;
-			let anchorShift = 0; // shift of anchor in pixels
-			let anchorPositionX = 0.5; // relative anchor X position (0.5 means that the shape reference point is in the middle horizontally)
-			let anchorPositionY = 0.5; // relative anchor Y position
-			let shape, icon;
-
-			// find shape by key in the internal set of shapes
-        	if (shapeKey) {
-        		shape = shapes[shapeKey] || null;
-			}
-
-        	// find icon by key in the given set of icons
-        	if (iconKey) {
-        		icon = this.props.icons?.[iconKey] || null;
-			}
-
-        	if (shape || icon) {
-        		basicShape = false;
-
-        		// get anchor positions from definitions, if exist
-        		if (shape?.anchorPoint) {
-					anchorPositionX = shape.anchorPoint[0];
-					anchorPositionY = shape.anchorPoint[1];
-				} else if (!shape && icon?.anchorPoint) {
-					anchorPositionX = icon.anchorPoint[0];
-					anchorPositionY = icon.anchorPoint[1];
-				}
-
-        		// if outline, shift the anchor point
-        		if (style?.weight) {
-					anchorShift = style?.weight;
-				}
-			}
-
-			this.shape = new MarkerShape({
-				basicShape,
-				id: this.shapeId,
-				style,
-				iconAnchor: style.radius ? [(2*style.radius + anchorShift) * anchorPositionX, (2*style.radius + anchorShift) * anchorPositionY] : null,
-				icon,
-				shape,
+			this.shape = helpers.getMarkerShape(this.shapeId, style, {
+				icons: this.props.icons,
 				onMouseMove: this.onMouseMove,
-				onMouseOut: this.onMouseOut,
 				onMouseOver: this.onMouseMove,
+				onMouseOut: this.onMouseOut,
 				onClick: this.onClick
 			});
         }
 
         if (!shallowEqualObjects(this.style, style)) {
             this.style = style;
-            this.shape.setStyle(style);
+            this.shape.setStyle(style, this.shapeId, this.shape.basicShape);
         }
 
         return (

@@ -179,6 +179,7 @@ class SvgVectorLayer extends React.PureComponent {
 				hoverable={this.props.hoverable}
 				styleDefinition={this.props.style}
 				hoveredStyleDefinition={this.props.hovered && this.props.hovered.style}
+				icons={this.props.resources?.icons}
             />
         );
     }
