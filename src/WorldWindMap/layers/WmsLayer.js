@@ -1,4 +1,11 @@
-import WorldWind from 'webworldwind-esa';
+var WWWmsLayer = null;
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var WWWmsLayer = require('webworldwind-esa').WmsLayer;
+    var Location = require('webworldwind-esa').Location;
+    var Sector = require('webworldwind-esa').Sector;
+}
+
 import _ from "lodash";
 
 /**
@@ -11,7 +18,7 @@ import _ from "lodash";
  * @augments WorldWind.WmsLayer
  * @constructor
  */
-class WmsLayer extends WorldWind.WmsLayer {
+class WmsLayer extends WWWmsLayer {
 	constructor(layer) {
 		const {key, options, opacity} = layer;
 		const {imageFormat, layers, name, styles, version, ...params} = options.params;
@@ -20,12 +27,12 @@ class WmsLayer extends WorldWind.WmsLayer {
 			key: key,
 			format: imageFormat || "image/png",
 			layerNames: layers,
-			levelZeroDelta: new WorldWind.Location(45, 45),
+			levelZeroDelta: new Location(45, 45),
 			name: name,
 			numLevels: 18,
 			opacity: opacity || 1,
 			params: _.isEmpty(params) ? null : params,
-			sector: new WorldWind.Sector(-90, 90, -180, 180),
+			sector: new Sector(-90, 90, -180, 180),
 			service: options.url,
 			size: 256,
 			styleNames: styles,
@@ -56,7 +63,7 @@ class WmsLayer extends WorldWind.WmsLayer {
 	};
 
 	doRender(dc) {
-		WorldWind.WmsLayer.prototype.doRender.call(this, dc);
+		WWWmsLayer.prototype.doRender.call(this, dc);
 		dc.screenCreditController.clear();
 	}
 }

@@ -1,11 +1,12 @@
-import WorldWind from 'webworldwind-esa';
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var WorldWind = require('webworldwind-esa');
+    var Angle = WorldWind.Angle;
+    var WWMath = WorldWind.WWMath;
+}
+
 import {mapConstants} from '@gisatcz/ptr-core';
 import viewUtils from "../../../utils/view";
-
-const {
-    Angle,
-    WWMath
-} = WorldWind;
 
 /**
  * @param {WorldWind.WorldWindController} basicController

@@ -1,4 +1,7 @@
-import WorldWind from 'webworldwind-esa';
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var WorldWind = require('webworldwind-esa');
+}
 
 import VectorLayer from './VectorLayer';
 import WikimediaLayer from './WikimediaLayer';

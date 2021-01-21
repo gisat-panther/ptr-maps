@@ -1,18 +1,19 @@
 import React from 'react';
-import WorldWind from 'webworldwind-esa';
+var TiledImageLayer = null;
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+	var WorldWind = require('webworldwind-esa');
+    var Location = WorldWind.Location;
+	var REDRAW_EVENT_TYPE = WorldWind.REDRAW_EVENT_TYPE;
+	var Sector = WorldWind.Sector;
+	var TiledImageLayer = WorldWind.TiledImageLayer;
+}
+
 import {QuadTree, Box, Point, Circle} from 'js-quadtree';
 import * as turf from '@turf/turf';
 import LargeDataLayerTile from "./LargeDataLayerTile";
 import _ from 'lodash';
 import {mapStyle} from '@gisatcz/ptr-utils';
-
-const {
-	Location,
-	REDRAW_EVENT_TYPE,
-	Sector,
-	SurfaceCircle,
-	TiledImageLayer
-} = WorldWind;
 
 // It supports GeoJSON as format with only points and maximum 1 000 000 points.
 // Multipolygons are represented as points

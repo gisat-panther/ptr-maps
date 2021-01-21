@@ -1,8 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {utils} from '@gisatcz/ptr-utils';
-import {GeoJSON, withLeaflet} from 'react-leaflet';
-import L from "leaflet";
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var L = require("leaflet");
+    var GeoJSON = require('react-leaflet').GeoJSON;
+    var withLeaflet = require('react-leaflet').withLeaflet;
+  }
 import helpers from "../helpers";
 import memoize from "memoize-one";
 
@@ -118,4 +122,8 @@ class GeoJsonLayer extends React.PureComponent {
     }
 }
 
-export default withLeaflet(GeoJsonLayer);
+var GeoJsonLayerWithLeaflet = null;
+if (!isServer) {
+    GeoJsonLayerWithLeaflet = withLeaflet(GeoJsonLayer);
+}
+export default GeoJsonLayerWithLeaflet

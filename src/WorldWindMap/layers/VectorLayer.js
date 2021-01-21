@@ -1,4 +1,9 @@
-import WorldWind from 'webworldwind-esa';
+var RenderableLayer = null;
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var RenderableLayer = require('webworldwind-esa').RenderableLayer;
+}
+
 import utils from '@gisatcz/ptr-utils';
 import _ from 'lodash';
 import constants from "../../constants";
@@ -13,7 +18,7 @@ import constants from "../../constants";
  * @augments WorldWind.RenderableLayer
  * @constructor
  */
-class VectorLayer extends WorldWind.RenderableLayer {
+class VectorLayer extends RenderableLayer {
 	constructor(layer, options) {
 		const name = layer.name || '';
 		super(name);

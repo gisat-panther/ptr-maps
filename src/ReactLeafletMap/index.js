@@ -1,8 +1,14 @@
 import React from 'react';
-import { Map, TileLayer, Pane } from 'react-leaflet';
 import PropTypes from 'prop-types';
-import L from "leaflet";
-import Proj from "proj4leaflet";
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var L = require("leaflet");
+    var Map = require('react-leaflet').Map;
+    var TileLayer = require('react-leaflet').TileLayer;
+    var Pane = require('react-leaflet').Pane;
+    var Proj = require('proj4leaflet').Proj;
+    require('leaflet/dist/leaflet.css');
+  }
 import ReactResizeDetector from 'react-resize-detector';
 import {mapConstants} from "@gisatcz/ptr-core";
 import {map as mapUtils} from '@gisatcz/ptr-utils';
@@ -13,7 +19,6 @@ import VectorLayer from "./layers/VectorLayer";
 import WMSLayer from "./layers/WMSLayer";
 
 import './style.scss';
-import 'leaflet/dist/leaflet.css';
 import constants from "../constants";
 
 class ReactLeafletMap extends React.PureComponent {

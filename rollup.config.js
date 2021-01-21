@@ -35,6 +35,7 @@ const lodashExternal = [
 ];
 
 export default {
+  inlineDynamicImports:true,
   input: "src/index.js",
   external: [
     'react',

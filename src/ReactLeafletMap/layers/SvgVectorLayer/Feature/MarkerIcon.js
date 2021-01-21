@@ -1,15 +1,19 @@
-import L from "leaflet";
+var DivIcon = null;
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var DivIcon = require("leaflet").DivIcon;
+  }
 import _ from "lodash";
 import {mapStyle} from "@gisatcz/ptr-utils";
 
 /**
  * Extended Leaflet's DivIcon class. It enables to draw basic geometric shapes as icons.
- * @augments L.DivIcon
+ * @augments DivIcon
  * @param id {string} uuid
  * @param style {Object} Extended Leaflet style definition
  * @param options {Object}
  */
-class MarkerIcon extends L.DivIcon {
+class MarkerIcon extends DivIcon {
     constructor(id, style, options) {
         super(options);
 

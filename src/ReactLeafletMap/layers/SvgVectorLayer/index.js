@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from "lodash";
 import {utils} from '@gisatcz/ptr-utils';
-import {Pane} from 'react-leaflet';
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var Pane = require('react-leaflet').Pane;
+}
 
 import helpers from "./helpers";
 import Feature from "./Feature";

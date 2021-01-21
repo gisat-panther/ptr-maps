@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {CyclicPickController, utils, map as mapUtils} from '@gisatcz/ptr-utils';
 
-import WorldWind from 'webworldwind-esa';
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+	var WorldWind = require('webworldwind-esa');
+	var WorldWindow = WorldWind.WorldWindow;
+	var ElevationModel = WorldWind.ElevationModel;
+}
 import decorateWorldWindowController from './controllers/WorldWindowControllerDecorator';
 import layersHelpers from './layers/helpers';
 import navigator from './navigator/helpers';
@@ -18,7 +23,6 @@ import {mapConstants} from "@gisatcz/ptr-core";
 import Context from '@gisatcz/cross-package-react-context';
 import ReactResizeDetector from "react-resize-detector";
 const HoverContext = Context.getContext('HoverContext');
-const {WorldWindow, ElevationModel} = WorldWind;
 
 class WorldWindMap extends React.PureComponent {
 	static contextType = HoverContext;

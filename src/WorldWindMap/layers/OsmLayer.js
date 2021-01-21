@@ -1,6 +1,10 @@
-import WorldWind from 'webworldwind-esa';
-
-const {Location, Sector, MercatorTiledImageLayer} = WorldWind;
+var MercatorTiledImageLayer = null;
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var Location = require('webworldwind-esa').Location;
+    var MercatorTiledImageLayer = require('webworldwind-esa').MercatorTiledImageLayer;
+    var Sector = require('webworldwind-esa').Sector;
+}
 
 /**
  * Constructs an Open Street Map layer.

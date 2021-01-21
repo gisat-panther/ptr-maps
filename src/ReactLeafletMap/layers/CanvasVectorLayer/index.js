@@ -1,4 +1,10 @@
-import {MapLayer,withLeaflet } from 'react-leaflet';
+var MapLayer = null;
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var MapLayer = require('react-leaflet').MapLayer;
+    var withLeaflet = require('react-leaflet').withLeaflet;
+}
+
 import LeafletCanvasLayer from './LeafletCanvasLayer';
 
 class CanvasVectorLayer extends MapLayer {
@@ -18,4 +24,8 @@ class CanvasVectorLayer extends MapLayer {
 	}
 }
 
-export default withLeaflet(CanvasVectorLayer)
+var CanvasVectorLayerWithLeaflet = null;
+if (!isServer) {
+    CanvasVectorLayerWithLeaflet = withLeaflet(CanvasVectorLayer);
+}
+export default CanvasVectorLayerWithLeaflet

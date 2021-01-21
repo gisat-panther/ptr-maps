@@ -1,8 +1,13 @@
-import { TileLayer } from 'leaflet';
 import isEqual from 'fast-deep-equal';
-import {MapLayer,withLeaflet } from 'react-leaflet';
-
 import wms from './leaflet.wms';
+var MapLayer = null;
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+  var MapLayer = require('react-leaflet').MapLayer;
+  var TileLayer = require('leaflet').TileLayer;
+  var withLeaflet = require('react-leaflet').withLeaflet;
+}
+
 export const EVENTS_RE = /^on(.+)$/i
 class WMSLayer extends MapLayer {
   createLeafletElement(props) {
@@ -47,4 +52,8 @@ class WMSLayer extends MapLayer {
   }
 }
 
-export default withLeaflet(WMSLayer)
+var WMSLayerWithLeaflet = null;
+if (!isServer) {
+    WMSLayerWithLeaflet = withLeaflet(WMSLayer);
+}
+export default WMSLayerWithLeaflet

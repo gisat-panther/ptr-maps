@@ -1,3 +1,15 @@
+var Layer = {
+    extend: () => {}
+};
+var TileLayer = {};
+var tileLayer = {};
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+	var Layer = require("leaflet").Layer;
+	var TileLayer = require("leaflet").TileLayer;
+	var tileLayer = require("leaflet").tileLayer;
+}
+
 /*!
  * leaflet.wms.js
  * A collection of Leaflet utilities for working with Web Mapping services.
@@ -28,7 +40,7 @@ if (!('keys' in Object)) {
  * each image update.  Can be used in non-tiled "overlay" mode (default), or
  * tiled mode, via an internal wms.Overlay or wms.TileLayer, respectively.
  */
-wms.Source = L.Layer.extend({
+wms.Source = Layer.extend({
     'options': {
         'untiled': true,
         'identify': true
@@ -245,7 +257,7 @@ wms.source = function(url, options) {
  * getLayer() to retrieve wms.Layer instances.
  */
 
-wms.Layer = L.Layer.extend({
+wms.Layer = Layer.extend({
     'initialize': function(source, layerName, options) { 
         L.setOptions(this, {pane: source.options.pane});
         if (!source.addSubLayer) {
@@ -293,8 +305,8 @@ wms.getSourceForUrl = function(url, options) {
 
 
 // Copy tiled WMS layer from leaflet core, in case we need to subclass it later
-wms.TileLayer = L.TileLayer.WMS;
-wms.tileLayer = L.tileLayer.wms;
+wms.TileLayer = TileLayer.WMS;
+wms.tileLayer = tileLayer.wms;
 
 /*
  * wms.Overlay:
@@ -302,7 +314,7 @@ wms.tileLayer = L.tileLayer.wms;
  * Portions of wms.Overlay are directly extracted from L.TileLayer.WMS.
  * See Leaflet license.
  */
-wms.Overlay = L.Layer.extend({
+wms.Overlay = Layer.extend({
     'defaultWmsParams': {
         'service': 'WMS',
         'request': 'GetMap',

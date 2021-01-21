@@ -1,6 +1,9 @@
 import React from 'react';
 import _ from "lodash";
-import {Pane} from 'react-leaflet';
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var Pane = require('react-leaflet').Pane;
+}
 import * as turf from "@turf/turf";
 import constants from "../../../constants";
 

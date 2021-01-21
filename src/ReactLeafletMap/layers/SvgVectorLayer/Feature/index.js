@@ -1,6 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Circle, Polygon, Marker, Polyline} from 'react-leaflet';
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var Circle = require('react-leaflet').Circle;
+    var Polygon = require('react-leaflet').Polygon;
+    var Marker = require('react-leaflet').Marker;
+    var Polyline = require('react-leaflet').Polyline;
+}
 import { shallowEqualObjects } from "shallow-equal";
 import {utils} from "@gisatcz/ptr-utils";
 

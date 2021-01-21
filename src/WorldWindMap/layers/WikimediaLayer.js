@@ -1,7 +1,10 @@
 import OsmLayer from './OsmLayer';
-import WorldWind from 'webworldwind-esa';
-
-const {ArgumentError, Logger} = WorldWind;
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var WorldWind = require('webworldwind-esa');
+    var ArgumentError = require('webworldwind-esa').ArgumentError;
+    var Logger = require('webworldwind-esa').Logger;
+}
 
 class WikimediaLayer extends OsmLayer {
     constructor(options) {

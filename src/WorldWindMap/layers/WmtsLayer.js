@@ -1,5 +1,9 @@
 import OsmLayer from './OsmLayer';
-import WorldWind from 'webworldwind-esa';
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var WorldWind = require('webworldwind-esa');
+}
+
 import uriTemplates from 'uri-templates';
 
 class WmtsLayer extends OsmLayer {

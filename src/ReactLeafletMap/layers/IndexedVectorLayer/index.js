@@ -1,7 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import {withLeaflet} from "react-leaflet";
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+    var withLeaflet = require('react-leaflet').withLeaflet;
+}
 import memoize from "memoize-one";
 import {utils} from "@gisatcz/ptr-utils";
 
@@ -107,4 +110,8 @@ class IndexedVectorLayer extends React.PureComponent {
     }
 }
 
-export default withLeaflet(IndexedVectorLayer);
+var IndexedVectorLayerWithLeaflet = null;
+if (!isServer) {
+    IndexedVectorLayerWithLeaflet = withLeaflet(IndexedVectorLayer);
+}
+export default IndexedVectorLayerWithLeaflet
