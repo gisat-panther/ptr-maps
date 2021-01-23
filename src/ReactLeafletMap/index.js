@@ -188,8 +188,6 @@ class ReactLeafletMap extends React.PureComponent {
         const baseLayersZindex = constants.defaultLeafletPaneZindex + 100;
         const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane key={layer.key || i} style={{zIndex: baseLayersZindex + i}}>{this.getLayerByType(layer, i, baseLayersZindex + i, leafletView.zoom)}</Pane>);
 
-        console.log(leafletView.center);
-
         return (
             <Map
                 id={this.props.mapKey}
