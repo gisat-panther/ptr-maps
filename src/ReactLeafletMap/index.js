@@ -112,6 +112,16 @@ class ReactLeafletMap extends React.PureComponent {
 
             if (!_.isEmpty(change) && !this.hasResized()) {
 				change = mapUtils.view.ensureViewIntegrity(change);
+
+				if (this.props.viewLimits?.center) {
+					/* Center coordinate values are compared by value. If the map view is changed from inside (by dragging) and the center gets out of the range, then the center coordinates are adjusted to those limits. However, if we move the map a bit again, these values will remain the same and the map component will not reredner. Therefore, it is necessary to make insignificant change in center coordinates values */
+					change.center = {
+						lat: change.center.lat + Math.random()/Math.pow(10,13),
+						lon: change.center.lon + Math.random()/Math.pow(10,13),
+					}
+				}
+
+
             	if (this.props.onViewChange) {
 					this.props.onViewChange(change);
 				}
@@ -170,11 +180,6 @@ class ReactLeafletMap extends React.PureComponent {
     renderMap() {
 		const leafletView = viewHelpers.getLeafletViewportFromViewParams(this.state.view || this.props.view, this.state.width, this.state.height);
 
-		if (this.props.viewLimits?.center) {
-			/* Center coordinate values are compared by value. If the map view is changed from inside (by dragging) and the center gets out of the range, then the center coordinates are adjusted to those limits. However, if we move the map a bit again, these values will remain the same and the map component will not reredner. Therefore, it is necessary to make insignificant change in center coordinates values */
-			leafletView.center = [leafletView.center[0] + Math.random()/Math.pow(10,13), leafletView.center[1] + Math.random()/Math.pow(10,13)]
-		}
-
         // fix for backward compatibility
         const backgroundLayersSource = _.isArray(this.props.backgroundLayer) ? this.props.backgroundLayer : [this.props.backgroundLayer];
         const backgroundLayersZindex = constants.defaultLeafletPaneZindex + 1;
@@ -182,6 +187,8 @@ class ReactLeafletMap extends React.PureComponent {
 
         const baseLayersZindex = constants.defaultLeafletPaneZindex + 100;
         const layers = this.props.layers && this.props.layers.map((layer, i) => <Pane key={layer.key || i} style={{zIndex: baseLayersZindex + i}}>{this.getLayerByType(layer, i, baseLayersZindex + i, leafletView.zoom)}</Pane>);
+
+        console.log(leafletView.center);
 
         return (
             <Map
