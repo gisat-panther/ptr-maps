@@ -47,7 +47,7 @@ class Feature extends React.PureComponent {
         this.fid = props.fid;
 
         if (props.type === "Point" && props.pointAsMarker) {
-            this.shapeId = this.props.fid ? `${this.props.fid}_icon` : utils.uuid();
+            this.shapeId = this.props.uniqueFeatureKey ? `${this.props.uniqueFeatureKey}_icon` : utils.uuid();
         }
 
         this.state = {
@@ -88,8 +88,8 @@ class Feature extends React.PureComponent {
         if (this.props.selectable) {
             this.showOnTop();
 
-            if (this.props.onClick && this.fid) {
-                this.props.onClick(this.fid);
+            if (this.props.onClick && this.props.uniqueFeatureKey) {
+                this.props.onClick(this.props.uniqueFeatureKey);
             }
         }
     }
