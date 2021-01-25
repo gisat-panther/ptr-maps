@@ -20,7 +20,7 @@ const lodashExternal = [
 	'lodash/orderBy',
 	'lodash/compact',
 	'lodash/maxBy',
-	'lodash/minBy'
+	'lodash/minBy',
 ];
 
 export default {
@@ -44,7 +44,7 @@ export default {
 		'js-quadtree',
 		'@turf/turf',
 		'uri-templates',
-		...lodashExternal
+		...lodashExternal,
 	],
 	output: {
 		file: 'build/bundle-tests.js',

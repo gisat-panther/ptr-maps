@@ -1,12 +1,12 @@
 import React from 'react';
 
-export default (props) => {
+export default props => {
 	let svgSize = 32;
 	let offset = 0;
 
 	if (props.outlineWidth) {
 		svgSize += props.outlineWidth;
-		offset = props.outlineWidth/2;
+		offset = props.outlineWidth / 2;
 	}
 
 	return (
@@ -16,8 +16,8 @@ export default (props) => {
 			xmlnsXlink="http://www.w3.org/1999/xlink"
 			x="0px"
 			y="0px"
-			width={svgSize + "px"}
-			height={svgSize + "px"}
+			width={svgSize + 'px'}
+			height={svgSize + 'px'}
 			viewBox={`0 0 ${svgSize} ${svgSize}`}
 			xmlSpace="preserve"
 			className={`ptr-map-shape ${props.className || ''}`}

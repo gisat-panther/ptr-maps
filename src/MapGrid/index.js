@@ -10,13 +10,16 @@ class MapGrid extends React.PureComponent {
 
 		this.state = {
 			width: null,
-			height: null
-		}
+			height: null,
+		};
 	}
 
 	componentDidMount() {
 		this.resize();
-		if (window) window.addEventListener('resize', this.resize.bind(this), {passive: true}); //todo IE
+		if (window)
+			window.addEventListener('resize', this.resize.bind(this), {
+				passive: true,
+			}); //todo IE
 	}
 
 	resize() {
@@ -25,7 +28,8 @@ class MapGrid extends React.PureComponent {
 			let height = this.ref.current.clientHeight;
 
 			this.setState({
-				width, height
+				width,
+				height,
 			});
 		}
 	}
@@ -43,8 +47,9 @@ class MapGrid extends React.PureComponent {
 		let availableHeight = this.state.height;
 
 		if (this.props.children.length && availableWidth && availableHeight) {
-			let sizeRatio = availableWidth/availableHeight;
-			let rows = 1, columns = 1;
+			let sizeRatio = availableWidth / availableHeight;
+			let rows = 1,
+				columns = 1;
 
 			switch (this.props.children.length) {
 				case 1:
@@ -131,9 +136,22 @@ class MapGrid extends React.PureComponent {
 				let rowNo = Math.ceil(index / columns);
 				let colNo = index % columns || columns;
 
-				let wrapperClasses = classNames("ptr-map-grid-cell", "row"+rowNo, "col"+colNo, map.props.wrapperClasses);
+				let wrapperClasses = classNames(
+					'ptr-map-grid-cell',
+					'row' + rowNo,
+					'col' + colNo,
+					map.props.wrapperClasses
+				);
 
-				return <div key={'map-grid-cell-' + index} className={wrapperClasses} style={style}>{map}</div>
+				return (
+					<div
+						key={'map-grid-cell-' + index}
+						className={wrapperClasses}
+						style={style}
+					>
+						{map}
+					</div>
+				);
 			});
 		} else {
 			return null;

@@ -21,11 +21,10 @@
  *  color strings.
  */
 import {mapStyle} from '@gisatcz/ptr-utils';
-import shapes from "./canvasShapes";
-import _ from "lodash";
+import shapes from './canvasShapes';
+import _ from 'lodash';
 
 class LargeDataLayerTile {
-
 	constructor(data, options, style, fidColumnName, selected, hovered) {
 		this._data = data;
 		this._style = style;
@@ -34,16 +33,20 @@ class LargeDataLayerTile {
 
 		// todo here?
 		if (this._hovered && this._hovered.keys) {
-			this._hoveredStyle = mapStyle.getStyleObject(null, this._hovered.style, true); // todo add default
+			this._hoveredStyle = mapStyle.getStyleObject(
+				null,
+				this._hovered.style,
+				true
+			); // todo add default
 		}
 
 		if (selected && !_.isEmpty(selected)) {
 			let sel = [];
-			_.forIn(selected, (selectedDef) => {
+			_.forIn(selected, selectedDef => {
 				if (selectedDef && !_.isEmpty(selectedDef)) {
 					sel.push({
 						keys: selectedDef.keys,
-						style: mapStyle.getStyleObject(null, selectedDef.style, true) // todo add default
+						style: mapStyle.getStyleObject(null, selectedDef.style, true), // todo add default
 					});
 				}
 			});
@@ -58,9 +61,12 @@ class LargeDataLayerTile {
 		this._width = options.width;
 		this._height = options.height;
 
-		const tileCenterLatitude = (this._sector.maxLatitude + this._sector.minLatitude)*(Math.PI/180)/2;
-		this._latitudeFactor = 1/Math.cos(Math.abs((tileCenterLatitude)));
-	};
+		const tileCenterLatitude =
+			((this._sector.maxLatitude + this._sector.minLatitude) *
+				(Math.PI / 180)) /
+			2;
+		this._latitudeFactor = 1 / Math.cos(Math.abs(tileCenterLatitude));
+	}
 
 	/**
 	 * Returns the drawn HeatMapTile in the form of URL.
@@ -68,7 +74,7 @@ class LargeDataLayerTile {
 	 */
 	url() {
 		return this.draw().toDataURL();
-	};
+	}
 
 	/**
 	 * Returns the whole Canvas. It is then possible to use further. This one is actually used in the
@@ -78,7 +84,7 @@ class LargeDataLayerTile {
 	 */
 	canvas() {
 		return this.draw();
-	};
+	}
 
 	/**
 	 * Draws the shapes on the canvas.
@@ -116,7 +122,7 @@ class LargeDataLayerTile {
 		});
 
 		return this._canvas;
-	};
+	}
 
 	isHovered(attributes) {
 		if (this._hovered && this._hovered.keys) {
@@ -128,7 +134,8 @@ class LargeDataLayerTile {
 		let isSelected = false;
 		if (this._selected) {
 			this._selected.forEach(selection => {
-				let selected = selection.keys.indexOf(attributes[this._fidColumnName]) !== -1;
+				let selected =
+					selection.keys.indexOf(attributes[this._fidColumnName]) !== -1;
 				if (selected) {
 					isSelected = true;
 				}
@@ -150,7 +157,8 @@ class LargeDataLayerTile {
 		// apply selected style, if feature is selected
 		if (selected) {
 			this._selected.forEach(selection => {
-				let selected = selection.keys.indexOf(attributes[this._fidColumnName]) !== -1;
+				let selected =
+					selection.keys.indexOf(attributes[this._fidColumnName]) !== -1;
 				if (selected) {
 					style = {...style, ...selection.style};
 				}
@@ -158,26 +166,26 @@ class LargeDataLayerTile {
 		}
 
 		if (style.shape) {
-			if (style.shape === "circle-with-arrow") {
-				this.circleWithArrow(context, data, style)
-			} else if (style.shape === "circle") {
-				this.point(context, data, style)
-			} else if (style.shape === "square") {
-				this.square(context, data, style)
-			} else if (style.shape === "diamond") {
-				this.diamond(context, data, style)
-			} else if (style.shape === "triangle") {
-				this.triangle(context, data, style)
+			if (style.shape === 'circle-with-arrow') {
+				this.circleWithArrow(context, data, style);
+			} else if (style.shape === 'circle') {
+				this.point(context, data, style);
+			} else if (style.shape === 'square') {
+				this.square(context, data, style);
+			} else if (style.shape === 'diamond') {
+				this.diamond(context, data, style);
+			} else if (style.shape === 'triangle') {
+				this.triangle(context, data, style);
 			} else {
-				this.point(context, data, style)
+				this.point(context, data, style);
 			}
 		} else {
-			this.point(context, data, style)
+			this.point(context, data, style);
 		}
 	}
 
 	point(context, data, style) {
-		let radius = this.getSize(style)/2;
+		let radius = this.getSize(style) / 2;
 		let center = this.getCenterCoordinates(data);
 		let cy = radius;
 		let cx = radius * this._latitudeFactor;
@@ -190,7 +198,14 @@ class LargeDataLayerTile {
 		let center = this.getCenterCoordinates(data);
 		let dx = size * this._latitudeFactor;
 
-		shapes.rectangle(context, center[0] - dx/2, center[1] - size/2, dx, size, style);
+		shapes.rectangle(
+			context,
+			center[0] - dx / 2,
+			center[1] - size / 2,
+			dx,
+			size,
+			style
+		);
 	}
 
 	diamond(context, data, style) {
@@ -202,11 +217,11 @@ class LargeDataLayerTile {
 
 		let dx = diagonalLength * this._latitudeFactor;
 		let nodes = [
-			[center[0]-dx/2, center[1]],
-			[center[0], center[1] - diagonalLength/2],
-			[center[0] + dx/2, center[1]],
-			[center[0], center[1] + diagonalLength/2],
-			[center[0]-dx/2, center[1]]
+			[center[0] - dx / 2, center[1]],
+			[center[0], center[1] - diagonalLength / 2],
+			[center[0] + dx / 2, center[1]],
+			[center[0], center[1] + diagonalLength / 2],
+			[center[0] - dx / 2, center[1]],
 		];
 
 		shapes.path(context, nodes, style);
@@ -214,24 +229,24 @@ class LargeDataLayerTile {
 
 	triangle(context, data, style) {
 		let edgeLength = this.getSize(style);
-		let ty = Math.sqrt(Math.pow(edgeLength, 2) - Math.pow(edgeLength/2, 2));
+		let ty = Math.sqrt(Math.pow(edgeLength, 2) - Math.pow(edgeLength / 2, 2));
 
 		// center coordinates
 		let center = this.getCenterCoordinates(data);
-		
+
 		let dx = edgeLength * this._latitudeFactor;
 		let nodes = [
-			[center[0]-dx/2, center[1] + ty/3],
-			[center[0], center[1] - 2*ty/3],
-			[center[0] + dx/2, center[1] + ty/3],
-			[center[0]-dx/2, center[1] + ty/3]
+			[center[0] - dx / 2, center[1] + ty / 3],
+			[center[0], center[1] - (2 * ty) / 3],
+			[center[0] + dx / 2, center[1] + ty / 3],
+			[center[0] - dx / 2, center[1] + ty / 3],
 		];
 
 		shapes.path(context, nodes, style);
 	}
 
 	circleWithArrow(context, data, style) {
-		let radius = this.getSize(style)/2;
+		let radius = this.getSize(style) / 2;
 		let direction = style.arrowDirection || 1;
 
 		let center = this.getCenterCoordinates(data);
@@ -240,12 +255,12 @@ class LargeDataLayerTile {
 
 		shapes.ellipse(context, center[0], center[1], rx, ry, style);
 
-		let x0 = center[0] + direction*rx;
+		let x0 = center[0] + direction * rx;
 		let y0 = center[1];
-		let x1 = x0 + direction*style.arrowLength;
+		let x1 = x0 + direction * style.arrowLength;
 		let y1 = y0;
 
-		shapes.arrow(context, x0, y0, x1, y1, style.arrowColor, style.arrowWidth)
+		shapes.arrow(context, x0, y0, x1, y1, style.arrowColor, style.arrowWidth);
 	}
 
 	getSize(style) {
@@ -253,22 +268,22 @@ class LargeDataLayerTile {
 			return style.size;
 		} else if (style.volume) {
 			if (style.shape === 'triangle') {
-				return Math.sqrt(style.volume/2);
+				return Math.sqrt(style.volume / 2);
 			} else if (style.shape === 'square' || style.shape === 'diamond') {
 				return Math.sqrt(style.volume);
 			} else {
-				return Math.sqrt(style.volume/Math.PI);
+				return Math.sqrt(style.volume / Math.PI);
 			}
 		} else {
 			return mapStyle.DEFAULT_SIZE;
 		}
 	}
-	
+
 	getCenterCoordinates(data) {
 		return [
 			this.longitudeInSector(data, this._sector, this._width),
-			this._height - this.latitudeInSector(data, this._sector, this._height)
-		]
+			this._height - this.latitudeInSector(data, this._sector, this._height),
+		];
 	}
 
 	/**
@@ -283,7 +298,7 @@ class LargeDataLayerTile {
 		canvas.width = width;
 		canvas.height = height;
 		return canvas;
-	};
+	}
 
 	/**
 	 * Calculates position in pixels of the point based on its latitude.
@@ -295,9 +310,9 @@ class LargeDataLayerTile {
 	 */
 	latitudeInSector(dataPoint, sector, height) {
 		var sizeOfArea = sector.maxLatitude - sector.minLatitude;
-		var locationInArea = (dataPoint.y - 90) - sector.minLatitude;
+		var locationInArea = dataPoint.y - 90 - sector.minLatitude;
 		return Math.ceil((locationInArea / sizeOfArea) * height);
-	};
+	}
 
 	/**
 	 * Calculates position in pixels of the point based on its longitude.
@@ -309,9 +324,9 @@ class LargeDataLayerTile {
 	 */
 	longitudeInSector(dataPoint, sector, width) {
 		var sizeOfArea = sector.maxLongitude - sector.minLongitude;
-		var locationInArea = (dataPoint.x - 180) - sector.minLongitude;
+		var locationInArea = dataPoint.x - 180 - sector.minLongitude;
 		return Math.ceil((locationInArea / sizeOfArea) * width);
-	};
+	}
 }
 
 export default LargeDataLayerTile;

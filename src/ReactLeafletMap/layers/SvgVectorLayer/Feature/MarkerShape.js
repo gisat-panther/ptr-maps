@@ -1,8 +1,8 @@
-import L from "leaflet";
-import _ from "lodash";
-import ReactDOMServer from "react-dom/server";
-import React from "react";
-import helpers from "../helpers";
+import L from 'leaflet';
+import _ from 'lodash';
+import ReactDOMServer from 'react-dom/server';
+import React from 'react';
+import helpers from '../helpers';
 
 /**
  * It enables to draw various shapes as marker icon.
@@ -55,16 +55,16 @@ class MarkerShape extends L.DivIcon {
 			div = document.createElement('div');
 			div.id = this.id;
 			if (this.onMouseMove) {
-				div.addEventListener("mousemove", this.onMouseMove);
+				div.addEventListener('mousemove', this.onMouseMove);
 			}
 			if (this.onMouseOver) {
-				div.addEventListener("mouseover", this.onMouseOver);
+				div.addEventListener('mouseover', this.onMouseOver);
 			}
 			if (this.onMouseOut) {
-				div.addEventListener("mouseout", this.onMouseOut);
+				div.addEventListener('mouseout', this.onMouseOut);
 			}
 			if (this.onClick) {
-				div.addEventListener("click", this.onClick);
+				div.addEventListener('click', this.onClick);
 			}
 		}
 
@@ -88,10 +88,8 @@ class MarkerShape extends L.DivIcon {
 		// Basic shape -> no need for svg
 		if (this.basicShape) {
 			const style = helpers.getMarkerShapeCssStyle(this.style);
-			return ReactDOMServer.renderToString(<div style={style}/>);
-		}
-
-		else {
+			return ReactDOMServer.renderToString(<div style={style} />);
+		} else {
 			let finalShape;
 			const style = helpers.getMarkerShapeSvgStyle(this.style);
 
@@ -120,8 +118,13 @@ class MarkerShape extends L.DivIcon {
 	 * @return {React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>}
 	 */
 	getShape(style) {
-		const props = this.shape.componentProps ? {...this.shape.componentProps, style} : {style};
-		return React.createElement(this.shape.component, {...props, outlineWidth: this.style.weight});
+		const props = this.shape.componentProps
+			? {...this.shape.componentProps, style}
+			: {style};
+		return React.createElement(this.shape.component, {
+			...props,
+			outlineWidth: this.style.weight,
+		});
 	}
 
 	/**
@@ -131,10 +134,12 @@ class MarkerShape extends L.DivIcon {
 	getIcon(style) {
 		const iconStyle = {
 			...style,
-			fill: style.iconFill ? style.iconFill : style.fill
-		}
+			fill: style.iconFill ? style.iconFill : style.fill,
+		};
 
-		const props = this.icon.componentProps ? {...this.icon.componentProps, style: iconStyle} : {style: iconStyle};
+		const props = this.icon.componentProps
+			? {...this.icon.componentProps, style: iconStyle}
+			: {style: iconStyle};
 		return React.createElement(this.icon.component, props);
 	}
 
@@ -152,11 +157,19 @@ class MarkerShape extends L.DivIcon {
 			iconStyle.fill = shapeStyle.stroke;
 		}
 
-		const iconProps = this.icon.componentProps ? {...this.icon.componentProps, style: iconStyle} : {style: iconStyle};
+		const iconProps = this.icon.componentProps
+			? {...this.icon.componentProps, style: iconStyle}
+			: {style: iconStyle};
 		const iconComponent = React.createElement(this.icon.component, iconProps);
 
-		const props = this.shape.componentProps ? {...this.shape.componentProps, style: shapeStyle} : {style: shapeStyle};
-		return React.createElement(this.shape.component, {...props, icon: iconComponent, outlineWidth: this.style.weight});
+		const props = this.shape.componentProps
+			? {...this.shape.componentProps, style: shapeStyle}
+			: {style: shapeStyle};
+		return React.createElement(this.shape.component, {
+			...props,
+			icon: iconComponent,
+			outlineWidth: this.style.weight,
+		});
 	}
 
 	/**
@@ -169,7 +182,9 @@ class MarkerShape extends L.DivIcon {
 		id = id || this.id;
 		isBasicShape = isBasicShape || this.basicShape;
 
-		let shapeStyle = isBasicShape ? helpers.getMarkerShapeCssStyle(style) : helpers.getMarkerShapeSvgStyle(style);
+		let shapeStyle = isBasicShape
+			? helpers.getMarkerShapeCssStyle(style)
+			: helpers.getMarkerShapeSvgStyle(style);
 		let element = document.getElementById(id);
 		let shape = element?.children?.[0];
 

@@ -1,9 +1,9 @@
-import {mapStyle} from "@gisatcz/ptr-utils";
-import constants from "../../../constants";
-import memoize from "memoize-one";
-import * as turf from "@turf/turf";
-import shapes from "./Feature/shapes";
-import MarkerShape from "./Feature/MarkerShape";
+import {mapStyle} from '@gisatcz/ptr-utils';
+import constants from '../../../constants';
+import memoize from 'memoize-one';
+import * as turf from '@turf/turf';
+import shapes from './Feature/shapes';
+import MarkerShape from './Feature/MarkerShape';
 
 /**
  * @param feature {GeoJSONFeature}
@@ -11,7 +11,10 @@ import MarkerShape from "./Feature/MarkerShape";
  * @return {Object}
  */
 function getDefaultStyleObject(feature, styleDefinition) {
-	return mapStyle.getStyleObject(feature.properties, styleDefinition || constants.vectorFeatureStyle.defaultFull);
+	return mapStyle.getStyleObject(
+		feature.properties,
+		styleDefinition || constants.vectorFeatureStyle.defaultFull
+	);
 }
 
 /**
@@ -19,7 +22,9 @@ function getDefaultStyleObject(feature, styleDefinition) {
  * @return {Object}
  */
 function getSelectedStyleObject(selectedStyleDefinition) {
-	return selectedStyleDefinition === "default" ? constants.vectorFeatureStyle.selected : selectedStyleDefinition
+	return selectedStyleDefinition === 'default'
+		? constants.vectorFeatureStyle.selected
+		: selectedStyleDefinition;
 }
 
 /**
@@ -37,7 +42,11 @@ function getFeatureDefaultStyle(feature, defaultStyleObject) {
  * @param accentedStyleObject {Object} Panther style definition
  * @return {Object}
  */
-function getFeatureAccentedStyle(feature, defaultStyleObject, accentedStyleObject) {
+function getFeatureAccentedStyle(
+	feature,
+	defaultStyleObject,
+	accentedStyleObject
+) {
 	const style = {...defaultStyleObject, ...accentedStyleObject};
 	return getFeatureLeafletStyle(feature, style);
 }
@@ -48,7 +57,16 @@ function getFeatureAccentedStyle(feature, defaultStyleObject, accentedStyleObjec
  * @return {Object} Leaflet style definition
  */
 function getFeatureLeafletStyle(feature, style) {
-	let {outlineColor, outlineWidth, outlineOpacity, fillOpacity, fill, size, volume, ...finalStyle} = style;
+	let {
+		outlineColor,
+		outlineWidth,
+		outlineOpacity,
+		fillOpacity,
+		fill,
+		size,
+		volume,
+		...finalStyle
+	} = style;
 
 	finalStyle.color = style.outlineColor ? style.outlineColor : null;
 	finalStyle.weight = style.outlineWidth ? style.outlineWidth : 0;
@@ -72,7 +90,7 @@ function getFeatureLeafletStyle(feature, style) {
 		if (style.size) {
 			finalStyle.radius = style.size;
 		} else if (style.volume) {
-			finalStyle.radius = Math.sqrt(style.volume/Math.PI);
+			finalStyle.radius = Math.sqrt(style.volume / Math.PI);
 		}
 	}
 
@@ -83,10 +101,14 @@ function getFeatureLeafletStyle(feature, style) {
  * Leaflet requires coordinates in different order than GeoJSON standard
  * @param feature {GeoJSONFeature}
  */
-const convertCoordinatesMemo = memoize((feature) => {
+const convertCoordinatesMemo = memoize(feature => {
 	// TODO do we need turf for this?
 	const flippedFeature = turf.flip(feature);
-	return flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
+	return (
+		flippedFeature &&
+		flippedFeature.geometry &&
+		flippedFeature.geometry.coordinates
+	);
 });
 
 const getDefaultStyle = (feature, styleDefinition) => {
@@ -94,7 +116,14 @@ const getDefaultStyle = (feature, styleDefinition) => {
 	return getFeatureDefaultStyle(feature, defaultStyleObject);
 };
 
-const calculateStyle = (feature, styleDefinition, hoveredStyleDefinition, selected, selectedStyleDefinition, selectedHoveredStyleDefinition) => {
+const calculateStyle = (
+	feature,
+	styleDefinition,
+	hoveredStyleDefinition,
+	selected,
+	selectedStyleDefinition,
+	selectedHoveredStyleDefinition
+) => {
 	// Prepare default style
 	const defaultStyleObject = getDefaultStyleObject(feature, styleDefinition);
 	const defaultStyle = getFeatureDefaultStyle(feature, defaultStyleObject);
@@ -103,8 +132,15 @@ const calculateStyle = (feature, styleDefinition, hoveredStyleDefinition, select
 	let hoveredStyleObject = null;
 	let hoveredStyle = null;
 	if (hoveredStyleDefinition) {
-		hoveredStyleObject = hoveredStyleDefinition === "default" ? constants.vectorFeatureStyle.hovered : hoveredStyleDefinition;
-		hoveredStyle = getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+		hoveredStyleObject =
+			hoveredStyleDefinition === 'default'
+				? constants.vectorFeatureStyle.hovered
+				: hoveredStyleDefinition;
+		hoveredStyle = getFeatureAccentedStyle(
+			feature,
+			defaultStyleObject,
+			hoveredStyleObject
+		);
 	}
 
 	// Prepare selected and selected hovered style, if selected
@@ -113,11 +149,22 @@ const calculateStyle = (feature, styleDefinition, hoveredStyleDefinition, select
 	if (selected) {
 		let selectedHoveredStyleObject = null;
 		if (selectedStyleDefinition) {
-			selectedStyle = getFeatureAccentedStyle(feature, defaultStyleObject, getSelectedStyleObject(selectedStyleDefinition));
+			selectedStyle = getFeatureAccentedStyle(
+				feature,
+				defaultStyleObject,
+				getSelectedStyleObject(selectedStyleDefinition)
+			);
 		}
 		if (selectedHoveredStyleDefinition) {
-			selectedHoveredStyleObject = selectedHoveredStyleDefinition === "default" ? constants.vectorFeatureStyle.selectedHovered : selectedHoveredStyleDefinition;
-			selectedHoveredStyle = getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+			selectedHoveredStyleObject =
+				selectedHoveredStyleDefinition === 'default'
+					? constants.vectorFeatureStyle.selectedHovered
+					: selectedHoveredStyleDefinition;
+			selectedHoveredStyle = getFeatureAccentedStyle(
+				feature,
+				defaultStyleObject,
+				selectedHoveredStyleObject
+			);
 		}
 	}
 
@@ -125,9 +172,9 @@ const calculateStyle = (feature, styleDefinition, hoveredStyleDefinition, select
 		default: defaultStyle,
 		hovered: hoveredStyle,
 		selected: selectedStyle,
-		selectedHovered: selectedHoveredStyle
-	}
-}
+		selectedHovered: selectedHoveredStyle,
+	};
+};
 
 const calculateStylesMemo = memoize(calculateStyle);
 
@@ -183,40 +230,45 @@ const getMarkerShape = (id, style, options) => {
 		basicShape,
 		id: id,
 		style,
-		iconAnchor: style.radius ? [(2*style.radius + anchorShift) * anchorPositionX, (2*style.radius + anchorShift) * anchorPositionY] : null,
+		iconAnchor: style.radius
+			? [
+					(2 * style.radius + anchorShift) * anchorPositionX,
+					(2 * style.radius + anchorShift) * anchorPositionY,
+			  ]
+			: null,
 		icon,
 		shape,
 		onMouseMove: options.onMouseMove,
 		onMouseOut: options.onMouseOut,
 		onMouseOver: options.onMouseOver,
-		onClick: options.onClick
+		onClick: options.onClick,
 	});
-}
+};
 
 /**
  * Prepare element style by shape
  * @param leafletStyle {Object} Leaflet style definition
  * @return {Object} calculated style object
  */
-const getMarkerShapeCssStyle = (leafletStyle) => {
+const getMarkerShapeCssStyle = leafletStyle => {
 	switch (leafletStyle.shape) {
 		case 'square':
 			return getMarkerShapeSquareStyle(leafletStyle);
 		case 'diamond':
-			return getMarkerShapeSquareStyle(leafletStyle,45);
+			return getMarkerShapeSquareStyle(leafletStyle, 45);
 		case 'circle':
 		default:
 			return getMarkerShapeCircleStyle(leafletStyle);
 	}
-}
+};
 
 /**
  * @param leafletStyle {Object} Leaflet style definition
  * @return {Object} calculated style object
  */
-const getMarkerShapeCircleStyle = (leafletStyle) => {
+const getMarkerShapeCircleStyle = leafletStyle => {
 	return getMarkerShapeSquareStyle(leafletStyle, null, leafletStyle.radius);
-}
+};
 
 /**
  * @param leafletStyle {Object} Leaflet style definition
@@ -234,7 +286,9 @@ const getMarkerShapeSquareStyle = (leafletStyle, rotation, borderRadius) => {
 	if (leafletStyle.fillColor) {
 		if (leafletStyle.fillOpacity && leafletStyle.fillOpacity !== 1) {
 			const rgb = mapStyle.hexToRgb(leafletStyle.fillColor);
-			style['backgroundColor'] = `rgba(${rgb.r},${rgb.g},${rgb.b},${leafletStyle.fillOpacity})`;
+			style[
+				'backgroundColor'
+			] = `rgba(${rgb.r},${rgb.g},${rgb.b},${leafletStyle.fillOpacity})`;
 		} else {
 			style['backgroundColor'] = leafletStyle.fillColor;
 		}
@@ -243,7 +297,9 @@ const getMarkerShapeSquareStyle = (leafletStyle, rotation, borderRadius) => {
 	if (leafletStyle.color) {
 		if (leafletStyle.opacity && leafletStyle.opacity !== 1) {
 			const rgb = mapStyle.hexToRgb(leafletStyle.color);
-			style['borderColor'] = `rgba(${rgb.r},${rgb.g},${rgb.b},${leafletStyle.opacity})`;
+			style[
+				'borderColor'
+			] = `rgba(${rgb.r},${rgb.g},${rgb.b},${leafletStyle.opacity})`;
 		} else {
 			style['borderColor'] = leafletStyle.color;
 		}
@@ -263,7 +319,7 @@ const getMarkerShapeSquareStyle = (leafletStyle, rotation, borderRadius) => {
 	}
 
 	return style;
-}
+};
 
 /**
  * Prepare element style
@@ -279,7 +335,7 @@ const getMarkerShapeSquareStyle = (leafletStyle, rotation, borderRadius) => {
  * @param leafletStyle.weight {number} outline width
  * @return {Object} calculated style object suitable for SVG
  */
-const getMarkerShapeSvgStyle = (leafletStyle) => {
+const getMarkerShapeSvgStyle = leafletStyle => {
 	let style = {};
 	if (leafletStyle.radius) {
 		const size = leafletStyle.radius * 2 + (leafletStyle.weight || 0);
@@ -312,7 +368,7 @@ const getMarkerShapeSvgStyle = (leafletStyle) => {
 	}
 
 	return style;
-}
+};
 
 export default {
 	calculateStyle,
@@ -327,5 +383,5 @@ export default {
 	getMarkerShape,
 	getMarkerShapeCssStyle,
 	getMarkerShapeSvgStyle,
-	getSelectedStyleObject
-}
+	getSelectedStyleObject,
+};

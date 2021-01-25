@@ -28,7 +28,7 @@ function ellipse(context, cx, cy, rx, ry, style) {
 	context.save(); // save state
 	context.beginPath();
 
-	context.translate(cx-rx, cy-ry);
+	context.translate(cx - rx, cy - ry);
 	context.scale(rx, ry);
 	context.arc(1, 1, 1, 0, 2 * Math.PI, false);
 
@@ -67,8 +67,6 @@ function rectangle(context, x0, y0, dx, dy, style) {
 	fillPolygon(context, style);
 }
 
-
-
 // helpers
 function fillPolygon(context, style) {
 	context.restore(); // restore to original state
@@ -80,10 +78,9 @@ function fillPolygon(context, style) {
 	context.stroke();
 }
 
-
 export default {
 	arrow,
 	ellipse,
 	path,
-	rectangle
-}
+	rectangle,
+};

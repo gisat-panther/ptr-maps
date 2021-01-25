@@ -2,14 +2,18 @@ import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 
 function getLeafletViewFromViewParams(view, width, height) {
-	const completeView = {...mapConstants.defaultMapView, ...view}
+	const completeView = {...mapConstants.defaultMapView, ...view};
 
 	return {
-		zoom: mapUtils.view.getZoomLevelFromBoxRange(completeView.boxRange, width, height),
+		zoom: mapUtils.view.getZoomLevelFromBoxRange(
+			completeView.boxRange,
+			width,
+			height
+		),
 		center: {
 			lat: completeView.center.lat,
-			lng: completeView.center.lon
-		}
+			lng: completeView.center.lon,
+		},
 	};
 }
 
@@ -18,7 +22,7 @@ function getLeafletViewportFromViewParams(view, width, height) {
 
 	return {
 		zoom: leafletView.zoom,
-		center: [leafletView.center.lat, leafletView.center.lng]
+		center: [leafletView.center.lat, leafletView.center.lng],
 	};
 }
 
@@ -28,12 +32,19 @@ function update(map, view, width, height) {
 
 	let leafletUpdate = getLeafletViewFromViewParams(view, width, height);
 
-	if (stateCenter.lat !== leafletUpdate.center.lat || stateCenter.lng !== leafletUpdate.center.lng || stateZoom !== leafletUpdate.zoom){
-		map.setView(leafletUpdate.center || stateCenter, leafletUpdate.zoom || stateZoom);
+	if (
+		stateCenter.lat !== leafletUpdate.center.lat ||
+		stateCenter.lng !== leafletUpdate.center.lng ||
+		stateZoom !== leafletUpdate.zoom
+	) {
+		map.setView(
+			leafletUpdate.center || stateCenter,
+			leafletUpdate.zoom || stateZoom
+		);
 	}
 }
 
 export default {
 	getLeafletViewportFromViewParams,
-	update
-}
+	update,
+};
