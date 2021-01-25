@@ -38,6 +38,7 @@ export default {
   input: "src/index.js",
   external: [
     'react',
+	'react-dom/server',
     'prop-types',
     '@gisatcz/ptr-atoms',
     'classnames',

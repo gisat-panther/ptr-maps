@@ -29,6 +29,7 @@ class ReactLeafletMap extends React.PureComponent {
         onClick: PropTypes.func,
         onLayerClick: PropTypes.func,
         onViewChange: PropTypes.func,
+		resources: PropTypes.object,
         view: PropTypes.object
     };
 
@@ -232,6 +233,7 @@ class ReactLeafletMap extends React.PureComponent {
 				key={layer.key || i}
 				layerKey={layer.layerKey || layer.key}
 				uniqueLayerKey={layer.key || i}
+				resources={this.props.resources}
 				onClick={this.onLayerClick}
 				opacity={layer.opacity || 1}
 				options={layer.options}
