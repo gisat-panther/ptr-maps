@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import {Icon, Button} from '@gisatcz/ptr-atoms'
+import {Icon, Button} from '@gisatcz/ptr-atoms';
 
 import './style.scss';
 
@@ -11,7 +11,7 @@ class SimpleLayersControl extends React.PureComponent {
 		activeLayer: PropTypes.object,
 		layers: PropTypes.array,
 		onSelect: PropTypes.func,
-		right: PropTypes.bool
+		right: PropTypes.bool,
 	};
 
 	constructor(props) {
@@ -19,7 +19,7 @@ class SimpleLayersControl extends React.PureComponent {
 
 		this.ref = React.createRef();
 		this.state = {
-			open: false
+			open: false,
 		};
 
 		this.onControlButtonClick = this.onControlButtonClick.bind(this);
@@ -34,7 +34,7 @@ class SimpleLayersControl extends React.PureComponent {
 
 	onControlButtonClick() {
 		this.setState({
-			open: !this.state.open
+			open: !this.state.open,
 		});
 	}
 
@@ -45,16 +45,14 @@ class SimpleLayersControl extends React.PureComponent {
 	}
 
 	render() {
-		let buttonClasses = classnames("ptr-simple-layers-control control", {
-			open: this.state.open
+		let buttonClasses = classnames('ptr-simple-layers-control control', {
+			open: this.state.open,
 		});
 
 		return (
 			<div className={buttonClasses} onBlur={this.onBlur} ref={this.ref}>
-				<Button
-					onClick={this.onControlButtonClick}
-				>
-					<Icon icon='layers'/>
+				<Button onClick={this.onControlButtonClick}>
+					<Icon icon="layers" />
 				</Button>
 				{this.renderMenu()}
 			</div>
@@ -65,33 +63,46 @@ class SimpleLayersControl extends React.PureComponent {
 		const layers = this.props.layers;
 		const tileWidth = 7;
 		const tileHeight = 5;
-		const tileMargin = .25;
+		const tileMargin = 0.25;
 		const contentMargin = 1;
 
 		if (layers) {
 			let grid = this.getGrid(layers.length);
 
-			let menuClasses = classnames("ptr-simple-layers-control-menu", {
+			let menuClasses = classnames('ptr-simple-layers-control-menu', {
 				open: this.state.open,
 				right: this.props.right,
-				left: !this.props.right
+				left: !this.props.right,
 			});
 
 			let menuStyle = {
-				width: this.state.open ? `${(tileWidth+2*tileMargin)*grid.width + 2*contentMargin}rem` : 0,
-				height: this.state.open ? `${(tileHeight+2*tileMargin)*grid.height + 2*contentMargin}rem` : '2rem'
+				width: this.state.open
+					? `${
+							(tileWidth + 2 * tileMargin) * grid.width + 2 * contentMargin
+					  }rem`
+					: 0,
+				height: this.state.open
+					? `${
+							(tileHeight + 2 * tileMargin) * grid.height + 2 * contentMargin
+					  }rem`
+					: '2rem',
 			};
 
 			let contentStyle = {
 				margin: `${contentMargin}rem`,
-				width: `calc(100% - ${2*contentMargin}rem)`,
-				height: `calc(100% - ${2*contentMargin}rem)`
+				width: `calc(100% - ${2 * contentMargin}rem)`,
+				height: `calc(100% - ${2 * contentMargin}rem)`,
 			};
 
 			return (
 				<div className={menuClasses} style={menuStyle}>
-					<div className="ptr-simple-layers-control-menu-content" style={contentStyle}>
-						{layers.map(layer => this.renderTile(layer, tileWidth, tileHeight, tileMargin))}
+					<div
+						className="ptr-simple-layers-control-menu-content"
+						style={contentStyle}
+					>
+						{layers.map(layer =>
+							this.renderTile(layer, tileWidth, tileHeight, tileMargin)
+						)}
 					</div>
 				</div>
 			);
@@ -103,14 +114,14 @@ class SimpleLayersControl extends React.PureComponent {
 	renderTile(layer, width, height, margin) {
 		let active = layer.key === this.props.activeLayer.key;
 
-		let classes = classnames("ptr-simple-layers-control-tile", {
+		let classes = classnames('ptr-simple-layers-control-tile', {
 			active,
 		});
 
 		let style = {
 			width: `${width}rem`,
 			height: `${height}rem`,
-			margin: `${margin}rem`
+			margin: `${margin}rem`,
 		};
 
 		if (layer.thumbnail) {
@@ -119,7 +130,12 @@ class SimpleLayersControl extends React.PureComponent {
 		}
 
 		return (
-			<div key={layer.key} style={style} className={classes} onClick={this.onLayerTileClick.bind(this, layer.key)}>
+			<div
+				key={layer.key}
+				style={style}
+				className={classes}
+				onClick={this.onLayerTileClick.bind(this, layer.key)}
+			>
 				<div className="ptr-simple-layers-control-tile-name">{layer.name}</div>
 			</div>
 		);
@@ -145,7 +161,7 @@ class SimpleLayersControl extends React.PureComponent {
 			height = 2;
 		}
 
-		return {width, height}
+		return {width, height};
 	}
 }
 

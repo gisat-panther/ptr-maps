@@ -5,17 +5,17 @@
 }
 
 .ptr-simple-layers-control .hold-button {
-	border-radius: .3rem;
+	border-radius: 0.3rem;
 }
 
 .ptr-simple-layers-control-menu {
 	position: absolute;
 	bottom: 0;
-	border-radius: .25rem;
+	border-radius: 0.25rem;
 	width: 0;
 	background: var(--base0);
-	transition: width .15s ease-in-out .15s, height .15s ease-in-out, border-radius 0s;
-	filter: drop-shadow(0 0 .2rem rgba(0,0,0,.2));
+	transition: width 0.15s ease-in-out 0.15s, height 0.15s ease-in-out, border-radius 0s;
+	filter: drop-shadow(0 0 0.2rem rgba(0, 0, 0, 0.2));
 }
 
 .ptr-simple-layers-control-menu-content {
@@ -25,11 +25,11 @@
 }
 
 .ptr-simple-layers-control-menu.open {
-	transition: width .15s ease-in-out, height .15s ease-in-out .15s, border-radius 0s ease-in-out .3s;
+	transition: width 0.15s ease-in-out, height 0.15s ease-in-out 0.15s, border-radius 0s ease-in-out 0.3s;
 }
 
 .ptr-simple-layers-control-menu:after {
-	content: "";
+	content: '';
 	position: absolute;
 	bottom: 0;
 	border-bottom-color: transparent;
@@ -60,7 +60,8 @@
 	border-left-style: solid;
 	border-left-width: 0;
 	right: -1rem;
-	transition: border-bottom-width 0s ease-in-out .3s, border-top-width 0s ease-in-out .3s, border-left-width 0s ease-in-out .3s;
+	transition: border-bottom-width 0s ease-in-out 0.3s, border-top-width 0s ease-in-out 0.3s,
+		border-left-width 0s ease-in-out 0.3s;
 }
 
 .ptr-simple-layers-control-menu.left.open:after {
@@ -72,7 +73,6 @@
 .ptr-simple-layers-control-menu.right {
 	left: calc(100% + 1.5rem);
 	border-bottom-left-radius: 0;
-
 }
 
 .ptr-simple-layers-control-menu.right:not(.open) {
@@ -84,7 +84,8 @@
 	border-right-style: solid;
 	border-right-width: 0;
 	left: -1rem;
-	transition: border-bottom-width 0s ease-in-out .3s, border-top-width 0s ease-in-out .3s, border-right-width 0s ease-in-out .3s;
+	transition: border-bottom-width 0s ease-in-out 0.3s, border-top-width 0s ease-in-out 0.3s,
+		border-right-width 0s ease-in-out 0.3s;
 }
 
 .ptr-simple-layers-control-menu.right.open:after {
@@ -94,11 +95,11 @@
 
 /* Layer tile */
 .ptr-simple-layers-control-tile {
-	background-image: linear-gradient(0deg, rgba(178,178,178,1) 0%, rgba(233,233,233,1) 100%);
+	background-image: linear-gradient(0deg, rgba(178, 178, 178, 1) 0%, rgba(233, 233, 233, 1) 100%);
 	background-size: cover;
 	border: 2px solid var(--base50);
 	border-bottom: 0;
-	border-radius: .15rem;
+	border-radius: 0.15rem;
 	display: flex;
 	align-items: flex-end;
 	cursor: pointer;
@@ -114,7 +115,7 @@
 	font-size: $b1;
 	width: 100%;
 	text-align: center;
-	padding: .15rem 0;
+	padding: 0.15rem 0;
 }
 
 .ptr-simple-layers-control-tile.active .ptr-simple-layers-control-tile-name {

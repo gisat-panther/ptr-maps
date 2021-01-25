@@ -1,4 +1,4 @@
-import chroma from  'chroma-js';
+import chroma from 'chroma-js';
 
 function setPolygonStyle(context, style) {
 	if (style.fill) {
@@ -14,10 +14,12 @@ function setPolygonStyle(context, style) {
 		context.lineWidth = style.outlineWidth;
 		context.strokeStyle = style.outlineColor;
 		if (style.outlineOpacity) {
-			context.strokeStyle = chroma(style.outlineColor).alpha(style.outlineOpacity).hex();
+			context.strokeStyle = chroma(style.outlineColor)
+				.alpha(style.outlineOpacity)
+				.hex();
 		}
 
-		context.lineJoin = "round";
+		context.lineJoin = 'round';
 		context.stroke();
 	}
 }
@@ -27,22 +29,24 @@ function setLineStyle(context, style) {
 		context.lineWidth = style.outlineWidth;
 		context.strokeStyle = style.outlineColor;
 		if (style.outlineOpacity) {
-			context.strokeStyle = chroma(style.outlineColor).alpha(style.outlineOpacity).hex();
+			context.strokeStyle = chroma(style.outlineColor)
+				.alpha(style.outlineOpacity)
+				.hex();
 		}
 
-		context.lineJoin = "round";
-		context.lineCap = "round";
+		context.lineJoin = 'round';
+		context.lineCap = 'round';
 		context.stroke();
 	}
 }
 
 function getSize(definedSize, pixelSizeInMeters) {
-	let size = pixelSizeInMeters ? definedSize/pixelSizeInMeters : definedSize;
+	let size = pixelSizeInMeters ? definedSize / pixelSizeInMeters : definedSize;
 	return size < 0.5 ? 0.5 : size;
 }
 
 export default {
 	setLineStyle,
 	setPolygonStyle,
-	getSize
-}
+	getSize,
+};

@@ -10,13 +10,13 @@ import navigator from './navigator/helpers';
 
 import './style.scss';
 
-import LargeDataLayer from "./layers/LargeDataLayerSource/LargeDataLayer";
+import LargeDataLayer from './layers/LargeDataLayerSource/LargeDataLayer';
 
-import VectorLayer from "./layers/VectorLayer";
+import VectorLayer from './layers/VectorLayer';
 
-import {mapConstants} from "@gisatcz/ptr-core";
+import {mapConstants} from '@gisatcz/ptr-core';
 import Context from '@gisatcz/cross-package-react-context';
-import ReactResizeDetector from "react-resize-detector";
+import ReactResizeDetector from 'react-resize-detector';
 const HoverContext = Context.getContext('HoverContext');
 const {WorldWindow, ElevationModel} = WorldWind;
 
@@ -24,14 +24,11 @@ class WorldWindMap extends React.PureComponent {
 	static contextType = HoverContext;
 
 	static defaultProps = {
-		elevationModel: null
+		elevationModel: null,
 	};
 
 	static propTypes = {
-		backgroundLayer: PropTypes.oneOfType([
-			PropTypes.object,
-			PropTypes.array
-		]),
+		backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 		layers: PropTypes.array,
 		name: PropTypes.string,
 		view: PropTypes.object,
@@ -50,12 +47,12 @@ class WorldWindMap extends React.PureComponent {
 
 		this.state = {
 			width: null,
-			height: null
-		}
+			height: null,
+		};
 
 		this.onClick = this.onClick.bind(this);
 		this.onLayerHover = this.onLayerHover.bind(this);
-		this.onWorldWindHover =  this.onWorldWindHover.bind(this);
+		this.onWorldWindHover = this.onWorldWindHover.bind(this);
 		this.onLayerClick = this.onLayerClick.bind(this);
 		this.onMouseOut = this.onMouseOut.bind(this);
 		this.onResize = this.onResize.bind(this);
@@ -68,18 +65,38 @@ class WorldWindMap extends React.PureComponent {
 	componentDidMount() {
 		this.wwd = new WorldWindow(this.canvasId, this.getElevationModel());
 
-		decorateWorldWindowController(this.wwd.worldWindowController, this.props.viewLimits, this.props.levelsBased);
-		this.wwd.worldWindowController.onNavigatorChanged = this.onNavigatorChange.bind(this);
+		decorateWorldWindowController(
+			this.wwd.worldWindowController,
+			this.props.viewLimits,
+			this.props.levelsBased
+		);
+		this.wwd.worldWindowController.onNavigatorChanged = this.onNavigatorChange.bind(
+			this
+		);
 
 		if (this.props.levelsBased) {
 			// rewrite default wheel listener.
-			this.wwd.eventListeners.wheel.listeners = [this.onZoomLevelsBased.bind(this)];
+			this.wwd.eventListeners.wheel.listeners = [
+				this.onZoomLevelsBased.bind(this),
+			];
 		}
 
-		new CyclicPickController(this.wwd, ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'touchstart', 'touchmove', 'touchend'], this.onWorldWindHover, true);
+		new CyclicPickController(
+			this.wwd,
+			[
+				'mousemove',
+				'mousedown',
+				'mouseup',
+				'mouseout',
+				'touchstart',
+				'touchmove',
+				'touchend',
+			],
+			this.onWorldWindHover,
+			true
+		);
 		this.updateNavigator(mapConstants.defaultMapView);
 		this.updateLayers();
-
 	}
 
 	onZoomLevelsBased(e) {
@@ -93,14 +110,18 @@ class WorldWindMap extends React.PureComponent {
 			}
 
 			this.onZoomLevelsBasedTimeout = setTimeout(() => {
-				let zoomLevel = mapUtils.view.getZoomLevelFromBoxRange(this.props.view.boxRange, this.state.width, this.state.height);
+				let zoomLevel = mapUtils.view.getZoomLevelFromBoxRange(
+					this.props.view.boxRange,
+					this.state.width,
+					this.state.height
+				);
 
 				if (this.onZoomLevelsBasedStep > 300) {
 					zoomLevel += 3;
 				} else if (this.onZoomLevelsBasedStep > 150) {
 					zoomLevel += 2;
 				} else if (this.onZoomLevelsBasedStep > 0) {
-					zoomLevel ++;
+					zoomLevel++;
 				} else if (this.onZoomLevelsBasedStep < -300) {
 					zoomLevel -= 3;
 				} else if (this.onZoomLevelsBasedStep < -150) {
@@ -110,9 +131,24 @@ class WorldWindMap extends React.PureComponent {
 				}
 
 				let levelsRange = mapConstants.defaultLevelsRange;
-				const boxRangeRange = this.props.viewLimits && this.props.viewLimits.boxRangeRange;
-				const maxLevel = boxRangeRange && boxRangeRange[0] ? mapUtils.view.getZoomLevelFromBoxRange(boxRangeRange[0], this.state.width, this.state.height) : levelsRange[1];
-				const minLevel = boxRangeRange && boxRangeRange[1] ? mapUtils.view.getZoomLevelFromBoxRange(boxRangeRange[1], this.state.width, this.state.height) : levelsRange[0];
+				const boxRangeRange =
+					this.props.viewLimits && this.props.viewLimits.boxRangeRange;
+				const maxLevel =
+					boxRangeRange && boxRangeRange[0]
+						? mapUtils.view.getZoomLevelFromBoxRange(
+								boxRangeRange[0],
+								this.state.width,
+								this.state.height
+						  )
+						: levelsRange[1];
+				const minLevel =
+					boxRangeRange && boxRangeRange[1]
+						? mapUtils.view.getZoomLevelFromBoxRange(
+								boxRangeRange[1],
+								this.state.width,
+								this.state.height
+						  )
+						: levelsRange[0];
 
 				levelsRange = [minLevel, maxLevel];
 
@@ -123,31 +159,40 @@ class WorldWindMap extends React.PureComponent {
 					finalZoomLevel = levelsRange[0];
 				}
 
-				const boxRange = mapUtils.view.getBoxRangeFromZoomLevel(finalZoomLevel, this.state.width, this.state.height);
+				const boxRange = mapUtils.view.getBoxRangeFromZoomLevel(
+					finalZoomLevel,
+					this.state.width,
+					this.state.height
+				);
 				if (this.props.onViewChange) {
 					this.props.onViewChange({
-						boxRange
+						boxRange,
 					});
 				}
 
 				this.onZoomLevelsBasedTimeout = null;
 				this.onZoomLevelsBasedStep = 0;
-			},50);
+			}, 50);
 		}
 	}
 
 	componentDidUpdate(prevProps) {
-		if (prevProps){
+		if (prevProps) {
 			if (this.props.view && prevProps.view !== this.props.view) {
 				this.updateNavigator();
 			}
 
-			if (prevProps.layers !== this.props.layers || prevProps.backgroundLayer !== this.props.backgroundLayer) {
+			if (
+				prevProps.layers !== this.props.layers ||
+				prevProps.backgroundLayer !== this.props.backgroundLayer
+			) {
 				this.updateLayers();
 			}
 
 			if (this.context && this.context.hoveredItems) {
-				const currentHoveredItemsString = JSON.stringify(_.sortBy(this.context.hoveredItems));
+				const currentHoveredItemsString = JSON.stringify(
+					_.sortBy(this.context.hoveredItems)
+				);
 				if (currentHoveredItemsString !== this.previousHoveredItemsString) {
 					this.updateHoveredFeatures();
 				}
@@ -159,20 +204,27 @@ class WorldWindMap extends React.PureComponent {
 		let layers = [];
 		if (this.props.backgroundLayer) {
 			// TODO fix for compatibility
-			let backgroundLayers = _.isArray(this.props.backgroundLayer) ? this.props.backgroundLayer : [this.props.backgroundLayer];
+			let backgroundLayers = _.isArray(this.props.backgroundLayer)
+				? this.props.backgroundLayer
+				: [this.props.backgroundLayer];
 
-			backgroundLayers.forEach((layer) => {
+			backgroundLayers.forEach(layer => {
 				layers.push(layersHelpers.getLayerByType(layer, this.wwd));
 			});
 		}
 
 		if (this.props.layers) {
-			this.props.layers.forEach((layer) => {
-				const mapLayer = layersHelpers.getLayerByType(layer, this.wwd, this.onLayerHover, this.onLayerClick, this.props.pointAsMarker);
+			this.props.layers.forEach(layer => {
+				const mapLayer = layersHelpers.getLayerByType(
+					layer,
+					this.wwd,
+					this.onLayerHover,
+					this.onLayerClick,
+					this.props.pointAsMarker
+				);
 				layers.push(mapLayer);
 			});
 		}
-
 
 		this.invalidateLayers(this.wwd.layers);
 		this.wwd.layers = layers;
@@ -190,13 +242,19 @@ class WorldWindMap extends React.PureComponent {
 	updateHoveredFeatures() {
 		this.wwd.layers.forEach(layer => {
 			if (layer instanceof LargeDataLayer) {
-				layer.updateHoveredKeys(this.context.hoveredItems, this.context.x, this.context.y);
+				layer.updateHoveredKeys(
+					this.context.hoveredItems,
+					this.context.x,
+					this.context.y
+				);
 			} else if (layer instanceof VectorLayer) {
 				layer.updateHoveredFeatures(this.context.hoveredItems);
 			}
 		});
 		this.wwd.redraw();
-		this.previousHoveredItemsString = JSON.stringify(_.sortBy(this.context.hoveredItems));
+		this.previousHoveredItemsString = JSON.stringify(
+			_.sortBy(this.context.hoveredItems)
+		);
 	}
 
 	updateNavigator(defaultView) {
@@ -204,7 +262,13 @@ class WorldWindMap extends React.PureComponent {
 		let width = this.state.width || viewport.width;
 		let height = this.state.height || viewport.height;
 
-		let currentView = defaultView || navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator, width, height);
+		let currentView =
+			defaultView ||
+			navigator.getViewParamsFromWorldWindNavigator(
+				this.wwd.navigator,
+				width,
+				height
+			);
 		let nextView = {...currentView, ...this.props.view};
 		navigator.update(this.wwd, nextView, width, height);
 	}
@@ -214,7 +278,7 @@ class WorldWindMap extends React.PureComponent {
 	 */
 	getElevationModel() {
 		switch (this.props.elevationModel) {
-			case "default":
+			case 'default':
 				return null;
 			case null:
 				const elevation = new ElevationModel();
@@ -225,10 +289,17 @@ class WorldWindMap extends React.PureComponent {
 
 	onNavigatorChange(event) {
 		if (event) {
-			const viewParams = navigator.getViewParamsFromWorldWindNavigator(event, this.state.width, this.state.height);
-			const changedViewParams = navigator.getChangedViewParams({...mapConstants.defaultMapView, ...this.props.view}, viewParams);
+			const viewParams = navigator.getViewParamsFromWorldWindNavigator(
+				event,
+				this.state.width,
+				this.state.height
+			);
+			const changedViewParams = navigator.getChangedViewParams(
+				{...mapConstants.defaultMapView, ...this.props.view},
+				viewParams
+			);
 
-			if(this.props.onViewChange) {
+			if (this.props.onViewChange) {
 				if (!_.isEmpty(changedViewParams)) {
 					if (this.props.delayedWorldWindNavigatorSync) {
 						if (this.changedNavigatorTimeout) {
@@ -236,7 +307,7 @@ class WorldWindMap extends React.PureComponent {
 						}
 						this.changedNavigatorTimeout = setTimeout(() => {
 							this.props.onViewChange(changedViewParams);
-						}, this.props.delayedWorldWindNavigatorSync)
+						}, this.props.delayedWorldWindNavigatorSync);
 					} else {
 						this.props.onViewChange(changedViewParams);
 					}
@@ -248,7 +319,11 @@ class WorldWindMap extends React.PureComponent {
 	onClick() {
 		if (this.props.onClick) {
 			const {width, height} = this.wwd.viewport;
-			let currentView = navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator, width, height);
+			let currentView = navigator.getViewParamsFromWorldWindNavigator(
+				this.wwd.navigator,
+				width,
+				height
+			);
 			this.props.onClick(currentView);
 		}
 	}
@@ -268,8 +343,8 @@ class WorldWindMap extends React.PureComponent {
 					y,
 					content: popupContent,
 					data,
-					fidColumnName
-				}
+					fidColumnName,
+				},
 			});
 		}
 	}
@@ -293,16 +368,25 @@ class WorldWindMap extends React.PureComponent {
 			if (event.type === 'mousedown' && layerPantherProps.selectable) {
 				this.onLayerClick(layerPantherProps.layerKey, featureKeys);
 			} else if (layerPantherProps.hoverable) {
-				this.onLayerHover(layerPantherProps.layerKey, featureKeys, event.pageX, event.pageY, <div>{featureKeys.join(",")}</div>, data, layerPantherProps.fidColumnName);
+				this.onLayerHover(
+					layerPantherProps.layerKey,
+					featureKeys,
+					event.pageX,
+					event.pageY,
+					<div>{featureKeys.join(',')}</div>,
+					data,
+					layerPantherProps.fidColumnName
+				);
 			}
-		} else if (this.context && this.context.onHoverOut){
+		} else if (this.context && this.context.onHoverOut) {
 			this.context.onHoverOut();
 		}
 	}
 
 	onResize(width, height) {
 		this.setState({
-			width, height
+			width,
+			height,
 		});
 		this.updateNavigator();
 		if (this.props.onResize) {
@@ -313,8 +397,16 @@ class WorldWindMap extends React.PureComponent {
 	render() {
 		return (
 			<>
-				<ReactResizeDetector handleHeight handleWidth onResize={this.onResize}/>
-				<div className="ptr-map ptr-world-wind-map" onClick={this.onClick} onMouseOut={this.onMouseOut}>
+				<ReactResizeDetector
+					handleHeight
+					handleWidth
+					onResize={this.onResize}
+				/>
+				<div
+					className="ptr-map ptr-world-wind-map"
+					onClick={this.onClick}
+					onMouseOut={this.onMouseOut}
+				>
 					<canvas className="ptr-world-wind-map-canvas" id={this.canvasId}>
 						Your browser does not support HTML5 Canvas.
 					</canvas>

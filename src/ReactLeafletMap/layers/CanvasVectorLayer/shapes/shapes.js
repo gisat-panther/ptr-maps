@@ -1,4 +1,4 @@
-import helpers from "./helpers";
+import helpers from './helpers';
 
 /**
  * Draw shape to the given canvas
@@ -8,9 +8,8 @@ import helpers from "./helpers";
  * @param pixelSizeInMeters {number | null}
  */
 function draw(context, center, style, pixelSizeInMeters) {
-
 	// TODO add other shapes
-	if (style.shape === "square") {
+	if (style.shape === 'square') {
 		square(context, center, style, pixelSizeInMeters);
 	} else {
 		circle(context, center, style, pixelSizeInMeters);
@@ -19,9 +18,9 @@ function draw(context, center, style, pixelSizeInMeters) {
 
 function square(context, center, style, pixelSizeInMeters) {
 	const size = helpers.getSize(style.size, pixelSizeInMeters);
-	const a = 2*size; // side length
+	const a = 2 * size; // side length
 	context.beginPath();
-	context.rect(center.x - a/2, center.y - a/2, a, a);
+	context.rect(center.x - a / 2, center.y - a / 2, a, a);
 	helpers.setPolygonStyle(context, style);
 	context.closePath();
 }
@@ -35,5 +34,5 @@ function circle(context, center, style, pixelSizeInMeters) {
 }
 
 export default {
-	draw
-}
+	draw,
+};

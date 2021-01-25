@@ -8,11 +8,11 @@ import _ from 'lodash';
  * @return {number|*} Panther view box range
  */
 function getBoxRangeFromWorldWindRange(range, width, height) {
-    if (width && width >= height) {
-        return range * height/width;
-    } else {
-        return range;
-    }
+	if (width && width >= height) {
+		return (range * height) / width;
+	} else {
+		return range;
+	}
 }
 
 /**
@@ -23,11 +23,11 @@ function getBoxRangeFromWorldWindRange(range, width, height) {
  * @return {number|*} WorldWind navigator range
  */
 function getWorldWindRangeFromBoxRange(boxRange, width, height) {
-    if (width && width >= height) {
-        return boxRange * width/height;
-    } else {
-        return boxRange;
-    }
+	if (width && width >= height) {
+		return (boxRange * width) / height;
+	} else {
+		return boxRange;
+	}
 }
 
 /**
@@ -47,7 +47,9 @@ function isBoxRangeInRange(boxRange, range) {
 		// without upper limit
 		const noUpperLimitMoreThanLower = boxRange > range[0] && !range[1];
 
-		return fitsInLimits || noLowerLimitLessThanUpper || noUpperLimitMoreThanLower;
+		return (
+			fitsInLimits || noLowerLimitLessThanUpper || noUpperLimitMoreThanLower
+		);
 	} else {
 		return false;
 	}
@@ -94,16 +96,15 @@ function getCenterWhichFitsLimits(center, limit) {
 		} else {
 			return {
 				lat: updatedLat || center.lat,
-				lon: updatedLon || center.lon
-			}
+				lon: updatedLon || center.lon,
+			};
 		}
 	}
 }
 
-
 export default {
-    getBoxRangeFromWorldWindRange,
+	getBoxRangeFromWorldWindRange,
 	getCenterWhichFitsLimits,
-    getWorldWindRangeFromBoxRange,
-	isBoxRangeInRange
-}
+	getWorldWindRangeFromBoxRange,
+	isBoxRangeInRange,
+};

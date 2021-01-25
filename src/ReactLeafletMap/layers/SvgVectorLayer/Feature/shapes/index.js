@@ -1,13 +1,13 @@
-import Cross from "./Cross";
-import Pin from "./Pin";
+import Cross from './Cross';
+import Pin from './Pin';
 
 export default {
-	"cross": {
+	cross: {
 		anchorPoint: [0.5, 0.5],
-		component: Cross
+		component: Cross,
 	},
-	"pin": {
+	pin: {
 		anchorPoint: [0.5, 1],
-		component: Pin
-	}
-}
+		component: Pin,
+	},
+};

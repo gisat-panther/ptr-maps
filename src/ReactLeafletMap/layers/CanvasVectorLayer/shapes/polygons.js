@@ -1,4 +1,4 @@
-import helpers from "./helpers";
+import helpers from './helpers';
 
 /**
  * Draw shape to the given canvas
@@ -7,7 +7,6 @@ import helpers from "./helpers";
  * @param style {Object} Panther style definition
  */
 function drawPolygon(context, coordinates, style) {
-
 	context.beginPath();
 
 	coordinates.forEach(linearRing => {
@@ -31,5 +30,5 @@ function drawMultiPolygon(context, coordinates, style) {
 
 export default {
 	drawPolygon,
-	drawMultiPolygon
-}
+	drawMultiPolygon,
+};
