@@ -92,6 +92,7 @@
 		"build:babel:lib:es": "cross-env BABEL_ENV=es babel src -d lib",
 		"copy:stylesheets": "node ./build/copy-stylesheets.js",
 		"copy:assets": "node ./build/copy-assets.js",
-		"test": "cross-env NODE_ENV=cjs rollup -c ./rollup.test.config.js && mocha -- --require source-map-support/register"
+		"test": "cross-env NODE_ENV=cjs rollup -c ./rollup.test.config.js && mocha -- --require source-map-support/register",
+		"format": "prettier --write ."
 	}
 }
