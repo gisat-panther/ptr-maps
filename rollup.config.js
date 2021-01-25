@@ -1,6 +1,5 @@
 import babel from "rollup-plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
-import alias from "@rollup/plugin-alias";
 import filesize from "rollup-plugin-filesize";
 import postcss from 'rollup-plugin-postcss';
 import postcssUrl from './build/plugins/postcssUrl'
@@ -32,6 +31,11 @@ const lodashExternal = [
   'lodash/find',
   'lodash/each',
   'lodash/indexOf',
+  'lodash/orderBy',
+  'lodash/compact',
+  'lodash/maxBy',
+  'lodash/minBy',
+  'lodash/findIndex'
 ];
 
 export default {
@@ -46,6 +50,8 @@ export default {
     'fast-deep-equal',
     '@gisatcz/ptr-utils',
     '@gisatcz/ptr-core',
+    '@gisatcz/cross-package-react-context',
+	'memoize-one',
     'leaflet',
     'leaflet/dist/leaflet.css',
     'proj4leaflet',
@@ -91,12 +97,5 @@ export default {
       ]
     }),
     filesize(),
-
-    // TODO figure out dev and prod version
-    // alias({
-    //   entries: [
-    //     { find: '@gisatcz/ptr-state', replacement: 'C:/Users/pvlach/DATA/ptr-state' }
-    //   ]
-    // })
   ]
 };
