@@ -54,7 +54,7 @@ function isBoxRangeInRange(boxRange, range) {
 }
 
 /**
- * It compares center coordinates with it's limits. If given center is outside limit, adjusted center will be returned
+ * It compares center coordinates with limits. If given center is outside limit, adjusted center will be returned
  * @param center {{lat: number, lon: number}}
  * @param limit {{minLat: number, maxLat: number, minLon: number, maxLon: number}}
  * @return {{lat: number, lon: number}}
