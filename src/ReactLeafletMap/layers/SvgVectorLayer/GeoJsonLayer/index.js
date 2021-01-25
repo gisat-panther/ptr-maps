@@ -37,7 +37,6 @@ class GeoJsonLayer extends React.PureComponent {
     }
 
     onEachFeature(feature, layer){
-        const fid = feature.properties[this.props.fidColumnName] || feature.id;
         const geometryType = feature.geometry.type;
         const isPolygon = geometryType === "Polygon" || geometryType === "MultiPolygon";
         const isLine = geometryType === "Line" || geometryType === "LineString";
@@ -47,7 +46,7 @@ class GeoJsonLayer extends React.PureComponent {
         layer.on({
             click: (e) => {
                 if (this.props.onFeatureClick && this.props.selectable) {
-                    this.props.onFeatureClick(fid);
+                    this.props.onFeatureClick(feature.uniqueFeatureKey);
                 }
             },
             mousemove: (e) => {
@@ -96,7 +95,6 @@ class GeoJsonLayer extends React.PureComponent {
     // render points
     pointToLayer(feature, coord) {
         if (this.props.pointAsMarker) {
-
         	let style = feature.defaultStyle;
         	if (feature.selected) {
         		// TODO selectedHovered?
@@ -104,7 +102,7 @@ class GeoJsonLayer extends React.PureComponent {
         		style = styles.selected;
 			}
 
-			const shapeId = feature.fid ? `${feature.fid}_icon` : utils.uuid();
+			const shapeId = feature.uniqueFeatureKey ? `${feature.uniqueFeatureKey}_icon` : utils.uuid();
 			const shape = helpers.getMarkerShape(shapeId, style, {
 				icons: this.props.icons
 			})
