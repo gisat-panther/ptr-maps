@@ -55,8 +55,56 @@ function isBoxRangeInRange(boxRange, range) {
 	}
 }
 
+/**
+ * It compares center coordinates with limits. If given center is outside limit, adjusted center will be returned
+ * @param center {{lat: number, lon: number}}
+ * @param limit {{minLat: number, maxLat: number, minLon: number, maxLon: number}}
+ * @return {{lat: number, lon: number}}
+ */
+function getCenterWhichFitsLimits(center, limit) {
+	if (!limit) {
+		return center;
+	} else {
+		let updatedLat = null;
+		let updatedLon = null;
+		const givenLat = center.lat;
+		const givenLon = center.lon;
+		const maxLat = limit.maxLat;
+		const maxLon = limit.maxLon;
+		const minLat = limit.minLat;
+		const minLon = limit.minLon;
+
+		if (givenLat >= maxLat) {
+			updatedLat = maxLat;
+		}
+
+		if (givenLat <= minLat) {
+			updatedLat = minLat;
+		}
+
+		if (givenLon >= maxLon) {
+			updatedLon = maxLon;
+		}
+
+		if (givenLon <= minLon) {
+			updatedLon = minLon;
+		}
+
+		// Don't mutate, if center fits limits
+		if (!updatedLon && !updatedLat) {
+			return center;
+		} else {
+			return {
+				lat: updatedLat || center.lat,
+				lon: updatedLon || center.lon,
+			};
+		}
+	}
+}
+
 export default {
 	getBoxRangeFromWorldWindRange,
+	getCenterWhichFitsLimits,
 	getWorldWindRangeFromBoxRange,
 	isBoxRangeInRange,
 };

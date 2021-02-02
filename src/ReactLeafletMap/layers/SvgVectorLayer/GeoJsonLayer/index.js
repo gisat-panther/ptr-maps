@@ -48,7 +48,6 @@ class GeoJsonLayer extends React.PureComponent {
 	}
 
 	onEachFeature(feature, layer) {
-		const fid = feature.properties[this.props.fidColumnName] || feature.id;
 		const geometryType = feature.geometry.type;
 		const isPolygon =
 			geometryType === 'Polygon' || geometryType === 'MultiPolygon';
@@ -66,15 +65,15 @@ class GeoJsonLayer extends React.PureComponent {
 		layer.on({
 			click: e => {
 				if (this.props.onFeatureClick && this.props.selectable) {
-					this.props.onFeatureClick(fid);
+					this.props.onFeatureClick(feature.uniqueFeatureKey);
 				}
 			},
 			mousemove: e => {
 				if (this.props.hoverable) {
 					if (feature.selected && styles.selectedHovered) {
-						e.target.setStyle(styles.selectedHovered);
+						this.setStyle(styles.selectedHovered, e.target);
 					} else {
-						e.target.setStyle(styles.hovered);
+						this.setStyle(styles.hovered, e.target);
 					}
 
 					if (isPolygon || isLine) {
@@ -85,9 +84,9 @@ class GeoJsonLayer extends React.PureComponent {
 			mouseout: e => {
 				if (this.props.hoverable) {
 					if (feature.selected && styles.selected) {
-						e.target.setStyle(styles.selected);
+						this.setStyle(styles.selected, e.target);
 					} else {
-						e.target.setStyle(styles.default);
+						this.setStyle(styles.default, e.target);
 					}
 
 					if ((isLine || isPolygon) && !feature.selected) {
@@ -98,11 +97,49 @@ class GeoJsonLayer extends React.PureComponent {
 		});
 	}
 
+	/**
+	 * Set style of the feature
+	 * @param leafletStyle {Object} Leaflet style definition
+	 * @param element {Object} Leaflet element
+	 */
+	setStyle(leafletStyle, element) {
+		const shape = element?.options?.icon;
+		if (shape) {
+			shape.setStyle(leafletStyle, shape.id, shape.isBasicShape);
+		} else {
+			element.setStyle(leafletStyle);
+		}
+	}
+
 	// render points
 	pointToLayer(feature, coord) {
 		if (this.props.pointAsMarker) {
-			// TODO add other shapes
-			return L.circleMarker(coord, {pane: this.props.paneName});
+			let style = feature.defaultStyle;
+			if (feature.selected) {
+				// TODO selectedHovered?
+				const styles = helpers.calculateStyle(
+					feature.feature,
+					this.props.styleDefinition,
+					this.props.hoveredStyleDefinition,
+					feature.selected,
+					feature.selectedStyleDefinition,
+					feature.selectedHoveredStyleDefinition
+				);
+				style = styles.selected;
+			}
+
+			const shapeId = feature.uniqueFeatureKey
+				? `${feature.uniqueFeatureKey}_icon`
+				: utils.uuid();
+			const shape = helpers.getMarkerShape(shapeId, style, {
+				icons: this.props.icons,
+			});
+
+			return L.marker(coord, {
+				pane: this.props.paneName,
+				interactive: this.props.hoverable || this.props.selectable,
+				icon: shape,
+			});
 		} else {
 			return L.circle(coord, feature.defaultStyle);
 		}

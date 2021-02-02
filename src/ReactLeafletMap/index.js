@@ -13,6 +13,7 @@ import ReactResizeDetector from 'react-resize-detector';
 import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 
+import viewUtils from '../utils/view';
 import viewHelpers from './viewHelpers';
 import _ from 'lodash';
 import VectorLayer from './layers/VectorLayer';
@@ -31,23 +32,10 @@ class ReactLeafletMap extends React.PureComponent {
 		onClick: PropTypes.func,
 		onLayerClick: PropTypes.func,
 		onViewChange: PropTypes.func,
+		resources: PropTypes.object,
 		view: PropTypes.object,
+		viewLimits: PropTypes.object,
 	};
-
-	static getDerivedStateFromProps(props, state) {
-		if (state.width && state.height) {
-			return {
-				leafletView: viewHelpers.getLeafletViewportFromViewParams(
-					props.view,
-					state.width,
-					state.height
-				),
-			};
-		}
-
-		// Return null if the state hasn't changed
-		return null;
-	}
 
 	constructor(props) {
 		super(props);
@@ -144,10 +132,13 @@ class ReactLeafletMap extends React.PureComponent {
 				(viewport.center[0] !== this.state.leafletView.center[0] ||
 					viewport.center[1] !== this.state.leafletView.center[1])
 			) {
-				change.center = {
-					lat: viewport.center[0],
-					lon: viewport.center[1],
-				};
+				change.center = viewUtils.getCenterWhichFitsLimits(
+					{
+						lat: viewport.center[0],
+						lon: viewport.center[1],
+					},
+					this.props.viewLimits?.center
+				);
 			}
 
 			if (
@@ -164,13 +155,22 @@ class ReactLeafletMap extends React.PureComponent {
 
 			if (!_.isEmpty(change) && !this.hasResized()) {
 				change = mapUtils.view.ensureViewIntegrity(change);
+
+				if (this.props.viewLimits?.center) {
+					/* Center coordinate values are compared by value. If the map view is changed from inside (by dragging) and the center gets out of the range, then the center coordinates are adjusted to those limits. However, if we move the map a bit again, these values will remain the same and the map component will not reredner. Therefore, it is necessary to make insignificant change in center coordinates values */
+					change.center = {
+						lat: change.center.lat + Math.random() / Math.pow(10, 13),
+						lon: change.center.lon + Math.random() / Math.pow(10, 13),
+					};
+				}
+
 				if (this.props.onViewChange) {
 					this.props.onViewChange(change);
 				}
 				// just presentational map
 				else {
 					this.setState({
-						view: change,
+						view: {...this.props.view, ...this.state.view, ...change},
 					});
 				}
 			}
@@ -199,7 +199,7 @@ class ReactLeafletMap extends React.PureComponent {
 			width,
 			height,
 			leafletView: viewHelpers.getLeafletViewportFromViewParams(
-				this.props.view,
+				this.state.view || this.props.view,
 				this.state.width,
 				this.state.height
 			),
@@ -226,6 +226,12 @@ class ReactLeafletMap extends React.PureComponent {
 	}
 
 	renderMap() {
+		const leafletView = viewHelpers.getLeafletViewportFromViewParams(
+			this.state.view || this.props.view,
+			this.state.width,
+			this.state.height
+		);
+
 		// fix for backward compatibility
 		const backgroundLayersSource = _.isArray(this.props.backgroundLayer)
 			? this.props.backgroundLayer
@@ -233,14 +239,21 @@ class ReactLeafletMap extends React.PureComponent {
 		const backgroundLayersZindex = constants.defaultLeafletPaneZindex + 1;
 		const backgroundLayers =
 			backgroundLayersSource &&
-			backgroundLayersSource.map((layer, i) => this.getLayerByType(layer, i));
+			backgroundLayersSource.map((layer, i) =>
+				this.getLayerByType(layer, i, null, leafletView.zoom)
+			);
 
 		const baseLayersZindex = constants.defaultLeafletPaneZindex + 100;
 		const layers =
 			this.props.layers &&
 			this.props.layers.map((layer, i) => (
 				<Pane key={layer.key || i} style={{zIndex: baseLayersZindex + i}}>
-					{this.getLayerByType(layer, i, baseLayersZindex + i)}
+					{this.getLayerByType(
+						layer,
+						i,
+						baseLayersZindex + i,
+						leafletView.zoom
+					)}
 				</Pane>
 			));
 
@@ -253,8 +266,8 @@ class ReactLeafletMap extends React.PureComponent {
 				className="ptr-map ptr-leaflet-map"
 				onViewportChanged={this.onViewportChanged}
 				onClick={this.onClick}
-				center={this.state.leafletView.center}
-				zoom={this.state.leafletView.zoom}
+				center={leafletView.center}
+				zoom={leafletView.zoom}
 				zoomControl={false}
 				minZoom={this.minZoom} // non-dynamic prop
 				maxZoom={this.maxZoom} // non-dynamic prop
@@ -269,7 +282,7 @@ class ReactLeafletMap extends React.PureComponent {
 		);
 	}
 
-	getLayerByType(layer, i, zIndex) {
+	getLayerByType(layer, i, zIndex, zoom) {
 		if (layer && layer.type) {
 			switch (layer.type) {
 				case 'wmts':
@@ -279,7 +292,7 @@ class ReactLeafletMap extends React.PureComponent {
 				case 'vector':
 				case 'tiled-vector':
 				case 'diagram':
-					return this.getVectorLayer(layer, i, zIndex);
+					return this.getVectorLayer(layer, i, zIndex, zoom);
 				default:
 					return null;
 			}
@@ -288,18 +301,19 @@ class ReactLeafletMap extends React.PureComponent {
 		}
 	}
 
-	getVectorLayer(layer, i, zIndex) {
+	getVectorLayer(layer, i, zIndex, zoom) {
 		return (
 			<VectorLayer
 				key={layer.key || i}
 				layerKey={layer.layerKey || layer.key}
 				uniqueLayerKey={layer.key || i}
+				resources={this.props.resources}
 				onClick={this.onLayerClick}
 				opacity={layer.opacity || 1}
 				options={layer.options}
 				type={layer.type}
 				view={this.state.view || this.props.view}
-				zoom={this.state.leafletView.zoom}
+				zoom={zoom}
 				zIndex={zIndex}
 			/>
 		);

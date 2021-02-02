@@ -3,7 +3,6 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 import CanvasVectorLayer from '../CanvasVectorLayer';
-import DiagramLayer from '../DiagramLayer';
 import IndexedVectorLayer from '../IndexedVectorLayer';
 import SvgVectorLayer from '../SvgVectorLayer';
 import TiledVectorLayer from '../TiledVectorLayer';

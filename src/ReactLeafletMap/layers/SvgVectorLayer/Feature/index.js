@@ -11,7 +11,6 @@ import {shallowEqualObjects} from 'shallow-equal';
 import {utils} from '@gisatcz/ptr-utils';
 
 import ContextWrapper from './ContextWrapper';
-import MarkerIcon from './MarkerIcon';
 import helpers from '../helpers';
 
 class Feature extends React.PureComponent {
@@ -51,7 +50,9 @@ class Feature extends React.PureComponent {
 		this.fid = props.fid;
 
 		if (props.type === 'Point' && props.pointAsMarker) {
-			this.iconId = this.props.fid ? `${this.props.fid}_icon` : utils.uuid();
+			this.shapeId = this.props.uniqueFeatureKey
+				? `${this.props.uniqueFeatureKey}_icon`
+				: utils.uuid();
 		}
 
 		this.state = {
@@ -92,8 +93,8 @@ class Feature extends React.PureComponent {
 		if (this.props.selectable) {
 			this.showOnTop();
 
-			if (this.props.onClick && this.fid) {
-				this.props.onClick(this.fid);
+			if (this.props.onClick && this.props.uniqueFeatureKey) {
+				this.props.onClick(this.props.uniqueFeatureKey);
 			}
 		}
 	}
@@ -241,28 +242,26 @@ class Feature extends React.PureComponent {
 	}
 
 	renderShape(coordinates, style) {
-		if (!this.icon) {
-			this.icon = new MarkerIcon(this.iconId, style, {
-				iconAnchor: style.radius ? [style.radius, style.radius] : null,
+		if (!this.shape) {
+			this.shape = helpers.getMarkerShape(this.shapeId, style, {
+				icons: this.props.icons,
 				onMouseMove: this.onMouseMove,
-				onMouseOut: this.onMouseOut,
 				onMouseOver: this.onMouseMove,
+				onMouseOut: this.onMouseOut,
 				onClick: this.onClick,
 			});
-
-			this.icon.setStyle(style);
 		}
 
 		if (!shallowEqualObjects(this.style, style)) {
 			this.style = style;
-			this.icon.setStyle(style);
+			this.shape.setStyle(style, this.shapeId, this.shape.basicShape);
 		}
 
 		return (
 			<Marker
 				interactive={this.props.hoverable || this.props.selectable}
 				position={coordinates}
-				icon={this.icon}
+				icon={this.shape}
 				onAdd={this.onAdd}
 			/>
 		);

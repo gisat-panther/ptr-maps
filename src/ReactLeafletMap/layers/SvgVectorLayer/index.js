@@ -60,13 +60,17 @@ class SvgVectorLayer extends React.PureComponent {
 					const fid =
 						this.props.fidColumnName &&
 						feature.properties[this.props.fidColumnName];
+					const uniqueFeatureKey = `${this.props.uniqueLayerKey}_${fid}`;
 
 					let selected = null;
 					let defaultStyle = null;
 
 					if (this.props.selected && fid) {
 						_.forIn(this.props.selected, (selection, key) => {
-							if (selection.keys && _.includes(selection.keys, fid)) {
+							if (
+								selection.keys &&
+								_.includes(selection.keys, uniqueFeatureKey)
+							) {
 								selected = selection;
 							}
 						});
@@ -79,6 +83,7 @@ class SvgVectorLayer extends React.PureComponent {
 					const data = {
 						feature,
 						fid,
+						uniqueFeatureKey,
 						defaultStyle,
 						selected: !!selected,
 						selectedStyleDefinition: selected?.style,
@@ -188,16 +193,20 @@ class SvgVectorLayer extends React.PureComponent {
 				hoverable={this.props.hoverable}
 				styleDefinition={this.props.style}
 				hoveredStyleDefinition={this.props.hovered && this.props.hovered.style}
+				icons={this.props.resources?.icons}
 			/>
 		);
 	}
 
 	renderFeature(data, index) {
-		const key = `${this.props.uniqueLayerKey}_${data.fid || index}`;
+		const key =
+			data.uniqueFeatureKey ||
+			`${this.props.uniqueLayerKey}_${data.fid || index}`;
 
 		return (
 			<Feature
 				key={key}
+				uniqueFeatureKey={data.uniqueFeatureKey}
 				onClick={this.onFeatureClick}
 				fid={data.fid}
 				fidColumnName={this.props.fidColumnName}
@@ -211,6 +220,7 @@ class SvgVectorLayer extends React.PureComponent {
 				hoverable={this.props.hoverable}
 				styleDefinition={this.props.style}
 				hoveredStyleDefinition={this.props.hovered && this.props.hovered.style}
+				icons={this.props.resources?.icons}
 			/>
 		);
 	}
