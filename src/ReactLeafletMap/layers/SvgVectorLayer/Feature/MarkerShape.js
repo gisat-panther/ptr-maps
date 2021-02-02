@@ -1,8 +1,13 @@
-import L from 'leaflet';
 import _ from 'lodash';
 import ReactDOMServer from 'react-dom/server';
 import React from 'react';
 import helpers from '../helpers';
+
+var DivIcon = null;
+import {isServer} from '@gisatcz/ptr-core';
+if (!isServer) {
+	var DivIcon = require('leaflet').DivIcon;
+}
 
 /**
  * It enables to draw various shapes as marker icon.
@@ -23,7 +28,7 @@ import helpers from '../helpers';
  * @param props.shape.componentProps {React.Object} Additional shape component props
  * @param props.style {string} Extended Leaflet style (see getSvgStyle method for details)
  */
-class MarkerShape extends L.DivIcon {
+class MarkerShape extends DivIcon {
 	constructor(props) {
 		super(props);
 
