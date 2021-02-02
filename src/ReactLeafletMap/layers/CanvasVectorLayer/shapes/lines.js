@@ -1,4 +1,4 @@
-import helpers from "./helpers";
+import helpers from './helpers';
 
 /**
  * Draw shape to the given canvas
@@ -21,5 +21,5 @@ function drawLine(context, coordinates, style) {
 }
 
 export default {
-	drawLine
-}
+	drawLine,
+};

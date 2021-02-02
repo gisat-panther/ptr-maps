@@ -1,6 +1,6 @@
 import {isServer} from '@gisatcz/ptr-core';
 if (!isServer) {
-	var L = require("leaflet");
+	var L = require('leaflet');
 	/*
 	Generic  Canvas Layer for leaflet 0.7 and 1.0-rc, 1.2, 1.3
 	copyright Stanislav Sumbera,  2016-2018, sumbera.com , license MIT
@@ -12,15 +12,17 @@ if (!isServer) {
 
 	// -- L.DomUtil.setTransform from leaflet 1.0.0 to work on 0.0.7
 	//------------------------------------------------------------------------------
-	L.DomUtil.setTransform = L.DomUtil.setTransform || function (el, offset, scale) {
-		var pos = offset || new L.Point(0, 0);
+	L.DomUtil.setTransform =
+		L.DomUtil.setTransform ||
+		function (el, offset, scale) {
+			var pos = offset || new L.Point(0, 0);
 
-		el.style[L.DomUtil.TRANSFORM] =
-			(L.Browser.ie3d ?
-				'translate(' + pos.x + 'px,' + pos.y + 'px)' :
-				'translate3d(' + pos.x + 'px,' + pos.y + 'px,0)') +
-			(scale ? ' scale(' + scale + ')' : '');
-	};
+			el.style[L.DomUtil.TRANSFORM] =
+				(L.Browser.ie3d
+					? 'translate(' + pos.x + 'px,' + pos.y + 'px)'
+					: 'translate3d(' + pos.x + 'px,' + pos.y + 'px,0)') +
+				(scale ? ' scale(' + scale + ')' : '');
+		};
 
 	// -- support for both  0.0.7 and 1.0.0 rc2 leaflet
 	L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
@@ -28,14 +30,14 @@ if (!isServer) {
 		initialize: function (options) {
 			this._paneName = options.paneName;
 			this._paneZindex = options.paneZindex;
-			this._map    = null;
+			this._map = null;
 			this._canvas = null;
-			this._frame  = null;
+			this._frame = null;
 			this._delegate = null;
 			L.setOptions(this, options);
 		},
 
-		delegate :function(del){
+		delegate: function (del) {
 			this._delegate = del;
 			return this;
 		},
@@ -71,10 +73,10 @@ if (!isServer) {
 			var events = {
 				resize: this._onLayerDidResize,
 				moveend: this._onLayerDidMove,
-				zoom: this._onLayerDidZoom
+				zoom: this._onLayerDidZoom,
 			};
 			if (this._map.options.zoomAnimation && L.Browser.any3d) {
-				events.zoomanim =  this._animateZoom;
+				events.zoomanim = this._animateZoom;
 			}
 
 			return events;
@@ -90,7 +92,10 @@ if (!isServer) {
 			this._canvas.height = size.y;
 
 			var animated = this._map.options.zoomAnimation && L.Browser.any3d;
-			L.DomUtil.addClass(this._canvas, 'leaflet-zoom-' + (animated ? 'animated' : 'hide'));
+			L.DomUtil.addClass(
+				this._canvas,
+				'leaflet-zoom-' + (animated ? 'animated' : 'hide')
+			);
 
 			var topLeft = this._map.containerPointToLayerPoint([0, 0]);
 			L.DomUtil.setPosition(this._canvas, topLeft);
@@ -102,7 +107,7 @@ if (!isServer) {
 			}
 			pane.appendChild(this._canvas);
 
-			map.on(this.getEvents(),this);
+			map.on(this.getEvents(), this);
 
 			var del = this._delegate || this;
 			del.onLayerDidMount && del.onLayerDidMount(); // -- callback
@@ -120,10 +125,9 @@ if (!isServer) {
 
 			map.getPane(this._paneName).removeChild(this._canvas);
 
-			map.off(this.getEvents(),this);
+			map.off(this.getEvents(), this);
 
 			this._canvas = null;
-
 		},
 
 		//------------------------------------------------------------
@@ -134,8 +138,8 @@ if (!isServer) {
 		// --------------------------------------------------------------------------------
 		LatLonToMercator: function (latlon) {
 			return {
-				x: latlon.lng * 6378137 * Math.PI / 180,
-				y: Math.log(Math.tan((90 + latlon.lat) * Math.PI / 360)) * 6378137
+				x: (latlon.lng * 6378137 * Math.PI) / 180,
+				y: Math.log(Math.tan(((90 + latlon.lat) * Math.PI) / 360)) * 6378137,
 			};
 		},
 
@@ -143,23 +147,26 @@ if (!isServer) {
 		drawLayer: function () {
 			// -- todo make the viewInfo properties  flat objects.
 			if (this._map) {
-				var size   = this._map.getSize();
+				var size = this._map.getSize();
 				var bounds = this._map.getBounds();
-				var zoom   = this._map.getZoom();
+				var zoom = this._map.getZoom();
 
 				var center = this.LatLonToMercator(this._map.getCenter());
-				var corner = this.LatLonToMercator(this._map.containerPointToLatLng(this._map.getSize()));
+				var corner = this.LatLonToMercator(
+					this._map.containerPointToLatLng(this._map.getSize())
+				);
 
 				var del = this._delegate || this;
-				del.onDrawLayer && del.onDrawLayer( {
-					layer : this,
-					canvas: this._canvas,
-					bounds: bounds,
-					size: size,
-					zoom: zoom,
-					center : center,
-					corner : corner
-				});
+				del.onDrawLayer &&
+					del.onDrawLayer({
+						layer: this,
+						canvas: this._canvas,
+						bounds: bounds,
+						size: size,
+						zoom: zoom,
+						center: center,
+						corner: corner,
+					});
 				this._frame = null;
 			}
 		},
@@ -169,9 +176,9 @@ if (!isServer) {
 			var pos = offset || new L.Point(0, 0);
 
 			el.style[L.DomUtil.TRANSFORM] =
-				(L.Browser.ie3d ?
-					'translate(' + pos.x + 'px,' + pos.y + 'px)' :
-					'translate3d(' + pos.x + 'px,' + pos.y + 'px,0)') +
+				(L.Browser.ie3d
+					? 'translate(' + pos.x + 'px,' + pos.y + 'px)'
+					: 'translate3d(' + pos.x + 'px,' + pos.y + 'px,0)') +
 				(scale ? ' scale(' + scale + ')' : '');
 		},
 
@@ -179,13 +186,19 @@ if (!isServer) {
 		_animateZoom: function (e) {
 			var scale = this._map.getZoomScale(e.zoom);
 			// -- different calc of animation zoom  in leaflet 1.0.3 thanks @peterkarabinovic, @jduggan1
-			var offset = L.Layer ? this._map._latLngBoundsToNewLayerBounds(this._map.getBounds(), e.zoom, e.center).min :
-				this._map._getCenterOffset(e.center)._multiplyBy(-scale).subtract(this._map._getMapPanePos());
+			var offset = L.Layer
+				? this._map._latLngBoundsToNewLayerBounds(
+						this._map.getBounds(),
+						e.zoom,
+						e.center
+				  ).min
+				: this._map
+						._getCenterOffset(e.center)
+						._multiplyBy(-scale)
+						.subtract(this._map._getMapPanePos());
 
 			L.DomUtil.setTransform(this._canvas, offset, scale);
-
-
-		}
+		},
 	});
 
 	L.canvasLayer = function (options) {

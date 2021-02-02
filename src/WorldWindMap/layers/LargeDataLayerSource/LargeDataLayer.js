@@ -3,7 +3,7 @@ var TiledImageLayer = null;
 import {isServer} from '@gisatcz/ptr-core';
 if (!isServer) {
 	var WorldWind = require('webworldwind-esa');
-    var Location = WorldWind.Location;
+	var Location = WorldWind.Location;
 	var REDRAW_EVENT_TYPE = WorldWind.REDRAW_EVENT_TYPE;
 	var Sector = WorldWind.Sector;
 	var TiledImageLayer = WorldWind.TiledImageLayer;
@@ -11,7 +11,7 @@ if (!isServer) {
 
 import {QuadTree, Box, Point, Circle} from 'js-quadtree';
 import * as turf from '@turf/turf';
-import LargeDataLayerTile from "./LargeDataLayerTile";
+import LargeDataLayerTile from './LargeDataLayerTile';
 import _ from 'lodash';
 import {mapStyle} from '@gisatcz/ptr-utils';
 
@@ -21,8 +21,16 @@ import {mapStyle} from '@gisatcz/ptr-utils';
 // TODO: Highlight the selected points.
 class LargeDataLayer extends TiledImageLayer {
 	constructor(wwd, options, layer) {
-		super(new Sector(-90, 90, -180, 180), new Location(45, 45), 18, 'image/png', layer.key, 256, 256);
-		
+		super(
+			new Sector(-90, 90, -180, 180),
+			new Location(45, 45),
+			18,
+			'image/png',
+			layer.key,
+			256,
+			256
+		);
+
 		this.tileWidth = 256;
 		this.tileHeight = 256;
 		this.detailControl = 1;
@@ -30,7 +38,7 @@ class LargeDataLayer extends TiledImageLayer {
 
 		// At the moment the URL must contain the GeoJSON.
 		this.processedTiles = {};
-		this.quadTree = new QuadTree(new Box(0,0,360,180));
+		this.quadTree = new QuadTree(new Box(0, 0, 360, 180));
 
 		this.pantherProps = {
 			features: options.features,
@@ -43,9 +51,9 @@ class LargeDataLayer extends TiledImageLayer {
 			onClick: options.onClick,
 			pointHoverBuffer: options.pointHoverBuffer || mapStyle.DEFAULT_SIZE,
 			style: options.style,
-			wwd: wwd
+			wwd: wwd,
 		};
-		
+
 		if (this.pantherProps.features) {
 			this.addFeatures(this.pantherProps.features);
 		} else {
@@ -64,15 +72,17 @@ class LargeDataLayer extends TiledImageLayer {
 	}
 
 	loadData(url) {
-		fetch(url).then(data => {
-			return data.json();
-		}).then(file => {
-			if(file.features.length > 1000000) {
-				throw new Error('Too many features.');
-			}
+		fetch(url)
+			.then(data => {
+				return data.json();
+			})
+			.then(file => {
+				if (file.features.length > 1000000) {
+					throw new Error('Too many features.');
+				}
 
-			this.addFeatures(file.features);
-		});
+				this.addFeatures(file.features);
+			});
 	}
 
 	addFeatures(features) {
@@ -81,25 +91,30 @@ class LargeDataLayer extends TiledImageLayer {
 			let point = null;
 			let props = {...feature.properties};
 
-
 			// TODO support other geometry types
 			if (type === 'Point') {
 				props.centroid = feature.geometry.coordinates;
-				point = new Point(feature.geometry.coordinates[0] + 180, feature.geometry.coordinates[1] + 90, props);
-			} else if (type==='MultiPoint') {
+				point = new Point(
+					feature.geometry.coordinates[0] + 180,
+					feature.geometry.coordinates[1] + 90,
+					props
+				);
+			} else if (type === 'MultiPoint') {
 				const coordinates = feature.geometry.coordinates[0];
 				props.centroid = coordinates;
 				point = new Point(coordinates[0] + 180, coordinates[1] + 90, props);
 			} else if (type === 'MultiPolygon') {
 				let centroid = turf.centroid(feature.geometry);
 				props.centroid = centroid.geometry.coordinates;
-				point = new Point(centroid.geometry.coordinates[0] + 180, centroid.geometry.coordinates[1] + 90, props);
+				point = new Point(
+					centroid.geometry.coordinates[0] + 180,
+					centroid.geometry.coordinates[1] + 90,
+					props
+				);
 			}
 
 			if (point) {
-				this.quadTree.insert(
-					point
-				);
+				this.quadTree.insert(point);
 			}
 		});
 
@@ -107,29 +122,43 @@ class LargeDataLayer extends TiledImageLayer {
 	}
 
 	handleEvent(wwd, event) {
-		const x = event.touches && event.touches[0] && event.touches[0].clientX || event.clientX,
-			y = event.touches && event.touches[0] && event.touches[0].clientY || event.clientY;
+		const x =
+				(event.touches && event.touches[0] && event.touches[0].clientX) ||
+				event.clientX,
+			y =
+				(event.touches && event.touches[0] && event.touches[0].clientY) ||
+				event.clientY;
 
-		const pageX = event.touches && event.touches[0] && event.touches[0].pageX || event.pageX;
-		const pageY = event.touches && event.touches[0] && event.touches[0].pageY || event.pageY;
+		const pageX =
+			(event.touches && event.touches[0] && event.touches[0].pageX) ||
+			event.pageX;
+		const pageY =
+			(event.touches && event.touches[0] && event.touches[0].pageY) ||
+			event.pageY;
 
-		const terrainObject = wwd.pickTerrain(wwd.canvasCoordinates(x, y)).terrainObject();
+		const terrainObject = wwd
+			.pickTerrain(wwd.canvasCoordinates(x, y))
+			.terrainObject();
 
 		let buffer = this.getPointHoverBuffer(wwd);
 
 		if (terrainObject) {
 			const position = terrainObject.position;
-			let points = this.quadTree.query(new Circle(position.longitude + 180, position.latitude + 90, buffer));
+			let points = this.quadTree.query(
+				new Circle(position.longitude + 180, position.latitude + 90, buffer)
+			);
 
 			// find nearest
 			if (points.length > 1) {
 				let targetPoint = turf.point([position.longitude, position.latitude]);
 				let features = points.map(point => {
-					return turf.point([point.data.centroid[0], point.data.centroid[1]], {...point});
+					return turf.point([point.data.centroid[0], point.data.centroid[1]], {
+						...point,
+					});
 				});
 
 				let featureCollection = turf.featureCollection(features);
-				let nearest = turf.nearestPoint(targetPoint,featureCollection);
+				let nearest = turf.nearestPoint(targetPoint, featureCollection);
 				points = [nearest.properties];
 			}
 
@@ -147,9 +176,11 @@ class LargeDataLayer extends TiledImageLayer {
 		this.onClickResult(this.handleEvent(wwd, event));
 	}
 
-	onClickResult(data){
+	onClickResult(data) {
 		if (this.pantherProps.onClick) {
-			let gids = data.points.map(point => point.data[this.pantherProps.fidColumnName]);
+			let gids = data.points.map(
+				point => point.data[this.pantherProps.fidColumnName]
+			);
 			if (gids && gids.length) {
 				this.pantherProps.onClick(this.pantherProps.layerKey, gids);
 			}
@@ -158,11 +189,20 @@ class LargeDataLayer extends TiledImageLayer {
 
 	onMouseMoveResult(data) {
 		if (this.pantherProps.onHover) {
-			let gids = _.compact(data.points.map(point => point.data[this.pantherProps.fidColumnName]));
-			this.pantherProps.onHover(this.pantherProps.layerKey, gids, data.x, data.y, null, data.points, this.pantherProps.fidColumnName);
+			let gids = _.compact(
+				data.points.map(point => point.data[this.pantherProps.fidColumnName])
+			);
+			this.pantherProps.onHover(
+				this.pantherProps.layerKey,
+				gids,
+				data.x,
+				data.y,
+				null,
+				data.points,
+				this.pantherProps.fidColumnName
+			);
 		}
 	}
-
 
 	retrieveTileImage(dc, tile, suppressRedraw) {
 		this.processedTiles[tile.imagePath] = true;
@@ -171,7 +211,7 @@ class LargeDataLayer extends TiledImageLayer {
 		const extended = this.calculateExtendedSector(sector, 0.2, 0.2);
 		const points = this.filterGeographically(extended.sector);
 
-		if(points) {
+		if (points) {
 			var imagePath = tile.imagePath,
 				cache = dc.gpuResourceCache,
 				layer = this;
@@ -180,7 +220,7 @@ class LargeDataLayer extends TiledImageLayer {
 				sector: sector,
 
 				width: this.tileWidth,
-				height: this.tileHeight
+				height: this.tileHeight,
 			}).canvas();
 
 			var texture = layer.createTexture(dc, tile, canvas);
@@ -201,7 +241,6 @@ class LargeDataLayer extends TiledImageLayer {
 			}
 		}
 	}
-
 
 	// TODO Original implementation from @jbalhar
 	// retrieveTileImage(dc, tile, suppressRedraw) {
@@ -259,17 +298,16 @@ class LargeDataLayer extends TiledImageLayer {
 	filterGeographically(sector) {
 		const width = sector.maxLongitude - sector.minLongitude;
 		const height = sector.maxLatitude - sector.minLatitude;
-		return this.quadTree.query(new Box(
-			sector.minLongitude + 180,
-			sector.minLatitude + 90,
-			width,
-			height
-		));
+		return this.quadTree.query(
+			new Box(sector.minLongitude + 180, sector.minLatitude + 90, width, height)
+		);
 	}
 
 	calculateExtendedSector(sector, extensionFactorWidth, extensionFactorHeight) {
-		var latitudeChange = (sector.maxLatitude - sector.minLatitude) * extensionFactorHeight;
-		var longitudeChange = (sector.maxLongitude - sector.minLongitude) * extensionFactorWidth;
+		var latitudeChange =
+			(sector.maxLatitude - sector.minLatitude) * extensionFactorHeight;
+		var longitudeChange =
+			(sector.maxLongitude - sector.minLongitude) * extensionFactorWidth;
 		return {
 			sector: new Sector(
 				sector.minLatitude - latitudeChange,
@@ -278,35 +316,53 @@ class LargeDataLayer extends TiledImageLayer {
 				sector.maxLongitude + longitudeChange
 			),
 			extensionFactorHeight: extensionFactorHeight,
-			extensionFactorWidth: extensionFactorWidth
+			extensionFactorWidth: extensionFactorWidth,
 		};
-	};
+	}
 
 	createPointTile(data, options) {
-		return new LargeDataLayerTile(data, options, this.pantherProps.style, this.pantherProps.fidColumnName, this.pantherProps.selected,this.pantherProps.hovered);
-	};
+		return new LargeDataLayerTile(
+			data,
+			options,
+			this.pantherProps.style,
+			this.pantherProps.fidColumnName,
+			this.pantherProps.selected,
+			this.pantherProps.hovered
+		);
+	}
 
 	updateHoveredKeys(hoveredKeys, x, y) {
 		this.pantherProps.hovered.keys = hoveredKeys;
 
-		const terrainObject = this.wwd.pickTerrain(this.wwd.canvasCoordinates(x, y)).terrainObject();
+		const terrainObject = this.wwd
+			.pickTerrain(this.wwd.canvasCoordinates(x, y))
+			.terrainObject();
 
 		if (terrainObject) {
 			const lat = terrainObject.position.latitude;
 			const lon = terrainObject.position.longitude;
 
-			_.each(this.currentTiles, (tile) => {
+			_.each(this.currentTiles, tile => {
 				const s = tile.sector;
 				const prev = this.previousHoveredCoordinates;
 
 				const latDiff = Math.abs(s.maxLatitude - s.minLatitude);
 				const lonDiff = Math.abs(s.maxLongitude - s.minLongitude);
 
-				const latBuffer = latDiff/10;
-				const lonBuffer = lonDiff/10;
+				const latBuffer = latDiff / 10;
+				const lonBuffer = lonDiff / 10;
 
-				const hovered = (lat <= (s.maxLatitude + latBuffer) && lat >= (s.minLatitude - latBuffer) && lon <= (s.maxLongitude + lonBuffer) && lon >= (s.minLongitude - lonBuffer));
-				const previouslyHovered = prev && (prev.lat <= (s.maxLatitude + latBuffer) && prev.lat >= (s.minLatitude - latBuffer) && prev.lon <= (s.maxLongitude + lonBuffer) && prev.lon >= (s.minLongitude - lonBuffer));
+				const hovered =
+					lat <= s.maxLatitude + latBuffer &&
+					lat >= s.minLatitude - latBuffer &&
+					lon <= s.maxLongitude + lonBuffer &&
+					lon >= s.minLongitude - lonBuffer;
+				const previouslyHovered =
+					prev &&
+					prev.lat <= s.maxLatitude + latBuffer &&
+					prev.lat >= s.minLatitude - latBuffer &&
+					prev.lon <= s.maxLongitude + lonBuffer &&
+					prev.lon >= s.minLongitude - lonBuffer;
 
 				if (hovered || previouslyHovered) {
 					this.retrieveTileImage(this.wwd.drawContext, tile, true);
@@ -325,7 +381,8 @@ class LargeDataLayer extends TiledImageLayer {
 	getPointHoverBuffer(wwd) {
 		const canvasWidth = wwd.canvas.clientWidth;
 		const range = wwd.navigator.range;
-		const bufferInMeters = range/canvasWidth * this.pantherProps.pointHoverBuffer;
+		const bufferInMeters =
+			(range / canvasWidth) * this.pantherProps.pointHoverBuffer;
 		return bufferInMeters * 0.00001;
 	}
 }

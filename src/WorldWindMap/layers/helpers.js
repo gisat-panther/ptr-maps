@@ -1,43 +1,50 @@
 import {isServer} from '@gisatcz/ptr-core';
 if (!isServer) {
-    var WorldWind = require('webworldwind-esa');
+	var WorldWind = require('webworldwind-esa');
 }
 
 import VectorLayer from './VectorLayer';
 import WikimediaLayer from './WikimediaLayer';
 import WmsLayer from './WmsLayer';
 import WmtsLayer from './WmtsLayer';
-import LargeDataLayer from "./LargeDataLayerSource/LargeDataLayer";
-import _ from "lodash";
+import LargeDataLayer from './LargeDataLayerSource/LargeDataLayer';
+import _ from 'lodash';
 import {mapStyle} from '@gisatcz/ptr-utils';
 
-function getLayerByType(layerDefinition, wwd, onHover, onClick, pointAsMarker){
-	if (layerDefinition.type){
-		switch (layerDefinition.type){
-			case "worldwind":
-				switch (layerDefinition.options.layer){
-					case "bingAerial":
+function getLayerByType(layerDefinition, wwd, onHover, onClick, pointAsMarker) {
+	if (layerDefinition.type) {
+		switch (layerDefinition.type) {
+			case 'worldwind':
+				switch (layerDefinition.options.layer) {
+					case 'bingAerial':
 						return new WorldWind.BingAerialLayer(null);
-					case "bluemarble":
+					case 'bluemarble':
 						return new WorldWind.BMNGLayer();
-					case "wikimedia":
+					case 'wikimedia':
 						return new WikimediaLayer({
-							attribution: "Wikimedia maps - Map data \u00A9 OpenStreetMap contributors",
+							attribution:
+								'Wikimedia maps - Map data \u00A9 OpenStreetMap contributors',
 							sourceObject: {
-								host: "maps.wikimedia.org",
-								path: "osm-intl",
-								protocol: "https"
-							}
+								host: 'maps.wikimedia.org',
+								path: 'osm-intl',
+								protocol: 'https',
+							},
 						});
 					default:
 						return null;
 				}
-			case "wmts":
+			case 'wmts':
 				return new WmtsLayer(layerDefinition);
-			case "wms":
+			case 'wms':
 				return new WmsLayer(layerDefinition);
-			case "vector":
-				return getVectorLayer(layerDefinition, wwd, onHover, onClick, pointAsMarker);
+			case 'vector':
+				return getVectorLayer(
+					layerDefinition,
+					wwd,
+					onHover,
+					onClick,
+					pointAsMarker
+				);
 			default:
 				return null;
 		}
@@ -48,7 +55,10 @@ function getLayerByType(layerDefinition, wwd, onHover, onClick, pointAsMarker){
 
 function getVectorLayer(layerDefinition, wwd, onHover, onClick, pointAsMarker) {
 	const url = layerDefinition.options && layerDefinition.options.url;
-	const numOfFeatures = layerDefinition.options && layerDefinition.options.features && layerDefinition.options.features.length;
+	const numOfFeatures =
+		layerDefinition.options &&
+		layerDefinition.options.features &&
+		layerDefinition.options.features.length;
 	const key = layerDefinition.key || 'Vector layer';
 	const layerKey = layerDefinition.layerKey || key;
 
@@ -57,7 +67,7 @@ function getVectorLayer(layerDefinition, wwd, onHover, onClick, pointAsMarker) {
 		key,
 		layerKey,
 		onHover,
-		onClick
+		onClick,
 	};
 
 	// TODO better deciding
@@ -72,8 +82,12 @@ function getVectorLayer(layerDefinition, wwd, onHover, onClick, pointAsMarker) {
 function updateVectorLayer(layerDefinition, wwd, onHover, onClick) {
 	let mapLayer = null;
 	let layerKey = layerDefinition.layerKey;
-	let worldWindLayer = _.find(wwd.layers, (lay) => {
-		return lay.pantherProps && lay.pantherProps.layerKey && (lay.pantherProps.layerKey === layerKey);
+	let worldWindLayer = _.find(wwd.layers, lay => {
+		return (
+			lay.pantherProps &&
+			lay.pantherProps.layerKey &&
+			lay.pantherProps.layerKey === layerKey
+		);
 	});
 
 	if (!worldWindLayer) {
@@ -90,8 +104,7 @@ function updateVectorLayer(layerDefinition, wwd, onHover, onClick) {
 			// if (prevHoveredKeys !== nextHoveredKeys) {
 			// 	worldWindLayer.updateHoveredKeys(nextHoveredKeys);
 			// }
-		}
-		else {
+		} else {
 			worldWindLayer.removeListeners();
 			mapLayer = getLayerByType(layerDefinition, wwd, onHover, onClick);
 		}
@@ -102,5 +115,5 @@ function updateVectorLayer(layerDefinition, wwd, onHover, onClick) {
 
 export default {
 	getLayerByType,
-	updateVectorLayer
-}
+	updateVectorLayer,
+};

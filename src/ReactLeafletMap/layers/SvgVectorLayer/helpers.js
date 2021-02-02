@@ -1,7 +1,7 @@
-import {mapStyle} from "@gisatcz/ptr-utils";
-import constants from "../../../constants";
-import memoize from "memoize-one";
-import * as turf from "@turf/turf";
+import {mapStyle} from '@gisatcz/ptr-utils';
+import constants from '../../../constants';
+import memoize from 'memoize-one';
+import * as turf from '@turf/turf';
 
 /**
  * @param feature {GeoJSONFeature}
@@ -9,7 +9,10 @@ import * as turf from "@turf/turf";
  * @return {Object}
  */
 function getDefaultStyleObject(feature, styleDefinition) {
-	return mapStyle.getStyleObject(feature.properties, styleDefinition || constants.vectorFeatureStyle.defaultFull);
+	return mapStyle.getStyleObject(
+		feature.properties,
+		styleDefinition || constants.vectorFeatureStyle.defaultFull
+	);
 }
 
 /**
@@ -17,7 +20,9 @@ function getDefaultStyleObject(feature, styleDefinition) {
  * @return {Object}
  */
 function getSelectedStyleObject(selectedStyleDefinition) {
-	return selectedStyleDefinition === "default" ? constants.vectorFeatureStyle.selected : selectedStyleDefinition
+	return selectedStyleDefinition === 'default'
+		? constants.vectorFeatureStyle.selected
+		: selectedStyleDefinition;
 }
 
 /**
@@ -35,7 +40,11 @@ function getFeatureDefaultStyle(feature, defaultStyleObject) {
  * @param accentedStyleObject {Object} Panther style definition
  * @return {Object}
  */
-function getFeatureAccentedStyle(feature, defaultStyleObject, accentedStyleObject) {
+function getFeatureAccentedStyle(
+	feature,
+	defaultStyleObject,
+	accentedStyleObject
+) {
 	const style = {...defaultStyleObject, ...accentedStyleObject};
 	return getFeatureLeafletStyle(feature, style);
 }
@@ -70,7 +79,7 @@ function getFeatureLeafletStyle(feature, style) {
 		if (style.size) {
 			finalStyle.radius = style.size;
 		} else if (style.volume) {
-			finalStyle.radius = Math.sqrt(style.volume/Math.PI);
+			finalStyle.radius = Math.sqrt(style.volume / Math.PI);
 		}
 	}
 
@@ -85,10 +94,14 @@ function getFeatureLeafletStyle(feature, style) {
  * Leaflet requires coordinates in different order than GeoJSON standard
  * @param feature {GeoJSONFeature}
  */
-const convertCoordinatesMemo = memoize((feature) => {
+const convertCoordinatesMemo = memoize(feature => {
 	// TODO do we need turf for this?
 	const flippedFeature = turf.flip(feature);
-	return flippedFeature && flippedFeature.geometry && flippedFeature.geometry.coordinates;
+	return (
+		flippedFeature &&
+		flippedFeature.geometry &&
+		flippedFeature.geometry.coordinates
+	);
 });
 
 const getDefaultStyle = (feature, styleDefinition) => {
@@ -96,7 +109,14 @@ const getDefaultStyle = (feature, styleDefinition) => {
 	return getFeatureDefaultStyle(feature, defaultStyleObject);
 };
 
-const calculateStyle = (feature, styleDefinition, hoveredStyleDefinition, selected, selectedStyleDefinition, selectedHoveredStyleDefinition) => {
+const calculateStyle = (
+	feature,
+	styleDefinition,
+	hoveredStyleDefinition,
+	selected,
+	selectedStyleDefinition,
+	selectedHoveredStyleDefinition
+) => {
 	// Prepare default style
 	const defaultStyleObject = getDefaultStyleObject(feature, styleDefinition);
 	const defaultStyle = getFeatureDefaultStyle(feature, defaultStyleObject);
@@ -105,8 +125,15 @@ const calculateStyle = (feature, styleDefinition, hoveredStyleDefinition, select
 	let hoveredStyleObject = null;
 	let hoveredStyle = null;
 	if (hoveredStyleDefinition) {
-		hoveredStyleObject = hoveredStyleDefinition === "default" ? constants.vectorFeatureStyle.hovered : hoveredStyleDefinition;
-		hoveredStyle = getFeatureAccentedStyle(feature, defaultStyleObject, hoveredStyleObject);
+		hoveredStyleObject =
+			hoveredStyleDefinition === 'default'
+				? constants.vectorFeatureStyle.hovered
+				: hoveredStyleDefinition;
+		hoveredStyle = getFeatureAccentedStyle(
+			feature,
+			defaultStyleObject,
+			hoveredStyleObject
+		);
 	}
 
 	// Prepare selected and selected hovered style, if selected
@@ -115,11 +142,22 @@ const calculateStyle = (feature, styleDefinition, hoveredStyleDefinition, select
 	if (selected) {
 		let selectedHoveredStyleObject = null;
 		if (selectedStyleDefinition) {
-			selectedStyle = getFeatureAccentedStyle(feature, defaultStyleObject, getSelectedStyleObject(selectedStyleDefinition));
+			selectedStyle = getFeatureAccentedStyle(
+				feature,
+				defaultStyleObject,
+				getSelectedStyleObject(selectedStyleDefinition)
+			);
 		}
 		if (selectedHoveredStyleDefinition) {
-			selectedHoveredStyleObject = selectedHoveredStyleDefinition === "default" ? constants.vectorFeatureStyle.selectedHovered : selectedHoveredStyleDefinition;
-			selectedHoveredStyle = getFeatureAccentedStyle(feature, defaultStyleObject, selectedHoveredStyleObject);
+			selectedHoveredStyleObject =
+				selectedHoveredStyleDefinition === 'default'
+					? constants.vectorFeatureStyle.selectedHovered
+					: selectedHoveredStyleDefinition;
+			selectedHoveredStyle = getFeatureAccentedStyle(
+				feature,
+				defaultStyleObject,
+				selectedHoveredStyleObject
+			);
 		}
 	}
 
@@ -127,9 +165,9 @@ const calculateStyle = (feature, styleDefinition, hoveredStyleDefinition, select
 		default: defaultStyle,
 		hovered: hoveredStyle,
 		selected: selectedStyle,
-		selectedHovered: selectedHoveredStyle
-	}
-}
+		selectedHovered: selectedHoveredStyle,
+	};
+};
 
 const calculateStylesMemo = memoize(calculateStyle);
 
@@ -143,5 +181,5 @@ export default {
 	getFeatureAccentedStyle,
 	getFeatureDefaultStyle,
 	getFeatureLeafletStyle,
-	getSelectedStyleObject
-}
+	getSelectedStyleObject,
+};

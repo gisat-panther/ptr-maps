@@ -1,12 +1,12 @@
 var WWWmsLayer = null;
 import {isServer} from '@gisatcz/ptr-core';
 if (!isServer) {
-    var WWWmsLayer = require('webworldwind-esa').WmsLayer;
-    var Location = require('webworldwind-esa').Location;
-    var Sector = require('webworldwind-esa').Sector;
+	var WWWmsLayer = require('webworldwind-esa').WmsLayer;
+	var Location = require('webworldwind-esa').Location;
+	var Sector = require('webworldwind-esa').Sector;
 }
 
-import _ from "lodash";
+import _ from 'lodash';
 
 /**
  * @param layer {Object}
@@ -21,11 +21,18 @@ import _ from "lodash";
 class WmsLayer extends WWWmsLayer {
 	constructor(layer) {
 		const {key, options, opacity} = layer;
-		const {imageFormat, layers, name, styles, version, ...params} = options.params;
+		const {
+			imageFormat,
+			layers,
+			name,
+			styles,
+			version,
+			...params
+		} = options.params;
 
 		const worldWindOptions = {
 			key: key,
-			format: imageFormat || "image/png",
+			format: imageFormat || 'image/png',
 			layerNames: layers,
 			levelZeroDelta: new Location(45, 45),
 			name: name,
@@ -36,7 +43,7 @@ class WmsLayer extends WWWmsLayer {
 			service: options.url,
 			size: 256,
 			styleNames: styles,
-			version: version || "1.3.0",
+			version: version || '1.3.0',
 		};
 
 		super(worldWindOptions);
@@ -45,7 +52,7 @@ class WmsLayer extends WWWmsLayer {
 		this.attributions = options.attributions;
 		this.layerNames = layers;
 		this.service = options.url;
-		this.styleNames = styles || "";
+		this.styleNames = styles || '';
 		this.customParams = params;
 		this.numLevels = worldWindOptions.numLevels;
 
@@ -60,7 +67,7 @@ class WmsLayer extends WWWmsLayer {
 		this.opacity = worldWindOptions.opacity;
 
 		// TODO extend url builder to accept custom params
-	};
+	}
 
 	doRender(dc) {
 		WWWmsLayer.prototype.doRender.call(this, dc);
@@ -69,4 +76,3 @@ class WmsLayer extends WWWmsLayer {
 }
 
 export default WmsLayer;
-

@@ -1,11 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import memoize from "memoize-one";
+import memoize from 'memoize-one';
 
-import IndexedVectorLayer from "../IndexedVectorLayer";
-import CanvasVectorLayer from "../CanvasVectorLayer";
-import SvgVectorLayer from "../SvgVectorLayer";
+import IndexedVectorLayer from '../IndexedVectorLayer';
+import CanvasVectorLayer from '../CanvasVectorLayer';
+import SvgVectorLayer from '../SvgVectorLayer';
 
 /**
  * @param featureKeysGroupedByTileKey {Array} A collection of feature keys by tile key
@@ -14,9 +14,16 @@ import SvgVectorLayer from "../SvgVectorLayer";
  * @param fidColumnName {String}
  * @return {[]|null} List of feature keys to omit
  */
-function getFeatureKeysToOmit(featureKeysGroupedByTileKey, tileKey, features, fidColumnName){
+function getFeatureKeysToOmit(
+	featureKeysGroupedByTileKey,
+	tileKey,
+	features,
+	fidColumnName
+) {
 	// Find the order of current tile among others
-	const indexOfCurrentTile = _.findIndex(featureKeysGroupedByTileKey, (tile) => {return tile.tileKey === tileKey});
+	const indexOfCurrentTile = _.findIndex(featureKeysGroupedByTileKey, tile => {
+		return tile.tileKey === tileKey;
+	});
 
 	let i = 0;
 	if (indexOfCurrentTile > 0) {
@@ -63,8 +70,8 @@ function checkIdentity(prev, next) {
 	} else if (!prevKeys || !nextKeys) {
 		return false;
 	} else {
-                 //performance suggestion
-                 // return prevKeys.sort().join(',') === nextKeys.sort().join(',')
+		//performance suggestion
+		// return prevKeys.sort().join(',') === nextKeys.sort().join(',')
 		return _.isEqual(prevKeys.sort(), nextKeys.sort());
 	}
 }
@@ -75,11 +82,8 @@ class Tile extends React.PureComponent {
 		features: PropTypes.array,
 		fidColumnName: PropTypes.string,
 		level: PropTypes.number,
-		tile: PropTypes.oneOfType([
-			PropTypes.array,
-			PropTypes.string
-		]),
-		featureKeysGroupedByTileKey: PropTypes.array // a collection of all tiles and their features for each tile in the layer
+		tile: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
+		featureKeysGroupedByTileKey: PropTypes.array, // a collection of all tiles and their features for each tile in the layer
 	};
 
 	constructor(props) {
@@ -92,8 +96,18 @@ class Tile extends React.PureComponent {
 	}
 
 	render() {
-		const {tileKey, featureKeysGroupedByTileKey, component, ...props} = this.props;
-		const omittedFeatureKeys = this.getFeatureKeysToOmit(featureKeysGroupedByTileKey, tileKey, props.features, props.fidColumnName);
+		const {
+			tileKey,
+			featureKeysGroupedByTileKey,
+			component,
+			...props
+		} = this.props;
+		const omittedFeatureKeys = this.getFeatureKeysToOmit(
+			featureKeysGroupedByTileKey,
+			tileKey,
+			props.features,
+			props.fidColumnName
+		);
 
 		if (props.renderingTechnique === 'canvas') {
 			return (
