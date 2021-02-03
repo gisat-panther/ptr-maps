@@ -201,3 +201,5 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 L.canvasLayer = function (options) {
 	return new L.CanvasLayer(options);
 };
+
+export default null;

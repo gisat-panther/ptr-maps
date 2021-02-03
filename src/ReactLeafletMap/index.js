@@ -12,6 +12,7 @@ import viewHelpers from './viewHelpers';
 import _ from 'lodash';
 import VectorLayer from './layers/VectorLayer';
 import WMSLayer from './layers/WMSLayer';
+import TileGridLayer from './layers/TileGridLayer';
 
 import './style.scss';
 import 'leaflet/dist/leaflet.css';
@@ -30,6 +31,12 @@ class ReactLeafletMap extends React.PureComponent {
 		resources: PropTypes.object,
 		view: PropTypes.object,
 		viewLimits: PropTypes.object,
+		debugTileGrid: PropTypes.oneOfType([
+			PropTypes.bool,
+			PropTypes.shape({
+				bottom: PropTypes.bool,
+			}),
+		]),
 	};
 
 	constructor(props) {
@@ -238,8 +245,8 @@ class ReactLeafletMap extends React.PureComponent {
 				this.getLayerByType(layer, i, null, leafletView.zoom)
 			);
 
-		const baseLayersZindex = constants.defaultLeafletPaneZindex + 100;
-		const layers =
+		const baseLayersZindex = constants.defaultLeafletPaneZindex + 101;
+		let layers =
 			this.props.layers &&
 			this.props.layers.map((layer, i) => (
 				<Pane key={layer.key || i} style={{zIndex: baseLayersZindex + i}}>
@@ -251,6 +258,41 @@ class ReactLeafletMap extends React.PureComponent {
 					)}
 				</Pane>
 			));
+
+		//
+		// Add debug grid layer on under all "layers" or at the top
+		//
+		if (this.props.debugTileGrid) {
+			const bottom = this.props.debugTileGrid?.bottom;
+			const zIndex = bottom ? 0 : layers.length + 1;
+
+			const tileGridLayer = (
+				<Pane key={'tilegrid'} style={{zIndex: baseLayersZindex + zIndex - 1}}>
+					{this.getLayerByType(
+						{
+							type: 'tile-grid',
+							key: 'tilegrid',
+							layerKey: 'tilegridlayerkey',
+							options: {
+								viewport: {
+									width: this.state.width,
+									height: this.state.height,
+								},
+							},
+						},
+						0,
+						baseLayersZindex + zIndex - 1,
+						leafletView.zoom
+					)}
+				</Pane>
+			);
+
+			if (bottom) {
+				layers = [tileGridLayer, ...layers];
+			} else {
+				layers = [...layers, tileGridLayer];
+			}
+		}
 
 		return (
 			<Map
@@ -288,6 +330,8 @@ class ReactLeafletMap extends React.PureComponent {
 				case 'tiled-vector':
 				case 'diagram':
 					return this.getVectorLayer(layer, i, zIndex, zoom);
+				case 'tile-grid':
+					return this.getTileGridLayer(layer, i, zIndex, zoom);
 				default:
 					return null;
 			}
@@ -308,6 +352,20 @@ class ReactLeafletMap extends React.PureComponent {
 				options={layer.options}
 				type={layer.type}
 				view={this.state.view || this.props.view}
+				zoom={zoom}
+				zIndex={zIndex}
+			/>
+		);
+	}
+
+	getTileGridLayer(layer, i, zIndex, zoom) {
+		return (
+			<TileGridLayer
+				key={layer.key || i}
+				layerKey={layer.layerKey || layer.key}
+				uniqueLayerKey={layer.key || i}
+				view={this.state.view || this.props.view}
+				options={layer.options}
 				zoom={zoom}
 				zIndex={zIndex}
 			/>
