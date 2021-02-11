@@ -308,6 +308,9 @@ class ReactLeafletMap extends React.PureComponent {
 				options={layer.options}
 				type={layer.type}
 				view={this.state.view || this.props.view}
+				width={this.state.width}
+				height={this.state.height}
+				crs={this.props.crs}
 				zoom={zoom}
 				zIndex={zIndex}
 			/>
