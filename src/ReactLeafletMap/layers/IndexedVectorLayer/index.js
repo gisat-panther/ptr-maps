@@ -1,30 +1,41 @@
 import React from 'react';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
-import {withLeaflet} from 'react-leaflet';
 import memoize from 'memoize-one';
-import {utils} from '@gisatcz/ptr-utils';
+import {map as mapUtils} from '@gisatcz/ptr-utils';
+import {mapConstants} from '@gisatcz/ptr-core';
 
 const geojsonRbush = require('geojson-rbush').default;
 
-function getBbox(map) {
-	const calculatedBbox = map.getBounds();
-	const northEastGeo = calculatedBbox._northEast;
-	const southWestGeo = calculatedBbox._southWest;
-	const northEastProjected = map.latLngToLayerPoint(northEastGeo);
-	const southWestProjected = map.latLngToLayerPoint(southWestGeo);
-	const corners = [
-		map.layerPointToLatLng([northEastProjected.x, northEastProjected.y]),
-		map.layerPointToLatLng([northEastProjected.x, southWestProjected.y]),
-		map.layerPointToLatLng([southWestProjected.x, northEastProjected.y]),
-		map.layerPointToLatLng([southWestProjected.x, southWestProjected.y]),
-	];
-	return [
-		_.minBy(corners, 'lng').lng,
-		_.minBy(corners, 'lat').lat,
-		_.maxBy(corners, 'lng').lng,
-		_.maxBy(corners, 'lat').lat,
-	];
+function getBoundingBox(view, width, height, crs, optLat) {
+	// TODO extent calculations for non-mercator projections
+	if (!crs || crs === 'EPSG:3857') {
+		let boxRange = view.boxRange;
+
+		// view.boxRange may differ from actual rance visible in map because of levels
+		const calculatedBoxRange = mapUtils.view.getNearestZoomLevelBoxRange(
+			width,
+			height,
+			view.boxRange
+		);
+
+		if (boxRange !== calculatedBoxRange) {
+			boxRange = calculatedBoxRange;
+		}
+
+		return mapUtils.view.getBoundingBoxFromViewForEpsg3857(
+			view.center,
+			boxRange,
+			width / height,
+			optLat
+		);
+	} else {
+		return {
+			minLat: -90,
+			maxLat: 90,
+			minLon: -180,
+			maxLon: 180,
+		};
+	}
 }
 
 class IndexedVectorLayer extends React.PureComponent {
@@ -50,18 +61,6 @@ class IndexedVectorLayer extends React.PureComponent {
 		});
 	}
 
-	componentDidUpdate(prevProps, prevState, snapshot) {
-		// TODO fix for map view controlled from outside of the map
-		setTimeout(() => {
-			const bbox = getBbox(this.props.leaflet.map);
-			if (JSON.stringify(this.bbox) !== JSON.stringify(bbox)) {
-				this.setState({
-					rerender: utils.uuid(),
-				});
-			}
-		}, 20);
-	}
-
 	boxRangeFitsLimits() {
 		const props = this.props;
 		if (props.boxRangeRange) {
@@ -83,16 +82,20 @@ class IndexedVectorLayer extends React.PureComponent {
 	}
 
 	render() {
-		const {view, zoom, component, ...props} = this.props;
+		const {view, zoom, component, width, height, crs, ...props} = this.props;
 
 		if (props.features && this.boxRangeFitsLimits()) {
 			this.repopulateIndexTreeIfNeeded(props.features);
-
-			// Bounding box in GeoJSON format
-			this.bbox = getBbox(props.leaflet.map);
+			const bbox = getBoundingBox(
+				view,
+				width,
+				height,
+				crs,
+				mapConstants.averageLatitude
+			);
 			const geoJsonBbox = {
 				type: 'Feature',
-				bbox: this.bbox,
+				bbox: [bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat],
 			};
 
 			// Find features in given bounding box
@@ -112,4 +115,4 @@ class IndexedVectorLayer extends React.PureComponent {
 	}
 }
 
-export default withLeaflet(IndexedVectorLayer);
+export default IndexedVectorLayer;
