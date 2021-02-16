@@ -29,6 +29,7 @@ export default {
 		'react',
 		'prop-types',
 		'@gisatcz/ptr-atoms',
+		'chai',
 		'classnames',
 		'chroma-js',
 		'@gisatcz/ptr-utils',
