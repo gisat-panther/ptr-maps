@@ -8,6 +8,20 @@ import {GeoJSON, withLeaflet, Marker, Pane} from 'react-leaflet';
 import memoize from 'memoize-one';
 import helpers from '../SvgVectorLayer/helpers';
 
+const getBoxRange = (boxRange, width, height) => {
+	const calculatedBoxRange = mapUtils.view.getNearestZoomLevelBoxRange(
+		width,
+		height,
+		boxRange
+	);
+
+	if (boxRange !== calculatedBoxRange) {
+		return calculatedBoxRange;
+	} else {
+		return boxRange;
+	}
+};
+
 class TileGridLayer extends React.PureComponent {
 	static propTypes = {
 		layerKey: PropTypes.string,
@@ -31,21 +45,7 @@ class TileGridLayer extends React.PureComponent {
 		});
 	}
 
-	onEachFeature(feature, layer) {
-		const geometryType = feature.geometry.type;
-		const isPolygon =
-			geometryType === 'Polygon' || geometryType === 'MultiPolygon';
-		const isLine = geometryType === 'Line' || geometryType === 'LineString';
-
-		const styles = helpers.calculateStyle(
-			feature,
-			this.props.style,
-			undefined,
-			feature.selected,
-			feature.selectedStyleDefinition,
-			feature.selectedHoveredStyleDefinition
-		);
-	}
+	onEachFeature(feature, layer) {}
 
 	getStyle(feature) {
 		const styles = helpers.calculateStyle(
@@ -143,17 +143,24 @@ class TileGridLayer extends React.PureComponent {
 
 	renderBasicVectorLayer(options) {
 		const {options: opt, ...props} = this.props;
+
+		const recalculatedBoxrange = getBoxRange(
+			props.view.boxRange,
+			options.viewport.width,
+			options.viewport.height
+		);
+
 		const tileGrid = grid.getTileGrid(
 			options.viewport.width,
 			options.viewport.height,
-			props.view.boxRange,
+			recalculatedBoxrange,
 			props.view.center,
 			true
 		);
 
 		const geoJsonTileGrid = this.getGeoJsonTileGrid(
 			tileGrid,
-			props.view.boxRange,
+			recalculatedBoxrange,
 			options.viewport
 		);
 
@@ -163,7 +170,7 @@ class TileGridLayer extends React.PureComponent {
 
 		const tilesMarkers = this.getTilesMarkers(
 			tileGrid,
-			props.view.boxRange,
+			recalculatedBoxrange,
 			options.viewport
 		);
 

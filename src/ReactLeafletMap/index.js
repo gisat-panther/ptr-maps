@@ -264,8 +264,7 @@ class ReactLeafletMap extends React.PureComponent {
 		//
 		if (this.props.debugTileGrid) {
 			const bottom = this.props.debugTileGrid?.bottom;
-			const zIndex = bottom ? 0 : layers?.length || 0 + 1;
-
+			const zIndex = bottom ? 0 : (layers?.length || 0) + 1;
 			const tileGridLayer = (
 				<Pane key={'tilegrid'} style={{zIndex: baseLayersZindex + zIndex - 1}}>
 					{this.getLayerByType(
