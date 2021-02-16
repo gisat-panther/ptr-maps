@@ -2,7 +2,6 @@ import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {utils} from '@gisatcz/ptr-utils';
-// import GeoJsonLayer from '../SvgVectorLayer/GeoJsonLayer'
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import {utils as tileGridUtils, grid} from '@gisatcz/ptr-tile-grid';
 import {GeoJSON, withLeaflet, Marker, Pane} from 'react-leaflet';
@@ -84,23 +83,6 @@ class TileGridLayer extends React.PureComponent {
 		return this.renderBasicVectorLayer(options);
 	}
 
-	getTileGrid(center, boxRange, viewport) {
-		const nearestBoxRange = mapUtils.view.getNearestZoomLevelBoxRange(
-			viewport.width,
-			viewport.height,
-			boxRange
-		);
-
-		const tileGrid = grid.getTileGrid(
-			viewport.width,
-			viewport.height,
-			nearestBoxRange,
-			[center.lon, center.lat],
-			true
-		);
-		return tileGrid;
-	}
-
 	getGeoJsonTileGrid(tileGrid, boxRange, viewport) {
 		const level = this.getTileGridLevel(boxRange, viewport);
 
@@ -133,7 +115,7 @@ class TileGridLayer extends React.PureComponent {
 		const markers = tileGrid.reduce((acc, row) => {
 			const rowMarkers = row.map((tile, i) => {
 				return (
-					<Pane style={{zIndex: this.props.zIndex}}>
+					<Pane style={{zIndex: this.props.zIndex}} key={`${level}-${tile[0]}-${tile[1]}`}>
 						<Marker
 							zIndex={this.props.zIndex}
 							position={[tile[1], tile[0]]}
@@ -158,13 +140,16 @@ class TileGridLayer extends React.PureComponent {
 
 	renderBasicVectorLayer(options) {
 		const {options: opt, ...props} = this.props;
-		const tilegrid = this.getTileGrid(
-			props.view.center,
+		const tileGrid = grid.getTileGrid(
+			options.viewport.width,
+			options.viewport.height,
 			props.view.boxRange,
-			options.viewport
+			props.view.center,
+			true
 		);
+
 		const geoJsonTileGrid = this.getGeoJsonTileGrid(
-			tilegrid,
+			tileGrid,
 			props.view.boxRange,
 			options.viewport
 		);
@@ -174,7 +159,7 @@ class TileGridLayer extends React.PureComponent {
 		const key = this.getRenderId(geoJsonTileGrid.features);
 
 		const tilesMarkers = this.getTilesMarkers(
-			tilegrid,
+			tileGrid,
 			props.view.boxRange,
 			options.viewport
 		);
