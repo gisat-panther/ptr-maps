@@ -87,8 +87,8 @@ class Feature extends React.PureComponent {
 		if (this.props.selectable) {
 			this.showOnTop();
 
-			if (this.props.onClick && this.props.uniqueFeatureKey) {
-				this.props.onClick(this.props.uniqueFeatureKey);
+			if (this.props.onClick && this.props.fid) {
+				this.props.onClick(this.props.fid);
 			}
 		}
 	}

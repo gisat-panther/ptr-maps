@@ -60,8 +60,8 @@ class GeoJsonLayer extends React.PureComponent {
 
 		layer.on({
 			click: e => {
-				if (this.props.onFeatureClick && this.props.selectable) {
-					this.props.onFeatureClick(feature.uniqueFeatureKey);
+				if (this.props.onFeatureClick && this.props.selectable && feature.fid) {
+					this.props.onFeatureClick(feature.fid);
 				}
 			},
 			mousemove: e => {

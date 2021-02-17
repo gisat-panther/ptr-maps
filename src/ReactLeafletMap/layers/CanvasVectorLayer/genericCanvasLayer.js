@@ -202,4 +202,4 @@ L.canvasLayer = function (options) {
 	return new L.CanvasLayer(options);
 };
 
-export default null;
+export default L.canvasLayer;
