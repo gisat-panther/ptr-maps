@@ -64,10 +64,7 @@ class SvgVectorLayer extends React.PureComponent {
 
 					if (this.props.selected && fid) {
 						_.forIn(this.props.selected, (selection, key) => {
-							if (
-								selection.keys &&
-								_.includes(selection.keys, uniqueFeatureKey)
-							) {
+							if (selection.keys && _.includes(selection.keys, fid)) {
 								selected = selection;
 							}
 						});
