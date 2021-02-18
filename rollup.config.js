@@ -45,6 +45,7 @@ export default {
 		'react-dom/server',
 		'prop-types',
 		'@gisatcz/ptr-atoms',
+		'@gisatcz/ptr-tile-grid',
 		'classnames',
 		'chroma-js',
 		'fast-deep-equal',
