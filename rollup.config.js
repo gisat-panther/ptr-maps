@@ -1,4 +1,4 @@
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import filesize from 'rollup-plugin-filesize';
 import path from 'path';
@@ -63,7 +63,12 @@ export default {
 		'shallow-equal',
 		'webworldwind-esa',
 		'js-quadtree',
-		'@turf/turf',
+		'@turf/boolean-point-in-polygon',
+		'@turf/center-of-mass',
+		'@turf/centroid',
+		'@turf/flip',
+		'@turf/helpers',
+		'@turf/nearest-point',
 		'uri-templates',
 		...lodashExternal,
 	],
