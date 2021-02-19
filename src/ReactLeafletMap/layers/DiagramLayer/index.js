@@ -1,7 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
 import {Pane} from 'react-leaflet';
-import * as turf from '@turf/turf';
+import centerOfMass from '@turf/center-of-mass';
+import flip from '@turf/flip';
 import constants from '../../../constants';
 
 import SvgVectorLayer from '../SvgVectorLayer';
@@ -66,7 +67,7 @@ class DiagramLayer extends SvgVectorLayer {
 				const fid =
 					this.props.fidColumnName &&
 					feature.properties[this.props.fidColumnName];
-				const centroid = turf.centerOfMass(feature.geometry);
+				const centroid = centerOfMass(feature.geometry);
 
 				let selected = null;
 				let areaSelectedStyle = null;
@@ -82,8 +83,8 @@ class DiagramLayer extends SvgVectorLayer {
 				}
 
 				// Flip coordinates due to different leaflet implementation
-				const flippedFeature = turf.flip(feature);
-				const flippedCentroid = turf.flip(centroid);
+				const flippedFeature = flip(feature);
+				const flippedCentroid = flip(centroid);
 
 				const diagramLeafletCoordinates =
 					flippedCentroid &&

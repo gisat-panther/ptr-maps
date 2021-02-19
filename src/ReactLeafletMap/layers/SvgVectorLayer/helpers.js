@@ -1,7 +1,7 @@
 import {mapStyle} from '@gisatcz/ptr-utils';
 import constants from '../../../constants';
 import memoize from 'memoize-one';
-import * as turf from '@turf/turf';
+import flip from '@turf/flip';
 import shapes from './Feature/shapes';
 import MarkerShape from './Feature/MarkerShape';
 
@@ -103,7 +103,7 @@ function getFeatureLeafletStyle(feature, style) {
  */
 const convertCoordinatesMemo = memoize(feature => {
 	// TODO do we need turf for this?
-	const flippedFeature = turf.flip(feature);
+	const flippedFeature = flip(feature);
 	return (
 		flippedFeature &&
 		flippedFeature.geometry &&

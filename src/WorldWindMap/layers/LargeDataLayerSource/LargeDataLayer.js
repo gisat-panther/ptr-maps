@@ -1,7 +1,12 @@
 import React from 'react';
 import WorldWind from 'webworldwind-esa';
 import {QuadTree, Box, Point, Circle} from 'js-quadtree';
-import * as turf from '@turf/turf';
+import {
+	point as turfPoint,
+	featureCollection as turfFeatureCollection,
+} from '@turf/helpers';
+import nearestPoint from '@turf/nearest-point';
+import turfCentroid from '@turf/centroid';
 import LargeDataLayerTile from './LargeDataLayerTile';
 import _ from 'lodash';
 import {mapStyle} from '@gisatcz/ptr-utils';
@@ -103,7 +108,7 @@ class LargeDataLayer extends TiledImageLayer {
 				props.centroid = coordinates;
 				point = new Point(coordinates[0] + 180, coordinates[1] + 90, props);
 			} else if (type === 'MultiPolygon') {
-				let centroid = turf.centroid(feature.geometry);
+				let centroid = turfCentroid(feature.geometry);
 				props.centroid = centroid.geometry.coordinates;
 				point = new Point(
 					centroid.geometry.coordinates[0] + 180,
@@ -149,15 +154,15 @@ class LargeDataLayer extends TiledImageLayer {
 
 			// find nearest
 			if (points.length > 1) {
-				let targetPoint = turf.point([position.longitude, position.latitude]);
+				let targetPoint = turfPoint([position.longitude, position.latitude]);
 				let features = points.map(point => {
-					return turf.point([point.data.centroid[0], point.data.centroid[1]], {
+					return turfPoint([point.data.centroid[0], point.data.centroid[1]], {
 						...point,
 					});
 				});
 
-				let featureCollection = turf.featureCollection(features);
-				let nearest = turf.nearestPoint(targetPoint, featureCollection);
+				let featureCollection = turfFeatureCollection(features);
+				let nearest = nearestPoint(targetPoint, featureCollection);
 				points = [nearest.properties];
 			}
 

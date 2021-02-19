@@ -1,5 +1,8 @@
 import _ from 'lodash';
-import * as turf from '@turf/turf';
+
+import {point as turfPoint} from '@turf/helpers';
+import nearestPoint from '@turf/nearest-point';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import {mapConstants} from '@gisatcz/ptr-core';
 
 import helpers from '../SvgVectorLayer/helpers';
@@ -72,8 +75,8 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 						const point = this._map.containerPointToLatLng(
 							L.point(mousePoint.x, mousePoint.y)
 						);
-						const pointFeature = turf.point([point.lng, point.lat]);
-						const insidePolygon = turf.booleanPointInPolygon(
+						const pointFeature = turfPoint([point.lng, point.lat]);
+						const insidePolygon = booleanPointInPolygon(
 							pointFeature,
 							feature.original.geometry
 						);
@@ -86,8 +89,8 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 				// select single point
 				if (pointsInsideBounds.length) {
 					const position = this._map.containerPointToLatLng(mousePoint);
-					const nearest = turf.nearestPoint(
-						turf.point([position.lng, position.lat]),
+					const nearest = nearestPoint(
+						turfPoint([position.lng, position.lat]),
 						{type: 'FeatureCollection', features: pointsInsideBounds}
 					);
 					self.props.onClick(self.props.layerKey, [
