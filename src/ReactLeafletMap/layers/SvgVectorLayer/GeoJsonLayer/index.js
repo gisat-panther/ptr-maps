@@ -111,31 +111,40 @@ class GeoJsonLayer extends React.PureComponent {
 	pointToLayer(feature, coord) {
 		if (this.props.pointAsMarker) {
 			let style = feature.defaultStyle;
-			if (feature.selected) {
-				// TODO selectedHovered?
-				const styles = helpers.calculateStyle(
-					feature.feature,
-					this.props.styleDefinition,
-					this.props.hoveredStyleDefinition,
-					feature.selected,
-					feature.selectedStyleDefinition,
-					feature.selectedHoveredStyleDefinition
-				);
-				style = styles.selected;
+
+			// for circles, use L.circleMarker due to better performance
+			if ((!style?.shape && !style?.icon) || style?.shape === 'circle') {
+				return L.circleMarker(coord, {
+					...feature.defaultStyle,
+					pane: this.props.paneName,
+				});
+			} else {
+				if (feature.selected) {
+					// TODO selectedHovered?
+					const styles = helpers.calculateStyle(
+						feature.feature,
+						this.props.styleDefinition,
+						this.props.hoveredStyleDefinition,
+						feature.selected,
+						feature.selectedStyleDefinition,
+						feature.selectedHoveredStyleDefinition
+					);
+					style = styles.selected;
+				}
+
+				const shapeId = feature.uniqueFeatureKey
+					? `${feature.uniqueFeatureKey}_icon`
+					: utils.uuid();
+				const shape = helpers.getMarkerShape(shapeId, style, {
+					icons: this.props.icons,
+				});
+
+				return L.marker(coord, {
+					pane: this.props.paneName,
+					interactive: this.props.hoverable || this.props.selectable,
+					icon: shape,
+				});
 			}
-
-			const shapeId = feature.uniqueFeatureKey
-				? `${feature.uniqueFeatureKey}_icon`
-				: utils.uuid();
-			const shape = helpers.getMarkerShape(shapeId, style, {
-				icons: this.props.icons,
-			});
-
-			return L.marker(coord, {
-				pane: this.props.paneName,
-				interactive: this.props.hoverable || this.props.selectable,
-				icon: shape,
-			});
 		} else {
 			return L.circle(coord, feature.defaultStyle);
 		}
