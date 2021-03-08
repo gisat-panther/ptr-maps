@@ -51,10 +51,11 @@ class VectorLayer extends React.PureComponent {
 	}
 
 	render() {
+		const {type} = this.props;
 		const options = this.getOptions();
 
 		// TODO handle type 'diagram'
-		if (this.props.type === 'tiled-vector') {
+		if (type === 'tiledVector' || type === 'tiled-vector') {
 			return this.renderTiledVectorLayer(options);
 		} else {
 			return this.renderBasicVectorLayer(options);
