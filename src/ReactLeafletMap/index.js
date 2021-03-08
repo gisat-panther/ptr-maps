@@ -326,6 +326,7 @@ class ReactLeafletMap extends React.PureComponent {
 				case 'wms':
 					return this.getWmsTileLayer(layer, i);
 				case 'vector':
+				case 'tiledVector':
 				case 'tiled-vector':
 				case 'diagram':
 					return this.getVectorLayer(layer, i, zIndex, zoom);
