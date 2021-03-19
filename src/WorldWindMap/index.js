@@ -17,6 +17,7 @@ import VectorLayer from './layers/VectorLayer';
 import {mapConstants} from '@gisatcz/ptr-core';
 import Context from '@gisatcz/cross-package-react-context';
 import ReactResizeDetector from 'react-resize-detector';
+import viewport from '../utils/viewport';
 const HoverContext = Context.getContext('HoverContext');
 const {WorldWindow, ElevationModel} = WorldWind;
 
@@ -384,6 +385,9 @@ class WorldWindMap extends React.PureComponent {
 	}
 
 	onResize(width, height) {
+		height = viewport.roundDimension(height);
+		width = viewport.roundDimension(width);
+
 		this.setState({
 			width,
 			height,
