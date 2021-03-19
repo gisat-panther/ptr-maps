@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import {Map, TileLayer, Pane} from 'react-leaflet';
 import PropTypes from 'prop-types';
 import L from 'leaflet';
@@ -9,14 +10,14 @@ import {map as mapUtils} from '@gisatcz/ptr-utils';
 
 import viewUtils from '../utils/view';
 import viewHelpers from './viewHelpers';
-import _ from 'lodash';
 import VectorLayer from './layers/VectorLayer';
 import WMSLayer from './layers/WMSLayer';
 import TileGridLayer from './layers/TileGridLayer';
+import constants from '../constants';
+import viewport from '../utils/viewport';
 
 import './style.scss';
 import 'leaflet/dist/leaflet.css';
-import constants from '../constants';
 
 class ReactLeafletMap extends React.PureComponent {
 	static propTypes = {
@@ -189,6 +190,9 @@ class ReactLeafletMap extends React.PureComponent {
 	}
 
 	onResize(width, height) {
+		height = viewport.roundDimension(height);
+		width = viewport.roundDimension(width);
+
 		if (this.leafletMap) {
 			this.leafletMap.invalidateSize();
 		}
