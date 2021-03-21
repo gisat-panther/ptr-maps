@@ -61,9 +61,11 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		}
 	},
 	_onLayerDidZoom: function (e) {
-		var topLeft = this._map.containerPointToLayerPoint([0, 0]);
-		L.DomUtil.setPosition(this._canvas, topLeft);
-		this.drawLayer();
+		if (this.props.type !== 'tiledVector') {
+			var topLeft = this._map.containerPointToLayerPoint([0, 0]);
+			L.DomUtil.setPosition(this._canvas, topLeft);
+			this.needRedraw();
+		}
 	},
 	//-------------------------------------------------------------
 	getEvents: function () {
@@ -142,7 +144,6 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 
 	//------------------------------------------------------------------------------
 	drawLayer: function () {
-		// -- todo make the viewInfo properties  flat objects.
 		if (this._map) {
 			var size = this._map.getSize();
 			var bounds = this._map.getBounds();
