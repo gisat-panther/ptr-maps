@@ -1,4 +1,5 @@
 import React from 'react';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {utils} from '@gisatcz/ptr-utils';
@@ -138,21 +139,24 @@ class SvgVectorLayer extends React.PureComponent {
 	render() {
 		const data = this.prepareData(this.props.features);
 		const style = this.props.opacity ? {opacity: this.props.opacity} : null;
+		const classes = classnames({
+			'leaflet-hoverable-pane': this.props.hoverable,
+		});
 
 		return data ? (
 			<>
 				{data.polygons?.length ? (
-					<Pane style={style} name={this.polygonsPaneName}>
+					<Pane className={classes} style={style} name={this.polygonsPaneName}>
 						{this.renderFeatures(data.polygons)}
 					</Pane>
 				) : null}
 				{data.lines?.length ? (
-					<Pane style={style} name={this.linesPaneName}>
+					<Pane className={classes} style={style} name={this.linesPaneName}>
 						{this.renderFeatures(data.lines)}
 					</Pane>
 				) : null}
 				{data.points?.length ? (
-					<Pane style={style} name={this.pointsPaneName}>
+					<Pane className={classes} style={style} name={this.pointsPaneName}>
 						{this.renderFeatures(data.points)}
 					</Pane>
 				) : null}
