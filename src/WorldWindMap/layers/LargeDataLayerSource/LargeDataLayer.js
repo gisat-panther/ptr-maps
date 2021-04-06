@@ -8,7 +8,7 @@ import {
 import nearestPoint from '@turf/nearest-point';
 import turfCentroid from '@turf/centroid';
 import LargeDataLayerTile from './LargeDataLayerTile';
-import _ from 'lodash';
+import {compact as _compact, each as _each} from 'lodash';
 import {mapStyle} from '@gisatcz/ptr-utils';
 
 const {
@@ -193,7 +193,7 @@ class LargeDataLayer extends TiledImageLayer {
 
 	onMouseMoveResult(data) {
 		if (this.pantherProps.onHover) {
-			let gids = _.compact(
+			let gids = _compact(
 				data.points.map(point => point.data[this.pantherProps.fidColumnName])
 			);
 			this.pantherProps.onHover(
@@ -346,7 +346,7 @@ class LargeDataLayer extends TiledImageLayer {
 			const lat = terrainObject.position.latitude;
 			const lon = terrainObject.position.longitude;
 
-			_.each(this.currentTiles, tile => {
+			_each(this.currentTiles, tile => {
 				const s = tile.sector;
 				const prev = this.previousHoveredCoordinates;
 

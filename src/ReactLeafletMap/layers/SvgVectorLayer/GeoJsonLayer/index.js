@@ -1,4 +1,5 @@
 import React from 'react';
+import {includes as _includes} from 'lodash';
 import PropTypes from 'prop-types';
 import {utils} from '@gisatcz/ptr-utils';
 import {GeoJSON, withLeaflet} from 'react-leaflet';
@@ -154,7 +155,7 @@ class GeoJsonLayer extends React.PureComponent {
 			const featureKey =
 				feature.id || feature.properties[this.props.fidColumnName];
 			return !(
-				featureKey && _.includes(this.props.omittedFeatureKeys, featureKey)
+				featureKey && _includes(this.props.omittedFeatureKeys, featureKey)
 			);
 		} else {
 			return true;

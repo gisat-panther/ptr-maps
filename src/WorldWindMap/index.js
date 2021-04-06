@@ -1,6 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import {
+	isArray as _isArray,
+	isEmpty as _isEmpty,
+	sortBy as _sortBy,
+} from 'lodash';
 import {CyclicPickController, utils, map as mapUtils} from '@gisatcz/ptr-utils';
 
 import WorldWind from 'webworldwind-esa';
@@ -192,7 +196,7 @@ class WorldWindMap extends React.PureComponent {
 
 			if (this.context && this.context.hoveredItems) {
 				const currentHoveredItemsString = JSON.stringify(
-					_.sortBy(this.context.hoveredItems)
+					_sortBy(this.context.hoveredItems)
 				);
 				if (currentHoveredItemsString !== this.previousHoveredItemsString) {
 					this.updateHoveredFeatures();
@@ -205,7 +209,7 @@ class WorldWindMap extends React.PureComponent {
 		let layers = [];
 		if (this.props.backgroundLayer) {
 			// TODO fix for compatibility
-			let backgroundLayers = _.isArray(this.props.backgroundLayer)
+			let backgroundLayers = _isArray(this.props.backgroundLayer)
 				? this.props.backgroundLayer
 				: [this.props.backgroundLayer];
 
@@ -254,7 +258,7 @@ class WorldWindMap extends React.PureComponent {
 		});
 		this.wwd.redraw();
 		this.previousHoveredItemsString = JSON.stringify(
-			_.sortBy(this.context.hoveredItems)
+			_sortBy(this.context.hoveredItems)
 		);
 	}
 
@@ -301,7 +305,7 @@ class WorldWindMap extends React.PureComponent {
 			);
 
 			if (this.props.onViewChange) {
-				if (!_.isEmpty(changedViewParams)) {
+				if (!_isEmpty(changedViewParams)) {
 					if (this.props.delayedWorldWindNavigatorSync) {
 						if (this.changedNavigatorTimeout) {
 							clearTimeout(this.changedNavigatorTimeout);

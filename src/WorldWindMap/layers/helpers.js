@@ -5,7 +5,7 @@ import WikimediaLayer from './WikimediaLayer';
 import WmsLayer from './WmsLayer';
 import WmtsLayer from './WmtsLayer';
 import LargeDataLayer from './LargeDataLayerSource/LargeDataLayer';
-import _ from 'lodash';
+import {find as _find} from 'lodash';
 import {mapStyle} from '@gisatcz/ptr-utils';
 
 function getLayerByType(layerDefinition, wwd, onHover, onClick, pointAsMarker) {
@@ -79,7 +79,7 @@ function getVectorLayer(layerDefinition, wwd, onHover, onClick, pointAsMarker) {
 function updateVectorLayer(layerDefinition, wwd, onHover, onClick) {
 	let mapLayer = null;
 	let layerKey = layerDefinition.layerKey;
-	let worldWindLayer = _.find(wwd.layers, lay => {
+	let worldWindLayer = _find(wwd.layers, lay => {
 		return (
 			lay.pantherProps &&
 			lay.pantherProps.layerKey &&

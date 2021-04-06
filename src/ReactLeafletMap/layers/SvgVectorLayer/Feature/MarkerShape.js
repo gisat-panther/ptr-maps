@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import _ from 'lodash';
+import {forIn as _forIn} from 'lodash';
 import ReactDOMServer from 'react-dom/server';
 import React from 'react';
 import helpers from '../helpers';
@@ -189,7 +189,7 @@ class MarkerShape extends L.DivIcon {
 		let shape = element?.children?.[0];
 
 		if (shape) {
-			_.forIn(shapeStyle, (value, key) => {
+			_forIn(shapeStyle, (value, key) => {
 				shape.style[key] = value;
 			});
 		}

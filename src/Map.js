@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import {isEqual as _isEqual, isEmpty as _isEmpty} from 'lodash';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import {Error} from '@gisatcz/ptr-atoms';
 import {mapConstants} from '@gisatcz/ptr-core';
@@ -61,7 +61,7 @@ class PresentationMap extends React.PureComponent {
 			const view = this.getValidView(props.view);
 			if (prevProps && prevProps.view) {
 				//todo simplify
-				if (!_.isEqual(props.view, prevProps.view)) {
+				if (!_isEqual(props.view, prevProps.view)) {
 					if (!this.props.stateMapKey) {
 						this.saveViewChange(view, false);
 					} else {
@@ -100,7 +100,7 @@ class PresentationMap extends React.PureComponent {
 
 	getValidView(update) {
 		let view = {...mapConstants.defaultMapView, ...view};
-		if (this.state.view && !_.isEmpty(this.state.view)) {
+		if (this.state.view && !_isEmpty(this.state.view)) {
 			view = {...this.state.view, ...update};
 		}
 		view = mapUtils.view.ensureViewIntegrity(view);
@@ -108,7 +108,7 @@ class PresentationMap extends React.PureComponent {
 	}
 
 	saveViewChange(view, checkViewEquality) {
-		if (checkViewEquality && !_.isEqual(view, this.state.view)) {
+		if (checkViewEquality && !_isEqual(view, this.state.view)) {
 			if (!this.props.stateMapKey) {
 				this.setState({view});
 			}
@@ -119,7 +119,7 @@ class PresentationMap extends React.PureComponent {
 		const view = this.getValidView(update);
 		this.saveViewChange(view, true);
 
-		if (!_.isEqual(view, this.state.view)) {
+		if (!_isEqual(view, this.state.view)) {
 			if (this.props.onViewChange && !this.props.stateMapKey) {
 				this.onViewChangeDecorator(this.props.onViewChange)(view);
 			}

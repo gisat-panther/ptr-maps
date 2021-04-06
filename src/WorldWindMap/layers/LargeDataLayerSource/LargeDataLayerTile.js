@@ -21,8 +21,8 @@
  *  color strings.
  */
 import {mapStyle} from '@gisatcz/ptr-utils';
+import {isEmpty as _isEmpty, forIn as _forIn} from 'lodash';
 import shapes from './canvasShapes';
-import _ from 'lodash';
 
 class LargeDataLayerTile {
 	constructor(data, options, style, fidColumnName, selected, hovered) {
@@ -40,10 +40,10 @@ class LargeDataLayerTile {
 			); // todo add default
 		}
 
-		if (selected && !_.isEmpty(selected)) {
+		if (selected && !_isEmpty(selected)) {
 			let sel = [];
-			_.forIn(selected, selectedDef => {
-				if (selectedDef && !_.isEmpty(selectedDef)) {
+			_forIn(selected, selectedDef => {
+				if (selectedDef && !_isEmpty(selectedDef)) {
 					sel.push({
 						keys: selectedDef.keys,
 						style: mapStyle.getStyleObject(null, selectedDef.style, true), // todo add default

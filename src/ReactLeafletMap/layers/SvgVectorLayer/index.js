@@ -1,7 +1,12 @@
 import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import {
+	forEach as _forEach,
+	forIn as _forIn,
+	includes as _includes,
+	orderBy as _orderBy,
+} from 'lodash';
 import {utils} from '@gisatcz/ptr-utils';
 import {Pane} from 'react-leaflet';
 
@@ -52,7 +57,7 @@ class SvgVectorLayer extends React.PureComponent {
 			let sortedPointFeatures = null;
 			let sortedPolygonFeatures = null;
 
-			_.forEach(features, feature => {
+			_forEach(features, feature => {
 				const type = feature && feature.geometry && feature.geometry.type;
 
 				if (type) {
@@ -65,8 +70,8 @@ class SvgVectorLayer extends React.PureComponent {
 					let defaultStyle = null;
 
 					if (this.props.selected && fid) {
-						_.forIn(this.props.selected, (selection, key) => {
-							if (selection.keys && _.includes(selection.keys, fid)) {
+						_forIn(this.props.selected, (selection, key) => {
+							if (selection.keys && _includes(selection.keys, fid)) {
 								selected = selection;
 							}
 						});
@@ -107,7 +112,7 @@ class SvgVectorLayer extends React.PureComponent {
 
 			// sort point features by radius
 			if (pointFeatures.length) {
-				sortedPointFeatures = _.orderBy(
+				sortedPointFeatures = _orderBy(
 					pointFeatures,
 					['defaultStyle.radius', 'fid'],
 					['desc', 'asc']
@@ -117,7 +122,7 @@ class SvgVectorLayer extends React.PureComponent {
 			// sort polygon features, if selected
 			if (polygonFeatures.length) {
 				if (this.props.selected) {
-					sortedPolygonFeatures = _.orderBy(
+					sortedPolygonFeatures = _orderBy(
 						polygonFeatures,
 						['selected'],
 						['asc']
