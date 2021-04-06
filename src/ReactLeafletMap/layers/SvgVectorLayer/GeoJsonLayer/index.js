@@ -120,7 +120,6 @@ class GeoJsonLayer extends React.PureComponent {
 				});
 			} else {
 				if (feature.selected) {
-					// TODO selectedHovered?
 					const styles = helpers.calculateStyle(
 						feature.feature,
 						this.props.styleDefinition,

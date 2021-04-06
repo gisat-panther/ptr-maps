@@ -25,6 +25,7 @@ class SvgVectorLayer extends React.PureComponent {
 		style: PropTypes.object,
 		pointAsMarker: PropTypes.bool,
 		onClick: PropTypes.func,
+		withSelectedFeaturesOnly: PropTypes.bool, // True, if layer contains only selected features
 	};
 
 	constructor(props) {
@@ -140,7 +141,8 @@ class SvgVectorLayer extends React.PureComponent {
 		const data = this.prepareData(this.props.features);
 		const style = this.props.opacity ? {opacity: this.props.opacity} : null;
 		const classes = classnames({
-			'leaflet-hoverable-pane': this.props.hoverable,
+			'hoverable-pane': this.props.hoverable,
+			'selected-features-pane': this.props.withSelectedFeaturesOnly,
 		});
 
 		return data ? (
