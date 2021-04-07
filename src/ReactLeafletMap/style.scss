@@ -32,3 +32,15 @@
 .ptr-leaflet-map .leaflet-overlay-pane {
 	z-index: 500;
 }
+
+.ptr-leaflet-map .hoverable-pane:hover {
+	z-index: 497;
+}
+
+.ptr-leaflet-map .selected-features-pane {
+	z-index: 498;
+}
+
+.ptr-leaflet-map .hoverable-pane.selected-features-pane:hover {
+	z-index: 499;
+}

@@ -1,5 +1,9 @@
 import React from 'react';
-import _ from 'lodash';
+import {
+	findIndex as _findIndex,
+	forEach as _forEach,
+	isEqual as _isEqual,
+} from 'lodash';
 import PropTypes from 'prop-types';
 import memoize from 'memoize-one';
 
@@ -21,7 +25,7 @@ function getFeatureKeysToOmit(
 	fidColumnName
 ) {
 	// Find the order of current tile among others
-	const indexOfCurrentTile = _.findIndex(featureKeysGroupedByTileKey, tile => {
+	const indexOfCurrentTile = _findIndex(featureKeysGroupedByTileKey, tile => {
 		return tile.tileKey === tileKey;
 	});
 
@@ -34,14 +38,14 @@ function getFeatureKeysToOmit(
 		// TODO don't iterate through features in each tile again
 		while (i < indexOfCurrentTile) {
 			const tile = featureKeysGroupedByTileKey[i];
-			_.forEach(tile.featureKeys, featureKey => {
+			_forEach(tile.featureKeys, featureKey => {
 				renderedFeatureKeys.add(featureKey);
 			});
 			i++;
 		}
 
 		// Iterate over current tile's features to find which features are rendered already
-		_.forEach(features, feature => {
+		_forEach(features, feature => {
 			// TODO feature.id
 			const featureKey = feature.properties[fidColumnName];
 			if (featureKey && renderedFeatureKeys.has(featureKey)) {
@@ -72,7 +76,7 @@ function checkIdentity(prev, next) {
 	} else {
 		//performance suggestion
 		// return prevKeys.sort().join(',') === nextKeys.sort().join(',')
-		return _.isEqual(prevKeys.sort(), nextKeys.sort());
+		return _isEqual(prevKeys.sort(), nextKeys.sort());
 	}
 }
 

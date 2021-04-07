@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import {find as _find} from 'lodash';
 import PropTypes from 'prop-types';
 
 import CanvasVectorLayer from '../CanvasVectorLayer';
@@ -28,7 +28,7 @@ class VectorLayer extends React.PureComponent {
 
 		if (renderAs) {
 			const boxRange = props.view?.boxRange;
-			const renderAsData = _.find(renderAs, renderAsItem => {
+			const renderAsData = _find(renderAs, renderAsItem => {
 				return view.isBoxRangeInRange(boxRange, renderAsItem.boxRangeRange);
 			});
 

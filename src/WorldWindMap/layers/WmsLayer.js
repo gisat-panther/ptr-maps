@@ -1,5 +1,5 @@
 import WorldWind from 'webworldwind-esa';
-import _ from 'lodash';
+import {isEmpty as _isEmpty} from 'lodash';
 
 /**
  * @param layer {Object}
@@ -31,7 +31,7 @@ class WmsLayer extends WorldWind.WmsLayer {
 			name: name,
 			numLevels: 18,
 			opacity: opacity || 1,
-			params: _.isEmpty(params) ? null : params,
+			params: _isEmpty(params) ? null : params,
 			sector: new WorldWind.Sector(-90, 90, -180, 180),
 			service: options.url,
 			size: 256,

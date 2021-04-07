@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Context from '@gisatcz/cross-package-react-context';
-import _ from 'lodash';
+import {indexOf as _indexOf} from 'lodash';
 const HoverContext = Context.getContext('HoverContext');
 
 export default function contextWrapper(WrappedFeature) {
@@ -26,7 +26,7 @@ export default function contextWrapper(WrappedFeature) {
 		render() {
 			if (this.props.fid && this.context && this.context.hoveredItems) {
 				this.hoveredFromContext =
-					_.indexOf(this.context.hoveredItems, this.props.fid) !== -1;
+					_indexOf(this.context.hoveredItems, this.props.fid) !== -1;
 			}
 
 			// TODO interactive without context case?

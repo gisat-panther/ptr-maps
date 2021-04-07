@@ -1,6 +1,12 @@
 import React from 'react';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import {
+	forEach as _forEach,
+	forIn as _forIn,
+	includes as _includes,
+	orderBy as _orderBy,
+} from 'lodash';
 import {utils} from '@gisatcz/ptr-utils';
 import {Pane} from 'react-leaflet';
 
@@ -24,6 +30,7 @@ class SvgVectorLayer extends React.PureComponent {
 		style: PropTypes.object,
 		pointAsMarker: PropTypes.bool,
 		onClick: PropTypes.func,
+		withSelectedFeaturesOnly: PropTypes.bool, // True, if layer contains only selected features
 	};
 
 	constructor(props) {
@@ -50,7 +57,7 @@ class SvgVectorLayer extends React.PureComponent {
 			let sortedPointFeatures = null;
 			let sortedPolygonFeatures = null;
 
-			_.forEach(features, feature => {
+			_forEach(features, feature => {
 				const type = feature && feature.geometry && feature.geometry.type;
 
 				if (type) {
@@ -63,8 +70,8 @@ class SvgVectorLayer extends React.PureComponent {
 					let defaultStyle = null;
 
 					if (this.props.selected && fid) {
-						_.forIn(this.props.selected, (selection, key) => {
-							if (selection.keys && _.includes(selection.keys, fid)) {
+						_forIn(this.props.selected, (selection, key) => {
+							if (selection.keys && _includes(selection.keys, fid)) {
 								selected = selection;
 							}
 						});
@@ -105,7 +112,7 @@ class SvgVectorLayer extends React.PureComponent {
 
 			// sort point features by radius
 			if (pointFeatures.length) {
-				sortedPointFeatures = _.orderBy(
+				sortedPointFeatures = _orderBy(
 					pointFeatures,
 					['defaultStyle.radius', 'fid'],
 					['desc', 'asc']
@@ -115,7 +122,7 @@ class SvgVectorLayer extends React.PureComponent {
 			// sort polygon features, if selected
 			if (polygonFeatures.length) {
 				if (this.props.selected) {
-					sortedPolygonFeatures = _.orderBy(
+					sortedPolygonFeatures = _orderBy(
 						polygonFeatures,
 						['selected'],
 						['asc']
@@ -138,21 +145,25 @@ class SvgVectorLayer extends React.PureComponent {
 	render() {
 		const data = this.prepareData(this.props.features);
 		const style = this.props.opacity ? {opacity: this.props.opacity} : null;
+		const classes = classnames({
+			'hoverable-pane': this.props.hoverable,
+			'selected-features-pane': this.props.withSelectedFeaturesOnly,
+		});
 
 		return data ? (
 			<>
 				{data.polygons?.length ? (
-					<Pane style={style} name={this.polygonsPaneName}>
+					<Pane className={classes} style={style} name={this.polygonsPaneName}>
 						{this.renderFeatures(data.polygons)}
 					</Pane>
 				) : null}
 				{data.lines?.length ? (
-					<Pane style={style} name={this.linesPaneName}>
+					<Pane className={classes} style={style} name={this.linesPaneName}>
 						{this.renderFeatures(data.lines)}
 					</Pane>
 				) : null}
 				{data.points?.length ? (
-					<Pane style={style} name={this.pointsPaneName}>
+					<Pane className={classes} style={style} name={this.pointsPaneName}>
 						{this.renderFeatures(data.points)}
 					</Pane>
 				) : null}

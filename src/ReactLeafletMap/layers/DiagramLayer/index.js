@@ -1,5 +1,10 @@
 import React from 'react';
-import _ from 'lodash';
+import {
+	forEach as _forEach,
+	forIn as _forIn,
+	includes as _includes,
+	orderBy as _orderBy,
+} from 'lodash';
 import {Pane} from 'react-leaflet';
 import centerOfMass from '@turf/center-of-mass';
 import flip from '@turf/flip';
@@ -63,7 +68,7 @@ class DiagramLayer extends SvgVectorLayer {
 		if (features) {
 			let data = [];
 
-			_.forEach(features, feature => {
+			_forEach(features, feature => {
 				const fid =
 					this.props.fidColumnName &&
 					feature.properties[this.props.fidColumnName];
@@ -75,8 +80,8 @@ class DiagramLayer extends SvgVectorLayer {
 				let areaSelectedHoveredStyle = null;
 				let diagramSelectedHoveredStyle = null;
 				if (this.props.selected && fid) {
-					_.forIn(this.props.selected, (selection, key) => {
-						if (selection.keys && _.includes(selection.keys, fid)) {
+					_forIn(this.props.selected, (selection, key) => {
+						if (selection.keys && _includes(selection.keys, fid)) {
 							selected = selection;
 						}
 					});
@@ -193,7 +198,7 @@ class DiagramLayer extends SvgVectorLayer {
 				});
 			});
 
-			return _.orderBy(data, ['diagramDefaultStyle.radius'], ['desc']);
+			return _orderBy(data, ['diagramDefaultStyle.radius'], ['desc']);
 		} else {
 			return null;
 		}
@@ -203,7 +208,7 @@ class DiagramLayer extends SvgVectorLayer {
 		const data = this.prepareData(this.props.features);
 		let sortedPolygons = data;
 		if (this.props.selected) {
-			sortedPolygons = _.orderBy(data, ['selected'], ['asc']);
+			sortedPolygons = _orderBy(data, ['selected'], ['asc']);
 		}
 
 		const style = this.props.opacity ? {opacity: this.props.opacity} : null;

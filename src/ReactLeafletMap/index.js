@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import {Map, TileLayer, Pane} from 'react-leaflet';
 import PropTypes from 'prop-types';
 import L from 'leaflet';
@@ -156,7 +156,7 @@ class ReactLeafletMap extends React.PureComponent {
 				);
 			}
 
-			if (!_.isEmpty(change) && !this.hasResized()) {
+			if (!_isEmpty(change) && !this.hasResized()) {
 				change = mapUtils.view.ensureViewIntegrity(change);
 
 				if (this.props.viewLimits?.center) {
@@ -239,7 +239,7 @@ class ReactLeafletMap extends React.PureComponent {
 		);
 
 		// fix for backward compatibility
-		const backgroundLayersSource = _.isArray(this.props.backgroundLayer)
+		const backgroundLayersSource = _isArray(this.props.backgroundLayer)
 			? this.props.backgroundLayer
 			: [this.props.backgroundLayer];
 		const backgroundLayersZindex = constants.defaultLeafletPaneZindex + 1;

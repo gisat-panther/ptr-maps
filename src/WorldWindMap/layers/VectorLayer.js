@@ -1,6 +1,6 @@
 import WorldWind from 'webworldwind-esa';
 import utils from '@gisatcz/ptr-utils';
-import _ from 'lodash';
+import {forIn as _forIn, includes as _includes} from 'lodash';
 import constants from '../../constants';
 
 /**
@@ -93,7 +93,7 @@ class VectorLayer extends WorldWind.RenderableLayer {
 	updateHoveredFeatures(fids) {
 		this.renderables.forEach(renderable => {
 			const key = renderable.userProperties[this.pantherProps.fidColumnName];
-			if (_.includes(fids, key)) {
+			if (_includes(fids, key)) {
 				const selection = this.getSelection(renderable);
 				if (selection?.hoveredStyle) {
 					let selectedHoveredStyleObject =
@@ -164,8 +164,8 @@ class VectorLayer extends WorldWind.RenderableLayer {
 				renderable.userProperties[this.pantherProps.fidColumnName];
 			let selectionDefintion = null;
 
-			_.forIn(this.pantherProps.selected, (selection, key) => {
-				if (selection.keys && _.includes(selection.keys, featureKey)) {
+			_forIn(this.pantherProps.selected, (selection, key) => {
+				if (selection.keys && _includes(selection.keys, featureKey)) {
 					selectionDefintion = selection;
 				}
 			});

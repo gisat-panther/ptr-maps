@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import {isArray as _isArray} from 'lodash';
 
 /**
  * Convert Web World Wind range to Panther boxRange
@@ -37,7 +37,7 @@ function getWorldWindRangeFromBoxRange(boxRange, width, height) {
  * @return {boolean}
  */
 function isBoxRangeInRange(boxRange, range) {
-	if (_.isArray(range)) {
+	if (_isArray(range)) {
 		// both limits defined by number
 		const fitsInLimits = boxRange > range[0] && boxRange <= range[1];
 

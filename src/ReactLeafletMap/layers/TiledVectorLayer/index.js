@@ -1,5 +1,11 @@
 import React from 'react';
-import _ from 'lodash';
+import {
+	forEach as _forEach,
+	forIn as _forIn,
+	includes as _includes,
+	isEmpty as _isEmpty,
+	uniq as _uniq,
+} from 'lodash';
 import PropTypes from 'prop-types';
 import memoize from 'memoize-one';
 
@@ -20,21 +26,80 @@ function getTileKey(uniqueLayerKey, tile) {
  * @param uniqueLayerKey {string}
  * @param tiles {Array}
  * @param fidColumnName {string}
- * @return {[]} A collection of feature keys grouped by tile key
+ * @param selections {Object}
+ * @return {Object} groupedFeatures - a collection of features grouped by tile key, groupedFeaturesKeys - a collection of feature keys grouped by tile key
  */
-function getFeatureKeysGroupedByTileKey(uniqueLayerKey, tiles, fidColumnName) {
-	let groupedKeys = [];
-	_.forEach(tiles, tile => {
+function getFeaturesGroupedByTileKey(
+	uniqueLayerKey,
+	tiles,
+	fidColumnName,
+	selections
+) {
+	let groupedFeatures = [];
+	let groupedFeatureKeys = [];
+	let selected = {};
+
+	_forEach(tiles, tile => {
 		// TODO pass featureKeys or filters
-		groupedKeys.push({
-			tileKey: getTileKey(uniqueLayerKey, tile),
-			featureKeys: tile.features?.map(
-				feature => feature.id || feature.properties[fidColumnName]
-			),
+		const key = getTileKey(uniqueLayerKey, tile);
+		let tileFeatureKeys = [];
+
+		if (tile.features) {
+			_forEach(tile.features, feature => {
+				const fid = feature.id || feature.properties[fidColumnName];
+
+				if (selections) {
+					_forIn(selections, (selection, selectionKey) => {
+						if (selection.keys && _includes(selection.keys, fid)) {
+							if (selected[selectionKey]?.features) {
+								selected[selectionKey].features[fid] = feature;
+								selected[selectionKey].featureKeys.push(fid);
+							} else {
+								selected[selectionKey] = {
+									features: {
+										[fid]: feature,
+									},
+									featureKeys: [fid],
+									level: tile.level,
+								};
+							}
+						}
+					});
+				}
+
+				tileFeatureKeys.push(fid);
+			});
+		}
+
+		groupedFeatures.push({
+			...tile,
+			key,
+		});
+
+		groupedFeatureKeys.push({
+			key,
+			featureKeys: tileFeatureKeys,
 		});
 	});
 
-	return groupedKeys;
+	if (!_isEmpty(selected)) {
+		_forIn(selected, (selection, selectionKey) => {
+			const key = `${uniqueLayerKey}_${selectionKey}_${selection.level}`;
+			groupedFeatures.unshift({
+				key,
+				features: Object.values(selection.features),
+				level: selection.level,
+				withSelectedFeaturesOnly: true,
+			});
+
+			groupedFeatureKeys.unshift({
+				key,
+				featureKeys: _uniq(selection.featureKeys),
+			});
+		});
+	}
+
+	return {groupedFeatures, groupedFeatureKeys};
 }
 
 class TiledVectorLayer extends React.PureComponent {
@@ -48,32 +113,30 @@ class TiledVectorLayer extends React.PureComponent {
 	constructor(props) {
 		super(props);
 
-		this.getFeatureKeysGroupedByTileKey = memoize(
-			getFeatureKeysGroupedByTileKey
-		);
+		this.getFeaturesGroupedByTileKey = memoize(getFeaturesGroupedByTileKey);
 	}
 
 	render() {
 		const {tiles, ...props} = this.props;
-		const featureKeysGroupedByTileKey = this.getFeatureKeysGroupedByTileKey(
+		const data = this.getFeaturesGroupedByTileKey(
 			props.uniqueLayerKey,
 			tiles,
-			props.fidColumnName
+			props.fidColumnName,
+			props.selected
 		);
 
-		if (tiles?.length) {
-			return tiles.map(tile => {
-				const tileKey = getTileKey(props.uniqueLayerKey, tile);
-
+		if (data.groupedFeatures?.length) {
+			return data.groupedFeatures.map(tile => {
 				return (
 					<Tile
 						{...props}
-						key={tileKey}
-						tileKey={tileKey}
+						key={tile.key}
+						tileKey={tile.key}
 						features={tile.features}
 						level={tile.level}
 						tile={tile.tile}
-						featureKeysGroupedByTileKey={featureKeysGroupedByTileKey}
+						featureKeysGroupedByTileKey={data.groupedFeatureKeys}
+						withSelectedFeaturesOnly={tile.withSelectedFeaturesOnly}
 					/>
 				);
 			});

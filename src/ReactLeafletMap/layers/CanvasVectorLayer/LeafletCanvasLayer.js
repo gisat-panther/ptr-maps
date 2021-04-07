@@ -1,4 +1,10 @@
-import _ from 'lodash';
+import {
+	forEach as _forEach,
+	forIn as _forIn,
+	includes as _includes,
+	isArray as _isArray,
+	orderBy as _orderBy,
+} from 'lodash';
 
 import {point as turfPoint} from '@turf/helpers';
 import nearestPoint from '@turf/nearest-point';
@@ -50,7 +56,7 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 			const self = this;
 
 			// TODO breakable loop?
-			if (_.isArray(this.features)) {
+			if (_isArray(this.features)) {
 				this.features.forEach(feature => {
 					const type = feature.original.geometry.type;
 					if (type === 'Point') {
@@ -119,7 +125,7 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 		let polygonFeatures = [];
 		let lineFeatures = [];
 
-		_.forEach(features, feature => {
+		_forEach(features, feature => {
 			const type = feature && feature.geometry && feature.geometry.type;
 			const fid =
 				feature.id ||
@@ -133,8 +139,8 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 			};
 
 			if (props.selected && fid) {
-				_.forIn(props.selected, (selection, key) => {
-					if (selection.keys && _.includes(selection.keys, fid)) {
+				_forIn(props.selected, (selection, key) => {
+					if (selection.keys && _includes(selection.keys, fid)) {
 						preparedFeature.selected = true;
 						preparedFeature.selectedStyle = {
 							...defaultStyle,
@@ -156,20 +162,20 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 
 		// TODO what if diferrent geometry types in one layer?
 		if (pointFeatures.length) {
-			return _.orderBy(
+			return _orderBy(
 				pointFeatures,
 				['defaultStyle.size', 'fid'],
 				['desc', 'asc']
 			);
 		} else if (polygonFeatures.length) {
 			if (props.selected) {
-				return _.orderBy(polygonFeatures, ['selected'], ['desc']);
+				return _orderBy(polygonFeatures, ['selected'], ['desc']);
 			} else {
 				return polygonFeatures;
 			}
 		} else if (lineFeatures.length) {
 			if (props.selected) {
-				return _.orderBy(lineFeatures, ['selected'], ['desc']);
+				return _orderBy(lineFeatures, ['selected'], ['desc']);
 			} else {
 				return lineFeatures;
 			}
@@ -206,7 +212,7 @@ const LeafletCanvasLayer = L.CanvasLayer.extend({
 			const feature = this.features[i];
 			const omitFeature =
 				this.props.omittedFeatureKeys?.length &&
-				_.includes(this.props.omittedFeatureKeys, feature.fid);
+				_includes(this.props.omittedFeatureKeys, feature.fid);
 
 			if (!omitFeature) {
 				this.drawFeature(

@@ -1,6 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import {
+	forEach as _forEach,
+	isEmpty as _isEmpty,
+	mapValues as _mapValues,
+	pickBy as _pickBy,
+} from 'lodash';
 
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 
@@ -58,7 +63,7 @@ class MapSet extends React.PureComponent {
 				mapsDimensions: {},
 			};
 
-			_.forEach(this.props.children, child => {
+			_forEach(this.props.children, child => {
 				if (
 					child &&
 					typeof child === 'object' &&
@@ -97,7 +102,7 @@ class MapSet extends React.PureComponent {
 		const props = this.props;
 		if (!props.stateMapSetKey) {
 			if (prevProps.view !== props.view) {
-				let mapViews = _.mapValues(this.state.mapViews, view => {
+				let mapViews = _mapValues(this.state.mapViews, view => {
 					return {...view, ...props.view};
 				});
 
@@ -126,14 +131,14 @@ class MapSet extends React.PureComponent {
 		mapKey = mapKey || this.state.activeMapKey;
 
 		if (this.props.sync) {
-			syncUpdate = _.pickBy(update, (updateVal, updateKey) => {
+			syncUpdate = _pickBy(update, (updateVal, updateKey) => {
 				return this.props.sync[updateKey];
 			});
 			syncUpdate = mapUtils.view.ensureViewIntegrity(syncUpdate);
 		}
 
 		// merge views of all maps
-		let mapViews = _.mapValues(this.state.mapViews, view => {
+		let mapViews = _mapValues(this.state.mapViews, view => {
 			return mapUtils.view.mergeViews(view, syncUpdate);
 		});
 
@@ -143,7 +148,7 @@ class MapSet extends React.PureComponent {
 			update
 		);
 
-		if (syncUpdate && !_.isEmpty(syncUpdate)) {
+		if (syncUpdate && !_isEmpty(syncUpdate)) {
 			const mergedView = mapUtils.view.mergeViews(this.state.view, syncUpdate);
 
 			this.setState({
