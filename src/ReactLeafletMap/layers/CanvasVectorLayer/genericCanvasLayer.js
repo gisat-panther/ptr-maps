@@ -9,6 +9,7 @@
 
 // -- L.DomUtil.setTransform from leaflet 1.0.0 to work on 0.0.7
 //------------------------------------------------------------------------------
+import * as L from "leaflet";
 L.DomUtil.setTransform =
 	L.DomUtil.setTransform ||
 	function (el, offset, scale) {
@@ -22,7 +23,7 @@ L.DomUtil.setTransform =
 	};
 
 // -- support for both  0.0.7 and 1.0.0 rc2 leaflet
-L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
+export const CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 	// -- initialized is called on prototype
 	initialize: function (options) {
 		this._paneName = options.paneName;
@@ -199,8 +200,6 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 	},
 });
 
-L.canvasLayer = function (options) {
-	return new L.CanvasLayer(options);
+export default (options) => {
+	return new CanvasLayer(options)
 };
-
-export default L.canvasLayer;

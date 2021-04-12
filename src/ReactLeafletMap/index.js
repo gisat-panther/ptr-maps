@@ -17,7 +17,6 @@ import constants from '../constants';
 import viewport from '../utils/viewport';
 
 import './style.scss';
-import 'leaflet/dist/leaflet.css';
 
 class ReactLeafletMap extends React.PureComponent {
 	static propTypes = {

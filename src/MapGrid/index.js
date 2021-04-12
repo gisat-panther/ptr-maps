@@ -16,7 +16,7 @@ class MapGrid extends React.PureComponent {
 
 	componentDidMount() {
 		this.resize();
-		if (window)
+		if (typeof window !== 'undefined')
 			window.addEventListener('resize', this.resize.bind(this), {
 				passive: true,
 			}); //todo IE
