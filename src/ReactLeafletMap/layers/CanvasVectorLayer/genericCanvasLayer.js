@@ -9,7 +9,7 @@
 
 // -- L.DomUtil.setTransform from leaflet 1.0.0 to work on 0.0.7
 //------------------------------------------------------------------------------
-import * as L from "leaflet";
+import * as L from 'leaflet';
 L.DomUtil.setTransform =
 	L.DomUtil.setTransform ||
 	function (el, offset, scale) {
@@ -200,6 +200,6 @@ export const CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 	},
 });
 
-export default (options) => {
-	return new CanvasLayer(options)
+export default options => {
+	return new CanvasLayer(options);
 };

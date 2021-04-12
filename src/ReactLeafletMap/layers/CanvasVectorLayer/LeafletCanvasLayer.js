@@ -16,7 +16,7 @@ import {CanvasLayer} from './genericCanvasLayer';
 import shapes from './shapes/shapes';
 import polygons from './shapes/polygons';
 import lines from './shapes/lines';
-import * as L from "leaflet";
+import * as L from 'leaflet';
 
 const LeafletCanvasLayer = CanvasLayer.extend({
 	onLayerDidMount: function () {
