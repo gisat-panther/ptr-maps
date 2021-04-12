@@ -12,12 +12,13 @@ import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import {mapConstants} from '@gisatcz/ptr-core';
 
 import helpers from '../SvgVectorLayer/helpers';
-import genericCanvasLayer from './genericCanvasLayer';
+import {CanvasLayer} from './genericCanvasLayer';
 import shapes from './shapes/shapes';
 import polygons from './shapes/polygons';
 import lines from './shapes/lines';
+import * as L from 'leaflet';
 
-const LeafletCanvasLayer = L.CanvasLayer.extend({
+const LeafletCanvasLayer = CanvasLayer.extend({
 	onLayerDidMount: function () {
 		this.customEvents = {
 			click: this.onLayerClick,

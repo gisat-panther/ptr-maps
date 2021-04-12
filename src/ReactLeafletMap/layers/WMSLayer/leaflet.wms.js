@@ -4,6 +4,7 @@
  * (c) 2014-2016, Houston Engineering, Inc.
  * MIT License
  */
+import * as L from 'leaflet';
 
 // Module object
 var wms = {};
