@@ -4,15 +4,39 @@ var findUp = require('find-up');
 var replace = require('replace-in-file');
 
 // path of local instance of Leaflet
-var localLeafletPath = ['node_modules','leaflet','dist','leaflet-src.js'];
+var localLeafletPath = ['node_modules', 'leaflet', 'dist', 'leaflet-src.js'];
 // path of Leaflet if ptr-maps is installed as a module
-var linkedPtrMapsLeafletPath = ['..','..','leaflet','dist','leaflet-src.js'];
+var linkedPtrMapsLeafletPath = [
+	'..',
+	'..',
+	'leaflet',
+	'dist',
+	'leaflet-src.js',
+];
 // path of local instance of WebWorldWind
-var localWebWorldWindPath = ['node_modules','webworldwind-esa','build','dist','worldwind.min.js'];
+var localWebWorldWindPath = [
+	'node_modules',
+	'webworldwind-esa',
+	'build',
+	'dist',
+	'worldwind.min.js',
+];
 // path of WebWorldWind if ptr-maps is installed as a module
-var linkedPtrMapsWebWorldWindPath = ['..','..','webworldwind-esa','build','dist','worldwind.min.js'];
+var linkedPtrMapsWebWorldWindPath = [
+	'..',
+	'..',
+	'webworldwind-esa',
+	'build',
+	'dist',
+	'worldwind.min.js',
+];
 
-var filesToFix = [localLeafletPath, linkedPtrMapsLeafletPath, localWebWorldWindPath, linkedPtrMapsWebWorldWindPath];
+var filesToFix = [
+	localLeafletPath,
+	linkedPtrMapsLeafletPath,
+	localWebWorldWindPath,
+	linkedPtrMapsWebWorldWindPath,
+];
 
 //mock window, document & navigator global objects
 var FIXED_CODE = `// < HACK >
@@ -137,31 +161,27 @@ var FIXED_CODE = `// < HACK >
 `;
 
 function modifyFiles(filePath) {
-    findUp('.', {type: 'directory'})
-    .then(nodeModules => {
-        var completeFilePath = path.resolve.apply(path, [nodeModules].concat(filePath))
-        
-        //prevent endeless adding modified code to files
-        var replace_options = {
-            files: completeFilePath,
-            from: /\/\/ < HACK >[\s\S]*?\/\/ <\/ HACK >[\s]*/g,
-            to: '',
-        };
+	findUp('.', {type: 'directory'}).then(nodeModules => {
+		var completeFilePath = path.resolve.apply(
+			path,
+			[nodeModules].concat(filePath)
+		);
 
-        try {
-            replace.sync(replace_options);
-            console.log('Modified files:', replace_options.files.join(', '));
-            prepend(
-                completeFilePath,
-                FIXED_CODE,
-                console.log
-            );
-        }
-        catch (error) {
-            console.error('Error occurred:', error);
-        }
+		//prevent endeless adding modified code to files
+		var replace_options = {
+			files: completeFilePath,
+			from: /\/\/ < HACK >[\s\S]*?\/\/ <\/ HACK >[\s]*/g,
+			to: '',
+		};
 
-    });
+		try {
+			replace.sync(replace_options);
+			console.log('Modified files:', replace_options.files.join(', '));
+			prepend(completeFilePath, FIXED_CODE, console.log);
+		} catch (error) {
+			console.error('Error occurred:', error);
+		}
+	});
 }
 
 filesToFix.forEach(modifyFiles);
