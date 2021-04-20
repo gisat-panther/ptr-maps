@@ -153,9 +153,9 @@ var FIXED_CODE = `// < HACK >
       };
 
       if(typeof window === 'undefined') {
-          window = fakeWindow;
-          document = fakeDocument;
-          navigator = fakeNavigator;
+          var window = fakeWindow;
+          var document = fakeDocument;
+          var navigator = fakeNavigator;
       }
 // </ HACK >
 `;
