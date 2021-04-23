@@ -169,7 +169,7 @@ var endOfFile = `
 // < HACK >
 }(typeof window === 'undefined' ? undefined : window, typeof document === 'undefined' ? undefined : document, typeof navigator === 'undefined' ? undefined : navigator))
 // </ HACK >
-`
+`;
 
 function modifyFiles(filePath) {
 	findUp('.', {type: 'directory'}).then(nodeModules => {
@@ -186,12 +186,19 @@ function modifyFiles(filePath) {
 		};
 
 		try {
-      if (fs.existsSync(completeFilePath)) {
-        replace.sync(replace_options);
-        console.log('Modified files:', replace_options.files.join(', '));
-        let fileData = fs.readFileSync(completeFilePath);
-        fs.writeFileSync(completeFilePath, Buffer.concat([Buffer.from(beginOfFile), Buffer.from(fileData), Buffer.from(endOfFile)]));
-      }
+			if (fs.existsSync(completeFilePath)) {
+				replace.sync(replace_options);
+				console.log('Modified files:', replace_options.files.join(', '));
+				let fileData = fs.readFileSync(completeFilePath);
+				fs.writeFileSync(
+					completeFilePath,
+					Buffer.concat([
+						Buffer.from(beginOfFile),
+						Buffer.from(fileData),
+						Buffer.from(endOfFile),
+					])
+				);
+			}
 		} catch (error) {
 			console.error('Error occurred:', error);
 		}
