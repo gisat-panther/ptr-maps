@@ -1,5 +1,5 @@
 var path = require('path');
-var prepend = require('prepend-file');
+var fs = require('fs');
 var findUp = require('find-up');
 var replace = require('replace-in-file');
 
@@ -39,10 +39,105 @@ var filesToFix = [
 ];
 
 //mock window, document & navigator global objects
-var FIXED_CODE = `// < HACK >
-    var fakeWindow = {
-    navigator: {
-        userAgent: '',
+var beginOfFile = `// < HACK >
+(function (window, document, navigator) {
+  var fakeWindow = {
+  navigator: {
+      userAgent: '',
+    },
+    location: {
+      hash: '',
+      host: '',
+      hostname: '',
+      href: '',
+      origin: '',
+      pathname: '',
+      protocol: '',
+      search: '',
+    },
+    history: {
+      replaceState: () => {},
+      pushState: () => {},
+      go: () => {},
+      back: () => {},
+    },
+    CustomEvent: () => {
+      return this;
+    },
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    getComputedStyle: () => {
+      return {
+        getPropertyValue: () => {
+          return '';
+        },
+      };
+    },
+    Image: () => {},
+    Date: () => {},
+    screen: {},
+    setTimeout: () => {},
+    clearTimeout: () => {},
+    matchMedia: () => {
+      return {};
+    },
+    requestAnimationFrame(callback) {
+      if (typeof setTimeout === 'undefined') {
+        callback();
+        return null;
+      }
+      return setTimeout(callback, 0);
+    },
+    cancelAnimationFrame(id) {
+      if (typeof setTimeout === 'undefined') {
+        return;
+      }
+      clearTimeout(id);
+    }
+  };
+
+  var fakeNavigator = {
+      platform: '',
+      userAgent: ''
+  };
+  var fakeDocument = {
+      body: {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      activeElement: {
+        blur: () => {},
+        nodeName: '',
+      },
+      querySelector: () => {
+        return null;
+      },
+      querySelectorAll: () => {
+        return [];
+      },
+      getElementById: () => {
+        return null;
+      },
+      createEvent: () => {
+        return {
+          initEvent: () => {},
+        };
+      },
+      createElement: () => {
+        return {
+          children: [],
+          childNodes: [],
+          style: {},
+          setAttribute: () => {},
+          getElementsByTagName: () => {
+            return [];
+          },
+        };
+      },
+      createElementNS: () => {
+        return {};
+      },
+      importNode: () => {
+        return null;
       },
       location: {
         hash: '',
@@ -54,111 +149,27 @@ var FIXED_CODE = `// < HACK >
         protocol: '',
         search: '',
       },
-      history: {
-        replaceState: () => {},
-        pushState: () => {},
-        go: () => {},
-        back: () => {},
-      },
-      CustomEvent: () => {
-        return this;
-      },
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      getComputedStyle: () => {
-        return {
-          getPropertyValue: () => {
-            return '';
-          },
-        };
-      },
-      Image: () => {},
-      Date: () => {},
-      screen: {},
-      setTimeout: () => {},
-      clearTimeout: () => {},
-      matchMedia: () => {
-        return {};
-      },
-      requestAnimationFrame(callback) {
-        if (typeof setTimeout === 'undefined') {
-          callback();
-          return null;
-        }
-        return setTimeout(callback, 0);
-      },
-      cancelAnimationFrame(id) {
-        if (typeof setTimeout === 'undefined') {
-          return;
-        }
-        clearTimeout(id);
-      }
+      documentElement: {style: {}},
+      getElementsByTagName: () => {return []}
     };
 
-    var fakeNavigator = {
-        platform: '',
-        userAgent: ''
-    };
-    var fakeDocument = {
-        body: {},
-        addEventListener: () => {},
-        removeEventListener: () => {},
-        activeElement: {
-          blur: () => {},
-          nodeName: '',
-        },
-        querySelector: () => {
-          return null;
-        },
-        querySelectorAll: () => {
-          return [];
-        },
-        getElementById: () => {
-          return null;
-        },
-        createEvent: () => {
-          return {
-            initEvent: () => {},
-          };
-        },
-        createElement: () => {
-          return {
-            children: [],
-            childNodes: [],
-            style: {},
-            setAttribute: () => {},
-            getElementsByTagName: () => {
-              return [];
-            },
-          };
-        },
-        createElementNS: () => {
-          return {};
-        },
-        importNode: () => {
-          return null;
-        },
-        location: {
-          hash: '',
-          host: '',
-          hostname: '',
-          href: '',
-          origin: '',
-          pathname: '',
-          protocol: '',
-          search: '',
-        },
-        documentElement: {style: {}},
-        getElementsByTagName: () => {return []}
-      };
-
-      if(typeof window === 'undefined') {
-          var window = fakeWindow;
-          var document = fakeDocument;
-          var navigator = fakeNavigator;
-      }
+    if(typeof window === 'undefined') {
+         window = fakeWindow;
+  }
+    if(typeof document === 'undefined') {
+     document = fakeDocument;
+  }
+    if(typeof navigator === 'undefined') {
+  navigator = fakeNavigator;
+  }
 // </ HACK >
 `;
+
+var endOfFile = `
+// < HACK >
+}(typeof window === 'undefined' ? undefined : window, typeof document === 'undefined' ? undefined : document, typeof navigator === 'undefined' ? undefined : navigator))
+// </ HACK >
+`
 
 function modifyFiles(filePath) {
 	findUp('.', {type: 'directory'}).then(nodeModules => {
@@ -175,9 +186,12 @@ function modifyFiles(filePath) {
 		};
 
 		try {
-			replace.sync(replace_options);
-			console.log('Modified files:', replace_options.files.join(', '));
-			prepend(completeFilePath, FIXED_CODE, console.log);
+      if (fs.existsSync(completeFilePath)) {
+        replace.sync(replace_options);
+        console.log('Modified files:', replace_options.files.join(', '));
+        let fileData = fs.readFileSync(completeFilePath);
+        fs.writeFileSync(completeFilePath, Buffer.concat([Buffer.from(beginOfFile), Buffer.from(fileData), Buffer.from(endOfFile)]));
+      }
 		} catch (error) {
 			console.error('Error occurred:', error);
 		}
