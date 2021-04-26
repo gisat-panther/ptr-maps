@@ -1,0 +1,514 @@
+.ptr-go-to-place-box {
+  width: 12rem;
+}
+
+.ptr-go-to-place-box > .ptr-input-text {
+  border: 1px solid var(--accent55);
+}
+
+.ptr-go-to-place-box > .ptr-input-text input::placeholder {
+  color: rgba(var(--base50rgb), 0.8);
+}
+
+.ptr-go-to-place-box > .ptr-input-text > .ptr-icon {
+  width: 1.25rem;
+  margin-right: 0.25rem;
+}
+
+.ptr-go-to-place-box > .ptr-input-text > .ptr-icon .line {
+  fill: var(--accent55);
+}
+
+.ptr-go-to-place-box > .ptr-input-text.focus > .ptr-icon .line {
+  fill: var(--accent55);
+}
+.ptr-map-grid {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ptr-map-grid .ptr-map {
+  position: relative;
+}
+
+.ptr-map-grid :not(.row1) > .ptr-map {
+  border-top: 1px solid #888;
+}
+.ptr-map-grid :not(.col1) > .ptr-map {
+  border-left: 1px solid #888;
+}
+
+.ptr-map-grid-cell {
+  overflow: hidden;
+  position: relative;
+}
+.ptr-map-controls {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+
+.ptr-map-controls .control {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 0.3rem;
+  z-index: 15;
+  box-shadow: 0 0 0.3rem 0 rgba(0, 0, 0, 0.3);
+  margin-bottom: 0.5rem;
+}
+
+.ptr-map-controls .control:last-child {
+  margin-bottom: 0;
+}
+
+.ptr-map-controls .control > .ptr-button:focus,
+.ptr-map-controls .menu-control > .ptr-button:focus {
+  outline: none;
+}
+
+.ptr-map-controls .control > .ptr-button:focus::after {
+  box-shadow: none;
+  border: 0;
+}
+
+.ptr-map-controls .control > .ptr-button,
+.ptr-map-controls .menu-control > .ptr-button {
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  user-select: none;
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  text-align: center;
+  font-size: 1.125rem;
+  color: var(--base50);
+  cursor: pointer;
+  transition: color 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+
+.ptr-map-controls .control .ptr-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ptr-map-controls .control .ptr-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.ptr-map-controls .legend-control .ptr-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.ptr-map-controls .legend-control.open .ptr-icon {
+  color: var(--accent50);
+}
+
+.ptr-map-controls .control > .ptr-button:not(:first-child) {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.ptr-map-controls .control > .ptr-button:first-child {
+  border-top-right-radius: 0.3rem;
+  border-top-left-radius: 0.3rem;
+}
+
+.ptr-map-controls .control > .ptr-button:last-child {
+  border-bottom-right-radius: 0.3rem;
+  border-bottom-left-radius: 0.3rem;
+}
+
+.ptr-map-controls .control > .ptr-button:hover,
+.ptr-map-controls .menu-control > .ptr-button:hover {
+  background-color: white;
+  color: var(--accent50);
+}
+
+.ptr-map-controls .control > .ptr-button:not(.ghost):not(.invisible):not(.primary):not(.inverted):hover:after,
+.ptr-map-controls .control > .ptr-button:not(.ghost):not(.invisible):not(.primary):not(.inverted):hover:after {
+  background: none;
+}
+
+.ptr-map-controls .rotate-needle-control i {
+  /*transition: all .2s ease-in-out;*/
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+/*#rotate-needle-control:hover i {*/
+/*transform: rotate(-45deg);*/
+/*}*/
+.ptr-map-controls .tilt-control .ptr-button {
+  /*	overflow: hidden;*/
+  background-position: center center;
+  background-size: 1.2rem;
+  background-repeat: no-repeat;
+}
+.ptr-map-set {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.ptr-map-set-maps {
+  width: 100%;
+  height: 100%;
+}
+.ptr-map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.ptr-map-wrapper::after {
+  content: "";
+  border: 2px solid transparent;
+  z-index: 2;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.ptr-map-wrapper.active::after {
+  border-color: var(--accent50);
+}
+
+/* header */
+.ptr-map-wrapper-header {
+  background: rgba(var(--base100rgb), 0.6);
+  color: var(--base0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  z-index: 3;
+  min-height: 2rem;
+  max-width: 100%;
+}
+
+.ptr-map-wrapper.active .ptr-map-wrapper-header {
+  background: var(--accent50);
+}
+
+.ptr-map-wrapper-header > div:not(:last-child) {
+  border-right: 1px solid rgba(var(--base0rgb), 0.25);
+}
+
+.ptr-map-wrapper-title {
+  padding: 0 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ptr-map-wrapper-header .ptr-button {
+  padding: 0 0.15rem;
+  border-radius: 0;
+}
+
+.ptr-map-wrapper-header .ptr-button:focus::after {
+  border-radius: 0;
+}
+.map-tools {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 0.5rem;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.control {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 0.3rem;
+  z-index: 15;
+  box-shadow: 0 0 0.3rem 0 rgba(0, 0, 0, 0.3);
+  margin-bottom: 0.5rem;
+}
+
+.map-tools.small {
+  bottom: 13px;
+}
+
+.map-tools.small .control {
+  margin-bottom: 5px;
+}
+
+.map-tools .control > button:focus,
+.menu-control > button:focus {
+  outline: none;
+}
+
+.map-tools .control > button,
+.menu-control > button {
+  padding: 0;
+  background: none;
+  border: 0;
+  user-select: none;
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  text-align: center;
+  font-size: 1.125rem;
+  color: var(--base50);
+  cursor: pointer;
+  transition: color 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+
+.map-tools .control .hold-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-tools .control .ptr-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.map-tools .legend-control .ptr-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.map-tools .control.open .ptr-icon {
+  color: var(--accent50);
+}
+
+.map-tools.small .control > button {
+  width: 1.6rem;
+  height: 1.6rem;
+  font-size: 0.975rem;
+}
+
+.map-tools .control > button:not(:first-child) {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.map-tools .control > button:first-child {
+  border-top-right-radius: 0.3rem;
+  border-top-left-radius: 0.3rem;
+}
+
+.map-tools .control > button:last-child {
+  border-bottom-right-radius: 0.3rem;
+  border-bottom-left-radius: 0.3rem;
+}
+
+.map-tools .control > button:hover,
+.menu-control > button:hover {
+  background-color: white;
+  color: var(--accent50);
+}
+
+.map-tools .hold-button .ptr-icon .line {
+  transition: fill 0.2s ease-in-out;
+}
+
+.map-tools .hold-button:hover .ptr-icon .line {
+  fill: var(--accent50);
+}
+
+.map-tools button > .ptr-icon .line {
+  fill: currentColor;
+}
+
+.map-tools button.disabled .ptr-icon .line {
+  color: var(--base35);
+}
+.ptr-map-controls-wrapper {
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+@import '~leaflet/dist/leaflet.css';
+.ptr-leaflet-map {
+  width: 100%;
+  height: 100%;
+  /* create stacking context */
+  isolation: isolate;
+  position: relative;
+  z-index: 1;
+}
+
+.ptr-leaflet-map .leaflet-div-icon {
+  border: 0;
+  background: none;
+}
+
+.ptr-leaflet-map .leaflet-marker-icon {
+  width: auto !important;
+  height: auto !important;
+  z-index: 0 !important;
+  will-change: transform;
+}
+
+.ptr-leaflet-map-icon {
+  will-change: transform;
+}
+
+.ptr-leaflet-map .leaflet-pane {
+  will-change: transform;
+}
+
+.ptr-leaflet-map .leaflet-overlay-pane {
+  z-index: 500;
+}
+
+.ptr-leaflet-map .hoverable-pane:hover {
+  z-index: 497;
+}
+
+.ptr-leaflet-map .selected-features-pane {
+  z-index: 498;
+}
+
+.ptr-leaflet-map .hoverable-pane.selected-features-pane:hover {
+  z-index: 499;
+}
+.ptr-simple-layers-control {
+  position: relative;
+}
+
+.ptr-simple-layers-control .hold-button {
+  border-radius: 0.3rem;
+}
+
+.ptr-simple-layers-control-menu {
+  position: absolute;
+  bottom: 0;
+  border-radius: 0.25rem;
+  width: 0;
+  background: var(--base0);
+  transition: width 0.15s ease-in-out 0.15s, height 0.15s ease-in-out, border-radius 0s;
+  filter: drop-shadow(0 0 0.2rem rgba(0, 0, 0, 0.2));
+}
+
+.ptr-simple-layers-control-menu-content {
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ptr-simple-layers-control-menu.open {
+  transition: width 0.15s ease-in-out, height 0.15s ease-in-out 0.15s, border-radius 0s ease-in-out 0.3s;
+}
+
+.ptr-simple-layers-control-menu:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  border-bottom-color: transparent;
+  border-bottom-style: solid;
+  border-bottom-width: 0;
+  border-top-color: transparent;
+  border-top-style: solid;
+  border-top-width: 0;
+}
+
+.ptr-simple-layers-control-menu.open:after {
+  border-bottom-width: 1rem;
+  border-top-width: 1rem;
+}
+
+/* Menu on left */
+.ptr-simple-layers-control-menu.left {
+  right: calc(100% + 1.5rem);
+  border-bottom-right-radius: 0;
+}
+
+.ptr-simple-layers-control-menu.left:not(.open) {
+  border-top-right-radius: 0;
+}
+
+.ptr-simple-layers-control-menu.left:after {
+  border-left-color: var(--base0);
+  border-left-style: solid;
+  border-left-width: 0;
+  right: -1rem;
+  transition: border-bottom-width 0s ease-in-out 0.3s, border-top-width 0s ease-in-out 0.3s, border-left-width 0s ease-in-out 0.3s;
+}
+
+.ptr-simple-layers-control-menu.left.open:after {
+  border-left-width: 1rem;
+  transition: border-bottom-width 0s, border-top-width 0s, border-left-width 0s;
+}
+
+/* Menu on right */
+.ptr-simple-layers-control-menu.right {
+  left: calc(100% + 1.5rem);
+  border-bottom-left-radius: 0;
+}
+
+.ptr-simple-layers-control-menu.right:not(.open) {
+  border-top-left-radius: 0;
+}
+
+.ptr-simple-layers-control-menu.right:after {
+  border-right-color: var(--base0);
+  border-right-style: solid;
+  border-right-width: 0;
+  left: -1rem;
+  transition: border-bottom-width 0s ease-in-out 0.3s, border-top-width 0s ease-in-out 0.3s, border-right-width 0s ease-in-out 0.3s;
+}
+
+.ptr-simple-layers-control-menu.right.open:after {
+  border-right-width: 1rem;
+  transition: border-bottom-width 0s, border-top-width 0s, border-right-width 0s;
+}
+
+/* Layer tile */
+.ptr-simple-layers-control-tile {
+  background-image: linear-gradient(0deg, #b2b2b2 0%, #e9e9e9 100%);
+  background-size: cover;
+  border: 2px solid var(--base50);
+  border-bottom: 0;
+  border-radius: 0.15rem;
+  display: flex;
+  align-items: flex-end;
+  cursor: pointer;
+}
+
+.ptr-simple-layers-control-tile.active {
+  border-color: var(--accent50);
+}
+
+.ptr-simple-layers-control-tile-name {
+  color: var(--base0);
+  background: var(--base50);
+  font-size: 0.809rem;
+  width: 100%;
+  text-align: center;
+  padding: 0.15rem 0;
+}
+
+.ptr-simple-layers-control-tile.active .ptr-simple-layers-control-tile-name {
+  background: var(--accent50);
+}
+.ptr-world-wind-map {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.ptr-world-wind-map-canvas {
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-color: #000;
+}

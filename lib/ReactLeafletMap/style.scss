@@ -1,0 +1,48 @@
+@import '~leaflet/dist/leaflet.css';
+
+.ptr-leaflet-map {
+	width: 100%;
+	height: 100%;
+
+	/* create stacking context */
+	isolation: isolate;
+	position: relative;
+	z-index: 1;
+}
+
+// reset default leaflet style
+.ptr-leaflet-map .leaflet-div-icon {
+	border: 0;
+	background: none;
+}
+
+.ptr-leaflet-map .leaflet-marker-icon {
+	width: auto !important;
+	height: auto !important;
+	z-index: 0 !important;
+	will-change: transform;
+}
+
+.ptr-leaflet-map-icon {
+	will-change: transform;
+}
+
+.ptr-leaflet-map .leaflet-pane {
+	will-change: transform;
+}
+
+.ptr-leaflet-map .leaflet-overlay-pane {
+	z-index: 500;
+}
+
+.ptr-leaflet-map .hoverable-pane:hover {
+	z-index: 497;
+}
+
+.ptr-leaflet-map .selected-features-pane {
+	z-index: 498;
+}
+
+.ptr-leaflet-map .hoverable-pane.selected-features-pane:hover {
+	z-index: 499;
+}
