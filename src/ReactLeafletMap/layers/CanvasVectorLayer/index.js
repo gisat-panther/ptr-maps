@@ -14,6 +14,10 @@ class CanvasVectorLayer extends MapLayer {
 	updateLeafletElement(fromProps, toProps) {
 		super.updateLeafletElement(fromProps, toProps);
 
+		if (fromProps.zIndex !== toProps.zIndex) {
+			this.leafletElement.setPaneZindex(toProps.uniqueLayerKey, toProps.zIndex);
+		}
+
 		// TODO
 		if (
 			fromProps.selected !== toProps.selected ||

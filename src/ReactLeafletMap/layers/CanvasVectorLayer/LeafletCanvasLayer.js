@@ -120,6 +120,13 @@ const LeafletCanvasLayer = CanvasLayer.extend({
 		this.needRedraw();
 	},
 
+	setPaneZindex: function (paneName, zIndex) {
+		let pane = this._map.getPane(paneName);
+		if (pane) {
+			pane.style.zIndex = zIndex;
+		}
+	},
+
 	prepareFeatures: function (features) {
 		const props = this.props;
 		let pointFeatures = [];
