@@ -149,13 +149,8 @@ class PresentationMap extends React.PureComponent {
 	}
 
 	render() {
-		const {
-			children,
-			mapComponent,
-			wrapper,
-			wrapperProps,
-			...props
-		} = this.props;
+		const {children, mapComponent, wrapper, wrapperProps, ...props} =
+			this.props;
 
 		if (!mapComponent) {
 			return <Error centered>mapComponent not supplied to Map</Error>;

@@ -14,14 +14,8 @@ import {isEmpty as _isEmpty} from 'lodash';
 class WmsLayer extends WorldWind.WmsLayer {
 	constructor(layer) {
 		const {key, options, opacity} = layer;
-		const {
-			imageFormat,
-			layers,
-			name,
-			styles,
-			version,
-			...params
-		} = options.params;
+		const {imageFormat, layers, name, styles, version, ...params} =
+			options.params;
 
 		const worldWindOptions = {
 			key: key,

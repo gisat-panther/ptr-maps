@@ -75,9 +75,8 @@ class WorldWindMap extends React.PureComponent {
 			this.props.viewLimits,
 			this.props.levelsBased
 		);
-		this.wwd.worldWindowController.onNavigatorChanged = this.onNavigatorChange.bind(
-			this
-		);
+		this.wwd.worldWindowController.onNavigatorChanged =
+			this.onNavigatorChange.bind(this);
 
 		if (this.props.levelsBased) {
 			// rewrite default wheel listener.
