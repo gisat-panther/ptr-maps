@@ -39,6 +39,24 @@ class ReactLeafletMap extends React.PureComponent {
 		]),
 	};
 
+	static getDerivedStateFromProps(props, state) {
+		let changes = {};
+
+		if (props.view && state.view !== props.view) {
+			changes.view = props.view;
+		}
+
+		if (
+			(props.viewport?.width && props.viewport.width !== state.width) ||
+			(props.viewport?.height && props.viewport.height !== state.height)
+		) {
+			changes.height = props.viewport.height;
+			changes.width = props.viewport.width;
+		}
+
+		return _isEmpty(changes) ? null : changes;
+	}
+
 	constructor(props) {
 		super(props);
 
@@ -128,11 +146,16 @@ class ReactLeafletMap extends React.PureComponent {
 	onViewportChanged(viewport) {
 		if (viewport) {
 			let change = {};
+			const leafletView = viewHelpers.getLeafletViewportFromViewParams(
+				this.state.view,
+				this.state.width,
+				this.state.height
+			);
 
 			if (
 				viewport.center &&
-				(viewport.center[0] !== this.state.leafletView.center[0] ||
-					viewport.center[1] !== this.state.leafletView.center[1])
+				(viewport.center[0] !== leafletView?.center[0] ||
+					viewport.center[1] !== leafletView?.center[1])
 			) {
 				change.center = viewUtils.getCenterWhichFitsLimits(
 					{
@@ -146,7 +169,7 @@ class ReactLeafletMap extends React.PureComponent {
 			if (
 				viewport.hasOwnProperty('zoom') &&
 				Number.isFinite(viewport.zoom) &&
-				viewport.zoom !== this.state.leafletView.zoom
+				leafletView?.zoom !== viewport.zoom
 			) {
 				change.boxRange = mapUtils.view.getBoxRangeFromZoomLevel(
 					viewport.zoom,
@@ -172,7 +195,7 @@ class ReactLeafletMap extends React.PureComponent {
 				// just presentational map
 				else {
 					this.setState({
-						view: {...this.props.view, ...this.state.view, ...change},
+						view: {...this.state.view, ...change},
 					});
 				}
 			}
@@ -200,19 +223,14 @@ class ReactLeafletMap extends React.PureComponent {
 			this.setZoomLevelsBounds(width, height);
 		}
 
-		this.setState({
-			width,
-			height,
-			leafletView: viewHelpers.getLeafletViewportFromViewParams(
-				this.state.view || this.props.view,
-				this.state.width,
-				this.state.height
-			),
-		});
-
 		if (this.props.onResize) {
 			this.props.onResize(width, height);
 		}
+
+		this.setState({
+			width,
+			height,
+		});
 	}
 
 	render() {
@@ -232,7 +250,7 @@ class ReactLeafletMap extends React.PureComponent {
 
 	renderMap() {
 		const leafletView = viewHelpers.getLeafletViewportFromViewParams(
-			this.state.view || this.props.view,
+			this.state.view,
 			this.state.width,
 			this.state.height
 		);
