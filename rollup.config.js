@@ -36,6 +36,7 @@ const lodashExternal = [
 	'lodash/maxBy',
 	'lodash/minBy',
 	'lodash/findIndex',
+	'lodash/uniq',
 ];
 
 export default {
