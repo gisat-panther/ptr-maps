@@ -456,9 +456,10 @@ wms.Overlay = L.Layer.extend({
 			height: size.y,
 		};
 		params[projectionKey] = crs.code;
-		params.bbox = (wmsVersion >= 1.3 && crs === L.CRS.EPSG4326
-			? [se.y, nw.x, nw.y, se.x]
-			: [nw.x, se.y, se.x, nw.y]
+		params.bbox = (
+			wmsVersion >= 1.3 && crs === L.CRS.EPSG4326
+				? [se.y, nw.x, nw.y, se.x]
+				: [nw.x, se.y, se.x, nw.y]
 		).join(',');
 
 		L.extend(this.wmsParams, params);

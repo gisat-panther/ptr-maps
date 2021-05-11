@@ -100,12 +100,8 @@ class Tile extends React.PureComponent {
 	}
 
 	render() {
-		const {
-			tileKey,
-			featureKeysGroupedByTileKey,
-			component,
-			...props
-		} = this.props;
+		const {tileKey, featureKeysGroupedByTileKey, component, ...props} =
+			this.props;
 		const omittedFeatureKeys = this.getFeatureKeysToOmit(
 			featureKeysGroupedByTileKey,
 			tileKey,
