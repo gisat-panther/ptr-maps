@@ -3,6 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import filesize from 'rollup-plugin-filesize';
 import path from 'path';
 import postcss from 'rollup-plugin-postcss';
+import image from '@rollup/plugin-image';
 
 const env = process.env.NODE_ENV;
 const pkg = require('./package.json');
@@ -96,5 +97,6 @@ export default {
 			extract: path.resolve(Paths.DIST + '/style.css'),
 		}),
 		filesize(),
+		image()
 	],
 };

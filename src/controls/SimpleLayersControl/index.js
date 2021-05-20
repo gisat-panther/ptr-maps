@@ -1,94 +1,85 @@
-import React from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import {Icon, Button} from '@gisatcz/ptr-atoms';
 
 import './style.scss';
+import images from './images';
 
-// TODO Refactor
-class SimpleLayersControl extends React.PureComponent {
-	static propTypes = {
-		activeLayer: PropTypes.object,
-		layers: PropTypes.array,
-		onSelect: PropTypes.func,
-		right: PropTypes.bool,
+const SimpleLayersControl = ({
+								 onSelect,
+								 layers,
+								 right,
+								 layerTemplates,
+								 activeLayerTemplateKey,
+								 onMount,
+							 }) => {
+	const wrapperEl = useRef(null);
+	const [isOpen, setIsOpen] = useState(false);
+	useEffect(() => {
+		if (typeof onMount === 'function') {
+			onMount(layerTemplates?.map(lt => lt.key));
+		}
+	}, []);
+
+	const close = () => {
+		setIsOpen(false);
 	};
 
-	constructor(props) {
-		super(props);
+	const open = () => {
+		setIsOpen(true);
+	};
 
-		this.ref = React.createRef();
-		this.state = {
-			open: false,
-		};
-
-		this.onControlButtonClick = this.onControlButtonClick.bind(this);
-		this.onBlur = this.onBlur.bind(this);
-	}
-
-	onBlur(e) {
-		setTimeout(() => {
-			this.setState({open: false});
-		}, 50);
-	}
-
-	onControlButtonClick() {
-		this.setState({
-			open: !this.state.open,
-		});
-	}
-
-	onLayerTileClick(key) {
-		if (this.props.onSelect) {
-			this.props.onSelect(key);
+	const handleClickOutside = () => {
+		if (isOpen) {
+			close();
 		}
-	}
+	};
+	useOnClickOutside(wrapperEl, handleClickOutside);
 
-	render() {
-		let buttonClasses = classnames('ptr-simple-layers-control control', {
-			open: this.state.open,
-		});
+	const onControlButtonClick = () => {
+		if (isOpen) {
+			close();
+		} else {
+			open();
+		}
+	};
 
-		return (
-			<div className={buttonClasses} onBlur={this.onBlur} ref={this.ref}>
-				<Button onClick={this.onControlButtonClick}>
-					<Icon icon="layers" />
-				</Button>
-				{this.renderMenu()}
-			</div>
-		);
-	}
+	const onLayerTileClick = key => {
+		if (onSelect) {
+			onSelect(key);
+		}
+	};
 
-	renderMenu() {
-		const layers = this.props.layers;
+	const renderMenu = () => {
 		const tileWidth = 7;
 		const tileHeight = 5;
 		const tileMargin = 0.25;
 		const contentMargin = 1;
 
 		if (layers) {
-			let grid = this.getGrid(layers.length);
+			const grid = getGrid(layers.length);
 
-			let menuClasses = classnames('ptr-simple-layers-control-menu', {
-				open: this.state.open,
-				right: this.props.right,
-				left: !this.props.right,
+			const menuClasses = classnames('ptr-simple-layers-control-menu', {
+				open: isOpen,
+				right,
+				left: !right,
 			});
 
-			let menuStyle = {
-				width: this.state.open
+			const menuStyle = {
+				width: isOpen
 					? `${
-							(tileWidth + 2 * tileMargin) * grid.width + 2 * contentMargin
-					  }rem`
+						(tileWidth + 2 * tileMargin) * grid.width + 2 * contentMargin
+					}rem`
 					: 0,
-				height: this.state.open
+				height: isOpen
 					? `${
-							(tileHeight + 2 * tileMargin) * grid.height + 2 * contentMargin
-					  }rem`
+						(tileHeight + 2 * tileMargin) * grid.height + 2 * contentMargin
+					}rem`
 					: '2rem',
 			};
 
-			let contentStyle = {
+			const contentStyle = {
 				margin: `${contentMargin}rem`,
 				width: `calc(100% - ${2 * contentMargin}rem)`,
 				height: `calc(100% - ${2 * contentMargin}rem)`,
@@ -101,7 +92,7 @@ class SimpleLayersControl extends React.PureComponent {
 						style={contentStyle}
 					>
 						{layers.map(layer =>
-							this.renderTile(layer, tileWidth, tileHeight, tileMargin)
+							renderTile(layer, tileWidth, tileHeight, tileMargin)
 						)}
 					</div>
 				</div>
@@ -109,24 +100,25 @@ class SimpleLayersControl extends React.PureComponent {
 		} else {
 			return null;
 		}
-	}
+	};
 
-	renderTile(layer, width, height, margin) {
-		let active = layer.key === this.props.activeLayer.key;
+	const renderTile = (layer, width, height, margin) => {
+		const layerTemplate = layerTemplates.find(lt => lt.key === layer.key);
+		const active = layer.key === activeLayerTemplateKey;
 
-		let classes = classnames('ptr-simple-layers-control-tile', {
+		const classes = classnames('ptr-simple-layers-control-tile', {
 			active,
 		});
 
-		let style = {
+		const style = {
 			width: `${width}rem`,
 			height: `${height}rem`,
 			margin: `${margin}rem`,
 		};
-
-		if (layer.thumbnail) {
-			// TODO check type of thumbnail
-			// style.backgroundImage = `url(${require('./img/' + layer.thumbnail + '.png')})`;
+		const previewParam = {};
+		if (layerTemplate?.thumbnail) {
+			previewParam['src'] = layerTemplate.thumbnail in images? images[layerTemplate.thumbnail] : images.noPreview;
+			previewParam['alt'] = layerTemplate.thumbnail;
 		}
 
 		return (
@@ -134,14 +126,25 @@ class SimpleLayersControl extends React.PureComponent {
 				key={layer.key}
 				style={style}
 				className={classes}
-				onClick={this.onLayerTileClick.bind(this, layer.key)}
+				onClick={() => onLayerTileClick(layer.key)}
 			>
-				<div className="ptr-simple-layers-control-tile-name">{layer.name}</div>
+				<img
+					className="ptr-simple-layers-control-tile-preview"
+					src={previewParam.src}
+					alt={previewParam.alt}
+					style={{
+						height: `${height - 1.5}rem`,
+						margin: `0 ${margin}rem 0 ${margin}rem`,
+					}}
+				/>
+				<div className="ptr-simple-layers-control-tile-name">
+					{layer.data.nameDisplay}
+				</div>
 			</div>
 		);
-	}
+	};
 
-	getGrid(count) {
+	const getGrid = count => {
 		let width = 1;
 		let height = 1;
 
@@ -162,7 +165,57 @@ class SimpleLayersControl extends React.PureComponent {
 		}
 
 		return {width, height};
-	}
-}
+	};
+
+	const buttonClasses = classnames('ptr-simple-layers-control control', {
+		open: isOpen,
+	});
+
+	return (
+		<div className={buttonClasses} ref={wrapperEl}>
+			<Button onClick={onControlButtonClick}>
+				<Icon icon="layers" />
+			</Button>
+			{renderMenu()}
+		</div>
+	);
+};
+
+SimpleLayersControl.prototype = {
+	activeLayerTemplateKey: PropTypes.string,
+	layerTemplates: PropTypes.array,
+	layers: PropTypes.array,
+	onSelect: PropTypes.func,
+	onMount: PropTypes.func,
+	right: PropTypes.bool,
+};
 
 export default SimpleLayersControl;
+
+// Hook
+function useOnClickOutside(ref, handler) {
+	useEffect(
+		() => {
+			const listener = event => {
+				// Do nothing if clicking ref's element or descendent elements
+				if (!ref.current || ref.current.contains(event.target)) {
+					return;
+				}
+				handler(event);
+			};
+			document.addEventListener('mousedown', listener);
+			document.addEventListener('touchstart', listener);
+			return () => {
+				document.removeEventListener('mousedown', listener);
+				document.removeEventListener('touchstart', listener);
+			};
+		},
+		// Add ref and handler to effect dependencies
+		// It's worth noting that because passed in handler is a new ...
+		// ... function on every render that will cause this effect ...
+		// ... callback/cleanup to run every render. It's not a big deal ...
+		// ... but to optimize you can wrap handler in useCallback before ...
+		// ... passing it into this hook.
+		[ref, handler]
+	);
+}
