@@ -7,13 +7,13 @@ import './style.scss';
 import images from './images';
 
 const SimpleLayersControl = ({
-								 onSelect,
-								 layers,
-								 right,
-								 layerTemplates,
-								 activeLayerTemplateKey,
-								 onMount,
-							 }) => {
+    onSelect,
+    layers,
+    right,
+    layerTemplates,
+    activeLayerTemplateKey,
+    onMount,
+}) => {
 	const wrapperEl = useRef(null);
 	const [isOpen, setIsOpen] = useState(false);
 	useEffect(() => {
