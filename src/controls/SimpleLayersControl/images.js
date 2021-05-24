@@ -13,8 +13,6 @@ import bingAerial from './img/bingAerial.png';
 import cartoBaseDarkLabeled from './img/cartoBaseDarkLabeled.png';
 import osm from './img/osm.png';
 
-// TO DO create updated thumbnail for wikimedia
-
 export default {
 	bing_Aerial,
 	cartoDB_DarkMatter,
