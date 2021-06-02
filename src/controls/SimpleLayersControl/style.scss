@@ -2,13 +2,56 @@
 
 .ptr-simple-layers-control {
 	position: absolute;
-	bottom: 4.5rem;
-	right: 0;
-	z-index: 2;
-}
-.ptr-map-controls .ptr-simple-layers-control.control > .ptr-button,
-.ptr-map-controls .menu-control > .ptr-button {
+	z-index: 999;
+	display: flex;
+	flex-direction: column;
+	background: rgba(255, 255, 255, 0.8);
 	border-radius: 0.3rem;
+	box-shadow: 0 0 0.3rem 0 rgba(0, 0, 0, 0.3);
+	margin-bottom: m(1/3);
+	width: 2rem;
+	height: 2rem;
+}
+
+.ptr-simple-layers-control.control > .ptr-button:focus{
+	outline: none;
+}
+
+.ptr-simple-layers-control.control > .ptr-button:focus::after {
+	box-shadow: none;
+	border: 0;
+}
+
+.ptr-simple-layers-control.control > .ptr-button {
+	padding: 0;
+	background: none;
+	border: 0;
+	border-radius: 0.3rem;
+	box-shadow: none;
+	user-select: none;
+	display: block;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	font-size: 1.125rem;
+	color: var(--base50);
+	cursor: pointer;
+
+	transition: color 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+
+.ptr-simple-layers-control.control .ptr-icon {
+	width: 1.35rem;
+	height: 1.35rem;
+}
+
+.ptr-simple-layers-control.control > .ptr-button:hover {
+	background-color: rgba(255, 255, 255, 1);
+	color: var(--accent50);
+}
+
+.ptr-simple-layers-control.control > .ptr-button:not(.ghost):not(.invisible):not(.primary):not(.inverted):hover:after{
+	background: none;
 }
 
 .ptr-simple-layers-control-menu {
