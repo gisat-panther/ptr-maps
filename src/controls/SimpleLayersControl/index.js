@@ -7,12 +7,16 @@ import './style.scss';
 import images from './images';
 
 const SimpleLayersControl = ({
-    onSelect,
-    layers,
-    right,
-    layerTemplates,
-    activeLayerTemplateKey,
-    onMount,
+	onSelect,
+	layers,
+	opensRight,
+	left,
+	top,
+	right,
+	bottom,
+	layerTemplates,
+	activeLayerTemplateKey,
+	onMount,
 }) => {
 	const wrapperEl = useRef(null);
 	const [isOpen, setIsOpen] = useState(false);
@@ -62,20 +66,20 @@ const SimpleLayersControl = ({
 
 			const menuClasses = classnames('ptr-simple-layers-control-menu', {
 				open: isOpen,
-				right,
-				left: !right,
+				right: opensRight,
+				left: !opensRight,
 			});
 
 			const menuStyle = {
 				width: isOpen
 					? `${
-						(tileWidth + 2 * tileMargin) * grid.width + 2 * contentMargin
-					}rem`
+							(tileWidth + 2 * tileMargin) * grid.width + 2 * contentMargin
+					  }rem`
 					: 0,
 				height: isOpen
 					? `${
-						(tileHeight + 2 * tileMargin) * grid.height + 2 * contentMargin
-					}rem`
+							(tileHeight + 2 * tileMargin) * grid.height + 2 * contentMargin
+					  }rem`
 					: '2rem',
 			};
 
@@ -117,7 +121,10 @@ const SimpleLayersControl = ({
 		};
 		const previewParam = {};
 		if (layerTemplate?.thumbnail) {
-			previewParam['src'] = layerTemplate.thumbnail in images? images[layerTemplate.thumbnail] : images.noPreview;
+			previewParam['src'] =
+				layerTemplate.thumbnail in images
+					? images[layerTemplate.thumbnail]
+					: images.noPreview;
 			previewParam['alt'] = layerTemplate.thumbnail;
 		}
 
@@ -171,8 +178,15 @@ const SimpleLayersControl = ({
 		open: isOpen,
 	});
 
+	const style = {
+		left: `${left ? `${left}rem` : undefined}`,
+		top: `${top ? `${top}rem` : undefined}`,
+		right: `${right ? right : 0.5}rem`,
+		bottom: `${bottom ? bottom : 4.5}rem`,
+	};
+
 	return (
-		<div className={buttonClasses} ref={wrapperEl}>
+		<div className={buttonClasses} ref={wrapperEl} style={style}>
 			<Button onClick={onControlButtonClick}>
 				<Icon icon="layers" />
 			</Button>
@@ -187,7 +201,11 @@ SimpleLayersControl.prototype = {
 	layers: PropTypes.array,
 	onSelect: PropTypes.func,
 	onMount: PropTypes.func,
-	right: PropTypes.bool,
+	opensRight: PropTypes.bool,
+	left: PropTypes.number,
+	top: PropTypes.number,
+	right: PropTypes.number,
+	bottom: PropTypes.number,
 };
 
 export default SimpleLayersControl;
