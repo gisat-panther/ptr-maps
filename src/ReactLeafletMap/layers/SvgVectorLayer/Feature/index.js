@@ -43,7 +43,10 @@ class Feature extends React.PureComponent {
 
 		this.fid = props.fid;
 
-		if (props.type === 'Point' && props.pointAsMarker) {
+		if (
+			(props.type === 'Point' || props.type === 'MultiPoint') &&
+			props.pointAsMarker
+		) {
 			this.shapeId = this.props.uniqueFeatureKey
 				? `${this.props.uniqueFeatureKey}_icon`
 				: utils.uuid();
@@ -132,7 +135,11 @@ class Feature extends React.PureComponent {
 	 * Show feature on the top of others, if it's not a point
 	 */
 	showOnTop() {
-		if (this.leafletFeature && this.props.type !== 'Point') {
+		if (
+			this.leafletFeature &&
+			this.props.type !== 'Point' &&
+			this.props.type !== 'MultiPoint'
+		) {
 			this.leafletFeature.bringToFront();
 		}
 	}
