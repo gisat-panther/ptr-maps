@@ -47,7 +47,7 @@
 		"lodash": "^4.17.21",
 		"memoize-one": "5.1.1",
 		"path": "^0.12.7",
-		"postcss": "8.2.6",
+		"postcss": "^8.3.0",
 		"proj4leaflet": "1.0.2",
 		"prop-types": "15.7.2",
 		"react": "^16.13.1",
