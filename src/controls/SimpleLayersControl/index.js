@@ -117,7 +117,7 @@ const SimpleLayersControl = ({
 			height: `${height}rem`,
 			margin: `${margin}rem`,
 		};
-		const previewParam = {};
+		let previewParam = {};
 		if (layerTemplate?.data?.thumbnail) {
 			previewParam['src'] =
 				layerTemplate.data.thumbnail in images
