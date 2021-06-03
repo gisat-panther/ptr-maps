@@ -13,7 +13,7 @@
 	height: 2rem;
 }
 
-.ptr-simple-layers-control.control > .ptr-button:focus{
+.ptr-simple-layers-control.control > .ptr-button:focus {
 	outline: none;
 }
 
@@ -50,7 +50,7 @@
 	color: var(--accent50);
 }
 
-.ptr-simple-layers-control.control > .ptr-button:not(.ghost):not(.invisible):not(.primary):not(.inverted):hover:after{
+.ptr-simple-layers-control.control > .ptr-button:not(.ghost):not(.invisible):not(.primary):not(.inverted):hover:after {
 	background: none;
 }
 
@@ -107,7 +107,7 @@
 	border-left-width: 0;
 	right: -1rem;
 	transition: border-bottom-width 0s ease-in-out 0.3s, border-top-width 0s ease-in-out 0.3s,
-	border-left-width 0s ease-in-out 0.3s;
+		border-left-width 0s ease-in-out 0.3s;
 }
 
 .ptr-simple-layers-control-menu.left.open:after {
@@ -132,7 +132,7 @@
 	border-right-width: 0;
 	left: -1rem;
 	transition: border-bottom-width 0s ease-in-out 0.3s, border-top-width 0s ease-in-out 0.3s,
-	border-right-width 0s ease-in-out 0.3s;
+		border-right-width 0s ease-in-out 0.3s;
 }
 
 .ptr-simple-layers-control-menu.right.open:after {

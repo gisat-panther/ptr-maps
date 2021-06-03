@@ -97,6 +97,6 @@ export default {
 			extract: path.resolve(Paths.DIST + '/style.css'),
 		}),
 		filesize(),
-		image()
+		image(),
 	],
 };

@@ -17,5 +17,5 @@ export default {
 	esri_WorldTopoMap,
 	noPreview,
 	openStreetMap_Mapnik,
-	wikimedia
+	wikimedia,
 };
