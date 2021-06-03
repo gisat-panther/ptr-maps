@@ -8,11 +8,6 @@ import noPreview from './img/noPreview.png';
 import openStreetMap_Mapnik from './img/OpenStreetMap_Mapnik.png';
 import wikimedia from './img/wikimedia.png';
 
-// to be deleted (void images)
-import bingAerial from './img/bingAerial.png';
-import cartoBaseDarkLabeled from './img/cartoBaseDarkLabeled.png';
-import osm from './img/osm.png';
-
 export default {
 	bing_Aerial,
 	cartoDB_DarkMatter,
@@ -22,10 +17,5 @@ export default {
 	esri_WorldTopoMap,
 	noPreview,
 	openStreetMap_Mapnik,
-	wikimedia,
-
-	// to be deleted (void images)
-	bingAerial,
-	cartoBaseDarkLabeled,
-	osm,
+	wikimedia
 };
