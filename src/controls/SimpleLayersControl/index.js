@@ -8,7 +8,6 @@ import images from './images';
 
 const SimpleLayersControl = ({
 	onSelect,
-	layers,
 	opensRight,
 	left,
 	top,
@@ -22,7 +21,7 @@ const SimpleLayersControl = ({
 	const [isOpen, setIsOpen] = useState(false);
 	useEffect(() => {
 		if (typeof onMount === 'function') {
-			onMount(layerTemplates?.map(lt => lt.key));
+			onMount();
 		}
 	}, []);
 
@@ -61,8 +60,8 @@ const SimpleLayersControl = ({
 		const tileMargin = 0.25;
 		const contentMargin = 1;
 
-		if (layers) {
-			const grid = getGrid(layers.length);
+		if (layerTemplates) {
+			const grid = getGrid(layerTemplates.length);
 
 			const menuClasses = classnames('ptr-simple-layers-control-menu', {
 				open: isOpen,
@@ -95,8 +94,8 @@ const SimpleLayersControl = ({
 						className="ptr-simple-layers-control-menu-content"
 						style={contentStyle}
 					>
-						{layers.map(layer =>
-							renderTile(layer, tileWidth, tileHeight, tileMargin)
+						{layerTemplates.map(layerTemplate =>
+							renderTile(layerTemplate, tileWidth, tileHeight, tileMargin)
 						)}
 					</div>
 				</div>
@@ -106,9 +105,8 @@ const SimpleLayersControl = ({
 		}
 	};
 
-	const renderTile = (layer, width, height, margin) => {
-		const layerTemplate = layerTemplates.find(lt => lt.key === layer.key);
-		const active = layer.key === activeLayerTemplateKey;
+	const renderTile = (layerTemplate, width, height, margin) => {
+		const active = layerTemplate.key === activeLayerTemplateKey;
 
 		const classes = classnames('ptr-simple-layers-control-tile', {
 			active,
@@ -120,20 +118,20 @@ const SimpleLayersControl = ({
 			margin: `${margin}rem`,
 		};
 		const previewParam = {};
-		if (layerTemplate?.thumbnail) {
+		if (layerTemplate?.data?.thumbnail) {
 			previewParam['src'] =
-				layerTemplate.thumbnail in images
-					? images[layerTemplate.thumbnail]
+				layerTemplate.data.thumbnail in images
+					? images[layerTemplate.data.thumbnail]
 					: images.noPreview;
-			previewParam['alt'] = layerTemplate.thumbnail;
+			previewParam['alt'] = layerTemplate.data.thumbnail;
 		}
 
 		return (
 			<div
-				key={layer.key}
+				key={layerTemplate.key}
 				style={style}
 				className={classes}
-				onClick={() => onLayerTileClick(layer.key)}
+				onClick={() => onLayerTileClick(layerTemplate.key)}
 			>
 				<img
 					className="ptr-simple-layers-control-tile-preview"
@@ -145,7 +143,7 @@ const SimpleLayersControl = ({
 					}}
 				/>
 				<div className="ptr-simple-layers-control-tile-name">
-					{layer.data.nameDisplay}
+					{layerTemplate.data.nameDisplay}
 				</div>
 			</div>
 		);
@@ -198,7 +196,6 @@ const SimpleLayersControl = ({
 SimpleLayersControl.prototype = {
 	activeLayerTemplateKey: PropTypes.string,
 	layerTemplates: PropTypes.array,
-	layers: PropTypes.array,
 	onSelect: PropTypes.func,
 	onMount: PropTypes.func,
 	opensRight: PropTypes.bool,
