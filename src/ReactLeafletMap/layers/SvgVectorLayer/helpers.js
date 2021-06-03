@@ -86,7 +86,10 @@ function getFeatureLeafletStyle(feature, style) {
 	}
 
 	// for point features, set radius
-	if (feature.geometry.type === 'Point' || feature.geometry.type === 'MultiPoint') {
+	if (
+		feature.geometry.type === 'Point' ||
+		feature.geometry.type === 'MultiPoint'
+	) {
 		if (style.size) {
 			finalStyle.radius = style.size;
 		} else if (style.volume) {
