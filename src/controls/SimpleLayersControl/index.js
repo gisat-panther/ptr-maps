@@ -118,12 +118,15 @@ const SimpleLayersControl = ({
 			margin: `${margin}rem`,
 		};
 		let previewParam = {};
-		if (layerTemplate?.data?.thumbnail) {
-			previewParam['src'] =
-				layerTemplate.data.thumbnail in images
-					? images[layerTemplate.data.thumbnail]
-					: images.noPreview;
+		if (
+			layerTemplate?.data?.thumbnail &&
+			images.hasOwnProperty(layerTemplate.data.thumbnail)
+		) {
+			previewParam['src'] = images[layerTemplate.data.thumbnail];
 			previewParam['alt'] = layerTemplate.data.thumbnail;
+		} else {
+			previewParam['src'] = images.noPreview;
+			previewParam['alt'] = 'thumbnail';
 		}
 
 		return (
