@@ -1,6 +1,7 @@
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
-import images from 'rollup-plugin-image-files';
+// import images from 'rollup-plugin-image-files';
+import image from '@rollup/plugin-image';
 import filesize from 'rollup-plugin-filesize';
 import path from 'path';
 import postcss from 'rollup-plugin-postcss';
@@ -98,7 +99,8 @@ export default {
 		}),
 		filesize(),
 		// Copy all imported images into build folder
-		// It is not ideal, imeges should bu in some subfolder and with hashed names
-		images(),
+		// It is not ideal, images should be in some subfolder and with hashed names
+		// images(), // Problem with compile
+		image(),
 	],
 };
