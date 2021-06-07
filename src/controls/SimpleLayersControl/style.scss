@@ -1,19 +1,64 @@
 @import '~@gisatcz/ptr-core/lib/styles/_variables';
 
 .ptr-simple-layers-control {
-	position: relative;
+	position: absolute;
+	z-index: 999;
+	display: flex;
+	flex-direction: column;
+	background: rgba(255, 255, 255, 0.8);
+	border-radius: 0.3rem;
+	box-shadow: 0 0 0.3rem 0 rgba(0, 0, 0, 0.3);
+	margin-bottom: m(1/3);
+	width: 2rem;
+	height: 2rem;
 }
 
-.ptr-simple-layers-control .hold-button {
+.ptr-simple-layers-control.control > .ptr-button:focus {
+	outline: none;
+}
+
+.ptr-simple-layers-control.control > .ptr-button:focus::after {
+	box-shadow: none;
+	border: 0;
+}
+
+.ptr-simple-layers-control.control > .ptr-button {
+	padding: 0;
+	background: none;
+	border: 0;
 	border-radius: 0.3rem;
+	box-shadow: none;
+	user-select: none;
+	display: block;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	font-size: 1.125rem;
+	color: var(--base50);
+	cursor: pointer;
+
+	transition: color 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+
+.ptr-simple-layers-control.control .ptr-icon {
+	width: 1.35rem;
+	height: 1.35rem;
+}
+
+.ptr-simple-layers-control.control > .ptr-button:hover {
+	background-color: rgba(255, 255, 255, 1);
+	color: var(--accent50);
+}
+
+.ptr-simple-layers-control.control > .ptr-button:not(.ghost):not(.invisible):not(.primary):not(.inverted):hover:after {
+	background: none;
 }
 
 .ptr-simple-layers-control-menu {
 	position: absolute;
-	bottom: 0;
 	border-radius: 0.25rem;
 	width: 0;
-	background: var(--base0);
+	background: rgba(255, 255, 255, 0.8);
 	transition: width 0.15s ease-in-out 0.15s, height 0.15s ease-in-out, border-radius 0s;
 	filter: drop-shadow(0 0 0.2rem rgba(0, 0, 0, 0.2));
 }
@@ -48,6 +93,7 @@
 /* Menu on left */
 .ptr-simple-layers-control-menu.left {
 	right: calc(100% + 1.5rem);
+	bottom: 0;
 	border-bottom-right-radius: 0;
 }
 
@@ -56,7 +102,7 @@
 }
 
 .ptr-simple-layers-control-menu.left:after {
-	border-left-color: var(--base0);
+	border-left-color: rgba(255, 255, 255, 0.8);
 	border-left-style: solid;
 	border-left-width: 0;
 	right: -1rem;
@@ -72,6 +118,7 @@
 /* Menu on right */
 .ptr-simple-layers-control-menu.right {
 	left: calc(100% + 1.5rem);
+	bottom: 0;
 	border-bottom-left-radius: 0;
 }
 
@@ -80,7 +127,7 @@
 }
 
 .ptr-simple-layers-control-menu.right:after {
-	border-right-color: var(--base0);
+	border-right-color: rgba(255, 255, 255, 0.8);
 	border-right-style: solid;
 	border-right-width: 0;
 	left: -1rem;
@@ -95,29 +142,42 @@
 
 /* Layer tile */
 .ptr-simple-layers-control-tile {
-	background-image: linear-gradient(0deg, rgba(178, 178, 178, 1) 0%, rgba(233, 233, 233, 1) 100%);
+	background-image: none;
 	background-size: cover;
-	border: 2px solid var(--base50);
-	border-bottom: 0;
-	border-radius: 0.15rem;
+	border: 0;
+	border-radius: 0;
 	display: flex;
-	align-items: flex-end;
+	flex-direction: column;
+	align-items: flex-start;
 	cursor: pointer;
 }
 
 .ptr-simple-layers-control-tile.active {
-	border-color: var(--accent50);
+	border: 0;
 }
 
 .ptr-simple-layers-control-tile-name {
-	color: var(--base0);
-	background: var(--base50);
+	color: var(--base50);
+	background: inherit;
 	font-size: $b1;
 	width: 100%;
 	text-align: center;
-	padding: 0.15rem 0;
+	padding: 0.25rem 0 0 0;
 }
 
 .ptr-simple-layers-control-tile.active .ptr-simple-layers-control-tile-name {
-	background: var(--accent50);
+	background: inherit;
+	color: var(--accent50);
+	font-weight: bold;
+}
+
+.ptr-simple-layers-control-tile-preview {
+	border-radius: 0.15rem;
+	box-shadow: 0 0 0 2px var(--base50);
+	object-fit: cover;
+	align-self: stretch;
+}
+
+.ptr-simple-layers-control-tile.active .ptr-simple-layers-control-tile-preview {
+	box-shadow: 0 0 0 3px var(--accent50);
 }
