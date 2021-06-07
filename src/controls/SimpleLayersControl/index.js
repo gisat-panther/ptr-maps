@@ -122,7 +122,13 @@ const SimpleLayersControl = ({
 			layerTemplate?.data?.thumbnail &&
 			images.hasOwnProperty(layerTemplate.data.thumbnail)
 		) {
-			previewParam['src'] = images[layerTemplate.data.thumbnail];
+			const image = images[layerTemplate.data.thumbnail];
+			if(typeof image === 'object') {
+				previewParam['src'] = images[layerTemplate.data.thumbnail].default;
+				
+			} else {
+				previewParam['src'] = images[layerTemplate.data.thumbnail];
+			}
 			previewParam['alt'] = layerTemplate.data.thumbnail;
 		} else {
 			previewParam['src'] = images.noPreview;
