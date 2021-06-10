@@ -55,6 +55,7 @@
 		"react-leaflet": "2.7.0",
 		"react-loadable": "^5.5.0",
 		"react-resize-detector": "4.2.3",
+		"react-texty": "^0.6.0",
 		"replace-in-file": "^6.2.0",
 		"shallow-equal": "1.2.1",
 		"uri-templates": "0.2.0",
