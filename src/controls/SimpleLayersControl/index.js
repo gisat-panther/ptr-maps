@@ -2,8 +2,6 @@ import React, {useRef, useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import {Icon, Button} from '@gisatcz/ptr-atoms';
-import Text from 'react-texty';
-import 'react-texty/styles.css';
 
 import './style.scss';
 import images from './images';
@@ -152,14 +150,9 @@ const SimpleLayersControl = ({
 						margin: `0 ${margin}rem 0 ${margin}rem`,
 					}}
 				/>
-				<Text
-					placement="bottom"
-					className="ptr-simple-layers-control-tile-name"
-					tooltipClassName="tooltip"
-					tooltipMaxWidth="7rem"
-				>
+				<div className="ptr-simple-layers-control-tile-name">
 					{layerTemplate.data.nameDisplay}
-				</Text>
+				</div>
 			</div>
 		);
 	};
