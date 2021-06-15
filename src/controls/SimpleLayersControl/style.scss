@@ -163,6 +163,9 @@
 	width: 100%;
 	text-align: center;
 	padding: 0.25rem 0 0 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .ptr-simple-layers-control-tile.active .ptr-simple-layers-control-tile-name {

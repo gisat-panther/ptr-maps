@@ -150,9 +150,12 @@ const SimpleLayersControl = ({
 						margin: `0 ${margin}rem 0 ${margin}rem`,
 					}}
 				/>
-				<div className="ptr-simple-layers-control-tile-name">
+				<label
+					className="ptr-simple-layers-control-tile-name"
+					title={layerTemplate.data.nameDisplay}
+				>
 					{layerTemplate.data.nameDisplay}
-				</div>
+				</label>
 			</div>
 		);
 	};
