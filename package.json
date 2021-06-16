@@ -1,6 +1,6 @@
 {
 	"name": "@gisatcz/ptr-maps",
-	"version": "1.3.0-alpha.64",
+	"version": "1.3.0",
 	"description": "Panther FE maps",
 	"keywords": [
 		"panther",
@@ -38,6 +38,7 @@
 		"@turf/flip": "^6.3.0",
 		"@turf/helpers": "^6.3.0",
 		"@turf/nearest-point": "^6.3.0",
+		"auto": "^10.29.3",
 		"chroma-js": "2.1.0",
 		"classnames": "2.2.6",
 		"find-up": "^5.0.0",
