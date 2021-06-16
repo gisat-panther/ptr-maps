@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {utils} from '@gisatcz/ptr-utils';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
