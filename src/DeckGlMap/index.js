@@ -1,4 +1,5 @@
 import React from 'react';
+import chroma from 'chroma-js';
 import {isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
@@ -8,6 +9,7 @@ import {MapView} from '@deck.gl/core';
 import viewport from '../utils/viewport';
 import viewHelpers from '../ReactLeafletMap/viewHelpers';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
+import helpers from '../ReactLeafletMap/layers/SvgVectorLayer/helpers';
 
 class DeckGlMap extends React.PureComponent {
 	static propTypes = {};
@@ -37,6 +39,7 @@ class DeckGlMap extends React.PureComponent {
 			view: null,
 		};
 
+		this.getFeatureFill = this.getFeatureFill.bind(this);
 		this.onResize = this.onResize.bind(this);
 		this.onViewStateChange = this.onViewStateChange.bind(this);
 	}
@@ -151,6 +154,20 @@ class DeckGlMap extends React.PureComponent {
 		});
 	}
 
+	getFeatureFill(feature) {
+		const style = this.props.layers[0].options.style;
+		const defaultStyle = helpers.getDefaultStyleObject(feature, style);
+		if (defaultStyle) {
+			let color = chroma(defaultStyle.fill).rgb();
+			if (defaultStyle.fillOpacity || defaultStyle.fillOpacity === 0) {
+				color.push(Math.floor(defaultStyle.fillOpacity * 255));
+			}
+			return color;
+		} else {
+			return [255, 255, 255, 255];
+		}
+	}
+
 	getVectorLayer(layer) {
 		return new GeoJsonLayer({
 			id: 'geojson-layer',
@@ -160,12 +177,11 @@ class DeckGlMap extends React.PureComponent {
 			filled: true,
 			extruded: false,
 			pointType: 'circle',
-			lineWidthScale: 20,
-			lineWidthMinPixels: 2,
-			getFillColor: [160, 160, 180, 200],
+			getFillColor: this.getFeatureFill,
 			getLineColor: [100, 100, 100, 255],
-			getPointRadius: 100,
-			getLineWidth: 1,
+			getPointRadius: 60,
+			getLineWidth: 3,
+			pointRadiusMinPixels: 1,
 		});
 	}
 
