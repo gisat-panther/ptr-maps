@@ -7,8 +7,7 @@ import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
 import {TileLayer} from '@deck.gl/geo-layers';
 import {MapView} from '@deck.gl/core';
 import viewport from '../utils/viewport';
-import viewHelpers from '../ReactLeafletMap/viewHelpers';
-import {map as mapUtils} from '@gisatcz/ptr-utils';
+import utils from './utils';
 import helpers from '../ReactLeafletMap/layers/SvgVectorLayer/helpers';
 
 class DeckGlMap extends React.PureComponent {
@@ -51,12 +50,8 @@ class DeckGlMap extends React.PureComponent {
 		const nextView = views.viewState;
 
 		if (prevView && prevView.zoom !== nextView.zoom) {
-			let zoom =
-				prevView.zoom > nextView.zoom
-					? Math.floor(nextView.zoom)
-					: Math.ceil(nextView.zoom);
-			change.boxRange = mapUtils.view.getBoxRangeFromZoomLevel(
-				zoom,
+			change.boxRange = utils.getBoxRangeFromZoomLevel(
+				nextView.zoom,
 				this.state.width,
 				this.state.height
 			);
@@ -98,24 +93,6 @@ class DeckGlMap extends React.PureComponent {
 			width,
 			height,
 		});
-	}
-
-	getDeckView() {
-		const leafletView = viewHelpers.getLeafletViewportFromViewParams(
-			this.state.view,
-			this.state.width,
-			this.state.height
-		);
-
-		if (leafletView) {
-			return {
-				latitude: leafletView.center[0],
-				longitude: leafletView.center[1],
-				zoom: leafletView.zoom,
-			};
-		} else {
-			return null;
-		}
 	}
 
 	getLayerByType(layer) {
@@ -201,7 +178,11 @@ class DeckGlMap extends React.PureComponent {
 	}
 
 	renderMap() {
-		const view = this.getDeckView();
+		const view = utils.getDeckViewFromPantherViewParams(
+			this.state.view,
+			this.state.width,
+			this.state.height
+		);
 		const {backgroundLayer, layers} = this.props;
 
 		const finalBackgroundLayer = this.getLayerByType(backgroundLayer);
