@@ -1,6 +1,10 @@
 import React from 'react';
 import chroma from 'chroma-js';
-import {isEmpty as _isEmpty} from 'lodash';
+import {
+	forIn as _forIn,
+	isEmpty as _isEmpty,
+	includes as _includes,
+} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
 import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
@@ -39,6 +43,9 @@ class DeckGlMap extends React.PureComponent {
 		};
 
 		this.getFeatureFill = this.getFeatureFill.bind(this);
+		this.getFeatureOutlineColor = this.getFeatureOutlineColor.bind(this);
+		this.getFeatureOutlineWidth = this.getFeatureOutlineWidth.bind(this);
+		this.getPointSize = this.getPointSize.bind(this);
 		this.onResize = this.onResize.bind(this);
 		this.onViewStateChange = this.onViewStateChange.bind(this);
 	}
@@ -95,6 +102,15 @@ class DeckGlMap extends React.PureComponent {
 		});
 	}
 
+	onLayerClick(mapKey, data) {
+		if (this.props.onLayerClick) {
+			this.props.onLayerClick(this.props.mapKey, data.layer.props.layerKey, [
+				data.object.id ||
+					data.object.properties[data.layer.props.fidColumnName],
+			]);
+		}
+	}
+
 	getLayerByType(layer) {
 		if (layer && layer.type) {
 			switch (layer.type) {
@@ -131,9 +147,31 @@ class DeckGlMap extends React.PureComponent {
 		});
 	}
 
-	getFeatureFill(feature) {
-		const style = this.props.layers[0].options.style;
+	getDefaultStyle(feature) {
+		const {hovered, hoverable, selected, selectable, style, fidColumnName} =
+			this.props.layers[0].options;
+		const fid = feature.id || feature.properties[fidColumnName];
+
 		const defaultStyle = helpers.getDefaultStyleObject(feature, style);
+
+		let isSelected, selectedStyle;
+		if (selected && fid) {
+			_forIn(selected, (selection, key) => {
+				if (selection.keys && _includes(selection.keys, fid)) {
+					isSelected = true;
+					selectedStyle = {
+						...defaultStyle,
+						...helpers.getSelectedStyleObject(selection.style),
+					};
+				}
+			});
+		}
+
+		return selectedStyle || defaultStyle;
+	}
+
+	getFeatureFill(feature) {
+		const defaultStyle = this.getDefaultStyle(feature);
 		if (defaultStyle) {
 			let color = chroma(defaultStyle.fill).rgb();
 			if (defaultStyle.fillOpacity || defaultStyle.fillOpacity === 0) {
@@ -141,23 +179,55 @@ class DeckGlMap extends React.PureComponent {
 			}
 			return color;
 		} else {
-			return [255, 255, 255, 255];
+			return [255, 255, 255, 200];
 		}
+	}
+
+	getFeatureOutlineColor(feature) {
+		const defaultStyle = this.getDefaultStyle(feature);
+		if (defaultStyle) {
+			let color = chroma(defaultStyle.outlineColor).rgb();
+			if (defaultStyle.outlineOpacity || defaultStyle.outlineOpacity === 0) {
+				color.push(Math.floor(defaultStyle.outlineOpacity * 255));
+			}
+			return color;
+		} else {
+			return [100, 100, 100, 200];
+		}
+	}
+
+	getPointSize(feature) {
+		const defaultStyle = this.getDefaultStyle(feature);
+		return defaultStyle?.size || 10;
+	}
+
+	getFeatureOutlineWidth(feature) {
+		const defaultStyle = this.getDefaultStyle(feature);
+		return defaultStyle?.outlineWidth || 0;
 	}
 
 	getVectorLayer(layer) {
 		return new GeoJsonLayer({
 			id: 'geojson-layer',
+			layerKey: layer.key || layer.layerKey,
+			fidColumnName: layer.options.fidColumnName,
 			data: layer.options.features,
 			pickable: true,
-			stroked: false,
+			stroked: true,
 			filled: true,
 			extruded: false,
 			pointType: 'circle',
+			lineWidthUnits: 'pixels',
 			getFillColor: this.getFeatureFill,
-			getLineColor: [100, 100, 100, 255],
-			getPointRadius: 60,
-			getLineWidth: 3,
+			getLineColor: this.getFeatureOutlineColor,
+			getPointRadius: this.getPointSize,
+			onClick: this.onLayerClick.bind(this, this.props.mapKey),
+			getLineWidth: this.getFeatureOutlineWidth,
+			updateTriggers: {
+				getFillColor: [layer.options],
+				getLineColor: [layer.options],
+				getLineWidth: [layer.options],
+			},
 			pointRadiusMinPixels: 1,
 		});
 	}

@@ -1,6 +1,6 @@
 import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
-
+// TODO add tests
 function getBoxRangeFromZoomLevel(level, width, height) {
 	const lowerLevel = Math.floor(level);
 	const upperLevel = Math.ceil(level);
