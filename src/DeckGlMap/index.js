@@ -13,6 +13,7 @@ import {MapView} from '@deck.gl/core';
 import viewport from '../utils/viewport';
 import utils from './utils';
 import helpers from '../ReactLeafletMap/layers/SvgVectorLayer/helpers';
+import TiledLayer from './layers/TiledLayer';
 
 class DeckGlMap extends React.PureComponent {
 	static propTypes = {};
@@ -127,23 +128,8 @@ class DeckGlMap extends React.PureComponent {
 	}
 
 	getTileLayer(layer) {
-		return new TileLayer({
-			data: layer.options.url,
-			minZoom: 0,
-			maxZoom: 19,
-			tileSize: 256,
-
-			renderSubLayers: props => {
-				const {
-					bbox: {west, south, east, north},
-				} = props.tile;
-
-				return new BitmapLayer(props, {
-					data: null,
-					image: props.data,
-					bounds: [west, south, east, north],
-				});
-			},
+		return new TiledLayer({
+			options: layer.options,
 		});
 	}
 
