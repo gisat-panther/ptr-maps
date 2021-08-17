@@ -8,13 +8,31 @@ class TiledLayer extends CompositeLayer {
 		return [this.renderTiledLayer()];
 	}
 
+	getValidUrlTemplates(url) {
+		const invalidTemplateSegment = '{s}';
+		if (url.includes(invalidTemplateSegment)) {
+			let subDomainNames = ['a', 'b', 'c'];
+			let urls = [];
+			subDomainNames.forEach(subDomainName => {
+				const validUrl = url.replace(invalidTemplateSegment, subDomainName);
+				urls.push(validUrl);
+			});
+
+			return urls;
+		} else {
+			return url;
+		}
+	}
+
 	renderTiledLayer() {
 		const {options, key} = this.props;
-		const {url, minNativeZoom, maxNativeZoom, tileSize} = options;
+		const {url, urls, minNativeZoom, maxNativeZoom, tileSize} = options;
+
+		let finalUrls = urls || this.getValidUrlTemplates(url);
 
 		return new TileLayer({
 			id: `${key}-tileLayer`,
-			data: url,
+			data: finalUrls,
 			minZoom: minNativeZoom || mapConstants.defaultLevelsRange[0],
 			maxZoom: maxNativeZoom || mapConstants.defaultLevelsRange[1],
 			tileSize: tileSize || 256,
