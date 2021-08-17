@@ -1,5 +1,7 @@
+import chroma from 'chroma-js';
 import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
+
 // TODO add tests
 function getBoxRangeFromZoomLevel(level, width, height) {
 	const lowerLevel = Math.floor(level);
@@ -46,7 +48,17 @@ function getDeckViewFromPantherViewParams(view, width, height) {
 	};
 }
 
+function rgbaFromHexAndOpacity(hexColor, opacity) {
+	let color = chroma(hexColor).rgb();
+	if (opacity || opacity === 0) {
+		color.push(Math.floor(opacity * 255));
+	}
+
+	return color;
+}
+
 export default {
 	getBoxRangeFromZoomLevel,
 	getDeckViewFromPantherViewParams,
+	rgbaFromHexAndOpacity,
 };

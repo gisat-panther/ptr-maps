@@ -11,12 +11,12 @@ import nearestPoint from '@turf/nearest-point';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import {mapConstants} from '@gisatcz/ptr-core';
 
-import helpers from '../SvgVectorLayer/helpers';
 import {CanvasLayer} from './genericCanvasLayer';
 import shapes from './shapes/shapes';
 import polygons from './shapes/polygons';
 import lines from './shapes/lines';
 import * as L from 'leaflet';
+import {style as styleUtils} from '../../../utils/style';
 
 const LeafletCanvasLayer = CanvasLayer.extend({
 	onLayerDidMount: function () {
@@ -138,7 +138,10 @@ const LeafletCanvasLayer = CanvasLayer.extend({
 			const fid =
 				feature.id ||
 				(props.fidColumnName && feature.properties[props.fidColumnName]);
-			const defaultStyle = helpers.getDefaultStyleObject(feature, props.style);
+			const defaultStyle = styleUtils.getDefaultStyleObject(
+				feature,
+				props.style
+			);
 
 			let preparedFeature = {
 				original: feature,
@@ -152,7 +155,7 @@ const LeafletCanvasLayer = CanvasLayer.extend({
 						preparedFeature.selected = true;
 						preparedFeature.selectedStyle = {
 							...defaultStyle,
-							...helpers.getSelectedStyleObject(selection.style),
+							...styleUtils.getSelectedStyleObject(selection.style),
 						};
 					}
 				});

@@ -7,13 +7,11 @@ import {
 } from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
-import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers';
-import {TileLayer} from '@deck.gl/geo-layers';
 import {MapView} from '@deck.gl/core';
 import viewport from '../utils/viewport';
 import utils from './utils';
-import helpers from '../ReactLeafletMap/layers/SvgVectorLayer/helpers';
 import TiledLayer from './layers/TiledLayer';
+import VectorLayer from './layers/VectorLayer';
 
 class DeckGlMap extends React.PureComponent {
 	static propTypes = {};
@@ -43,16 +41,12 @@ class DeckGlMap extends React.PureComponent {
 			view: null,
 		};
 
-		this.getFeatureFill = this.getFeatureFill.bind(this);
-		this.getFeatureOutlineColor = this.getFeatureOutlineColor.bind(this);
-		this.getFeatureOutlineWidth = this.getFeatureOutlineWidth.bind(this);
-		this.getPointSize = this.getPointSize.bind(this);
+		this.onVectorLayerClick = this.onVectorLayerClick.bind(this);
 		this.onResize = this.onResize.bind(this);
 		this.onViewStateChange = this.onViewStateChange.bind(this);
 	}
 
 	onViewStateChange(views) {
-		// TODO zoom to cursor
 		let change = {};
 		const prevView = views.oldViewState;
 		const nextView = views.viewState;
@@ -89,6 +83,10 @@ class DeckGlMap extends React.PureComponent {
 		}
 	}
 
+	/**
+	 * @param width {number}
+	 * @param height {number}
+	 */
 	onResize(width, height) {
 		height = viewport.roundDimension(height);
 		width = viewport.roundDimension(width);
@@ -103,15 +101,21 @@ class DeckGlMap extends React.PureComponent {
 		});
 	}
 
-	onLayerClick(mapKey, data) {
+	/**
+	 * @param layerKey {string}
+	 * @param featureKeys {Array}
+	 */
+	onVectorLayerClick(layerKey, featureKeys) {
 		if (this.props.onLayerClick) {
-			this.props.onLayerClick(this.props.mapKey, data.layer.props.layerKey, [
-				data.object.id ||
-					data.object.properties[data.layer.props.fidColumnName],
-			]);
+			this.props.onLayerClick(this.props.mapKey, layerKey, featureKeys);
 		}
 	}
 
+	/**
+	 * Return layer by type
+	 * @param layer {Object} layer data
+	 * @returns {TiledLayer|VectorLayer|null}
+	 */
 	getLayerByType(layer) {
 		if (layer && layer.type) {
 			switch (layer.type) {
@@ -127,94 +131,29 @@ class DeckGlMap extends React.PureComponent {
 		}
 	}
 
+	/**
+	 * Return tiled (WMTS) layer
+	 * @param layer {Object} layer data
+	 * @returns {TiledLayer}
+	 */
 	getTileLayer(layer) {
 		return new TiledLayer({
 			options: layer.options,
 		});
 	}
 
-	getDefaultStyle(feature) {
-		const {hovered, hoverable, selected, selectable, style, fidColumnName} =
-			this.props.layers[0].options;
-		const fid = feature.id || feature.properties[fidColumnName];
-
-		const defaultStyle = helpers.getDefaultStyleObject(feature, style);
-
-		let isSelected, selectedStyle;
-		if (selected && fid) {
-			_forIn(selected, (selection, key) => {
-				if (selection.keys && _includes(selection.keys, fid)) {
-					isSelected = true;
-					selectedStyle = {
-						...defaultStyle,
-						...helpers.getSelectedStyleObject(selection.style),
-					};
-				}
-			});
-		}
-
-		return selectedStyle || defaultStyle;
-	}
-
-	getFeatureFill(feature) {
-		const defaultStyle = this.getDefaultStyle(feature);
-		if (defaultStyle) {
-			let color = chroma(defaultStyle.fill).rgb();
-			if (defaultStyle.fillOpacity || defaultStyle.fillOpacity === 0) {
-				color.push(Math.floor(defaultStyle.fillOpacity * 255));
-			}
-			return color;
-		} else {
-			return [255, 255, 255, 200];
-		}
-	}
-
-	getFeatureOutlineColor(feature) {
-		const defaultStyle = this.getDefaultStyle(feature);
-		if (defaultStyle) {
-			let color = chroma(defaultStyle.outlineColor).rgb();
-			if (defaultStyle.outlineOpacity || defaultStyle.outlineOpacity === 0) {
-				color.push(Math.floor(defaultStyle.outlineOpacity * 255));
-			}
-			return color;
-		} else {
-			return [100, 100, 100, 200];
-		}
-	}
-
-	getPointSize(feature) {
-		const defaultStyle = this.getDefaultStyle(feature);
-		return defaultStyle?.size || 10;
-	}
-
-	getFeatureOutlineWidth(feature) {
-		const defaultStyle = this.getDefaultStyle(feature);
-		return defaultStyle?.outlineWidth || 0;
-	}
-
+	/**
+	 * Return vector layer
+	 * TODO it supports only points currently
+	 * @param layer {Object} layer data
+	 * @returns {VectorLayer}
+	 */
 	getVectorLayer(layer) {
-		return new GeoJsonLayer({
-			id: 'geojson-layer',
+		return new VectorLayer({
+			key: layer.key || layer.layerKey,
 			layerKey: layer.key || layer.layerKey,
-			fidColumnName: layer.options.fidColumnName,
-			data: layer.options.features,
-			pickable: true,
-			stroked: true,
-			filled: true,
-			extruded: false,
-			pointType: 'circle',
-			lineWidthUnits: 'pixels',
-			getFillColor: this.getFeatureFill,
-			getLineColor: this.getFeatureOutlineColor,
-			getPointRadius: this.getPointSize,
-			onClick: this.onLayerClick.bind(this, this.props.mapKey),
-			getLineWidth: this.getFeatureOutlineWidth,
-			updateTriggers: {
-				getFillColor: [layer.options],
-				getLineColor: [layer.options],
-				getLineWidth: [layer.options],
-			},
-			pointRadiusMinPixels: 1,
+			options: layer.options,
+			onClick: this.onVectorLayerClick,
 		});
 	}
 

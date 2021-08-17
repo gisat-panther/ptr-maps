@@ -1,31 +1,10 @@
 import {mapStyle} from '@gisatcz/ptr-utils';
 import constants from '../../../constants';
+import {style as styleUtils} from '../../../utils/style';
 import memoize from 'memoize-one';
 import flip from '@turf/flip';
 import shapes from './Feature/shapes';
 import MarkerShape from './Feature/MarkerShape';
-
-/**
- * @param feature {GeoJSONFeature}
- * @param styleDefinition {Object} Panther style definition
- * @return {Object}
- */
-function getDefaultStyleObject(feature, styleDefinition) {
-	return mapStyle.getStyleObject(
-		feature.properties,
-		styleDefinition || constants.vectorFeatureStyle.defaultFull
-	);
-}
-
-/**
- * @param selectedStyleDefinition {Object} Panther style definition
- * @return {Object}
- */
-function getSelectedStyleObject(selectedStyleDefinition) {
-	return selectedStyleDefinition === 'default'
-		? constants.vectorFeatureStyle.selected
-		: selectedStyleDefinition;
-}
 
 /**
  * @param feature {GeoJSONFeature}
@@ -115,7 +94,10 @@ const convertCoordinatesMemo = memoize(feature => {
 });
 
 const getDefaultStyle = (feature, styleDefinition) => {
-	const defaultStyleObject = getDefaultStyleObject(feature, styleDefinition);
+	const defaultStyleObject = styleUtils.getDefaultStyleObject(
+		feature,
+		styleDefinition
+	);
 	return getFeatureDefaultStyle(feature, defaultStyleObject);
 };
 
@@ -128,7 +110,10 @@ const calculateStyle = (
 	selectedHoveredStyleDefinition
 ) => {
 	// Prepare default style
-	const defaultStyleObject = getDefaultStyleObject(feature, styleDefinition);
+	const defaultStyleObject = styleUtils.getDefaultStyleObject(
+		feature,
+		styleDefinition
+	);
 	const defaultStyle = getFeatureDefaultStyle(feature, defaultStyleObject);
 
 	// Prepare hovered style
@@ -155,7 +140,7 @@ const calculateStyle = (
 			selectedStyle = getFeatureAccentedStyle(
 				feature,
 				defaultStyleObject,
-				getSelectedStyleObject(selectedStyleDefinition)
+				styleUtils.getSelectedStyleObject(selectedStyleDefinition)
 			);
 		}
 		if (selectedHoveredStyleDefinition) {
@@ -379,12 +364,10 @@ export default {
 	convertCoordinatesMemo,
 
 	getDefaultStyle,
-	getDefaultStyleObject,
 	getFeatureAccentedStyle,
 	getFeatureDefaultStyle,
 	getFeatureLeafletStyle,
 	getMarkerShape,
 	getMarkerShapeCssStyle,
 	getMarkerShapeSvgStyle,
-	getSelectedStyleObject,
 };
