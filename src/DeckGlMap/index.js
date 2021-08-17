@@ -155,6 +155,7 @@ class DeckGlMap extends React.PureComponent {
 			layerKey: layer.layerKey || layer.key,
 			options: layer.options,
 			onClick: this.onVectorLayerClick,
+			view: this.props.view,
 		});
 	}
 
