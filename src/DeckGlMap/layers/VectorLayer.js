@@ -91,8 +91,9 @@ class VectorLayer extends CompositeLayer {
 		const {key, layerKey, options} = this.props;
 
 		return new GeoJsonLayer({
-			id: key,
-			layerKey: key || layerKey,
+			id: `${key}-geoJsonLayer`,
+			key,
+			layerKey,
 			fidColumnName: options?.fidColumnName,
 			data: options?.features,
 			pickable: options?.selectable,

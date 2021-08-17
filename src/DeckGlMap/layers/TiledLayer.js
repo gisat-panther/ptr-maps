@@ -9,10 +9,11 @@ class TiledLayer extends CompositeLayer {
 	}
 
 	renderTiledLayer() {
-		const {options} = this.props;
+		const {options, key} = this.props;
 		const {url, minNativeZoom, maxNativeZoom, tileSize} = options;
 
 		return new TileLayer({
+			id: `${key}-tileLayer`,
 			data: url,
 			minZoom: minNativeZoom || mapConstants.defaultLevelsRange[0],
 			maxZoom: maxNativeZoom || mapConstants.defaultLevelsRange[1],

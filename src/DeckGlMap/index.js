@@ -136,7 +136,10 @@ class DeckGlMap extends React.PureComponent {
 	 * @returns {TiledLayer}
 	 */
 	getTileLayer(layer) {
-		return new TiledLayer(layer);
+		return new TiledLayer({
+			...layer,
+			id: layer.key,
+		});
 	}
 
 	/**
@@ -147,8 +150,9 @@ class DeckGlMap extends React.PureComponent {
 	 */
 	getVectorLayer(layer) {
 		return new VectorLayer({
-			key: layer.key || layer.layerKey,
-			layerKey: layer.key || layer.layerKey,
+			id: layer.key,
+			key: layer.key,
+			layerKey: layer.layerKey || layer.key,
 			options: layer.options,
 			onClick: this.onVectorLayerClick,
 		});
