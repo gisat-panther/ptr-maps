@@ -16,7 +16,7 @@ import shapes from './shapes/shapes';
 import polygons from './shapes/polygons';
 import lines from './shapes/lines';
 import * as L from 'leaflet';
-import {style as styleUtils} from '../../../utils/style';
+import styleUtils from '../../../utils/style';
 
 const LeafletCanvasLayer = CanvasLayer.extend({
 	onLayerDidMount: function () {

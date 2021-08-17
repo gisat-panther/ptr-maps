@@ -1,7 +1,7 @@
 import {CompositeLayer} from '@deck.gl/core';
 import {GeoJsonLayer} from '@deck.gl/layers';
 import {forIn as _forIn, includes as _includes} from 'lodash';
-import {style as styleUtils} from '../../utils/style';
+import styleUtils from '../../utils/style';
 import utils from '../utils';
 
 class VectorLayer extends CompositeLayer {

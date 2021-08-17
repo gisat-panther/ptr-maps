@@ -1,10 +1,5 @@
 import React from 'react';
-import chroma from 'chroma-js';
-import {
-	forIn as _forIn,
-	isEmpty as _isEmpty,
-	includes as _includes,
-} from 'lodash';
+import {isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
 import {MapView} from '@deck.gl/core';

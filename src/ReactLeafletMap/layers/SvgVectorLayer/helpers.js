@@ -1,6 +1,6 @@
 import {mapStyle} from '@gisatcz/ptr-utils';
 import constants from '../../../constants';
-import {style as styleUtils} from '../../../utils/style';
+import styleUtils from '../../../utils/style';
 import memoize from 'memoize-one';
 import flip from '@turf/flip';
 import shapes from './Feature/shapes';
