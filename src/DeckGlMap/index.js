@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
@@ -9,7 +10,10 @@ import TiledLayer from './layers/TiledLayer';
 import VectorLayer from './layers/VectorLayer';
 
 class DeckGlMap extends React.PureComponent {
-	static propTypes = {};
+	static propTypes = {
+		view: PropTypes.object,
+		viewLimits: PropTypes.object,
+	};
 
 	static getDerivedStateFromProps(props, state) {
 		let changes = {};
@@ -132,9 +136,7 @@ class DeckGlMap extends React.PureComponent {
 	 * @returns {TiledLayer}
 	 */
 	getTileLayer(layer) {
-		return new TiledLayer({
-			options: layer.options,
-		});
+		return new TiledLayer(layer);
 	}
 
 	/**
@@ -168,10 +170,11 @@ class DeckGlMap extends React.PureComponent {
 	}
 
 	renderMap() {
-		const view = utils.getDeckViewFromPantherViewParams(
+		let view = utils.getDeckViewFromPantherViewParams(
 			this.state.view,
 			this.state.width,
-			this.state.height
+			this.state.height,
+			this.props.viewLimits
 		);
 		const {backgroundLayer, layers} = this.props;
 

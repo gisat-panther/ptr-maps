@@ -31,20 +31,40 @@ function getZoomLevelFromPixelSize(pxSize) {
 	const lowerLevelPxSize = levels[lowerLevel];
 	const upperLevelPxSize = levels[upperLevel];
 
-	const level =
-		upperLevel -
+	return upperLevel -
 		(pxSize - upperLevelPxSize) / (lowerLevelPxSize - upperLevelPxSize);
-
-	return level;
 }
 
-function getDeckViewFromPantherViewParams(view, width, height) {
+function getDeckViewFromPantherViewParams(view, width, height, viewLimits) {
 	const completeView = {...mapConstants.defaultMapView, ...view};
+
+	let minZoom = mapConstants.defaultLevelsRange[0];
+	let maxZoom = mapConstants.defaultLevelsRange[1];
+
+	if (viewLimits?.boxRangeRange) {
+		if (viewLimits.boxRangeRange[1]) {
+			minZoom = getZoomLevelFromBoxRange(
+				viewLimits.boxRangeRange[1],
+				width,
+				height
+			);
+		}
+
+		if (viewLimits.boxRangeRange[0]) {
+			maxZoom = getZoomLevelFromBoxRange(
+				viewLimits.boxRangeRange[0],
+				width,
+				height
+			);
+		}
+	}
 
 	return {
 		latitude: completeView.center.lat,
 		longitude: completeView.center.lon,
 		zoom: getZoomLevelFromBoxRange(completeView.boxRange, width, height),
+		minZoom,
+		maxZoom,
 	};
 }
 
