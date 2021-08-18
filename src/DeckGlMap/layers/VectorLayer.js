@@ -1,87 +1,86 @@
 import {CompositeLayer} from '@deck.gl/core';
 import {GeoJsonLayer} from '@deck.gl/layers';
 import {find as _find, forIn as _forIn, includes as _includes} from 'lodash';
-import styleUtils from '../../utils/style';
-import utils from '../utils';
-import view from '../../utils/view';
+import styleHelpers from '../helpers/style';
 
 class VectorLayer extends CompositeLayer {
 	renderLayers() {
 		return [this.renderVectorLayer()];
 	}
 
+	updateState({changeFlags}) {}
+
 	/**
+	 * @param style {Object} Preprocessed style
 	 * @param feature {GeoJSONFeature}
-	 * @returns {fill: string, fillOpacity: number, outlineColor: string, outlineWidth: number, outlineSize: number, size: number} Panther-like style object
+	 * @returns {fill: array, fillOpacity: number, outlineColor: array, outlineWidth: number, outlineSize: number, size: number} Style object
 	 */
-	getDefaultStyle(feature) {
-		const {hovered, hoverable, selected, selectable, fidColumnName} =
-			this.props.options;
-		const style = this.getOption(
-			this.props.options,
-			'style',
-			this.props.view?.boxRange
-		);
-
-		const fid = feature.id || feature.properties[fidColumnName];
-
-		const defaultStyle = styleUtils.getDefaultStyleObject(feature, style);
-
-		let isSelected, selectedStyle;
-		if (selected && fid) {
-			_forIn(selected, (selection, key) => {
-				if (selection.keys && _includes(selection.keys, fid)) {
-					isSelected = true;
-					selectedStyle = {
-						...defaultStyle,
-						...styleUtils.getSelectedStyleObject(selection.style),
-					};
-				}
-			});
+	getDefaultStyle(style, feature) {
+		if (style.attributesStyles) {
+			return styleHelpers.getStyleForFeature(style.attributesStyles, feature);
+		} else {
+			return style.baseStyle;
 		}
 
-		return selectedStyle || defaultStyle;
+		// let isSelected, selectedStyle;
+		// if (selected && fid) {
+		// 	_forIn(selected, (selection, key) => {
+		// 		if (selection.keys && _includes(selection.keys, fid)) {
+		// 			isSelected = true;
+		// 			selectedStyle = {
+		// 				...defaultStyle,
+		// 				fill: [255, 0, 0],
+		// 			};
+		// 		}
+		// 	});
+		// }
+		//
+		// return selectedStyle || defaultStyle;
 	}
 
 	/**
+	 * @param style {Object} Preprocessed style
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Array} Array representing RGBA channels
 	 */
-	getFeatureFill(feature) {
-		const defaultStyle = this.getDefaultStyle(feature);
-		return utils.rgbaFromHexAndOpacity(
+	getFeatureFill(style, feature) {
+		const defaultStyle = this.getDefaultStyle(style, feature);
+		return styleHelpers.getColorWithOpacity(
 			defaultStyle?.fill,
 			defaultStyle?.fillOpacity
 		);
 	}
 
 	/**
+	 * @param style {Object} Preprocessed style
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Array} Array representing RGBA channels
 	 */
-	getFeatureOutlineColor(feature) {
-		const defaultStyle = this.getDefaultStyle(feature);
-		return utils.rgbaFromHexAndOpacity(
+	getFeatureOutlineColor(style, feature) {
+		const defaultStyle = this.getDefaultStyle(style, feature);
+		return styleHelpers.getColorWithOpacity(
 			defaultStyle?.outlineColor,
 			defaultStyle?.outlineOpacity
 		);
 	}
 
 	/**
+	 * @param style {Object} Preprocessed style
 	 * @param feature {GeoJSONFeature}
 	 * @returns {number}
 	 */
-	getPointSize(feature) {
-		const defaultStyle = this.getDefaultStyle(feature);
+	getPointSize(style, feature) {
+		const defaultStyle = this.getDefaultStyle(style, feature);
 		return defaultStyle?.size / 2;
 	}
 
 	/**
+	 * @param style {Object} Preprocessed style
 	 * @param feature {GeoJSONFeature}
 	 * @returns {number}
 	 */
-	getFeatureOutlineWidth(feature) {
-		const defaultStyle = this.getDefaultStyle(feature);
+	getFeatureOutlineWidth(style, feature) {
+		const defaultStyle = this.getDefaultStyle(style, feature);
 		return defaultStyle?.outlineWidth;
 	}
 
@@ -94,29 +93,10 @@ class VectorLayer extends CompositeLayer {
 		}
 	}
 
-	getRenderAsRules(renderAs, boxRange) {
-		return _find(renderAs, renderAsItem => {
-			return view.isBoxRangeInRange(boxRange, renderAsItem.boxRangeRange);
-		});
-	}
-
-	getOption(options, option, boxRange) {
-		if (options?.renderAs && boxRange) {
-			const renderAsRules = this.getRenderAsRules(options.renderAs, boxRange);
-			if (renderAsRules.options?.hasOwnProperty(option)) {
-				return renderAsRules.options[option];
-			} else {
-				return options[option];
-			}
-		} else {
-			return options[option];
-		}
-	}
-
 	renderVectorLayer() {
-		const {key, layerKey, options, view} = this.props;
+		// TODO update state
+		const {key, layerKey, options, styleForDeck, pointAsMarker} = this.props;
 		const {fidColumnName, features, selectable} = options;
-		const style = this.getOption(options, 'style', view?.boxRange);
 
 		return new GeoJsonLayer({
 			id: `${key}-geoJsonLayer`,
@@ -130,19 +110,17 @@ class VectorLayer extends CompositeLayer {
 			extruded: false,
 			pointType: 'circle',
 			lineWidthUnits: 'pixels',
-			getFillColor: this.getFeatureFill.bind(this),
-			getLineColor: this.getFeatureOutlineColor.bind(this),
-			getPointRadius: this.getPointSize.bind(this),
-			pointRadiusUnits: this.getOption(options, 'pointAsMarker', view?.boxRange)
-				? 'pixels'
-				: 'meters',
+			getFillColor: this.getFeatureFill.bind(this, styleForDeck),
+			getLineColor: this.getFeatureOutlineColor.bind(this, styleForDeck),
+			getPointRadius: this.getPointSize.bind(this, styleForDeck),
+			pointRadiusUnits: pointAsMarker ? 'pixels' : 'meters',
 			onClick: this.onClick.bind(this),
-			getLineWidth: this.getFeatureOutlineWidth.bind(this),
+			getLineWidth: this.getFeatureOutlineWidth.bind(this, styleForDeck),
 			updateTriggers: {
-				getFillColor: [options, style],
-				getLineColor: [options, style],
-				getLineWidth: [options, style],
-				getPointRadius: [options, style],
+				getFillColor: [options, styleForDeck],
+				getLineColor: [options, styleForDeck],
+				getLineWidth: [options, styleForDeck],
+				getPointRadius: [options, styleForDeck],
 			},
 			pointRadiusMinPixels: 1,
 		});

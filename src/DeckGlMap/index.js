@@ -5,7 +5,8 @@ import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
 import {MapView} from '@deck.gl/core';
 import viewport from '../utils/viewport';
-import utils from './utils';
+import viewHelpers from './helpers/view';
+import styleHelpers from './helpers/style';
 import TiledLayer from './layers/TiledLayer';
 import VectorLayer from './layers/VectorLayer';
 
@@ -51,7 +52,7 @@ class DeckGlMap extends React.PureComponent {
 		const nextView = views.viewState;
 
 		if (prevView && prevView.zoom !== nextView.zoom) {
-			change.boxRange = utils.getBoxRangeFromZoomLevel(
+			change.boxRange = viewHelpers.getBoxRangeFromZoomLevel(
 				nextView.zoom,
 				this.state.width,
 				this.state.height
@@ -149,14 +150,29 @@ class DeckGlMap extends React.PureComponent {
 	 * @returns {VectorLayer}
 	 */
 	getVectorLayer(layer) {
-		return new VectorLayer({
+		const {key, layerKey, options, ...restProps} = layer;
+		const {features, ...restOptions} = options;
+
+		// TODO move somewhere else
+		const renderAsRules = styleHelpers.getRenderAsRules(
+			options.renderAs,
+			this.props.view?.boxRange
+		);
+
+		let props = {
+			...restProps,
+			options,
 			id: layer.key,
 			key: layer.key,
 			layerKey: layer.layerKey || layer.key,
-			options: layer.options,
 			onClick: this.onVectorLayerClick,
-			view: this.props.view,
-		});
+			styleForDeck: styleHelpers.getStyleForDeck(restOptions, renderAsRules),
+			pointAsMarker: renderAsRules?.options?.hasOwnProperty('pointAsMarker')
+				? renderAsRules.options.pointAsMarker
+				: options.pointAsMarker,
+		};
+
+		return new VectorLayer(props);
 	}
 
 	render() {
@@ -175,7 +191,7 @@ class DeckGlMap extends React.PureComponent {
 	}
 
 	renderMap() {
-		let view = utils.getDeckViewFromPantherViewParams(
+		let view = viewHelpers.getDeckViewFromPantherViewParams(
 			this.state.view,
 			this.state.width,
 			this.state.height,

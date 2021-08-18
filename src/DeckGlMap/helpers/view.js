@@ -31,8 +31,10 @@ function getZoomLevelFromPixelSize(pxSize) {
 	const lowerLevelPxSize = levels[lowerLevel];
 	const upperLevelPxSize = levels[upperLevel];
 
-	return upperLevel -
-		(pxSize - upperLevelPxSize) / (lowerLevelPxSize - upperLevelPxSize);
+	return (
+		upperLevel -
+		(pxSize - upperLevelPxSize) / (lowerLevelPxSize - upperLevelPxSize)
+	);
 }
 
 function getDeckViewFromPantherViewParams(view, width, height, viewLimits) {
@@ -68,17 +70,7 @@ function getDeckViewFromPantherViewParams(view, width, height, viewLimits) {
 	};
 }
 
-function rgbaFromHexAndOpacity(hexColor, opacity) {
-	let color = chroma(hexColor).rgb();
-	if (opacity || opacity === 0) {
-		color.push(Math.floor(opacity * 255));
-	}
-
-	return color;
-}
-
 export default {
 	getBoxRangeFromZoomLevel,
 	getDeckViewFromPantherViewParams,
-	rgbaFromHexAndOpacity,
 };
