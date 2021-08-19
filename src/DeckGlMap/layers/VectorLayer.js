@@ -8,7 +8,23 @@ class VectorLayer extends CompositeLayer {
 		return [this.renderVectorLayer()];
 	}
 
-	updateState({changeFlags}) {}
+	updateState({changeFlags}) {
+		if (changeFlags.propsOrDataChanged) {
+			const {options, styleForDeck} = this.props;
+			const {fidColumnName, features} = options;
+			if (styleForDeck && features) {
+				let styleByFeatureKey = {};
+				features.forEach(feature => {
+					const featureKey = feature.id || feature.properties[fidColumnName];
+					styleByFeatureKey[featureKey] = this.getDefaultStyle(
+						styleForDeck,
+						feature
+					);
+				});
+				this.setState({styleByFeatureKey});
+			}
+		}
+	}
 
 	/**
 	 * @param style {Object} Preprocessed style
@@ -43,8 +59,10 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Array} Array representing RGBA channels
 	 */
-	getFeatureFill(style, feature) {
-		const defaultStyle = this.getDefaultStyle(style, feature);
+	getFeatureFill(style, fidColumnName, feature) {
+		// const defaultStyle = this.getDefaultStyle(style, feature);
+		const featureKey = feature.id || feature.properties[fidColumnName];
+		const defaultStyle = this.state.styleByFeatureKey[featureKey];
 		return styleHelpers.getColorWithOpacity(
 			defaultStyle?.fill,
 			defaultStyle?.fillOpacity
@@ -56,8 +74,10 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Array} Array representing RGBA channels
 	 */
-	getFeatureOutlineColor(style, feature) {
-		const defaultStyle = this.getDefaultStyle(style, feature);
+	getFeatureOutlineColor(style, fidColumnName, feature) {
+		// const defaultStyle = this.getDefaultStyle(style, feature);
+		const featureKey = feature.id || feature.properties[fidColumnName];
+		const defaultStyle = this.state.styleByFeatureKey[featureKey];
 		return styleHelpers.getColorWithOpacity(
 			defaultStyle?.outlineColor,
 			defaultStyle?.outlineOpacity
@@ -69,8 +89,10 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {number}
 	 */
-	getPointSize(style, feature) {
-		const defaultStyle = this.getDefaultStyle(style, feature);
+	getPointSize(style, fidColumnName, feature) {
+		// const defaultStyle = this.getDefaultStyle(style, feature);
+		const featureKey = feature.id || feature.properties[fidColumnName];
+		const defaultStyle = this.state.styleByFeatureKey[featureKey];
 		return defaultStyle?.size / 2;
 	}
 
@@ -79,8 +101,10 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {number}
 	 */
-	getFeatureOutlineWidth(style, feature) {
-		const defaultStyle = this.getDefaultStyle(style, feature);
+	getFeatureOutlineWidth(style, fidColumnName, feature) {
+		// const defaultStyle = this.getDefaultStyle(style, feature);
+		const featureKey = feature.id || feature.properties[fidColumnName];
+		const defaultStyle = this.state.styleByFeatureKey[featureKey];
 		return defaultStyle?.outlineWidth;
 	}
 
@@ -110,12 +134,20 @@ class VectorLayer extends CompositeLayer {
 			extruded: false,
 			pointType: 'circle',
 			lineWidthUnits: 'pixels',
-			getFillColor: this.getFeatureFill.bind(this, styleForDeck),
-			getLineColor: this.getFeatureOutlineColor.bind(this, styleForDeck),
-			getPointRadius: this.getPointSize.bind(this, styleForDeck),
+			getFillColor: this.getFeatureFill.bind(this, styleForDeck, fidColumnName),
+			getLineColor: this.getFeatureOutlineColor.bind(
+				this,
+				styleForDeck,
+				fidColumnName
+			),
+			getPointRadius: this.getPointSize.bind(this, styleForDeck, fidColumnName),
 			pointRadiusUnits: pointAsMarker ? 'pixels' : 'meters',
 			onClick: this.onClick.bind(this),
-			getLineWidth: this.getFeatureOutlineWidth.bind(this, styleForDeck),
+			getLineWidth: this.getFeatureOutlineWidth.bind(
+				this,
+				styleForDeck,
+				fidColumnName
+			),
 			updateTriggers: {
 				getFillColor: [options, styleForDeck],
 				getLineColor: [options, styleForDeck],
