@@ -241,7 +241,6 @@ describe('utils/DeckGlMap/helpers/style', function () {
 
 		it('should return base style', function () {
 			const attributes = {
-				letter: 'c',
 				number: 3,
 			};
 
