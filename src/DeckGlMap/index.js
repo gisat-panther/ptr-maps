@@ -151,13 +151,19 @@ class DeckGlMap extends React.PureComponent {
 	 */
 	getVectorLayer(layer) {
 		const {key, layerKey, options, ...restProps} = layer;
-		const {features, ...restOptions} = options;
+		let {features, style, pointAsMarker, ...restOptions} = options;
 
-		// TODO move somewhere else
-		const renderAsRules = styleHelpers.getRenderAsRules(
+		const renderAsRules = styleHelpers.getRenderAsRulesByBoxRange(
 			options.renderAs,
 			this.props.view?.boxRange
 		);
+
+		// Check options for renderAsRules
+		// TODO add other options
+		style = renderAsRules?.options?.style || style;
+		pointAsMarker = renderAsRules?.options?.hasOwnProperty('pointAsMarker')
+			? renderAsRules.options.pointAsMarker
+			: options.pointAsMarker;
 
 		let props = {
 			...restProps,
@@ -166,10 +172,8 @@ class DeckGlMap extends React.PureComponent {
 			key: layer.key,
 			layerKey: layer.layerKey || layer.key,
 			onClick: this.onVectorLayerClick,
-			styleForDeck: styleHelpers.getStyleForDeck(restOptions, renderAsRules),
-			pointAsMarker: renderAsRules?.options?.hasOwnProperty('pointAsMarker')
-				? renderAsRules.options.pointAsMarker
-				: options.pointAsMarker,
+			styleForDeck: styleHelpers.getStylesDefinitionForDeck(style),
+			pointAsMarker,
 		};
 
 		return new VectorLayer(props);

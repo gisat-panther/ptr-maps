@@ -1,6 +1,6 @@
 import {CompositeLayer} from '@deck.gl/core';
 import {GeoJsonLayer} from '@deck.gl/layers';
-import {find as _find, forIn as _forIn, includes as _includes} from 'lodash';
+import {forIn as _forIn, includes as _includes} from 'lodash';
 import styleHelpers from '../helpers/style';
 
 class VectorLayer extends CompositeLayer {
@@ -10,13 +10,14 @@ class VectorLayer extends CompositeLayer {
 
 	updateState({changeFlags}) {
 		if (changeFlags.propsOrDataChanged) {
+			// prepare style for each feature in advance
 			const {options, styleForDeck} = this.props;
 			const {fidColumnName, features, selected} = options;
 			if (styleForDeck && features) {
 				let styleByFeatureKey = {};
 				features.forEach(feature => {
-					const featureKey = feature.id || feature.properties[fidColumnName];
-					styleByFeatureKey[featureKey] = this.getDefaultStyle(
+					const featureKey = this.getFeatureKey(fidColumnName, feature);
+					styleByFeatureKey[featureKey] = this.calculateDefaultStyle(
 						styleForDeck,
 						featureKey,
 						feature,
@@ -29,11 +30,14 @@ class VectorLayer extends CompositeLayer {
 	}
 
 	/**
-	 * @param style {Object} Preprocessed style
+	 * Return feature style
+	 * @param style {Object} Preprocessed style definition for Deck
+	 * @param featureKey {string}
 	 * @param feature {GeoJSONFeature}
+	 * @param selected {Object} Selected featureKeys and styles by selection
 	 * @returns {fill: array, fillOpacity: number, outlineColor: array, outlineWidth: number, outlineSize: number, size: number} Style object
 	 */
-	getDefaultStyle(style, featureKey, feature, selected) {
+	calculateDefaultStyle(style, featureKey, feature, selected) {
 		const defaultStyle = styleHelpers.getStyleForFeature(style, feature);
 
 		let selectedStyle;
@@ -42,7 +46,7 @@ class VectorLayer extends CompositeLayer {
 				if (selection.keys && _includes(selection.keys, featureKey)) {
 					selectedStyle = {
 						...defaultStyle,
-						...styleHelpers.getDeckReadyStyleObject(selection.style), // todo apply opacity
+						...styleHelpers.getDeckReadyStyleObject(selection.style),
 					};
 				}
 			});
@@ -52,15 +56,35 @@ class VectorLayer extends CompositeLayer {
 	}
 
 	/**
+	 * Get feature key
+	 * @param fidColumnName {string}
+	 * @param feature {GeoJSONFeature}
+	 * @returns {string}
+	 */
+	getFeatureKey(fidColumnName, feature) {
+		return feature.id || feature.properties[fidColumnName];
+	}
+
+	/**
+	 * Get default style from state
+	 * @param fidColumnName {string}
+	 * @param feature {GeoJSONFeature}
+	 * @returns {Object} DeckGl-ready style object
+	 */
+	getDefaultFeatureStyle(fidColumnName, feature) {
+		const featureKey = this.getFeatureKey(fidColumnName, feature);
+		return this.state.styleByFeatureKey[featureKey] || null;
+	}
+
+	/**
 	 * @param style {Object} Preprocessed style
+	 * @param fidColumnName {string}
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Array} Array representing RGBA channels
 	 */
 	getFeatureFill(style, fidColumnName, feature) {
-		// const defaultStyle = this.getDefaultStyle(style, feature);
-		const featureKey = feature.id || feature.properties[fidColumnName];
-		const defaultStyle = this.state.styleByFeatureKey[featureKey];
-		return styleHelpers.getColorWithOpacity(
+		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
+		return styleHelpers.getRgbaColorArray(
 			defaultStyle?.fill,
 			defaultStyle?.fillOpacity
 		);
@@ -68,14 +92,13 @@ class VectorLayer extends CompositeLayer {
 
 	/**
 	 * @param style {Object} Preprocessed style
+	 * @param fidColumnName {string}
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Array} Array representing RGBA channels
 	 */
 	getFeatureOutlineColor(style, fidColumnName, feature) {
-		// const defaultStyle = this.getDefaultStyle(style, feature);
-		const featureKey = feature.id || feature.properties[fidColumnName];
-		const defaultStyle = this.state.styleByFeatureKey[featureKey];
-		return styleHelpers.getColorWithOpacity(
+		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
+		return styleHelpers.getRgbaColorArray(
 			defaultStyle?.outlineColor,
 			defaultStyle?.outlineOpacity
 		);
@@ -83,39 +106,42 @@ class VectorLayer extends CompositeLayer {
 
 	/**
 	 * @param style {Object} Preprocessed style
+	 * @param fidColumnName {string}
 	 * @param feature {GeoJSONFeature}
 	 * @returns {number}
 	 */
-	getPointSize(style, fidColumnName, feature) {
-		// const defaultStyle = this.getDefaultStyle(style, feature);
-		const featureKey = feature.id || feature.properties[fidColumnName];
-		const defaultStyle = this.state.styleByFeatureKey[featureKey];
-		return defaultStyle?.size / 2;
+	getPointRadius(style, fidColumnName, feature) {
+		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
+		return defaultStyle?.size && defaultStyle.size / 2;
 	}
 
 	/**
 	 * @param style {Object} Preprocessed style
+	 * @param fidColumnName {string}
 	 * @param feature {GeoJSONFeature}
 	 * @returns {number}
 	 */
 	getFeatureOutlineWidth(style, fidColumnName, feature) {
-		// const defaultStyle = this.getDefaultStyle(style, feature);
-		const featureKey = feature.id || feature.properties[fidColumnName];
-		const defaultStyle = this.state.styleByFeatureKey[featureKey];
+		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
 		return defaultStyle?.outlineWidth;
 	}
 
+	/**
+	 * Call on feature click
+	 * @param data {Object}
+	 */
 	onClick(data) {
 		if (this.props.options.selectable && this.props.onClick) {
 			this.props.onClick(this.props.layerKey, [
-				data.object.id ||
-					data.object.properties[this.props.options.fidColumnName],
+				this.getFeatureKey(this.props.options.fidColumnName, data.object),
 			]);
 		}
 	}
 
+	/**
+	 * @returns {GeoJsonLayer} DeckGl.GeoJsonLayer
+	 */
 	renderVectorLayer() {
-		// TODO update state
 		const {key, layerKey, options, styleForDeck, pointAsMarker} = this.props;
 		const {fidColumnName, features, selectable} = options;
 
@@ -137,7 +163,11 @@ class VectorLayer extends CompositeLayer {
 				styleForDeck,
 				fidColumnName
 			),
-			getPointRadius: this.getPointSize.bind(this, styleForDeck, fidColumnName),
+			getPointRadius: this.getPointRadius.bind(
+				this,
+				styleForDeck,
+				fidColumnName
+			),
 			pointRadiusUnits: pointAsMarker ? 'pixels' : 'meters',
 			onClick: this.onClick.bind(this),
 			getLineWidth: this.getFeatureOutlineWidth.bind(

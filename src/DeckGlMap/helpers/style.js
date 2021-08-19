@@ -8,26 +8,42 @@ import memoize from 'memoize-one';
 import chroma from 'chroma-js';
 import view from '../../utils/view';
 
-// TODO memoize more than last style calculation
-const calculateStyleForDeckMemo = memoize(calculateStyleForDeck);
-
+/**
+ * Get style object ready for usage in DeckGl-based layers, where colors are represented by RGB array
+ * @param styleObject {Object} Panther style object
+ * @returns {Object} DeckGl-ready style object
+ */
 function getDeckReadyStyleObject(styleObject) {
 	const {fill, outlineColor, ...restProps} = styleObject;
 
 	let deckReadyStyleObject = {...restProps};
 
 	if (fill) {
-		deckReadyStyleObject.fill = chroma(fill).rgb();
+		deckReadyStyleObject.fill = getDeckReadyColor(fill);
 	}
 
 	if (outlineColor) {
-		deckReadyStyleObject.outlineColor = chroma(outlineColor).rgb();
+		deckReadyStyleObject.outlineColor = getDeckReadyColor(outlineColor);
 	}
 
 	return deckReadyStyleObject;
 }
 
-function calculateStyleForDeck(style) {
+/**
+ * Get array representing RGB values
+ * @param hexColor {string} color hex code
+ * @returns {Array} RGB array
+ */
+function getDeckReadyColor(hexColor) {
+	return chroma(hexColor).rgb();
+}
+
+/**
+ * Style definition prepared for the usage in DeckGl-based vector layers to optimize rendering performance
+ * @param style {Object} Panther Style.definition
+ * @returns {baseStyle: Object, attributeStyles: Array}
+ */
+function getStylesDefinitionForDeck(style) {
 	// TODO multiple rules and filters?
 	const styles = style.rules[0].styles;
 	if (styles) {
@@ -73,22 +89,29 @@ function calculateStyleForDeck(style) {
 	}
 }
 
-function getRenderAsRules(renderAs, boxRange) {
-	return _find(renderAs, renderAsItem => {
-		return view.isBoxRangeInRange(boxRange, renderAsItem.boxRangeRange);
-	});
-}
-
-function getStyleForDeck(options, renderAsRules) {
-	const style = renderAsRules?.options?.style || options.style;
-	if (style) {
-		return calculateStyleForDeckMemo(style);
+/**
+ * Return renderAs rules according to given box range
+ * @param renderAs {Array} List of renderAs rule sets
+ * @param boxRange {number} Panther's mapView.boxRange
+ * @returns {Object} renderAs rules
+ */
+function getRenderAsRulesByBoxRange(renderAs, boxRange) {
+	if (renderAs && boxRange) {
+		return _find(renderAs, renderAsItem => {
+			return view.isBoxRangeInRange(boxRange, renderAsItem.boxRangeRange);
+		});
 	} else {
 		return null;
 	}
 }
 
-function getColorWithOpacity(rgbColorArray, opacity) {
+/**
+ * Return array of RGBA values, where A is from 0 to 255
+ * @param rgbColorArray {Array} Array of RGB values
+ * @param opacity {number} From 0 to 1
+ * @returns {Array}
+ */
+function getRgbaColorArray(rgbColorArray, opacity) {
 	if (opacity || opacity === 0) {
 		[...rgbColorArray].push(Math.floor(opacity * 255));
 	}
@@ -96,6 +119,12 @@ function getColorWithOpacity(rgbColorArray, opacity) {
 	return rgbColorArray;
 }
 
+/**
+ * Get style for given feature
+ * @param style {Object} Style definition suitable for Deck
+ * @param feature {GeoJSONFeature}
+ * @returns {Object} style object
+ */
 function getStyleForFeature(style, feature) {
 	if (style.attributesStyles) {
 		if (style.attributesStyles.length === 1) {
@@ -105,14 +134,13 @@ function getStyleForFeature(style, feature) {
 				feature.properties
 			);
 		} else {
-			// TODO
+			// TODO merge styles if there are styles for more attributes
 		}
 	} else {
 		return style.baseStyle;
 	}
 }
 
-// TODO export below from ptr-utils
 /**
  * @param attributeStyleDefinition {Object} Style definition for given attribute key
  * @param baseStyleDefinition {Object}
@@ -150,11 +178,13 @@ function getStyleObjectForAttribute(
 	}
 }
 
+// TODO export below methods from ptr-utils
 /**
  * Attribute classes
  *
  * @param attributeClasses {Array}
  * @param value {number|String} attribute value
+ * @return {Object} style object
  */
 function getStyleObjectForAttributeClasses(attributeClasses, value) {
 	let styleObject = {};
@@ -200,9 +230,9 @@ function isGreaterThan(comparedValue, referenceValue, allowEquality) {
 }
 
 export default {
-	getColorWithOpacity,
+	getRgbaColorArray,
 	getDeckReadyStyleObject,
-	getStyleForDeck,
+	getStylesDefinitionForDeck: memoize(getStylesDefinitionForDeck),
 	getStyleForFeature,
-	getRenderAsRules,
+	getRenderAsRulesByBoxRange,
 };
