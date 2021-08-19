@@ -11,14 +11,16 @@ class VectorLayer extends CompositeLayer {
 	updateState({changeFlags}) {
 		if (changeFlags.propsOrDataChanged) {
 			const {options, styleForDeck} = this.props;
-			const {fidColumnName, features} = options;
+			const {fidColumnName, features, selected} = options;
 			if (styleForDeck && features) {
 				let styleByFeatureKey = {};
 				features.forEach(feature => {
 					const featureKey = feature.id || feature.properties[fidColumnName];
 					styleByFeatureKey[featureKey] = this.getDefaultStyle(
 						styleForDeck,
-						feature
+						featureKey,
+						feature,
+						selected
 					);
 				});
 				this.setState({styleByFeatureKey});
@@ -31,23 +33,22 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {fill: array, fillOpacity: number, outlineColor: array, outlineWidth: number, outlineSize: number, size: number} Style object
 	 */
-	getDefaultStyle(style, feature) {
-		return styleHelpers.getStyleForFeature(style, feature);
+	getDefaultStyle(style, featureKey, feature, selected) {
+		const defaultStyle = styleHelpers.getStyleForFeature(style, feature);
 
-		// let isSelected, selectedStyle;
-		// if (selected && fid) {
-		// 	_forIn(selected, (selection, key) => {
-		// 		if (selection.keys && _includes(selection.keys, fid)) {
-		// 			isSelected = true;
-		// 			selectedStyle = {
-		// 				...defaultStyle,
-		// 				fill: [255, 0, 0],
-		// 			};
-		// 		}
-		// 	});
-		// }
-		//
-		// return selectedStyle || defaultStyle;
+		let selectedStyle;
+		if (selected && featureKey) {
+			_forIn(selected, (selection, key) => {
+				if (selection.keys && _includes(selection.keys, featureKey)) {
+					selectedStyle = {
+						...defaultStyle,
+						...styleHelpers.getDeckReadyStyleObject(selection.style), // todo apply opacity
+					};
+				}
+			});
+		}
+
+		return selectedStyle || defaultStyle;
 	}
 
 	/**

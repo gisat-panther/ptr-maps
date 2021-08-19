@@ -201,6 +201,7 @@ function isGreaterThan(comparedValue, referenceValue, allowEquality) {
 
 export default {
 	getColorWithOpacity,
+	getDeckReadyStyleObject,
 	getStyleForDeck,
 	getStyleForFeature,
 	getRenderAsRules,
