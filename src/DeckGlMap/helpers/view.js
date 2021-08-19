@@ -48,11 +48,15 @@ function getZoomLevelFromPixelSize(pxSize) {
 	const upperLevel = lowerLevel + 1;
 	const lowerLevelPxSize = levels[lowerLevel];
 	const upperLevelPxSize = levels[upperLevel];
+	if (upperLevel >= levels.length) {
+		return lowerLevel;
+	} else {
+		const level =
+			upperLevel -
+			(pxSize - upperLevelPxSize) / (lowerLevelPxSize - upperLevelPxSize);
 
-	return (
-		upperLevel -
-		(pxSize - upperLevelPxSize) / (lowerLevelPxSize - upperLevelPxSize)
-	);
+		return level >= 0 ? level : 0;
+	}
 }
 
 /**
@@ -71,19 +75,27 @@ function getDeckViewFromPantherViewParams(view, width, height, viewLimits) {
 
 	if (viewLimits?.boxRangeRange) {
 		if (viewLimits.boxRangeRange[1]) {
-			minZoom = getZoomLevelFromBoxRange(
+			const calculatedMinZoom = getZoomLevelFromBoxRange(
 				viewLimits.boxRangeRange[1],
 				width,
 				height
 			);
+
+			if (calculatedMinZoom > minZoom) {
+				minZoom = calculatedMinZoom;
+			}
 		}
 
 		if (viewLimits.boxRangeRange[0]) {
-			maxZoom = getZoomLevelFromBoxRange(
+			const calculatedMaxZoom = getZoomLevelFromBoxRange(
 				viewLimits.boxRangeRange[0],
 				width,
 				height
 			);
+
+			if (calculatedMaxZoom < maxZoom) {
+				maxZoom = calculatedMaxZoom;
+			}
 		}
 	}
 
@@ -98,5 +110,7 @@ function getDeckViewFromPantherViewParams(view, width, height, viewLimits) {
 
 export default {
 	getBoxRangeFromZoomLevel,
+	getZoomLevelFromBoxRange,
+	getZoomLevelFromPixelSize,
 	getDeckViewFromPantherViewParams,
 };
