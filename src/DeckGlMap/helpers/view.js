@@ -1,8 +1,14 @@
-import chroma from 'chroma-js';
 import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 
 // TODO add tests
+/**
+ * Return boxRange from zoom level and dimensions
+ * @param level {number} Zoom level as decimal number
+ * @param width {number} width of viewport in px
+ * @param height {number} height of viewport in px
+ * @returns {number} Panther's mapView.boxRange in meters
+ */
 function getBoxRangeFromZoomLevel(level, width, height) {
 	const lowerLevel = Math.floor(level);
 	const upperLevel = Math.ceil(level);
@@ -14,12 +20,24 @@ function getBoxRangeFromZoomLevel(level, width, height) {
 	return mapUtils.view.getMapViewportRange(width, height) * pxSize;
 }
 
+/**
+ * Return zoom level from boxRange and dimensions
+ * @param boxRange {number} Panther's mapView.boxRange in meters
+ * @param width {number} width of viewport in px
+ * @param height {number} height of viewport in px
+ * @returns {number} Zoom level as decimal number
+ */
 function getZoomLevelFromBoxRange(boxRange, width, height) {
 	return getZoomLevelFromPixelSize(
 		(boxRange - 1) / mapUtils.view.getMapViewportRange(width, height)
 	);
 }
 
+/**
+ * Return zoom level (decimal number)
+ * @param pxSize {number} Size of 1px in meters
+ * @returns {number} Zoom level
+ */
 function getZoomLevelFromPixelSize(pxSize) {
 	const levels = mapConstants.pixelSizeInLevels;
 	let lowerLevel = 0;
@@ -37,6 +55,14 @@ function getZoomLevelFromPixelSize(pxSize) {
 	);
 }
 
+/**
+ * Return DeckGl map view state representation
+ * @param view {Object} Panther's map view representation
+ * @param width {number} width of viewport in px
+ * @param height {number} height of viewport in px
+ * @param viewLimits {Object} Panther's map view limits representation
+ * @returns {{maxZoom: number, latitude: number, minZoom: number, zoom: number, longitude: number}}
+ */
 function getDeckViewFromPantherViewParams(view, width, height, viewLimits) {
 	const completeView = {...mapConstants.defaultMapView, ...view};
 
