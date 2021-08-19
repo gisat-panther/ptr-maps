@@ -96,40 +96,57 @@ function getColorWithOpacity(rgbColorArray, opacity) {
 	return rgbColorArray;
 }
 
-function getStyleForFeature(styles, feature) {
-	if (styles.length === 1) {
-		return getStyleObjectForAttribute(styles[0], feature.properties);
+function getStyleForFeature(style, feature) {
+	if (style.attributesStyles) {
+		if (style.attributesStyles.length === 1) {
+			return getStyleObjectForAttribute(
+				style.attributesStyles[0],
+				style.baseStyle,
+				feature.properties
+			);
+		} else {
+			// TODO
+		}
 	} else {
-		// TODO
+		return style.baseStyle;
 	}
 }
 
 // TODO export below from ptr-utils
 /**
- * @param styleDefinition {Object} Style definition for given attribute key
+ * @param attributeStyleDefinition {Object} Style definition for given attribute key
+ * @param baseStyleDefinition {Object}
  * @param attributes {Object} Feature attributes
  * @return {Object} Style object for given attribute key
  */
-function getStyleObjectForAttribute(styleDefinition, attributes) {
-	if (attributes.hasOwnProperty(styleDefinition.attributeKey)) {
-		let value = attributes[styleDefinition.attributeKey];
-		if (styleDefinition.attributeClasses) {
-			return getStyleObjectForAttributeClasses(
-				styleDefinition.attributeClasses,
-				value
-			);
-		} else if (styleDefinition.attributeValues) {
-			return getStyleObjectForAttributeValues(
-				styleDefinition.attributeValues,
-				value
-			);
-		}
-		// TODO add other cases
-		else {
-			return {};
+function getStyleObjectForAttribute(
+	attributeStyleDefinition,
+	baseStyleDefinition,
+	attributes
+) {
+	if (attributes.hasOwnProperty(attributeStyleDefinition.attributeKey)) {
+		let value = attributes[attributeStyleDefinition.attributeKey];
+		if (value === null || value === undefined) {
+			return baseStyleDefinition;
+		} else {
+			if (attributeStyleDefinition.attributeClasses) {
+				return getStyleObjectForAttributeClasses(
+					attributeStyleDefinition.attributeClasses,
+					value
+				);
+			} else if (attributeStyleDefinition.attributeValues) {
+				return getStyleObjectForAttributeValues(
+					attributeStyleDefinition.attributeValues,
+					value
+				);
+			}
+			// TODO add other cases
+			else {
+				return baseStyleDefinition;
+			}
 		}
 	} else {
-		return {};
+		return baseStyleDefinition;
 	}
 }
 

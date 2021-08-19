@@ -32,11 +32,7 @@ class VectorLayer extends CompositeLayer {
 	 * @returns {fill: array, fillOpacity: number, outlineColor: array, outlineWidth: number, outlineSize: number, size: number} Style object
 	 */
 	getDefaultStyle(style, feature) {
-		if (style.attributesStyles) {
-			return styleHelpers.getStyleForFeature(style.attributesStyles, feature);
-		} else {
-			return style.baseStyle;
-		}
+		return styleHelpers.getStyleForFeature(style, feature);
 
 		// let isSelected, selectedStyle;
 		// if (selected && fid) {
