@@ -52,7 +52,7 @@ function getStylesDefinitionForDeck(style) {
 			baseStyle,
 		};
 
-		let attributesStyles = [];
+		let attributeStyles = [];
 		for (let i = 1; i < styles.length; i++) {
 			const style = styles[i];
 			const attributeKey = style.attributeKey;
@@ -63,7 +63,7 @@ function getStylesDefinitionForDeck(style) {
 					values[value] = {...baseStyle, ...getDeckReadyStyleObject(style)};
 				});
 
-				attributesStyles.push({
+				attributeStyles.push({
 					attributeKey,
 					attributeValues: values,
 				});
@@ -72,15 +72,15 @@ function getStylesDefinitionForDeck(style) {
 				_forEach(style.attributeClasses, style => {
 					classes.push({...baseStyle, ...getDeckReadyStyleObject(style)});
 				});
-				attributesStyles.push({
+				attributeStyles.push({
 					attributeKey,
 					attributeClasses: classes,
 				});
 			}
 		}
 
-		if (!_isEmpty(attributesStyles)) {
-			styleForDeck.attributesStyles = attributesStyles;
+		if (!_isEmpty(attributeStyles)) {
+			styleForDeck.attributeStyles = attributeStyles;
 		}
 
 		return styleForDeck;
@@ -113,10 +113,10 @@ function getRenderAsRulesByBoxRange(renderAs, boxRange) {
  */
 function getRgbaColorArray(rgbColorArray, opacity) {
 	if (opacity || opacity === 0) {
-		[...rgbColorArray].push(Math.floor(opacity * 255));
+		return [...rgbColorArray, Math.floor(opacity * 255)];
+	} else {
+		return rgbColorArray;
 	}
-
-	return rgbColorArray;
 }
 
 /**
@@ -126,10 +126,10 @@ function getRgbaColorArray(rgbColorArray, opacity) {
  * @returns {Object} style object
  */
 function getStyleForFeature(style, feature) {
-	if (style.attributesStyles) {
-		if (style.attributesStyles.length === 1) {
+	if (style.attributeStyles) {
+		if (style.attributeStyles.length === 1) {
 			return getStyleObjectForAttribute(
-				style.attributesStyles[0],
+				style.attributeStyles[0],
 				style.baseStyle,
 				feature.properties
 			);
@@ -231,8 +231,10 @@ function isGreaterThan(comparedValue, referenceValue, allowEquality) {
 
 export default {
 	getRgbaColorArray,
+	getDeckReadyColor,
 	getDeckReadyStyleObject,
 	getStylesDefinitionForDeck: memoize(getStylesDefinitionForDeck),
 	getStyleForFeature,
+	getStyleObjectForAttribute,
 	getRenderAsRulesByBoxRange,
 };
