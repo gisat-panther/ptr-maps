@@ -10,6 +10,8 @@ import styleHelpers from './helpers/style';
 import TiledLayer from './layers/TiledLayer';
 import VectorLayer from './layers/VectorLayer';
 
+import './style.scss';
+
 class DeckGlMap extends React.PureComponent {
 	static propTypes = {
 		view: PropTypes.object,
@@ -39,9 +41,11 @@ class DeckGlMap extends React.PureComponent {
 
 		this.state = {
 			view: null,
+			tooltipData: null,
 		};
 
 		this.onVectorLayerClick = this.onVectorLayerClick.bind(this);
+		this.onVectorLayerHover = this.onVectorLayerHover.bind(this);
 		this.onResize = this.onResize.bind(this);
 		this.onViewStateChange = this.onViewStateChange.bind(this);
 	}
@@ -112,6 +116,28 @@ class DeckGlMap extends React.PureComponent {
 	}
 
 	/**
+	 * @param layerKey {string}
+	 * @param featureKey {string}
+	 * @param feature {Object}
+	 * @param x {number}
+	 * @param y {number}
+	 */
+	onVectorLayerHover(layerKey, featureKey, feature, x, y) {
+		if (this.props.Tooltip) {
+			this.setState({
+				tooltipData: {
+					mapKey: this.props.mapKey,
+					layerKey,
+					featureKey,
+					feature,
+					x,
+					y,
+				},
+			});
+		}
+	}
+
+	/**
 	 * Return layer by type
 	 * @param layer {Object} layer data
 	 * @returns {TiledLayer|VectorLayer|null}
@@ -172,6 +198,7 @@ class DeckGlMap extends React.PureComponent {
 			key: layer.key,
 			layerKey: layer.layerKey || layer.key,
 			onClick: this.onVectorLayerClick,
+			onHover: this.onVectorLayerHover,
 			styleForDeck: styleHelpers.getStylesDefinitionForDeck(style),
 			pointAsMarker,
 		};
@@ -201,19 +228,24 @@ class DeckGlMap extends React.PureComponent {
 			this.state.height,
 			this.props.viewLimits
 		);
-		const {backgroundLayer, layers} = this.props;
+		const {backgroundLayer, layers, Tooltip} = this.props;
 
 		const finalBackgroundLayer = this.getLayerByType(backgroundLayer);
 		const finalLayers = layers.map(layer => this.getLayerByType(layer));
 
 		return (
-			<DeckGL
-				onViewStateChange={this.onViewStateChange}
-				views={new MapView({repeat: true})}
-				viewState={view}
-				layers={[finalBackgroundLayer, ...finalLayers]}
-				controller={true}
-			/>
+			<>
+				<DeckGL
+					onViewStateChange={this.onViewStateChange}
+					views={new MapView({repeat: true})}
+					viewState={view}
+					layers={[finalBackgroundLayer, ...finalLayers]}
+					controller={true}
+				/>
+				{Tooltip && this.state.tooltipData?.featureKey
+					? React.createElement(Tooltip, {...this.state.tooltipData})
+					: null}
+			</>
 		);
 	}
 }

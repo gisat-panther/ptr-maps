@@ -139,11 +139,24 @@ class VectorLayer extends CompositeLayer {
 	}
 
 	/**
+	 * Call on feature hover
+	 * @param data {Object}
+	 */
+	onHover(data) {
+		if (this.props.options.hoverable && this.props.onHover) {
+			const {layer, object, x, y} = data;
+			const featureKey =
+				object && this.getFeatureKey(this.props.options.fidColumnName, object);
+			this.props.onHover(layer, featureKey, object, x, y);
+		}
+	}
+
+	/**
 	 * @returns {GeoJsonLayer} DeckGl.GeoJsonLayer
 	 */
 	renderVectorLayer() {
 		const {key, layerKey, options, styleForDeck, pointAsMarker} = this.props;
-		const {fidColumnName, features, selectable} = options;
+		const {fidColumnName, features, selectable, hoverable} = options;
 
 		return new GeoJsonLayer({
 			id: `${key}-geoJsonLayer`,
@@ -151,7 +164,7 @@ class VectorLayer extends CompositeLayer {
 			layerKey,
 			fidColumnName,
 			data: features,
-			pickable: selectable,
+			pickable: selectable || hoverable,
 			stroked: true,
 			filled: true,
 			extruded: false,
@@ -170,6 +183,7 @@ class VectorLayer extends CompositeLayer {
 			),
 			pointRadiusUnits: pointAsMarker ? 'pixels' : 'meters',
 			onClick: this.onClick.bind(this),
+			onHover: this.onHover.bind(this),
 			getLineWidth: this.getFeatureOutlineWidth.bind(
 				this,
 				styleForDeck,
