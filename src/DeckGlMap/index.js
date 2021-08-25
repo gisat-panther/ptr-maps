@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {isEmpty as _isEmpty} from 'lodash';
+import {isEmpty as _isEmpty, isEqual as _isEqual} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
 import {MapView} from '@deck.gl/core';
@@ -231,7 +231,9 @@ class DeckGlMap extends React.PureComponent {
 		const {backgroundLayer, layers, Tooltip} = this.props;
 
 		const finalBackgroundLayer = this.getLayerByType(backgroundLayer);
-		const finalLayers = layers.map(layer => this.getLayerByType(layer));
+		const finalLayers = layers
+			? layers.map(layer => this.getLayerByType(layer))
+			: [];
 
 		return (
 			<>
