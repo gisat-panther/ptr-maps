@@ -4,27 +4,27 @@ import viewHelpers from '../../../src/DeckGlMap/helpers/view';
 describe('utils/DeckGlMap/helpers/view', function () {
 	describe('getZoomLevelFromPixelSize', function () {
 		it('should be close to 0', function () {
-			const zoomLevel = viewHelpers.getZoomLevelFromPixelSize(1000000);
+			const zoomLevel = viewHelpers.getZoomLevelFromPixelSize(10000000);
 			assert.approximately(zoomLevel, 0, 0.5);
 		});
 
 		it('should be close to 0 again', function () {
-			const zoomLevel = viewHelpers.getZoomLevelFromPixelSize(100000);
+			const zoomLevel = viewHelpers.getZoomLevelFromPixelSize(1000000);
 			assert.approximately(zoomLevel, 0, 0.5);
 		});
 
-		it('should be close to 1', function () {
-			const zoomLevel = viewHelpers.getZoomLevelFromPixelSize(70000);
-			assert.approximately(zoomLevel, 1, 0.5);
+		it('should be close to 2', function () {
+			const zoomLevel = viewHelpers.getZoomLevelFromPixelSize(10000);
+			assert.approximately(zoomLevel, 2, 0.5);
 		});
 
 		it('should be close to 10', function () {
-			const zoomLevel = viewHelpers.getZoomLevelFromPixelSize(120);
+			const zoomLevel = viewHelpers.getZoomLevelFromPixelSize(50);
 			assert.approximately(zoomLevel, 10, 0.5);
 		});
 
 		it('should be close to 20', function () {
-			const zoomLevel = viewHelpers.getZoomLevelFromPixelSize(0.1);
+			const zoomLevel = viewHelpers.getZoomLevelFromPixelSize(0.05);
 			assert.approximately(zoomLevel, 20, 0.5);
 		});
 
@@ -44,11 +44,11 @@ describe('utils/DeckGlMap/helpers/view', function () {
 			assert.approximately(zoomLevel, 0, 0.5);
 		});
 		it('should be close to 19', function () {
-			const zoomLevel = viewHelpers.getZoomLevelFromBoxRange(100, 500, 500);
+			const zoomLevel = viewHelpers.getZoomLevelFromBoxRange(50, 500, 500);
 			assert.approximately(zoomLevel, 19, 0.5);
 		});
 		it('should be close to 20', function () {
-			const zoomLevel = viewHelpers.getZoomLevelFromBoxRange(100, 1000, 1000);
+			const zoomLevel = viewHelpers.getZoomLevelFromBoxRange(50, 1000, 1000);
 			assert.approximately(zoomLevel, 20, 0.5);
 		});
 		it('should be close to 24', function () {
@@ -62,20 +62,20 @@ describe('utils/DeckGlMap/helpers/view', function () {
 	});
 
 	describe('getBoxRangeFromZoomLevel', function () {
-		it('should be close to 50000000', function () {
+		it('should be close to 25000000', function () {
 			const zoomLevel = viewHelpers.getBoxRangeFromZoomLevel(0, 500, 500);
-			assert.approximately(zoomLevel, 50000000, 5000000);
+			assert.approximately(zoomLevel, 25000000, 5000000);
 		});
 		it('should be close to 100', function () {
-			const zoomLevel = viewHelpers.getBoxRangeFromZoomLevel(19, 500, 500);
+			const zoomLevel = viewHelpers.getBoxRangeFromZoomLevel(18, 500, 500);
 			assert.approximately(zoomLevel, 100, 10);
 		});
 		it('should be close to 100', function () {
-			const zoomLevel = viewHelpers.getBoxRangeFromZoomLevel(20, 1000, 1000);
+			const zoomLevel = viewHelpers.getBoxRangeFromZoomLevel(19, 1000, 1000);
 			assert.approximately(zoomLevel, 100, 10);
 		});
 		it('should be close to 5', function () {
-			const zoomLevel = viewHelpers.getBoxRangeFromZoomLevel(24, 1000, 1000);
+			const zoomLevel = viewHelpers.getBoxRangeFromZoomLevel(23, 1000, 1000);
 			assert.approximately(zoomLevel, 5, 1);
 		});
 	});
@@ -93,7 +93,7 @@ describe('utils/DeckGlMap/helpers/view', function () {
 			const height = 1000;
 
 			const expectedView = {
-				zoom: 20,
+				zoom: 19,
 				longitude: 15,
 				latitude: 50,
 				minZoom: 0,
@@ -127,10 +127,10 @@ describe('utils/DeckGlMap/helpers/view', function () {
 			};
 
 			const expectedView = {
-				zoom: 20,
+				zoom: 19,
 				longitude: 15,
 				latitude: 50,
-				minZoom: 14,
+				minZoom: 13,
 				maxZoom: 19,
 			};
 
@@ -162,7 +162,7 @@ describe('utils/DeckGlMap/helpers/view', function () {
 			};
 
 			const expectedView = {
-				zoom: 20,
+				zoom: 19,
 				longitude: 15,
 				latitude: 50,
 				minZoom: 0,
