@@ -10,6 +10,7 @@ import {map as mapUtils} from '@gisatcz/ptr-utils';
  * @returns {number} Panther's mapView.boxRange in meters
  */
 function getBoxRangeFromZoomLevel(level, width, height) {
+	level += 1; // TODO add 1 to meet the same view in Deck as in Leaflet
 	const lowerLevel = Math.floor(level);
 	const upperLevel = Math.ceil(level);
 	const lowerPxSize = mapUtils.view.getPixelSizeFromZoomLevel(lowerLevel);
@@ -51,9 +52,11 @@ function getZoomLevelFromPixelSize(pxSize) {
 	if (upperLevel >= levels.length) {
 		return lowerLevel;
 	} else {
-		const level =
+		let level =
 			upperLevel -
 			(pxSize - upperLevelPxSize) / (lowerLevelPxSize - upperLevelPxSize);
+
+		level -= 1; // TODO remove 1 to meet the same view in Deck as in Leaflet
 
 		return level >= 0 ? level : 0;
 	}
