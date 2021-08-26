@@ -1,9 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-	isArray as _isArray,
-	isEmpty as _isEmpty,
-} from 'lodash';
+import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
 import {MapView} from '@deck.gl/core';
@@ -84,7 +81,7 @@ class DeckGlMap extends React.PureComponent {
 			// just presentational map
 			else {
 				this.setState({
-					view: {...this.state.view, ...change},
+					view: {...this.props.view, ...this.state.view, ...change},
 				});
 			}
 		}
