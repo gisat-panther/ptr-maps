@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {isEmpty as _isEmpty, isEqual as _isEqual} from 'lodash';
+import {
+	isArray as _isArray,
+	isEmpty as _isEmpty,
+} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
 import {MapView} from '@deck.gl/core';
@@ -235,18 +238,23 @@ class DeckGlMap extends React.PureComponent {
 		);
 		const {backgroundLayer, layers, Tooltip} = this.props;
 
-		const finalBackgroundLayer = this.getLayerByType(backgroundLayer);
+		const backgroundLayersSource = _isArray(backgroundLayer)
+			? backgroundLayer
+			: [backgroundLayer];
+		const finalBackgroundLayers =
+			backgroundLayersSource &&
+			backgroundLayersSource.map(layer => this.getLayerByType(layer));
 		const finalLayers = layers
 			? layers.map(layer => this.getLayerByType(layer))
 			: [];
 
 		return (
-			<div className="ptr-deckGl-map-container">
+			<div className="ptr-deckGl-map ptr-map">
 				<DeckGL
 					onViewStateChange={this.onViewStateChange}
 					views={new MapView({repeat: true})}
 					viewState={deckView}
-					layers={[finalBackgroundLayer, ...finalLayers]}
+					layers={[...finalBackgroundLayers, ...finalLayers]}
 					controller={true}
 				/>
 				{Tooltip && this.state.tooltipData?.featureKey
