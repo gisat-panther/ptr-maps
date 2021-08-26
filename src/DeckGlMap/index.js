@@ -14,6 +14,7 @@ import './style.scss';
 
 class DeckGlMap extends React.PureComponent {
 	static propTypes = {
+		Tooltip: PropTypes.element,
 		view: PropTypes.object,
 		viewLimits: PropTypes.object,
 	};
@@ -255,8 +256,22 @@ class DeckGlMap extends React.PureComponent {
 					controller={true}
 				/>
 				{Tooltip && this.state.tooltipData?.featureKey
-					? React.createElement(Tooltip, {...this.state.tooltipData})
+					? this.renderTooltip()
 					: null}
+			</div>
+		);
+	}
+
+	renderTooltip() {
+		const {x, y} = this.state.tooltipData;
+		const style = {
+			left: x,
+			top: y,
+		};
+
+		return (
+			<div className="ptr-deckGl-map-tooltip" style={style}>
+				{React.createElement(this.props.Tooltip, {...this.state.tooltipData})}
 			</div>
 		);
 	}
