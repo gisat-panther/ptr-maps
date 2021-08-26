@@ -7,6 +7,7 @@ import {
 import memoize from 'memoize-one';
 import chroma from 'chroma-js';
 import view from '../../utils/view';
+import defaultStyles from '../../constants/styles';
 
 /**
  * Get style object ready for usage in DeckGl-based layers, where colors are represented by RGB array
@@ -45,7 +46,9 @@ function getDeckReadyColor(hexColor) {
  */
 function getStylesDefinitionForDeck(style) {
 	// TODO multiple rules and filters?
-	const styles = style.rules[0].styles;
+	const styles = style?.rules[0].styles || [
+		defaultStyles.vectorFeatureStyle.default,
+	];
 	if (styles) {
 		const baseStyle = getDeckReadyStyleObject(styles[0]);
 		let styleForDeck = {
