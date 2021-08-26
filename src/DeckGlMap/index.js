@@ -19,21 +19,21 @@ class DeckGlMap extends React.PureComponent {
 	};
 
 	static getDerivedStateFromProps(props, state) {
-		let changes = {};
+		if (props.onViewChange) {
+			let changes = {};
 
-		if (props.view && state.view !== props.view) {
-			changes.view = props.view;
+			if (
+				(props.viewport?.width && props.viewport.width !== state.width) ||
+				(props.viewport?.height && props.viewport.height !== state.height)
+			) {
+				changes.height = props.viewport.height;
+				changes.width = props.viewport.width;
+			}
+
+			return _isEmpty(changes) ? null : changes;
+		} else {
+			return null;
 		}
-
-		if (
-			(props.viewport?.width && props.viewport.width !== state.width) ||
-			(props.viewport?.height && props.viewport.height !== state.height)
-		) {
-			changes.height = props.viewport.height;
-			changes.width = props.viewport.width;
-		}
-
-		return _isEmpty(changes) ? null : changes;
 	}
 
 	constructor(props) {
@@ -222,8 +222,13 @@ class DeckGlMap extends React.PureComponent {
 	}
 
 	renderMap() {
-		let view = viewHelpers.getDeckViewFromPantherViewParams(
-			this.state.view,
+		const view =
+			this.props.onViewChange || !this.state.view
+				? this.props.view
+				: this.state.view;
+
+		let deckView = viewHelpers.getDeckViewFromPantherViewParams(
+			view,
 			this.state.width,
 			this.state.height,
 			this.props.viewLimits
@@ -236,18 +241,18 @@ class DeckGlMap extends React.PureComponent {
 			: [];
 
 		return (
-			<>
+			<div className="ptr-deckGl-map-container">
 				<DeckGL
 					onViewStateChange={this.onViewStateChange}
 					views={new MapView({repeat: true})}
-					viewState={view}
+					viewState={deckView}
 					layers={[finalBackgroundLayer, ...finalLayers]}
 					controller={true}
 				/>
 				{Tooltip && this.state.tooltipData?.featureKey
 					? React.createElement(Tooltip, {...this.state.tooltipData})
 					: null}
-			</>
+			</div>
 		);
 	}
 }
