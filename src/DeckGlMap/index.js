@@ -14,7 +14,7 @@ import './style.scss';
 
 class DeckGlMap extends React.PureComponent {
 	static propTypes = {
-		Tooltip: PropTypes.element,
+		Tooltip: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
 		view: PropTypes.object,
 		viewLimits: PropTypes.object,
 	};
