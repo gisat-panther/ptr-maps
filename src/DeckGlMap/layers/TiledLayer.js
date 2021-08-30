@@ -1,3 +1,4 @@
+import {flatten as _flatten} from 'lodash';
 import {CompositeLayer} from '@deck.gl/core';
 import {TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
@@ -28,7 +29,9 @@ class TiledLayer extends CompositeLayer {
 		const {options, key} = this.props;
 		const {url, urls, minNativeZoom, maxNativeZoom, tileSize} = options;
 
-		let finalUrls = urls || this.getValidUrlTemplates(url);
+		let finalUrls = urls
+			? _flatten(urls.map(url => this.getValidUrlTemplates(url)))
+			: this.getValidUrlTemplates(url);
 
 		return new TileLayer({
 			id: `${key}-tileLayer`,
