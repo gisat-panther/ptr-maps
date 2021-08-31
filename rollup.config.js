@@ -24,6 +24,7 @@ const lodashExternal = [
 	'lodash/isEmpty',
 	'lodash/pickBy',
 	'lodash/mapValues',
+	'lodash/flatten',
 	'lodash/forEach',
 	'lodash/isEqual',
 	'lodash/isArray',
