@@ -73,6 +73,10 @@ export default {
 		'@turf/helpers',
 		'@turf/nearest-point',
 		'uri-templates',
+		'@deck.gl/core',
+		'@deck.gl/react',
+		'@deck.gl/geo-layers',
+		'@deck.gl/layers',
 		...lodashExternal,
 	],
 	output: {
