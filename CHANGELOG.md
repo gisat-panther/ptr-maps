@@ -1,3 +1,15 @@
+# v1.6.0 (Tue Aug 31 2021)
+
+#### 🚀 Enhancement
+
+- Bump path-parse from 1.0.6 to 1.0.7 [#90](https://github.com/gisat-panther/ptr-maps/pull/90) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 1
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+
+---
+
 # v1.5.0 (Tue Aug 31 2021)
 
 #### 🚀 Enhancement
