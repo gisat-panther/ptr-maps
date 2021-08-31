@@ -1,3 +1,15 @@
+# v1.5.0 (Tue Aug 31 2021)
+
+#### 🚀 Enhancement
+
+- Bump tar from 6.1.0 to 6.1.5 [#89](https://github.com/gisat-panther/ptr-maps/pull/89) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 1
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+
+---
+
 # v1.4.0 (Wed Jun 16 2021)
 
 #### 🚀 Enhancement
