@@ -1,3 +1,15 @@
+# v1.6.2 (Tue Aug 31 2021)
+
+#### 🐾 Patch
+
+- Bump color-string from 1.5.4 to 1.6.0 [#93](https://github.com/gisat-panther/ptr-maps/pull/93) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 1
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+
+---
+
 # v1.6.1 (Tue Aug 31 2021)
 
 #### 🐾 Patch
