@@ -13,6 +13,7 @@ import viewHelpers from './viewHelpers';
 import VectorLayer from './layers/VectorLayer';
 import WMSLayer from './layers/WMSLayer';
 import TileGridLayer from './layers/TileGridLayer';
+import CogLayer from './layers/CogLayer/wrapper';
 import constants from '../constants';
 import viewport from '../utils/viewport';
 
@@ -329,6 +330,8 @@ class ReactLeafletMap extends React.PureComponent {
 					return this.getTileLayer(layer, i);
 				case 'wms':
 					return this.getWmsTileLayer(layer, i);
+				case 'cog':
+					return this.getCogLayer(layer, i, zIndex);
 				case 'vector':
 				case 'tiledVector':
 				case 'tiled-vector':
@@ -428,6 +431,19 @@ class ReactLeafletMap extends React.PureComponent {
 					format: imageFormat,
 					...restParameters,
 				}}
+			/>
+		);
+	}
+
+	getCogLayer(layer, i, zIndex) {
+		return (
+			<CogLayer
+				key={layer.key || i}
+				layerKey={layer.layerKey || layer.key}
+				uniqueLayerKey={layer.key || i}
+				paneName={layer.key}
+				zIndex={zIndex}
+				{...layer}
 			/>
 		);
 	}
