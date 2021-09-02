@@ -78,6 +78,8 @@ export default {
 		'@deck.gl/react',
 		'@deck.gl/geo-layers',
 		'@deck.gl/layers',
+		'georaster',
+		'georaster-layer-for-leaflet',
 		...lodashExternal,
 	],
 	output: {
