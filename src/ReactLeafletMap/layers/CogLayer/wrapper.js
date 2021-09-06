@@ -1,7 +1,8 @@
 import React from 'react';
 import parseGeoRaster from 'georaster';
-import CogLayerComponent from './CogLayer';
 import {withLeaflet} from 'react-leaflet';
+import {utils} from '@gisatcz/ptr-utils';
+import CogLayerComponent from './CogLayer';
 
 /**
  * Wrapper is used to load & parse geotiff data and to place layer to the pane for z-positioning
@@ -27,14 +28,39 @@ class CogLayerWrapper extends React.PureComponent {
 		}
 
 		parseGeoRaster(url).then(georaster => {
-			this.setState({georaster});
+			this.setState({georaster, key: utils.uuid()});
 		});
+	}
+
+	componentDidUpdate(prevProps, prevState, snapshot) {
+		const {options, paneName, leaflet, zIndex, opacity} = this.props;
+		const {url} = options;
+
+		if (zIndex !== prevProps.zIndex) {
+			let pane = leaflet.map.getPane(paneName);
+			pane.style.zIndex = zIndex;
+		}
+
+		if (url !== prevProps.options.url) {
+			parseGeoRaster(url).then(georaster => {
+				this.setState({georaster, key: utils.uuid()});
+			});
+		}
+
+		// TODO find better solution for opacity change
+		if (opacity !== prevProps.opacity) {
+			this.setState({key: utils.uuid()});
+		}
 	}
 
 	render() {
 		if (this.state.georaster) {
 			return (
-				<CogLayerComponent {...this.props} georaster={this.state.georaster} />
+				<CogLayerComponent
+					{...this.props}
+					georaster={this.state.georaster}
+					key={this.state.key}
+				/>
 			);
 		} else {
 			return null;

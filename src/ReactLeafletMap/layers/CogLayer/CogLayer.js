@@ -9,18 +9,25 @@ const DEFAULT_RESOLUTION = 128;
 
 class CogLayer extends MapLayer {
 	createLeafletElement(props) {
-		const {georaster, paneName, options} = props;
+		const {georaster, paneName, options, opacity} = props;
 
-		return new GeoRasterLayer({
+		this.layer = new GeoRasterLayer({
 			georaster,
 			pane: paneName,
 			resolution: options.resolution || DEFAULT_RESOLUTION,
 			pixelValuesToColorFn: this.getStyle.bind(this),
+			opacity: opacity || 1,
 		});
+
+		return this.layer;
 	}
 
 	updateLeafletElement(fromProps, toProps) {
 		super.updateLeafletElement(fromProps, toProps);
+
+		if (fromProps.options.style !== toProps.options.style) {
+			this.layer.updateColors(this.getStyle.bind(this));
+		}
 	}
 
 	getStyle(pixelValues) {
