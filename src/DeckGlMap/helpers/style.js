@@ -162,12 +162,12 @@ function getStyleObjectForAttribute(
 			return baseStyleDefinition;
 		} else {
 			if (attributeStyleDefinition.attributeClasses) {
-				return mapStyle.getStyleObjectForAttributeClasses(
+				return mapStyle.getStyleObjectForIntervals(
 					attributeStyleDefinition.attributeClasses,
 					value
 				);
 			} else if (attributeStyleDefinition.attributeValues) {
-				return mapStyle.getStyleObjectForAttributeValues(
+				return mapStyle.getStyleObjectForValues(
 					attributeStyleDefinition.attributeValues,
 					value
 				);
