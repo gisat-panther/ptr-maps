@@ -1,3 +1,15 @@
+# v1.7.0 (Fri Sep 17 2021)
+
+#### 🚀 Enhancement
+
+- Basic integration of DeckGl framework [#91](https://github.com/gisat-panther/ptr-maps/pull/91) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.6.2 (Tue Aug 31 2021)
 
 #### 🐾 Patch
