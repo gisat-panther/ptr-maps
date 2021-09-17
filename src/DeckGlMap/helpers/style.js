@@ -1,3 +1,4 @@
+import {mapStyle} from '@gisatcz/ptr-utils';
 import {
 	find as _find,
 	forEach as _forEach,
@@ -161,12 +162,12 @@ function getStyleObjectForAttribute(
 			return baseStyleDefinition;
 		} else {
 			if (attributeStyleDefinition.attributeClasses) {
-				return getStyleObjectForAttributeClasses(
+				return mapStyle.getStyleObjectForIntervals(
 					attributeStyleDefinition.attributeClasses,
 					value
 				);
 			} else if (attributeStyleDefinition.attributeValues) {
-				return getStyleObjectForAttributeValues(
+				return mapStyle.getStyleObjectForValues(
 					attributeStyleDefinition.attributeValues,
 					value
 				);
@@ -178,57 +179,6 @@ function getStyleObjectForAttribute(
 		}
 	} else {
 		return baseStyleDefinition;
-	}
-}
-
-// TODO export below methods from ptr-utils
-/**
- * Attribute classes
- *
- * @param attributeClasses {Array}
- * @param value {number|String} attribute value
- * @return {Object} style object
- */
-function getStyleObjectForAttributeClasses(attributeClasses, value) {
-	let styleObject = {};
-	_forEach(attributeClasses, attributeClass => {
-		let {interval, intervalBounds} = attributeClass;
-
-		if (!intervalBounds) {
-			intervalBounds = [true, false];
-		}
-
-		if (
-			isGreaterThan(value, interval[0], intervalBounds[0]) &&
-			isGreaterThan(interval[1], value, intervalBounds[1])
-		) {
-			styleObject = attributeClass;
-		}
-	});
-
-	return styleObject;
-}
-
-/**
- * Attribute value
- *
- * @param attributeValues {Object}
- * @param value {String} attribute value
- * @return {Object}
- */
-function getStyleObjectForAttributeValues(attributeValues, value) {
-	return attributeValues[value] || {};
-}
-
-function isGreaterThan(comparedValue, referenceValue, allowEquality) {
-	if (comparedValue || comparedValue === 0) {
-		if (allowEquality) {
-			return comparedValue >= referenceValue;
-		} else {
-			return comparedValue > referenceValue;
-		}
-	} else {
-		return false;
 	}
 }
 

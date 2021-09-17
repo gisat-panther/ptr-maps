@@ -1,3 +1,8 @@
+/* Raster pixel basic style */
+const defaultRasterPixelStyle = {
+	color: '#000000',
+};
+
 /* Vector feature basic style */
 const defaultVectorFeatureStyle = {
 	fill: '#ffffff',
@@ -82,6 +87,8 @@ const vectorLayerDefaultFeatureStyle = {
 };
 
 export default {
+	defaultRasterPixelStyle,
+
 	diagramStyle,
 	vectorFeatureStyle,
 

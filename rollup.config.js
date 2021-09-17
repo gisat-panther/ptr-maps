@@ -24,6 +24,7 @@ const lodashExternal = [
 	'lodash/isEmpty',
 	'lodash/pickBy',
 	'lodash/mapValues',
+	'lodash/flatten',
 	'lodash/forEach',
 	'lodash/isEqual',
 	'lodash/isArray',
@@ -77,6 +78,8 @@ export default {
 		'@deck.gl/react',
 		'@deck.gl/geo-layers',
 		'@deck.gl/layers',
+		'georaster',
+		'georaster-layer-for-leaflet',
 		...lodashExternal,
 	],
 	output: {
