@@ -1,5 +1,6 @@
 import constants from './constants';
 import view from './utils/view';
+import DeckGlMap from './DeckGlMap';
 import GoToPlace from './controls/GoToPlace';
 import MapGrid from './MapGrid';
 import MapControls from './controls/MapControls';
@@ -20,6 +21,7 @@ import LoadableMap from './LoadableMap';
 export {
 	constants,
 	view,
+	DeckGlMap,
 	GoToPlace,
 	LoadableMapControls,
 	LoadableMapSet,
