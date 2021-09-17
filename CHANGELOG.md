@@ -1,3 +1,15 @@
+# v1.8.0 (Fri Sep 17 2021)
+
+#### 🚀 Enhancement
+
+- Leaflet COG layer [#94](https://github.com/gisat-panther/ptr-maps/pull/94) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.7.0 (Fri Sep 17 2021)
 
 #### 🚀 Enhancement
