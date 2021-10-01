@@ -32,6 +32,18 @@ class CogLayerWrapper extends React.PureComponent {
 		});
 	}
 
+	componentWillUnmount() {
+		const {paneName, leaflet} = this.props;
+		if (paneName) {
+			// delete pane and remove them from DOM
+			delete leaflet.map._panes[paneName];
+			const elements = document.querySelectorAll(`.leaflet-${paneName}-pane`);
+			if (elements.length) {
+				elements.forEach(element => element.remove());
+			}
+		}
+	}
+
 	componentDidUpdate(prevProps, prevState, snapshot) {
 		const {options, paneName, leaflet, zIndex, opacity} = this.props;
 		const {url} = options;
