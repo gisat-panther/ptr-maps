@@ -1,3 +1,15 @@
+# v1.9.1 (Tue Oct 05 2021)
+
+#### 🐾 Patch
+
+- Add georaster-layer-for-leaflet files to be prepared for SSR [#97](https://github.com/gisat-panther/ptr-maps/pull/97) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.9.0 (Mon Oct 04 2021)
 
 #### 🚀 Enhancement
