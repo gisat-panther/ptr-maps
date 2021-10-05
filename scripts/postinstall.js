@@ -13,6 +13,16 @@ var linkedPtrMapsLeafletPath = [
 	'dist',
 	'leaflet-src.js',
 ];
+// path of local instance of georaster-layer-for-leaflet.
+var localGeorasterPath = ['node_modules', 'georaster-layer-for-leaflet', 'dist', 'georaster-layer-for-leaflet.min.js'];
+// path of georaster-layer-for-leaflet if ptr-maps is installed as a module
+var linkedGeorasterPath = [
+	'..',
+	'..',
+	'georaster-layer-for-leaflet',
+	'dist',
+	'georaster-layer-for-leaflet.min.js',
+];
 // path of local instance of WebWorldWind
 var localWebWorldWindPath = [
 	'node_modules',
@@ -34,6 +44,8 @@ var linkedPtrMapsWebWorldWindPath = [
 var filesToFix = [
 	localLeafletPath,
 	linkedPtrMapsLeafletPath,
+  localGeorasterPath,
+  linkedGeorasterPath,
 	localWebWorldWindPath,
 	linkedPtrMapsWebWorldWindPath,
 ];
@@ -161,6 +173,9 @@ var beginOfFile = `// < HACK >
   }
     if(typeof navigator === 'undefined') {
   navigator = fakeNavigator;
+  }
+    if(typeof self === 'undefined') {
+      self = {};
   }
 // </ HACK >
 `;
