@@ -14,7 +14,12 @@ var linkedPtrMapsLeafletPath = [
 	'leaflet-src.js',
 ];
 // path of local instance of georaster-layer-for-leaflet.
-var localGeorasterPath = ['node_modules', 'georaster-layer-for-leaflet', 'dist', 'georaster-layer-for-leaflet.min.js'];
+var localGeorasterPath = [
+	'node_modules',
+	'georaster-layer-for-leaflet',
+	'dist',
+	'georaster-layer-for-leaflet.min.js',
+];
 // path of georaster-layer-for-leaflet if ptr-maps is installed as a module
 var linkedGeorasterPath = [
 	'..',
@@ -44,8 +49,8 @@ var linkedPtrMapsWebWorldWindPath = [
 var filesToFix = [
 	localLeafletPath,
 	linkedPtrMapsLeafletPath,
-  localGeorasterPath,
-  linkedGeorasterPath,
+	localGeorasterPath,
+	linkedGeorasterPath,
 	localWebWorldWindPath,
 	linkedPtrMapsWebWorldWindPath,
 ];
