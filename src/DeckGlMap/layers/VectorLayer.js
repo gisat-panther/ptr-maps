@@ -149,6 +149,16 @@ class VectorLayer extends CompositeLayer {
 				object && this.getFeatureKey(this.props.options.fidColumnName, object);
 			this.props.onHover(layer, featureKey, object, x, y);
 		}
+
+		if (this.props.options.selectable && this.props.onClick) {
+			const object = data?.object;
+			const canvas = data?.layer?.context?.deck?.canvas;
+			if (canvas && object) {
+				canvas.style.cursor = 'pointer';
+			} else {
+				canvas.style.cursor = 'inherit';
+			}
+		}
 	}
 
 	/**
