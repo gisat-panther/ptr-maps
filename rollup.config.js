@@ -90,7 +90,7 @@ export default {
 		}[env],
 		format: env,
 		globals: {
-				proj4: 'proj4'
+			proj4: 'proj4',
 			// 'lodash/random': '_.random'
 		},
 		exports: 'named' /** Disable warning for default imports */,
