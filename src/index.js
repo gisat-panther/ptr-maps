@@ -19,7 +19,6 @@ import LoadableMapSet from './LoadableMapSet';
 import LoadableReactLeafletMap from './LoadableReactLeafletMap';
 import LoadableMap from './LoadableMap';
 
-
 export {
 	constants,
 	proj,
