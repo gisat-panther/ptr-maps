@@ -1,3 +1,15 @@
+# v1.10.2 (Tue Oct 12 2021)
+
+#### 🐾 Patch
+
+- DeckGl maps: better cursor for active features [#100](https://github.com/gisat-panther/ptr-maps/pull/100) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.10.1 (Tue Oct 12 2021)
 
 #### 🐾 Patch
