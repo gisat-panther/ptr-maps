@@ -1,6 +1,5 @@
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
-// import images from 'rollup-plugin-image-files';
 import image from '@rollup/plugin-image';
 import filesize from 'rollup-plugin-filesize';
 import path from 'path';
@@ -59,6 +58,7 @@ export default {
 		'memoize-one',
 		'leaflet',
 		'leaflet/dist/leaflet.css',
+		'proj4',
 		'proj4leaflet',
 		'react-leaflet',
 		'react-loadable',
@@ -79,7 +79,8 @@ export default {
 		'@deck.gl/geo-layers',
 		'@deck.gl/layers',
 		'georaster',
-		'georaster-layer-for-leaflet',
+		'georaster-layer-for-leaflet/dist/georaster-layer-for-leaflet.lite.min.js',
+		/@babel\/runtime/,
 		...lodashExternal,
 	],
 	output: {
@@ -89,6 +90,7 @@ export default {
 		}[env],
 		format: env,
 		globals: {
+				proj4: 'proj4'
 			// 'lodash/random': '_.random'
 		},
 		exports: 'named' /** Disable warning for default imports */,
@@ -97,6 +99,7 @@ export default {
 	plugins: [
 		babel({
 			plugins: ['lodash'],
+			babelHelpers: 'runtime',
 		}),
 		commonjs({
 			include: 'node_modules/**',
