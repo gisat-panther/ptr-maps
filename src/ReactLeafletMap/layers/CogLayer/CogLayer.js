@@ -1,5 +1,4 @@
-import React from 'react';
-import GeoRasterLayer from 'georaster-layer-for-leaflet';
+import GeoRasterLayer from 'georaster-layer-for-leaflet/dist/georaster-layer-for-leaflet.lite.min.js';
 import {MapLayer, withLeaflet} from 'react-leaflet';
 import {mapStyle as mapStyleUtils} from '@gisatcz/ptr-utils';
 
@@ -17,6 +16,7 @@ class CogLayer extends MapLayer {
 			resolution: options.resolution || DEFAULT_RESOLUTION,
 			pixelValuesToColorFn: this.getStyle.bind(this),
 			opacity: opacity || 1,
+			// debugLevel: 5,
 		});
 
 		return this.layer;
