@@ -1,3 +1,15 @@
+# v1.10.0 (Tue Oct 12 2021)
+
+#### 🚀 Enhancement
+
+- Fix/react dep [#98](https://github.com/gisat-panther/ptr-maps/pull/98) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.9.1 (Tue Oct 05 2021)
 
 #### 🐾 Patch
