@@ -1,3 +1,15 @@
+# v1.10.1 (Tue Oct 12 2021)
+
+#### 🐾 Patch
+
+- Fix definition of krovak projection [#99](https://github.com/gisat-panther/ptr-maps/pull/99) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.10.0 (Tue Oct 12 2021)
 
 #### 🚀 Enhancement
