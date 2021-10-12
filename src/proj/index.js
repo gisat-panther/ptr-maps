@@ -1,5 +1,5 @@
-import utms from '.projections/UTM';
-import krovak from '.projections/krovak';
+import utms from './projections/UTM';
+import krovak from './projections/krovak';
 import proj4 from 'proj4';
 
 // Adds proj4 as a global variable to be accessible for other libraries like Georaster
