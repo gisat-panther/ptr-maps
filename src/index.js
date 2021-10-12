@@ -11,6 +11,7 @@ import PresentationMap from './Map';
 import ReactLeafletMap from './ReactLeafletMap';
 import SimpleLayersControl from './controls/SimpleLayersControl';
 import WorldWindMap from './WorldWindMap';
+import * as proj from './proj';
 
 //loadable
 import LoadableMapControls from './controls/LoadableMapControls';
@@ -18,8 +19,10 @@ import LoadableMapSet from './LoadableMapSet';
 import LoadableReactLeafletMap from './LoadableReactLeafletMap';
 import LoadableMap from './LoadableMap';
 
+
 export {
 	constants,
+	proj,
 	view,
 	DeckGlMap,
 	GoToPlace,
@@ -43,6 +46,7 @@ export {
 export default {
 	constants,
 	view,
+	proj,
 
 	GoToPlace,
 
