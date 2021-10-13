@@ -163,11 +163,8 @@ class PresentationMap extends React.PureComponent {
 			}
 
 			if (wrapper) {
-				let wrapperComponent = MapWrapper;
-
 				// check if passed wrapper is React component or connected component
-				if (React.isValidElement(wrapper) || wrapper.WrappedComponent) {
-					wrapperComponent = wrapper;
+                                 const wrapperComponent = React.isValidElement(wrapper) || wrapper.WrappedComponent ? wrapper : MapWrapper
 				}
 
 				return React.createElement(
