@@ -1,3 +1,15 @@
+# v1.10.3 (Wed Oct 13 2021)
+
+#### 🐾 Patch
+
+- Fix/prettier [#101](https://github.com/gisat-panther/ptr-maps/pull/101) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.10.2 (Tue Oct 12 2021)
 
 #### 🐾 Patch
