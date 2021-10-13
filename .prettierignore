@@ -1,5 +1,7 @@
 .cache
 .idea
+.nyc_output
+coverage
 build
 dist
 lib
