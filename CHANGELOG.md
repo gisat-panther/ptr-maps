@@ -1,3 +1,15 @@
+# v1.10.5 (Fri Oct 15 2021)
+
+#### 🐾 Patch
+
+- ReactLeafletMap: Feature - fix for MultiPoints [#103](https://github.com/gisat-panther/ptr-maps/pull/103) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.10.4 (Wed Oct 13 2021)
 
 #### 🐾 Patch
