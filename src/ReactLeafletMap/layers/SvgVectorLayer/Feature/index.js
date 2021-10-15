@@ -184,8 +184,9 @@ class Feature extends React.PureComponent {
 			case 'MultiPolygon':
 				return this.renderPolygon(coordinates, style);
 			case 'Point':
-			case 'MultiPoint':
 				return this.renderPoint(coordinates, style);
+			case 'MultiPoint':
+				return coordinates.map(coord => this.renderPoint(coord, style));
 			case 'LineString':
 			case 'MultiLineString':
 				return this.renderLine(coordinates, style);
