@@ -49,8 +49,12 @@ function getFeatureLeafletStyle(feature, style) {
 
 	finalStyle.color = style.outlineColor ? style.outlineColor : null;
 	finalStyle.weight = style.outlineWidth ? style.outlineWidth : 0;
-	finalStyle.opacity = style.outlineOpacity ? style.outlineOpacity : 1;
-	finalStyle.fillOpacity = style.fillOpacity ? style.fillOpacity : 1;
+	finalStyle.opacity =
+		style.outlineOpacity || style.outlineOpacity === 0
+			? style.outlineOpacity
+			: 1;
+	finalStyle.fillOpacity =
+		style.fillOpacity || style.fillOpacity === 0 ? style.fillOpacity : 1;
 	finalStyle.fillColor = style.fill;
 
 	if (!style.fill) {
