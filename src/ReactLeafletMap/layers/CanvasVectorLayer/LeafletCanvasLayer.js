@@ -61,7 +61,7 @@ const LeafletCanvasLayer = CanvasLayer.extend({
 				this.features.forEach(feature => {
 					const type = feature.original.geometry.type;
 					if (type === 'Point') {
-						const radius = feature.defaultStyle.size;
+						const radius = feature.defaultStyle.size / 2;
 						var LatLngBounds = L.latLngBounds(
 							this._map.containerPointToLatLng(
 								mousePoint.add(L.point(radius, radius))

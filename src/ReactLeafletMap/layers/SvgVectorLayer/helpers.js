@@ -74,7 +74,7 @@ function getFeatureLeafletStyle(feature, style) {
 		feature.geometry.type === 'MultiPoint'
 	) {
 		if (style.size) {
-			finalStyle.radius = style.size;
+			finalStyle.radius = style.size / 2;
 		} else if (style.volume) {
 			finalStyle.radius = Math.sqrt(style.volume / Math.PI);
 		}
