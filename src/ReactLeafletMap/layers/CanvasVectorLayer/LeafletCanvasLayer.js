@@ -101,11 +101,12 @@ const LeafletCanvasLayer = CanvasLayer.extend({
 						{type: 'FeatureCollection', features: pointsInsideBounds}
 					);
 					self.props.onClick(self.props.layerKey, [
-						nearest.properties[self.props.fidColumnName],
+						nearest.id || nearest.properties[self.props.fidColumnName],
 					]);
 				} else if (selectedPolygons.length) {
 					self.props.onClick(self.props.layerKey, [
-						selectedPolygons[0].original.properties[self.props.fidColumnName],
+						selectedPolygons[0].original.id ||
+							selectedPolygons[0].original.properties[self.props.fidColumnName],
 					]);
 				}
 

@@ -46,8 +46,7 @@ function getFeatureKeysToOmit(
 
 		// Iterate over current tile's features to find which features are rendered already
 		_forEach(features, feature => {
-			// TODO feature.id
-			const featureKey = feature.properties[fidColumnName];
+			const featureKey = feature.id || feature.properties[fidColumnName];
 			if (featureKey && renderedFeatureKeys.has(featureKey)) {
 				featureKeysToOmit.push(featureKey);
 			}

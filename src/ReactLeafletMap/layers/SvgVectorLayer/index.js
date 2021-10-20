@@ -62,8 +62,9 @@ class SvgVectorLayer extends React.PureComponent {
 
 				if (type) {
 					const fid =
-						this.props.fidColumnName &&
-						feature.properties[this.props.fidColumnName];
+						feature.id ||
+						(this.props.fidColumnName &&
+							feature.properties[this.props.fidColumnName]);
 					const uniqueFeatureKey = `${this.props.uniqueLayerKey}_${fid}`;
 
 					let selected = null;
