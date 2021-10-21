@@ -18,16 +18,15 @@ function draw(context, center, style, pixelSizeInMeters) {
 
 function square(context, center, style, pixelSizeInMeters) {
 	const size = helpers.getSize(style.size, pixelSizeInMeters);
-	const a = 2 * size; // side length
 	context.beginPath();
-	context.rect(center.x - a / 2, center.y - a / 2, a, a);
+	context.rect(center.x - size / 2, center.y - size / 2, size, size);
 	helpers.setPolygonStyle(context, style);
 	context.closePath();
 }
 
 function circle(context, center, style, pixelSizeInMeters) {
 	context.beginPath();
-	const size = helpers.getSize(style.size, pixelSizeInMeters);
+	const size = helpers.getSize(style.size, pixelSizeInMeters) / 2;
 	context.arc(Math.floor(center.x), Math.floor(center.y), size, 0, Math.PI * 2);
 	helpers.setPolygonStyle(context, style);
 	context.closePath();

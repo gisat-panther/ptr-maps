@@ -61,7 +61,7 @@ const LeafletCanvasLayer = CanvasLayer.extend({
 				this.features.forEach(feature => {
 					const type = feature.original.geometry.type;
 					if (type === 'Point') {
-						const radius = feature.defaultStyle.size;
+						const radius = feature.defaultStyle.size / 2;
 						var LatLngBounds = L.latLngBounds(
 							this._map.containerPointToLatLng(
 								mousePoint.add(L.point(radius, radius))
@@ -101,11 +101,12 @@ const LeafletCanvasLayer = CanvasLayer.extend({
 						{type: 'FeatureCollection', features: pointsInsideBounds}
 					);
 					self.props.onClick(self.props.layerKey, [
-						nearest.properties[self.props.fidColumnName],
+						nearest.id || nearest.properties[self.props.fidColumnName],
 					]);
 				} else if (selectedPolygons.length) {
 					self.props.onClick(self.props.layerKey, [
-						selectedPolygons[0].original.properties[self.props.fidColumnName],
+						selectedPolygons[0].original.id ||
+							selectedPolygons[0].original.properties[self.props.fidColumnName],
 					]);
 				}
 

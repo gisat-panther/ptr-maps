@@ -3,7 +3,7 @@ import chroma from 'chroma-js';
 function setPolygonStyle(context, style) {
 	if (style.fill) {
 		context.fillStyle = style.fill;
-		if (style.fillOpacity) {
+		if (style.fillOpacity || style.fillOpacity === 0) {
 			context.fillStyle = chroma(style.fill).alpha(style.fillOpacity).hex();
 		}
 
@@ -13,7 +13,7 @@ function setPolygonStyle(context, style) {
 	if (style.outlineColor && style.outlineWidth) {
 		context.lineWidth = style.outlineWidth;
 		context.strokeStyle = style.outlineColor;
-		if (style.outlineOpacity) {
+		if (style.outlineOpacity || style.outlineOpacity === 0) {
 			context.strokeStyle = chroma(style.outlineColor)
 				.alpha(style.outlineOpacity)
 				.hex();
