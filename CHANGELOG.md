@@ -1,3 +1,15 @@
+# v1.10.6 (Thu Oct 21 2021)
+
+#### 🐾 Patch
+
+- ReactLeafletMap: fixes [#104](https://github.com/gisat-panther/ptr-maps/pull/104) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.10.5 (Fri Oct 15 2021)
 
 #### 🐾 Patch
