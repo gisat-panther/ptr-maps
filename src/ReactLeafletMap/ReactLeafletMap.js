@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useMemo, useCallback, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {isArray as _isArray} from 'lodash';
 import {MapContainer, Pane, TileLayer} from 'react-leaflet';
+import {map as mapUtils} from '@gisatcz/ptr-utils';
 
+import viewHelpers from './helpers/view';
 import constants from '../constants';
 
 /**
@@ -59,23 +61,86 @@ function getTileLayer(layer, i) {
 	return <TileLayer key={layer.key || i} url={url} {...restOptions} />;
 }
 
-const ReactLeafletMap = ({backgroundLayer, height, view, width}) => {
-	const {} = view;
-	console.log(width, height);
+const MapViewControl = ({map, zoom, center, width, height, onViewChange}) => {
+	console.log('MapViewControlRender');
+	const mapZoom = map.getZoom();
+
+	if (mapZoom !== zoom) {
+		console.log('external change -> setZoom');
+		map.setZoom(zoom);
+	}
+
+	const onZoom = useCallback(() => {
+		console.log('onZoom');
+		const boxRange = mapUtils.view.getBoxRangeFromZoomLevel(
+			map.getZoom(),
+			width,
+			height
+		);
+		if (onViewChange) {
+			onViewChange({boxRange});
+		}
+	}, [map]);
+
+	useEffect(() => {
+		map.on('zoom', onZoom);
+		return () => {
+			map.off('zoom', onZoom);
+		};
+	}, [map, onZoom]);
+
+	return null;
+};
+
+const ReactLeafletMap = ({
+	backgroundLayer,
+	height,
+	view,
+	width,
+	onViewChange,
+}) => {
+	console.log('ReactLeafletMap render');
+	const [map, setMap] = useState(null);
+	const {zoom, center} = viewHelpers.getLeafletViewportFromViewParams(
+		view,
+		width,
+		height
+	);
+
+	const displayMap = useMemo(() => {
+		console.log('MapContainer render');
+		return (
+			<MapContainer
+				className="ptr-map ptr-ReactLeafletMap"
+				center={center}
+				zoom={zoom}
+				zoomControl={false}
+				whenCreated={setMap}
+			>
+				<Pane
+					style={{zIndex: constants.defaultLeafletPaneZindex + 101}}
+					name="backgroundLayers"
+				>
+					{getBackgroundLayers(backgroundLayer)}
+				</Pane>
+			</MapContainer>
+		);
+	}, []);
 
 	return (
-		<MapContainer
-			className="ptr-map ptr-ReactLeafletMap"
-			center={{lat: 51.505, lng: -0.09}}
-			zoom={13}
-		>
-			<Pane
-				style={{zIndex: constants.defaultLeafletPaneZindex + 101}}
-				name="backgroundLayers"
-			>
-				{getBackgroundLayers(backgroundLayer)}
-			</Pane>
-		</MapContainer>
+		<>
+			{displayMap}
+			{map ? (
+				<MapViewControl
+					map={map}
+					zoom={zoom}
+					center={center}
+					width={width}
+					height={height}
+					onViewChange={onViewChange}
+				/>
+			) : null}
+		</>
 	);
 };
 
