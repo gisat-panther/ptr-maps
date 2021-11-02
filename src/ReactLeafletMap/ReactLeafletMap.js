@@ -8,7 +8,6 @@ import viewHelpers from './helpers/view';
 import constants from '../constants';
 
 import MapViewController from './MapViewController';
-import viewport from '../utils/viewport';
 
 /**
  * Return one or multiple layer as an array (depending on number of data sources)
