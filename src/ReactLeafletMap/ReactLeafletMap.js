@@ -8,6 +8,7 @@ import viewHelpers from './helpers/view';
 import constants from '../constants';
 
 import MapViewController from './MapViewController';
+import viewport from '../utils/viewport';
 
 /**
  * Return one or multiple layer as an array (depending on number of data sources)
@@ -100,6 +101,27 @@ function useMapClick(map, onClick, width, height) {
 	}, [map, onMapClick]);
 }
 
+/**
+ * Custom hook which call actions when map was resized
+ * @param map {L.Map}
+ * @param onResize {function} on resize callback
+ * @param width {number} width of the map component
+ * @param height {number} width of the map component
+ */
+function useResize(map, onResize, width, height) {
+	useEffect(() => {
+		map && map.invalidateSize();
+		if (onResize) {
+			setTimeout(() => {
+				onResize(
+					viewport.roundDimension(width),
+					viewport.roundDimension(height)
+				);
+			}, 10);
+		}
+	}, [map, onResize, width, height]);
+}
+
 const ReactLeafletMap = ({
 	backgroundLayer,
 	height,
@@ -107,6 +129,7 @@ const ReactLeafletMap = ({
 	view,
 	width,
 	onClick,
+	onResize,
 	onViewChange,
 }) => {
 	const [map, setMap] = useState(null);
@@ -117,9 +140,10 @@ const ReactLeafletMap = ({
 	);
 
 	useMapClick(map, onClick, width, height);
+	useResize(map, onResize, width, height);
 
-	const displayMap = useMemo(() => {
-		return (
+	return (
+		<>
 			<MapContainer
 				attributionControl={false}
 				className="ptr-map ptr-ReactLeafletMap"
@@ -135,12 +159,6 @@ const ReactLeafletMap = ({
 					{getBackgroundLayers(backgroundLayer)}
 				</Pane>
 			</MapContainer>
-		);
-	}, []);
-
-	return (
-		<>
-			{displayMap}
 			{map ? (
 				<MapViewController
 					map={map}
@@ -163,6 +181,7 @@ ReactLeafletMap.propTypes = {
 	width: PropTypes.number,
 
 	onClick: PropTypes.func,
+	onResize: PropTypes.func,
 	onViewChange: PropTypes.func,
 };
 

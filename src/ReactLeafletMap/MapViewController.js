@@ -22,7 +22,7 @@ const MapViewController = ({
 			const zoomToSet = currentZoom !== zoom ? zoom : currentZoom;
 			map.setView({lat, lng: lon}, zoomToSet, {pan: {duration: '0.1'}});
 		}
-	}, [zoom, lat, lon]);
+	}, [map, zoom, lat, lon]);
 
 	// Call onViewChange if there was change in map zoom (e.g. by mouse wheel). It almost always takes place together with a change of position.
 	const onZoom = useCallback(() => {
