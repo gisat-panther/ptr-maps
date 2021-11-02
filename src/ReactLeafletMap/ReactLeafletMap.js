@@ -14,6 +14,15 @@ import MapViewController from './MapViewController';
 const backgroundLayerStartingZindex = constants.defaultLeafletPaneZindex + 1;
 const layersStartingZindex = constants.defaultLeafletPaneZindex + 101;
 
+const reservedWmsParamsKeys = [
+	'layers',
+	'crs',
+	'imageFormat',
+	'pane',
+	'maxZoom',
+	'styles',
+];
+
 /**
  * Get Proj CRS definition
  * @param code {string} EPSG:code
@@ -110,25 +119,31 @@ function getWmsLayer(layer, i) {
 	const layers = options?.params?.layers || '';
 	const crs = options?.params?.crs ? getCRS(options.params.crs) : null;
 	const imageFormat = options?.params?.imageFormat || 'image/png';
-	const reservedParamsKeys = [
-		'layers',
-		'crs',
-		'imageFormat',
-		'pane',
-		'maxZoom',
-		'styles',
-	];
-	const restParameters =
-		(options?.params &&
-			Object.entries(options.params).reduce((acc, [key, value]) => {
-				if (reservedParamsKeys.includes(key)) {
-					return acc;
-				} else {
-					acc[key] = value;
-					return acc;
-				}
-			}, {})) ||
-		{};
+
+	const restParameters = useMemo(
+		() =>
+			(options?.params &&
+				Object.entries(options.params).reduce((acc, [key, value]) => {
+					if (reservedWmsParamsKeys.includes(key)) {
+						return acc;
+					} else {
+						acc[key] = value;
+						return acc;
+					}
+				}, {})) ||
+			{},
+		[options]
+	);
+
+	const params = useMemo(() => {
+		return {
+			layers: layers,
+			opacity: opacity >= 0 ? opacity : 1,
+			transparent: true,
+			format: imageFormat,
+			...restParameters,
+		};
+	}, [layers, opacity, imageFormat, restParameters]);
 
 	return (
 		<WMSTileLayer
@@ -136,13 +151,7 @@ function getWmsLayer(layer, i) {
 			url={options.url}
 			crs={crs}
 			// singleTile={o.singleTile === true} TODO single tile layer
-			params={{
-				layers: layers,
-				opacity: opacity >= 0 ? opacity : 1,
-				transparent: true,
-				format: imageFormat,
-				...restParameters,
-			}}
+			params={params}
 		/>
 	);
 }
