@@ -1,4 +1,5 @@
 import React, {useMemo, useState} from 'react';
+import {mapConstants} from '@gisatcz/ptr-core';
 import PropTypes from 'prop-types';
 import {isArray as _isArray} from 'lodash';
 import {MapContainer, Pane, TileLayer} from 'react-leaflet';
@@ -60,7 +61,12 @@ function getTileLayer(layer, i) {
 	}
 
 	return (
-		<TileLayer key={layer.key || i} url={url} {...restOptions} maxZoom={19} />
+		<TileLayer
+			key={layer.key || i}
+			url={url}
+			{...restOptions}
+			maxZoom={mapConstants.defaultLevelsRange[1]}
+		/>
 	);
 }
 
