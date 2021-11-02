@@ -186,6 +186,22 @@ function useMapClick(map, onClick, width, height) {
 	}, [map, onMapClick]);
 }
 
+function useFixTileGap() {
+	useEffect(() => {
+		// Hack for ugly 1px tile borders in Chrome
+		// Version of Leaflet package in dependencies should match version used by react-leaflet
+		let originalInitTile = L.GridLayer.prototype._initTile;
+		L.GridLayer.include({
+			_initTile: function (tile) {
+				originalInitTile.call(this, tile);
+				const tileSize = this.getTileSize();
+				tile.style.width = tileSize.x + 1 + 'px';
+				tile.style.height = tileSize.y + 1 + 'px';
+			},
+		});
+	}, []);
+}
+
 const ReactLeafletMap = ({
 	backgroundLayer,
 	height,
@@ -203,6 +219,7 @@ const ReactLeafletMap = ({
 		height
 	);
 
+	useFixTileGap();
 	useMapClick(map, onClick, width, height);
 
 	let mapLayers =
