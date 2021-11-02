@@ -17,6 +17,16 @@ function getLeafletViewFromViewParams(view, width, height) {
 	};
 }
 
+function getPantherViewFromLeafletViewParams(view, width, height) {
+	return {
+		boxRange: mapUtils.view.getBoxRangeFromZoomLevel(view.zoom, width, height),
+		center: {
+			lat: view.center.lat,
+			lon: view.center.lng,
+		},
+	};
+}
+
 function getLeafletViewportFromViewParams(view, width, height) {
 	const leafletView = getLeafletViewFromViewParams(view, width, height);
 
@@ -46,5 +56,6 @@ function update(map, view, width, height) {
 
 export default {
 	getLeafletViewportFromViewParams,
+	getPantherViewFromLeafletViewParams,
 	update,
 };

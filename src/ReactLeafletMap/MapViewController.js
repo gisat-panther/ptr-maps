@@ -39,7 +39,7 @@ const MapViewController = ({
 				center: {lat: currentCenter.lat, lon: currentCenter.lng},
 			});
 		}
-	}, [map, zoom]);
+	}, [map, zoom, width, height]);
 
 	// Call onViewChange if there was change in map center (e.g. by map dragging)
 	const onMove = useCallback(() => {
@@ -49,7 +49,7 @@ const MapViewController = ({
 		if (onViewChange && (currentLat !== lat || currentLon !== lon)) {
 			onViewChange({center: {lat: currentLat, lon: currentLon}});
 		}
-	}, [map, center]);
+	}, [map, lat, lon]);
 
 	useEffect(() => {
 		map.on('zoomend', onZoom);

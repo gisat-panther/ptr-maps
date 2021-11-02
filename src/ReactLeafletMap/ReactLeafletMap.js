@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {mapConstants} from '@gisatcz/ptr-core';
 import PropTypes from 'prop-types';
 import {isArray as _isArray} from 'lodash';
@@ -70,12 +70,43 @@ function getTileLayer(layer, i) {
 	);
 }
 
+/**
+ * Custom hook which handles click in map
+ * @param map {L.Map}
+ * @param onClick {function} on click callback
+ * @param width {number} width of the map component
+ * @param height {number} width of the map component
+ */
+function useMapClick(map, onClick, width, height) {
+	const onMapClick = useCallback(() => {
+		if (onClick) {
+			const view = viewHelpers.getPantherViewFromLeafletViewParams(
+				{
+					zoom: map.getZoom(),
+					center: map.getCenter(),
+				},
+				width,
+				height
+			);
+			onClick(view);
+		}
+	}, [map, onClick, width, height]);
+
+	useEffect(() => {
+		map && map.on('click', onMapClick);
+		return () => {
+			map && map.off('click', onMapClick);
+		};
+	}, [map, onMapClick]);
+}
+
 const ReactLeafletMap = ({
 	backgroundLayer,
 	height,
 	mapKey,
 	view,
 	width,
+	onClick,
 	onViewChange,
 }) => {
 	const [map, setMap] = useState(null);
@@ -84,6 +115,8 @@ const ReactLeafletMap = ({
 		width,
 		height
 	);
+
+	useMapClick(map, onClick, width, height);
 
 	const displayMap = useMemo(() => {
 		return (
@@ -129,6 +162,7 @@ ReactLeafletMap.propTypes = {
 	view: PropTypes.object,
 	width: PropTypes.number,
 
+	onClick: PropTypes.func,
 	onViewChange: PropTypes.func,
 };
 
