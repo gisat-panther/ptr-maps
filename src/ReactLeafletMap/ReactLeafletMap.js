@@ -59,7 +59,9 @@ function getTileLayer(layer, i) {
 		url = layer.options.urls[0];
 	}
 
-	return <TileLayer key={layer.key || i} url={url} {...restOptions} />;
+	return (
+		<TileLayer key={layer.key || i} url={url} {...restOptions} maxZoom={19} />
+	);
 }
 
 const ReactLeafletMap = ({
@@ -103,7 +105,6 @@ const ReactLeafletMap = ({
 			{map ? (
 				<MapViewController
 					map={map}
-					mapKey={mapKey}
 					zoom={zoom}
 					center={center}
 					width={width}
@@ -119,9 +120,10 @@ ReactLeafletMap.propTypes = {
 	backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 	height: PropTypes.number,
 	mapKey: PropTypes.string,
-	onViewChange: PropTypes.func,
 	view: PropTypes.object,
 	width: PropTypes.number,
+
+	onViewChange: PropTypes.func,
 };
 
 export default ReactLeafletMap;

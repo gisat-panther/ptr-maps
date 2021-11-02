@@ -10,10 +10,13 @@ import './style.scss';
 const ReactLeafletMapWrapper = props => {
 	const onResize = useCallback((width, height) => {
 		if (props.onResize && width && height) {
-			props.onResize(
-				viewport.roundDimension(width),
-				viewport.roundDimension(height)
-			);
+			// postpone onResize call due to React issue (Cannot update during an existing state transition)
+			setTimeout(() => {
+				props.onResize(
+					viewport.roundDimension(width),
+					viewport.roundDimension(height)
+				);
+			}, 10);
 		}
 	}, []);
 
@@ -30,7 +33,6 @@ const ReactLeafletMapWrapper = props => {
 					{...props}
 					width={viewport.roundDimension(width)}
 					height={viewport.roundDimension(height)}
-					onWrapperResize={onResize}
 				/>
 			) : null}
 		</div>
