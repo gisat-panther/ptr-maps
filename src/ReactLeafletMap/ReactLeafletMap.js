@@ -2,7 +2,13 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {mapConstants} from '@gisatcz/ptr-core';
 import PropTypes from 'prop-types';
 import {isArray as _isArray} from 'lodash';
-import {MapContainer, Pane, TileLayer, WMSTileLayer} from 'react-leaflet';
+import {
+	MapContainer,
+	MapConsumer,
+	Pane,
+	TileLayer,
+	WMSTileLayer,
+} from 'react-leaflet';
 import L from 'leaflet';
 import Proj from 'proj4leaflet';
 
@@ -10,6 +16,7 @@ import viewHelpers from './helpers/view';
 import constants from '../constants';
 
 import MapViewController from './MapViewController';
+import CogLayer from './layers/CogLayer';
 
 const backgroundLayerStartingZindex = constants.defaultLeafletPaneZindex + 1;
 const layersStartingZindex = constants.defaultLeafletPaneZindex + 101;
@@ -75,6 +82,8 @@ function getLayerByType(layer, i, zIndex, zoom) {
 				return getTileLayer(layer, i);
 			case 'wms':
 				return getWmsLayer(layer, i);
+			case 'cog':
+				return getCogLayer(layer, i, zIndex);
 			default:
 				return null;
 		}
@@ -153,6 +162,31 @@ function getWmsLayer(layer, i) {
 			// singleTile={o.singleTile === true} TODO single tile layer
 			params={params}
 		/>
+	);
+}
+
+/**
+ * Return Cloud optimized GeoTiff layer
+ * @param layer {Object} Panther Layer definition
+ * @param i {number} index of layer if the list
+ * @param zIndex {number}
+ * @returns {JSX.Element}
+ */
+function getCogLayer(layer, i, zIndex) {
+	return (
+		<MapConsumer>
+			{map => (
+				<CogLayer
+					key={layer.key || i}
+					layerKey={layer.layerKey || layer.key}
+					uniqueLayerKey={layer.key || i}
+					paneName={layer.key}
+					zIndex={zIndex}
+					map={map}
+					{...layer}
+				/>
+			)}
+		</MapConsumer>
 	);
 }
 
