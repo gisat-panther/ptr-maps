@@ -20,7 +20,11 @@ const MapViewController = ({
 
 		if (lat !== currentLat || lon !== currentLon || zoom !== currentZoom) {
 			const zoomToSet = currentZoom !== zoom ? zoom : currentZoom;
-			map.setView({lat, lng: lon}, zoomToSet, {pan: {duration: '0.1'}});
+			// TODO pass animation options as props
+			map.setView({lat, lng: lon}, zoomToSet, {
+				zoom: {animate: false},
+				pan: {animate: false},
+			});
 		}
 	}, [map, zoom, lat, lon]);
 

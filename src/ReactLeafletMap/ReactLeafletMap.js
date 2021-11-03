@@ -220,6 +220,9 @@ function useMapClick(map, onClick, width, height) {
 	}, [map, onMapClick]);
 }
 
+/**
+ * Custom hook executed once on mount
+ */
 function useFixTileGap() {
 	useEffect(() => {
 		// Hack for ugly 1px tile borders in Chrome
@@ -234,6 +237,18 @@ function useFixTileGap() {
 			},
 		});
 	}, []);
+}
+
+/**
+ * Custom hook invalidating map instance internal size if component size changed
+ * @param map {L.Map}
+ * @param width {number} width of the map component
+ * @param height {number} width of the map component
+ */
+function useInvalidateMapInstanceSize(map, width, height) {
+	useEffect(() => {
+		map && map.invalidateSize();
+	}, [map, width, height]);
 }
 
 const ReactLeafletMap = ({
@@ -253,8 +268,10 @@ const ReactLeafletMap = ({
 		height
 	);
 
+	// Custom hooks
 	useFixTileGap();
 	useMapClick(map, onClick, width, height);
+	useInvalidateMapInstanceSize(map, width, height);
 
 	let mapLayers =
 		layers &&
