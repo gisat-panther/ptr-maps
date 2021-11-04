@@ -15,6 +15,7 @@ class VectorLayer extends React.PureComponent {
 		onClick: PropTypes.func,
 		opacity: PropTypes.number,
 		options: PropTypes.object,
+		resources: PropTypes.object,
 		type: PropTypes.string,
 		view: PropTypes.object,
 		zoom: PropTypes.number,

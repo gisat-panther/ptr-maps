@@ -79,6 +79,7 @@ function getBackgroundLayers(backgroundLayer) {
  * @param width {number} map width
  * @param height {number} map width
  * @param crs {string} EPSG:code
+ * @param resources {Object} additional map resources (e.g. icons)
  * @returns {JSX.Element|null}
  */
 function getLayerByType(
@@ -90,7 +91,8 @@ function getLayerByType(
 	view,
 	width,
 	height,
-	crs
+	crs,
+	resources
 ) {
 	if (layer && layer.type) {
 		switch (layer.type) {
@@ -110,7 +112,8 @@ function getLayerByType(
 					view,
 					width,
 					height,
-					crs
+					crs,
+					resources
 				);
 			default:
 				return null;
@@ -229,6 +232,7 @@ function getCogLayer(layer, i, zIndex) {
  * @param width {number} map width
  * @param height {number} map width
  * @param crs {string} EPSG:code
+ * @param resources {Object} additional map resources (e.g. icons)
  * @returns {JSX.Element}
  */
 function getVectorLayer(
@@ -240,14 +244,15 @@ function getVectorLayer(
 	view,
 	width,
 	height,
-	crs
+	crs,
+	resources
 ) {
 	return (
 		<VectorLayer
 			key={layer.key || i}
 			layerKey={layer.layerKey || layer.key}
 			uniqueLayerKey={layer.key || i}
-			// resources={this.props.resources} // TODO
+			resources={resources}
 			onClick={onLayerClick}
 			opacity={layer.opacity || 1}
 			options={layer.options}
@@ -329,6 +334,7 @@ const ReactLeafletMap = ({
 	height,
 	layers,
 	mapKey,
+	resources,
 	view,
 	width,
 	onClick,
@@ -374,7 +380,8 @@ const ReactLeafletMap = ({
 					view,
 					width,
 					height,
-					crs
+					crs,
+					resources
 				)}
 			</Pane>
 		));
@@ -413,9 +420,11 @@ const ReactLeafletMap = ({
 
 ReactLeafletMap.propTypes = {
 	backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+	crs: PropTypes.string,
 	height: PropTypes.number,
 	layers: PropTypes.array,
 	mapKey: PropTypes.string,
+	resources: PropTypes.object,
 	view: PropTypes.object,
 	width: PropTypes.number,
 
