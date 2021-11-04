@@ -11,8 +11,6 @@ import {utils} from '@gisatcz/ptr-utils';
 import {Pane} from 'react-leaflet';
 
 import helpers from './helpers';
-// import Feature from './Feature';
-// import constants from '../../../constants';
 import GeoJsonLayer from './GeoJsonLayer';
 
 class SvgVectorLayer extends React.PureComponent {
@@ -173,17 +171,6 @@ class SvgVectorLayer extends React.PureComponent {
 	}
 
 	renderFeatures(features) {
-		// TODO
-		// if (
-		// 	this.props.renderAsGeoJson ||
-		// 	features.length > constants.maxFeaturesAsReactElement
-		// ) {
-		// 	// GeoJsonLayer doesn't get context
-		// 	return this.renderGeoJson(features);
-		// } else {
-		// 	return features.map((item, index) => this.renderFeature(item, index));
-		// }
-
 		return this.renderGeoJson(features);
 	}
 
@@ -206,33 +193,6 @@ class SvgVectorLayer extends React.PureComponent {
 			/>
 		);
 	}
-
-	// renderFeature(data, index) {
-	// 	const key =
-	// 		data.uniqueFeatureKey ||
-	// 		`${this.props.uniqueLayerKey}_${data.fid || index}`;
-	//
-	// 	return (
-	// 		<Feature
-	// 			key={key}
-	// 			uniqueFeatureKey={data.uniqueFeatureKey}
-	// 			onClick={this.onFeatureClick}
-	// 			fid={data.fid}
-	// 			fidColumnName={this.props.fidColumnName}
-	// 			feature={data.feature}
-	// 			type={data.feature.geometry.type}
-	// 			pointAsMarker={this.props.pointAsMarker}
-	// 			selectable={this.props.selectable}
-	// 			selected={data.selected}
-	// 			selectedStyleDefinition={data.selectedStyleDefinition}
-	// 			selectedHoveredStyleDefinition={data.selectedStyleDefinition}
-	// 			hoverable={this.props.hoverable}
-	// 			styleDefinition={this.props.style}
-	// 			hoveredStyleDefinition={this.props.hovered && this.props.hovered.style}
-	// 			icons={this.props.resources?.icons}
-	// 		/>
-	// 	);
-	// }
 }
 
 export default SvgVectorLayer;

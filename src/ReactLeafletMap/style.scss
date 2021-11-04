@@ -27,3 +27,23 @@
 	z-index: 0 !important;
 	will-change: transform;
 }
+
+.ptr-ReactLeafletMap .leaflet-pane {
+	will-change: transform;
+}
+
+.ptr-ReactLeafletMap .leaflet-overlay-pane {
+	z-index: 500;
+}
+
+.ptr-ReactLeafletMap .hoverable-pane:hover {
+	z-index: 497;
+}
+
+.ptr-ReactLeafletMap .selected-features-pane {
+	z-index: 498;
+}
+
+.ptr-ReactLeafletMap .hoverable-pane.selected-features-pane:hover {
+	z-index: 499;
+}
