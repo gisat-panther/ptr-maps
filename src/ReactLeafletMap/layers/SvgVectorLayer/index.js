@@ -173,6 +173,7 @@ class SvgVectorLayer extends React.PureComponent {
 	}
 
 	renderFeatures(features) {
+		// TODO
 		// if (
 		// 	this.props.renderAsGeoJson ||
 		// 	features.length > constants.maxFeaturesAsReactElement

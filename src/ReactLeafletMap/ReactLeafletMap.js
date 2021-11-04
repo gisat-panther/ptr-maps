@@ -75,6 +75,10 @@ function getBackgroundLayers(backgroundLayer) {
  * @param zIndex {number}
  * @param zoom {number}
  * @param onLayerClick {function}
+ * @param view {Object} Panther map view
+ * @param width {number} map width
+ * @param height {number} map width
+ * @param crs {string} EPSG:code
  * @returns {JSX.Element|null}
  */
 function getLayerByType(
@@ -221,6 +225,10 @@ function getCogLayer(layer, i, zIndex) {
  * @param zIndex {number}
  * @param zoom {number}
  * @param onLayerClick {function}
+ * @param view {Object} Panther map view
+ * @param width {number} map width
+ * @param height {number} map width
+ * @param crs {string} EPSG:code
  * @returns {JSX.Element}
  */
 function getVectorLayer(
@@ -239,7 +247,7 @@ function getVectorLayer(
 			key={layer.key || i}
 			layerKey={layer.layerKey || layer.key}
 			uniqueLayerKey={layer.key || i}
-			// resources={this.props.resources}
+			// resources={this.props.resources} // TODO
 			onClick={onLayerClick}
 			opacity={layer.opacity || 1}
 			options={layer.options}

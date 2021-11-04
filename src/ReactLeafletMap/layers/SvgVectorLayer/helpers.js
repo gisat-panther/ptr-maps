@@ -3,6 +3,7 @@ import constants from '../../../constants';
 import styleUtils from '../../../utils/style';
 import memoize from 'memoize-one';
 import flip from '@turf/flip';
+// TODO
 // import shapes from './Feature/shapes';
 // import MarkerShape from './Feature/MarkerShape';
 
