@@ -17,6 +17,7 @@ import constants from '../constants';
 
 import MapViewController from './MapViewController';
 import CogLayer from './layers/CogLayer';
+import VectorLayer from './layers/VectorLayer';
 
 const backgroundLayerStartingZindex = constants.defaultLeafletPaneZindex + 1;
 const layersStartingZindex = constants.defaultLeafletPaneZindex + 101;
@@ -71,11 +72,12 @@ function getBackgroundLayers(backgroundLayer) {
  * @param layer {Object} Panther Layer definition
  * @param layer.type {string} defined type of layer
  * @param i {number} index of layer if there are several data sources for one layer
- * @param zIndex
- * @param zoom
+ * @param zIndex {number}
+ * @param zoom {number}
+ * @param onLayerClick {function}
  * @returns {JSX.Element|null}
  */
-function getLayerByType(layer, i, zIndex, zoom) {
+function getLayerByType(layer, i, zIndex, zoom, onLayerClick) {
 	if (layer && layer.type) {
 		switch (layer.type) {
 			case 'wmts':
@@ -84,6 +86,8 @@ function getLayerByType(layer, i, zIndex, zoom) {
 				return getWmsLayer(layer, i);
 			case 'cog':
 				return getCogLayer(layer, i, zIndex);
+			case 'vector':
+				return getVectorLayer(layer, i, zIndex, zoom, onLayerClick);
 			default:
 				return null;
 		}
@@ -191,6 +195,36 @@ function getCogLayer(layer, i, zIndex) {
 }
 
 /**
+ * Return vector layer
+ * @param layer {Object} Panther Layer definition
+ * @param i {number} index of layer if the list
+ * @param zIndex {number}
+ * @param zoom {number}
+ * @param onLayerClick {function}
+ * @returns {JSX.Element}
+ */
+function getVectorLayer(layer, i, zIndex, zoom, onLayerClick) {
+	return (
+		<VectorLayer
+			key={layer.key || i}
+			layerKey={layer.layerKey || layer.key}
+			uniqueLayerKey={layer.key || i}
+			// resources={this.props.resources}
+			onClick={onLayerClick}
+			opacity={layer.opacity || 1}
+			options={layer.options}
+			type={layer.type}
+			// view={this.state.view || this.props.view}
+			// width={this.state.width}
+			// height={this.state.height}
+			// crs={this.props.crs}
+			zoom={zoom}
+			zIndex={zIndex}
+		/>
+	);
+}
+
+/**
  * Custom hook which handles click in map
  * @param map {L.Map}
  * @param onClick {function} on click callback
@@ -259,6 +293,7 @@ const ReactLeafletMap = ({
 	view,
 	width,
 	onClick,
+	onLayerClick,
 	onViewChange,
 }) => {
 	const [map, setMap] = useState(null);
@@ -273,6 +308,16 @@ const ReactLeafletMap = ({
 	useMapClick(map, onClick, width, height);
 	useInvalidateMapInstanceSize(map, width, height);
 
+	// Callbacks
+	const onMapLayerClick = useCallback(
+		(layerKey, featureKeys) => {
+			if (onLayerClick) {
+				onLayerClick(mapKey, layerKey, featureKeys);
+			}
+		},
+		[mapKey, onLayerClick]
+	);
+
 	let mapLayers =
 		layers &&
 		layers.map((layer, i) => (
@@ -281,7 +326,13 @@ const ReactLeafletMap = ({
 				key={layer.key || i}
 				style={{zIndex: layersStartingZindex + i}}
 			>
-				{getLayerByType(layer, i, layersStartingZindex + i, zoom)}
+				{getLayerByType(
+					layer,
+					i,
+					layersStartingZindex + i,
+					zoom,
+					onMapLayerClick
+				)}
 			</Pane>
 		));
 
@@ -326,6 +377,7 @@ ReactLeafletMap.propTypes = {
 	width: PropTypes.number,
 
 	onClick: PropTypes.func,
+	onLayerClick: PropTypes.func,
 	onViewChange: PropTypes.func,
 };
 
