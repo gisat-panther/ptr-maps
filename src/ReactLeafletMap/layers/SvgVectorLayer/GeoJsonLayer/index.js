@@ -204,8 +204,13 @@ class GeoJsonLayer extends React.PureComponent {
 				const shapeId = feature.uniqueFeatureKey
 					? `${feature.uniqueFeatureKey}_icon`
 					: utils.uuid();
+
 				const shape = this.getMarkerShape(shapeId, style, {
 					icons: this.props.icons,
+					onClick:
+						this.props.selectable &&
+						this.props.onFeatureClick.bind(this, feature.fid),
+					// TODO on events
 				});
 
 				return L.marker(coord, {
