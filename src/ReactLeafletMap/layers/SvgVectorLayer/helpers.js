@@ -1,10 +1,8 @@
+import memoize from 'memoize-one';
 import {mapStyle} from '@gisatcz/ptr-utils';
+import flip from '@turf/flip';
 import constants from '../../../constants';
 import styleUtils from '../../../utils/style';
-import memoize from 'memoize-one';
-import flip from '@turf/flip';
-import shapes from './shapes';
-import MarkerShape from './MarkerShape';
 
 /**
  * @param feature {GeoJSONFeature}
@@ -171,73 +169,6 @@ const calculateStyle = (
 const calculateStylesMemo = memoize(calculateStyle);
 
 /**
- * @param id {string}
- * @param style {Object} Leaflet style definition
- * @param options {Object}
- * @param options.icons {Object} see https://gisat.github.io/components/maps/map#resources
- * @param options.onMouseMove {function}
- * @param options.onMouseOver {function}
- * @param options.onMouseOut {function}
- * @param options.onClick {function}
- * @return {MarkerShape}
- */
-const getMarkerShape = (id, style, options) => {
-	const shapeKey = style.shape;
-	const iconKey = style.icon;
-	let basicShape = true;
-	let anchorShift = 0; // shift of anchor in pixels
-	let anchorPositionX = 0.5; // relative anchor X position (0.5 means that the shape reference point is in the middle horizontally)
-	let anchorPositionY = 0.5; // relative anchor Y position
-	let shape, icon;
-
-	// find shape by key in the internal set of shapes
-	if (shapeKey) {
-		shape = shapes[shapeKey] || null;
-	}
-
-	// find icon by key in the given set of icons
-	if (iconKey) {
-		icon = options?.icons?.[iconKey] || null;
-	}
-
-	if (shape || icon) {
-		basicShape = false;
-
-		// get anchor positions from definitions, if exist
-		if (shape?.anchorPoint) {
-			anchorPositionX = shape.anchorPoint[0];
-			anchorPositionY = shape.anchorPoint[1];
-		} else if (!shape && icon?.anchorPoint) {
-			anchorPositionX = icon.anchorPoint[0];
-			anchorPositionY = icon.anchorPoint[1];
-		}
-
-		// if outline, shift the anchor point
-		if (style?.weight) {
-			anchorShift = style?.weight;
-		}
-	}
-
-	return new MarkerShape({
-		basicShape,
-		id: id,
-		style,
-		iconAnchor: style.radius
-			? [
-					(2 * style.radius + anchorShift) * anchorPositionX,
-					(2 * style.radius + anchorShift) * anchorPositionY,
-			  ]
-			: null,
-		icon,
-		shape,
-		onMouseMove: options.onMouseMove,
-		onMouseOut: options.onMouseOut,
-		onMouseOver: options.onMouseOver,
-		onClick: options.onClick,
-	});
-};
-
-/**
  * Prepare element style by shape
  * @param leafletStyle {Object} Leaflet style definition
  * @return {Object} calculated style object
@@ -371,7 +302,6 @@ export default {
 	getFeatureAccentedStyle,
 	getFeatureDefaultStyle,
 	getFeatureLeafletStyle,
-	getMarkerShape,
 	getMarkerShapeCssStyle,
 	getMarkerShapeSvgStyle,
 };
