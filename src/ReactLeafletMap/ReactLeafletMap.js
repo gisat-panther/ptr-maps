@@ -77,7 +77,17 @@ function getBackgroundLayers(backgroundLayer) {
  * @param onLayerClick {function}
  * @returns {JSX.Element|null}
  */
-function getLayerByType(layer, i, zIndex, zoom, onLayerClick) {
+function getLayerByType(
+	layer,
+	i,
+	zIndex,
+	zoom,
+	onLayerClick,
+	view,
+	width,
+	height,
+	crs
+) {
 	if (layer && layer.type) {
 		switch (layer.type) {
 			case 'wmts':
@@ -87,7 +97,17 @@ function getLayerByType(layer, i, zIndex, zoom, onLayerClick) {
 			case 'cog':
 				return getCogLayer(layer, i, zIndex);
 			case 'vector':
-				return getVectorLayer(layer, i, zIndex, zoom, onLayerClick);
+				return getVectorLayer(
+					layer,
+					i,
+					zIndex,
+					zoom,
+					onLayerClick,
+					view,
+					width,
+					height,
+					crs
+				);
 			default:
 				return null;
 		}
@@ -203,7 +223,17 @@ function getCogLayer(layer, i, zIndex) {
  * @param onLayerClick {function}
  * @returns {JSX.Element}
  */
-function getVectorLayer(layer, i, zIndex, zoom, onLayerClick) {
+function getVectorLayer(
+	layer,
+	i,
+	zIndex,
+	zoom,
+	onLayerClick,
+	view,
+	width,
+	height,
+	crs
+) {
 	return (
 		<VectorLayer
 			key={layer.key || i}
@@ -214,10 +244,10 @@ function getVectorLayer(layer, i, zIndex, zoom, onLayerClick) {
 			opacity={layer.opacity || 1}
 			options={layer.options}
 			type={layer.type}
-			// view={this.state.view || this.props.view}
-			// width={this.state.width}
-			// height={this.state.height}
-			// crs={this.props.crs}
+			view={view}
+			width={width}
+			height={height}
+			crs={crs}
 			zoom={zoom}
 			zIndex={zIndex}
 		/>
@@ -287,6 +317,7 @@ function useInvalidateMapInstanceSize(map, width, height) {
 
 const ReactLeafletMap = ({
 	backgroundLayer,
+	crs,
 	height,
 	layers,
 	mapKey,
@@ -331,7 +362,11 @@ const ReactLeafletMap = ({
 					i,
 					layersStartingZindex + i,
 					zoom,
-					onMapLayerClick
+					onMapLayerClick,
+					view,
+					width,
+					height,
+					crs
 				)}
 			</Pane>
 		));

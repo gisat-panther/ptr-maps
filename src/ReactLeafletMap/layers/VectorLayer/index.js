@@ -3,8 +3,8 @@ import {find as _find} from 'lodash';
 import PropTypes from 'prop-types';
 
 import CanvasVectorLayer from '../CanvasVectorLayer';
-// import IndexedVectorLayer from '../IndexedVectorLayer';
-// import SvgVectorLayer from '../SvgVectorLayer';
+import IndexedVectorLayer from '../IndexedVectorLayer';
+import SvgVectorLayer from '../SvgVectorLayer';
 // import TiledVectorLayer from '../TiledVectorLayer';
 import view from '../../../utils/view';
 
@@ -73,14 +73,13 @@ class VectorLayer extends React.PureComponent {
 		if (options.renderingTechnique === 'canvas') {
 			return <CanvasVectorLayer {...props} {...options} />;
 		} else {
-			// return (
-			// 	<IndexedVectorLayer
-			// 		component={SvgVectorLayer}
-			// 		{...props}
-			// 		{...options}
-			// 	/>
-			// );
-			return null;
+			return (
+				<IndexedVectorLayer
+					component={SvgVectorLayer}
+					{...props}
+					{...options}
+				/>
+			);
 		}
 	}
 }
