@@ -103,6 +103,8 @@ function getLayerByType(
 			case 'cog':
 				return getCogLayer(layer, i, zIndex);
 			case 'vector':
+			case 'tiledVector':
+			case 'tiled-vector':
 				return getVectorLayer(
 					layer,
 					i,

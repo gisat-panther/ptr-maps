@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import CanvasVectorLayer from '../CanvasVectorLayer';
 import IndexedVectorLayer from '../IndexedVectorLayer';
 import SvgVectorLayer from '../SvgVectorLayer';
-// import TiledVectorLayer from '../TiledVectorLayer';
+import TiledVectorLayer from '../TiledVectorLayer';
 import view from '../../../utils/view';
 
 class VectorLayer extends React.PureComponent {
@@ -56,17 +56,16 @@ class VectorLayer extends React.PureComponent {
 		const options = this.getOptions();
 
 		if (type === 'tiledVector' || type === 'tiled-vector') {
-			// TODO
-			// return this.renderTiledVectorLayer(options);
+			return this.renderTiledVectorLayer(options);
 		} else {
 			return this.renderBasicVectorLayer(options);
 		}
 	}
 
 	renderTiledVectorLayer(options) {
-		// const {options: opt, ...props} = this.props;
-		//
-		// return <TiledVectorLayer {...props} {...options} />;
+		const {options: opt, ...props} = this.props;
+
+		return <TiledVectorLayer {...props} {...options} />;
 	}
 
 	renderBasicVectorLayer(options) {

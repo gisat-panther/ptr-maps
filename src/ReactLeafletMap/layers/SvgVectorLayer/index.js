@@ -17,7 +17,6 @@ class SvgVectorLayer extends React.PureComponent {
 	static propTypes = {
 		layerKey: PropTypes.string,
 		uniqueLayerKey: PropTypes.string, // typically a combination of layerKey and data source key (or just layerKey, if no data source)
-		renderAsGeoJson: PropTypes.bool, // Use Leaflet's GeoJSON layer to render vector features
 		features: PropTypes.array,
 		fidColumnName: PropTypes.string,
 		omittedFeatureKeys: PropTypes.array,
