@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {mapConstants} from '@gisatcz/ptr-core';
+import {map as mapUtils} from '@gisatcz/ptr-utils';
 import PropTypes from 'prop-types';
 import {isArray as _isArray} from 'lodash';
 import {
@@ -338,6 +339,7 @@ const ReactLeafletMap = ({
 	mapKey,
 	resources,
 	view,
+	viewLimits,
 	width,
 	onClick,
 	onLayerClick,
@@ -364,6 +366,31 @@ const ReactLeafletMap = ({
 		},
 		[mapKey, onLayerClick]
 	);
+
+	// Memos
+	const [maxZoom, minZoom] = useMemo(() => {
+		let minZoom = mapConstants.defaultLevelsRange[0];
+		let maxZoom = mapConstants.defaultLevelsRange[1];
+		if (viewLimits?.boxRangeRange) {
+			if (viewLimits.boxRangeRange[1]) {
+				minZoom = mapUtils.view.getZoomLevelFromBoxRange(
+					viewLimits.boxRangeRange[1],
+					width,
+					height
+				);
+			}
+
+			if (viewLimits.boxRangeRange[0]) {
+				maxZoom = mapUtils.view.getZoomLevelFromBoxRange(
+					viewLimits.boxRangeRange[0],
+					width,
+					height
+				);
+			}
+		}
+
+		return [maxZoom, minZoom];
+	}, [width, height, viewLimits]);
 
 	let mapLayers =
 		layers &&
@@ -395,6 +422,8 @@ const ReactLeafletMap = ({
 				className="ptr-map ptr-ReactLeafletMap"
 				center={center}
 				zoom={zoom}
+				maxZoom={maxZoom}
+				minZoom={minZoom}
 				zoomControl={false}
 				whenCreated={setMap}
 			>
@@ -428,6 +457,7 @@ ReactLeafletMap.propTypes = {
 	mapKey: PropTypes.string,
 	resources: PropTypes.object,
 	view: PropTypes.object,
+	viewLimits: PropTypes.object,
 	width: PropTypes.number,
 
 	onClick: PropTypes.func,
