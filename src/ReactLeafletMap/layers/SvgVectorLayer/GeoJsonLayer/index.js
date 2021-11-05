@@ -134,6 +134,11 @@ class GeoJsonLayer extends React.PureComponent {
 					this.props.onFeatureClick(feature.fid);
 				}
 			},
+			mouseover: e => {
+				if (!this.props.selectable && !this.props.hoverable) {
+					e.originalEvent.target.className.baseVal = '';
+				}
+			},
 			mousemove: e => {
 				if (this.props.hoverable) {
 					if (feature.selected && styles.selectedHovered) {
