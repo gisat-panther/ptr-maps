@@ -3,7 +3,7 @@ import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import PropTypes from 'prop-types';
 import {isArray as _isArray} from 'lodash';
-import {MapContainer, MapConsumer, Pane, TileLayer} from 'react-leaflet';
+import {MapContainer, MapConsumer, TileLayer} from 'react-leaflet';
 import L from 'leaflet';
 
 import viewHelpers from './helpers/view';
@@ -13,6 +13,7 @@ import MapViewController from './MapViewController';
 import CogLayer from './layers/CogLayer';
 import VectorLayer from './layers/VectorLayer';
 import WmsLayer from './layers/WmsLayer';
+import MapPane from './MapPane';
 
 const backgroundLayerStartingZindex = constants.defaultLeafletPaneZindex + 1;
 const layersStartingZindex = constants.defaultLeafletPaneZindex + 101;
@@ -333,10 +334,11 @@ const ReactLeafletMap = ({
 	let mapLayers =
 		layers &&
 		layers.map((layer, i) => (
-			<Pane
+			<MapPane
 				name={layer.key}
 				key={layer.key || i}
-				style={{zIndex: layersStartingZindex + i}}
+				zIndex={layersStartingZindex + i}
+				map={map}
 			>
 				{getLayerByType(
 					layer,
@@ -350,7 +352,7 @@ const ReactLeafletMap = ({
 					crs,
 					resources
 				)}
-			</Pane>
+			</MapPane>
 		));
 
 	return (
@@ -365,12 +367,9 @@ const ReactLeafletMap = ({
 				zoomControl={false}
 				whenCreated={setMap}
 			>
-				<Pane
-					style={{zIndex: backgroundLayerStartingZindex}}
-					name="backgroundLayers"
-				>
+				<MapPane zIndex={backgroundLayerStartingZindex} name="backgroundLayers">
 					{getBackgroundLayers(backgroundLayer)}
-				</Pane>
+				</MapPane>
 				{mapLayers}
 			</MapContainer>
 			{map ? (
