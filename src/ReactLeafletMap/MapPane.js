@@ -15,7 +15,7 @@ const MapPane = ({children, name, zIndex, map}) => {
 	}, [map, zIndex]);
 
 	return (
-		<Pane ref={paneRef} name={name} style={{zIndex}}>
+		<Pane forwardRef={paneRef} name={name} style={{zIndex}}>
 			{children}
 		</Pane>
 	);
@@ -24,7 +24,7 @@ const MapPane = ({children, name, zIndex, map}) => {
 MapPane.propTypes = {
 	name: PropTypes.string,
 	zIndex: PropTypes.number,
-	map: PropTypes.object
-}
+	map: PropTypes.object,
+};
 
 export default MapPane;
