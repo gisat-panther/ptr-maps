@@ -7,6 +7,7 @@ import {MapContainer, MapConsumer, TileLayer} from 'react-leaflet';
 import L from 'leaflet';
 
 import viewHelpers from './helpers/view';
+import paneHelpers from './helpers/pane';
 import constants from '../constants';
 
 import MapViewController from './MapViewController';
@@ -20,21 +21,23 @@ const layersStartingZindex = constants.defaultLeafletPaneZindex + 101;
 
 /**
  * Return one or multiple layer as an array (depending on number of data sources)
+ * @param mapKey {string}
  * @param backgroundLayer {Object} Panther Layer definition
  * @returns {(JSX.Element|null)[]}
  */
-function getBackgroundLayers(backgroundLayer) {
+function getBackgroundLayers(mapKey, backgroundLayer) {
 	const backgroundLayersSource = _isArray(backgroundLayer)
 		? backgroundLayer
 		: [backgroundLayer];
 	return (
 		backgroundLayersSource &&
-		backgroundLayersSource.map((layer, i) => getLayerByType(layer, i))
+		backgroundLayersSource.map((layer, i) => getLayerByType(mapKey, layer, i))
 	);
 }
 
 /**
  * Return layer by given layer.type
+ * @param mapKey {string}
  * @param layer {Object} Panther Layer definition
  * @param layer.type {string} defined type of layer
  * @param i {number} index of layer if there are several data sources for one layer
@@ -49,6 +52,7 @@ function getBackgroundLayers(backgroundLayer) {
  * @returns {JSX.Element|null}
  */
 function getLayerByType(
+	mapKey,
 	layer,
 	i,
 	zIndex,
@@ -67,7 +71,7 @@ function getLayerByType(
 			case 'wms':
 				return getWmsLayer(layer, i);
 			case 'cog':
-				return getCogLayer(layer, i, zIndex);
+				return getCogLayer(mapKey, layer, i, zIndex);
 			case 'vector':
 			case 'tiledVector':
 			case 'tiled-vector':
@@ -128,12 +132,14 @@ function getWmsLayer(layer, i) {
 
 /**
  * Return Cloud optimized GeoTiff layer
+ * @param mapKey {string}
  * @param layer {Object} Panther Layer definition
  * @param i {number} index of layer if the list
  * @param zIndex {number}
  * @returns {JSX.Element}
  */
-function getCogLayer(layer, i, zIndex) {
+function getCogLayer(mapKey, layer, i, zIndex) {
+	const paneKey = paneHelpers.getKey(mapKey, layer, i);
 	return (
 		<MapConsumer>
 			{map => (
@@ -141,7 +147,7 @@ function getCogLayer(layer, i, zIndex) {
 					key={layer.key || i}
 					layerKey={layer.layerKey || layer.key}
 					uniqueLayerKey={layer.key || i}
-					paneName={layer.key}
+					paneName={paneKey}
 					zIndex={zIndex}
 					map={map}
 					{...layer}
@@ -333,27 +339,31 @@ const ReactLeafletMap = ({
 
 	let mapLayers =
 		layers &&
-		layers.map((layer, i) => (
-			<MapPane
-				name={layer.key}
-				key={layer.key || i}
-				zIndex={layersStartingZindex + i}
-				map={map}
-			>
-				{getLayerByType(
-					layer,
-					i,
-					layersStartingZindex + i,
-					zoom,
-					onMapLayerClick,
-					view,
-					width,
-					height,
-					crs,
-					resources
-				)}
-			</MapPane>
-		));
+		layers.map((layer, i) => {
+			const paneKey = paneHelpers.getKey(mapKey, layer, i);
+			return (
+				<MapPane
+					name={paneKey}
+					key={paneKey}
+					zIndex={layersStartingZindex + i}
+					map={map}
+				>
+					{getLayerByType(
+						mapKey,
+						layer,
+						i,
+						layersStartingZindex + i,
+						zoom,
+						onMapLayerClick,
+						view,
+						width,
+						height,
+						crs,
+						resources
+					)}
+				</MapPane>
+			);
+		});
 
 	return (
 		<>
@@ -367,8 +377,11 @@ const ReactLeafletMap = ({
 				zoomControl={false}
 				whenCreated={setMap}
 			>
-				<MapPane zIndex={backgroundLayerStartingZindex} name="backgroundLayers">
-					{getBackgroundLayers(backgroundLayer)}
+				<MapPane
+					zIndex={backgroundLayerStartingZindex}
+					name={paneHelpers.getKey(mapKey, 'backgroundLayers')}
+				>
+					{getBackgroundLayers(mapKey, backgroundLayer)}
 				</MapPane>
 				{mapLayers}
 			</MapContainer>
