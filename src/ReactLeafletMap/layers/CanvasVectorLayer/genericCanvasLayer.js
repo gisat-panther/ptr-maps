@@ -122,7 +122,10 @@ export const CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 			L.Util.cancelAnimFrame(this._frame);
 		}
 
-		map.getPane(this._paneName).removeChild(this._canvas);
+		const pane = map.getPane(this._paneName);
+		if (pane) {
+			pane.removeChild(this._canvas);
+		}
 
 		map.off(this.getEvents(), this);
 

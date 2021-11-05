@@ -3,16 +3,8 @@ import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import PropTypes from 'prop-types';
 import {isArray as _isArray} from 'lodash';
-import {
-	MapContainer,
-	MapConsumer,
-	Pane,
-	TileLayer,
-	WMSTileLayer,
-} from 'react-leaflet';
+import {MapContainer, MapConsumer, Pane, TileLayer} from 'react-leaflet';
 import L from 'leaflet';
-import Proj from 'proj4leaflet';
-import memoize from 'memoize-one';
 
 import viewHelpers from './helpers/view';
 import constants from '../constants';
@@ -20,77 +12,10 @@ import constants from '../constants';
 import MapViewController from './MapViewController';
 import CogLayer from './layers/CogLayer';
 import VectorLayer from './layers/VectorLayer';
+import WmsLayer from './layers/WmsLayer';
 
 const backgroundLayerStartingZindex = constants.defaultLeafletPaneZindex + 1;
 const layersStartingZindex = constants.defaultLeafletPaneZindex + 101;
-
-const reservedWmsParamsKeys = [
-	'layers',
-	'crs',
-	'imageFormat',
-	'pane',
-	'maxZoom',
-	'styles',
-];
-
-const getWmsRestParameters = memoize(
-	options =>
-		(options?.params &&
-			Object.entries(options.params).reduce((acc, [key, value]) => {
-				if (reservedWmsParamsKeys.includes(key)) {
-					return acc;
-				} else {
-					acc[key] = value;
-					return acc;
-				}
-			}, {})) ||
-		{}
-);
-
-const getWmsParams = memoize((params, opacity) => {
-	const layers = params?.layers || '';
-	const imageFormat = params?.imageFormat || 'image/png';
-	const restParameters =
-		(params &&
-			Object.entries(params).reduce((acc, [key, value]) => {
-				if (reservedWmsParamsKeys.includes(key)) {
-					return acc;
-				} else {
-					acc[key] = value;
-					return acc;
-				}
-			}, {})) ||
-		{};
-
-	return {
-		layers: layers,
-		opacity: opacity >= 0 ? opacity : 1,
-		transparent: true,
-		format: imageFormat,
-		...restParameters,
-	};
-});
-
-/**
- * Get Proj CRS definition
- * @param code {string} EPSG:code
- * @returns {Proj.CRS|*}
- */
-function getCRS(code) {
-	switch (code) {
-		case 'EPSG:4326':
-			return L.CRS.EPSG4326;
-		case 'EPSG:5514':
-			return new Proj.CRS('EPSG:5514', constants.projDefinitions.epsg5514, {
-				resolutions: [
-					102400, 51200, 25600, 12800, 6400, 3200, 1600, 800, 400, 200, 100, 50,
-					25, 12.5, 6.25, 3.125, 1.5625, 0.78125, 0.390625,
-				],
-			});
-		default:
-			return L.CRS.EPSG3857;
-	}
-}
 
 /**
  * Return one or multiple layer as an array (depending on number of data sources)
@@ -197,19 +122,7 @@ function getTileLayer(layer, i) {
  */
 function getWmsLayer(layer, i) {
 	const {options, opacity, key} = layer;
-
-	const crs = options?.params?.crs ? getCRS(options.params.crs) : null;
-	const params = getWmsParams(options?.params, opacity);
-
-	return (
-		<WMSTileLayer
-			key={key || i}
-			url={options.url}
-			crs={crs}
-			// singleTile={o.singleTile === true} TODO single tile layer
-			params={params}
-		/>
-	);
+	return <WmsLayer layerKey={key || i} options={options} opacity={opacity} />;
 }
 
 /**
@@ -344,6 +257,37 @@ function useInvalidateMapInstanceSize(map, width, height) {
 	}, [map, width, height]);
 }
 
+/**
+ * Get minZoom and maxZoom
+ * @param width {number} width of the map component
+ * @param height {number} width of the map component
+ * @param viewLimits {Object} Panther view limits
+ * @returns {[maxZoom, minZoom]}
+ */
+function getZoomLimits(width, height, viewLimits) {
+	let minZoom = mapConstants.defaultLevelsRange[0];
+	let maxZoom = mapConstants.defaultLevelsRange[1];
+	if (viewLimits?.boxRangeRange) {
+		if (viewLimits.boxRangeRange[1]) {
+			minZoom = mapUtils.view.getZoomLevelFromBoxRange(
+				viewLimits.boxRangeRange[1],
+				width,
+				height
+			);
+		}
+
+		if (viewLimits.boxRangeRange[0]) {
+			maxZoom = mapUtils.view.getZoomLevelFromBoxRange(
+				viewLimits.boxRangeRange[0],
+				width,
+				height
+			);
+		}
+	}
+
+	return [maxZoom, minZoom];
+}
+
 const ReactLeafletMap = ({
 	backgroundLayer,
 	crs,
@@ -381,29 +325,10 @@ const ReactLeafletMap = ({
 	);
 
 	// Memos
-	const [maxZoom, minZoom] = useMemo(() => {
-		let minZoom = mapConstants.defaultLevelsRange[0];
-		let maxZoom = mapConstants.defaultLevelsRange[1];
-		if (viewLimits?.boxRangeRange) {
-			if (viewLimits.boxRangeRange[1]) {
-				minZoom = mapUtils.view.getZoomLevelFromBoxRange(
-					viewLimits.boxRangeRange[1],
-					width,
-					height
-				);
-			}
-
-			if (viewLimits.boxRangeRange[0]) {
-				maxZoom = mapUtils.view.getZoomLevelFromBoxRange(
-					viewLimits.boxRangeRange[0],
-					width,
-					height
-				);
-			}
-		}
-
-		return [maxZoom, minZoom];
-	}, [width, height, viewLimits]);
+	const [maxZoom, minZoom] = useMemo(
+		() => getZoomLimits(width, height, viewLimits),
+		[width, height, viewLimits]
+	);
 
 	let mapLayers =
 		layers &&
