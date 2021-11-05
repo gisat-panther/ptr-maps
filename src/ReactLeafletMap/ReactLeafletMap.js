@@ -76,6 +76,7 @@ function getLayerByType(
 			case 'tiledVector':
 			case 'tiled-vector':
 				return getVectorLayer(
+					mapKey,
 					layer,
 					i,
 					zIndex,
@@ -159,6 +160,7 @@ function getCogLayer(mapKey, layer, i, zIndex) {
 
 /**
  * Return vector layer
+ * @param mapKey {string}
  * @param layer {Object} Panther Layer definition
  * @param i {number} index of layer if the list
  * @param zIndex {number}
@@ -172,6 +174,7 @@ function getCogLayer(mapKey, layer, i, zIndex) {
  * @returns {JSX.Element}
  */
 function getVectorLayer(
+	mapKey,
 	layer,
 	i,
 	zIndex,
@@ -185,6 +188,7 @@ function getVectorLayer(
 ) {
 	return (
 		<VectorLayer
+			mapKey={mapKey}
 			key={layer.key || i}
 			layerKey={layer.layerKey || layer.key}
 			uniqueLayerKey={layer.key || i}

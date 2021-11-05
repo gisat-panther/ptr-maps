@@ -10,6 +10,7 @@ import view from '../../../utils/view';
 
 class VectorLayer extends React.PureComponent {
 	static propTypes = {
+		mapKey: PropTypes.string,
 		layerKey: PropTypes.string,
 		uniqueLayerKey: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 		onClick: PropTypes.func,

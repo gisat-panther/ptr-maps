@@ -1,10 +1,12 @@
 import React from 'react';
 import {createLayerComponent} from '@react-leaflet/core';
 import LeafletCanvasLayer from './LeafletCanvasLayer';
+import paneHelpers from '../../helpers/pane';
 
 function createLeafletElement(props, context) {
+	const paneKey = paneHelpers.getKey(props.mapKey, props.uniqueLayerKey);
 	const instance = new LeafletCanvasLayer({
-		paneName: props.uniqueLayerKey,
+		paneName: paneKey,
 		paneZindex: props.zIndex,
 	});
 
@@ -17,7 +19,8 @@ function createLeafletElement(props, context) {
 
 function updateLeafletElement(instance, props, prevProps) {
 	if (prevProps.zIndex !== props.zIndex) {
-		instance.setPaneZindex(props.uniqueLayerKey, props.zIndex);
+		const paneKey = paneHelpers.getKey(props.mapKey, props.uniqueLayerKey);
+		instance.setPaneZindex(paneKey, props.zIndex);
 	}
 
 	// TODO
