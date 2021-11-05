@@ -12,6 +12,7 @@ import {
 } from 'react-leaflet';
 import L from 'leaflet';
 import Proj from 'proj4leaflet';
+import memoize from 'memoize-one';
 
 import viewHelpers from './helpers/view';
 import constants from '../constants';
@@ -31,6 +32,44 @@ const reservedWmsParamsKeys = [
 	'maxZoom',
 	'styles',
 ];
+
+const getWmsRestParameters = memoize(
+	options =>
+		(options?.params &&
+			Object.entries(options.params).reduce((acc, [key, value]) => {
+				if (reservedWmsParamsKeys.includes(key)) {
+					return acc;
+				} else {
+					acc[key] = value;
+					return acc;
+				}
+			}, {})) ||
+		{}
+);
+
+const getWmsParams = memoize((params, opacity) => {
+	const layers = params?.layers || '';
+	const imageFormat = params?.imageFormat || 'image/png';
+	const restParameters =
+		(params &&
+			Object.entries(params).reduce((acc, [key, value]) => {
+				if (reservedWmsParamsKeys.includes(key)) {
+					return acc;
+				} else {
+					acc[key] = value;
+					return acc;
+				}
+			}, {})) ||
+		{};
+
+	return {
+		layers: layers,
+		opacity: opacity >= 0 ? opacity : 1,
+		transparent: true,
+		format: imageFormat,
+		...restParameters,
+	};
+});
 
 /**
  * Get Proj CRS definition
@@ -159,34 +198,8 @@ function getTileLayer(layer, i) {
 function getWmsLayer(layer, i) {
 	const {options, opacity, key} = layer;
 
-	const layers = options?.params?.layers || '';
 	const crs = options?.params?.crs ? getCRS(options.params.crs) : null;
-	const imageFormat = options?.params?.imageFormat || 'image/png';
-
-	const restParameters = useMemo(
-		() =>
-			(options?.params &&
-				Object.entries(options.params).reduce((acc, [key, value]) => {
-					if (reservedWmsParamsKeys.includes(key)) {
-						return acc;
-					} else {
-						acc[key] = value;
-						return acc;
-					}
-				}, {})) ||
-			{},
-		[options]
-	);
-
-	const params = useMemo(() => {
-		return {
-			layers: layers,
-			opacity: opacity >= 0 ? opacity : 1,
-			transparent: true,
-			format: imageFormat,
-			...restParameters,
-		};
-	}, [layers, opacity, imageFormat, restParameters]);
+	const params = getWmsParams(options?.params, opacity);
 
 	return (
 		<WMSTileLayer
