@@ -357,9 +357,6 @@ const ReactLeafletMap = ({
 		layers &&
 		layers.map((layer, i) => {
 			const paneKey = paneHelpers.getKey(mapKey, layer, i);
-			if (crs) {
-				debugger;
-			}
 			return (
 				<MapPane
 					name={paneKey}
