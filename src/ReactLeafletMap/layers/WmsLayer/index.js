@@ -42,10 +42,8 @@ const getFinalParams = (params, opacity) => {
 	};
 };
 
-const WmsLayer = ({layerKey, options, opacity}) => {
+const WmsLayer = ({layerKey, options, opacity, crs}) => {
 	const {params} = options;
-
-	const crs = params?.crs ? projectionHelpers.getCRS(params.crs) : null;
 	const finalParams = useMemo(
 		() => getFinalParams(params, opacity),
 		[params, opacity]
@@ -55,7 +53,7 @@ const WmsLayer = ({layerKey, options, opacity}) => {
 		<WMSTileLayer
 			key={layerKey || i}
 			url={options.url}
-			crs={crs}
+			crs={crs ? projectionHelpers.getCRS(crs) : null}
 			// singleTile={o.singleTile === true} TODO single tile layer
 			params={finalParams}
 		/>

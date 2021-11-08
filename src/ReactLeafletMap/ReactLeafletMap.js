@@ -8,6 +8,7 @@ import L from 'leaflet';
 
 import viewHelpers from './helpers/view';
 import paneHelpers from './helpers/pane';
+import projectionHelpers from './helpers/projection';
 import constants from '../constants';
 
 import MapViewController from './MapViewController';
@@ -23,15 +24,18 @@ const layersStartingZindex = constants.defaultLeafletPaneZindex + 101;
  * Return one or multiple layer as an array (depending on number of data sources)
  * @param mapKey {string}
  * @param backgroundLayer {Object} Panther Layer definition
+ * @param crs {string} EPSG:code
  * @returns {(JSX.Element|null)[]}
  */
-function getBackgroundLayers(mapKey, backgroundLayer) {
+function getBackgroundLayers(mapKey, backgroundLayer, crs) {
 	const backgroundLayersSource = _isArray(backgroundLayer)
 		? backgroundLayer
 		: [backgroundLayer];
 	return (
 		backgroundLayersSource &&
-		backgroundLayersSource.map((layer, i) => getLayerByType(mapKey, layer, i))
+		backgroundLayersSource.map((layer, i) =>
+			getLayerByType(mapKey, layer, i, crs)
+		)
 	);
 }
 
@@ -42,12 +46,12 @@ function getBackgroundLayers(mapKey, backgroundLayer) {
  * @param layer.type {string} defined type of layer
  * @param i {number} index of layer if there are several data sources for one layer
  * @param zIndex {number}
+ * @param crs {string} EPSG:code
  * @param zoom {number}
  * @param onLayerClick {function}
  * @param view {Object} Panther map view
  * @param width {number} map width
  * @param height {number} map width
- * @param crs {string} EPSG:code
  * @param resources {Object} additional map resources (e.g. icons)
  * @returns {JSX.Element|null}
  */
@@ -55,13 +59,13 @@ function getLayerByType(
 	mapKey,
 	layer,
 	i,
+	crs,
 	zIndex,
 	zoom,
 	onLayerClick,
 	view,
 	width,
 	height,
-	crs,
 	resources
 ) {
 	if (layer && layer.type) {
@@ -69,7 +73,7 @@ function getLayerByType(
 			case 'wmts':
 				return getTileLayer(layer, i);
 			case 'wms':
-				return getWmsLayer(layer, i);
+				return getWmsLayer(layer, i, crs);
 			case 'cog':
 				return getCogLayer(mapKey, layer, i, zIndex);
 			case 'vector':
@@ -124,11 +128,19 @@ function getTileLayer(layer, i) {
  * Return WMS layer
  * @param layer {Object} Panther Layer definition
  * @param i {number} index of layer if the list
+ * @param crs {string} EPSG:code
  * @returns {JSX.Element} WMSTileLayer https://react-leaflet.js.org/docs/api-components/#wmstilelayer
  */
-function getWmsLayer(layer, i) {
+function getWmsLayer(layer, i, crs) {
 	const {options, opacity, key} = layer;
-	return <WmsLayer layerKey={key || i} options={options} opacity={opacity} />;
+	return (
+		<WmsLayer
+			layerKey={key || i}
+			options={options}
+			opacity={opacity}
+			crs={crs}
+		/>
+	);
 }
 
 /**
@@ -345,6 +357,9 @@ const ReactLeafletMap = ({
 		layers &&
 		layers.map((layer, i) => {
 			const paneKey = paneHelpers.getKey(mapKey, layer, i);
+			if (crs) {
+				debugger;
+			}
 			return (
 				<MapPane
 					name={paneKey}
@@ -356,13 +371,13 @@ const ReactLeafletMap = ({
 						mapKey,
 						layer,
 						i,
+						crs,
 						layersStartingZindex + i,
 						zoom,
 						onMapLayerClick,
 						view,
 						width,
 						height,
-						crs,
 						resources
 					)}
 				</MapPane>
@@ -380,12 +395,13 @@ const ReactLeafletMap = ({
 				minZoom={minZoom}
 				zoomControl={false}
 				whenCreated={setMap}
+				crs={projectionHelpers.getCRS(crs)}
 			>
 				<MapPane
 					zIndex={backgroundLayerStartingZindex}
 					name={paneHelpers.getKey(mapKey, 'backgroundLayers')}
 				>
-					{getBackgroundLayers(mapKey, backgroundLayer)}
+					{getBackgroundLayers(mapKey, backgroundLayer, crs)}
 				</MapPane>
 				{mapLayers}
 			</MapContainer>
