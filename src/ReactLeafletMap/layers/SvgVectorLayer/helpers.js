@@ -231,6 +231,8 @@ const getMarkerShapeSquareStyle = (leafletStyle, rotation, borderRadius) => {
 	if (leafletStyle.weight) {
 		style['borderStyle'] = 'solid';
 		style['borderWidth'] = leafletStyle.weight + 'px';
+	} else {
+		style['borderWidth'] = 0;
 	}
 
 	if (borderRadius) {
@@ -284,6 +286,8 @@ const getMarkerShapeSvgStyle = leafletStyle => {
 
 	if (leafletStyle.weight) {
 		style.strokeWidth = leafletStyle.weight + 'px';
+	} else {
+		style.strokeWidth = 0;
 	}
 
 	if (leafletStyle.iconFill) {
