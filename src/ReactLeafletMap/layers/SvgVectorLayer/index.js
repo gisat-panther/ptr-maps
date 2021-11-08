@@ -151,17 +151,29 @@ class SvgVectorLayer extends React.PureComponent {
 		return data ? (
 			<>
 				{data.polygons?.length ? (
-					<Pane className={classes} style={style} name={this.polygonsPaneName}>
+					<Pane
+						className={classes}
+						style={{...style, zIndex: 1}}
+						name={this.polygonsPaneName}
+					>
 						{this.renderFeatures(data.polygons)}
 					</Pane>
 				) : null}
 				{data.lines?.length ? (
-					<Pane className={classes} style={style} name={this.linesPaneName}>
+					<Pane
+						className={classes}
+						style={{...style, zIndex: 2}}
+						name={this.linesPaneName}
+					>
 						{this.renderFeatures(data.lines)}
 					</Pane>
 				) : null}
 				{data.points?.length ? (
-					<Pane className={classes} style={style} name={this.pointsPaneName}>
+					<Pane
+						className={classes}
+						style={{...style, zIndex: 3}}
+						name={this.pointsPaneName}
+					>
 						{this.renderFeatures(data.points)}
 					</Pane>
 				) : null}
