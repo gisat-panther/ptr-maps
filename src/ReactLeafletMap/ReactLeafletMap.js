@@ -135,6 +135,7 @@ function getWmsLayer(layer, i, crs) {
 	const {options, opacity, key} = layer;
 	return (
 		<WmsLayer
+			key={key || i}
 			layerKey={key || i}
 			options={options}
 			opacity={opacity}

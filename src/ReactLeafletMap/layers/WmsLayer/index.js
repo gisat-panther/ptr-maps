@@ -2,7 +2,7 @@ import React, {useMemo} from 'react';
 import {WMSTileLayer} from 'react-leaflet';
 import PropTypes from 'prop-types';
 import projectionHelpers from '../../helpers/projection';
-
+import SingleTileLayer from './SingleTileLayer';
 const reservedWmsParamsKeys = [
 	'layers',
 	'crs',
@@ -42,6 +42,7 @@ const getFinalParams = (params, opacity) => {
 	};
 };
 
+
 const WmsLayer = ({layerKey, options, opacity, crs}) => {
 	const {params} = options;
 	const finalParams = useMemo(
@@ -49,15 +50,25 @@ const WmsLayer = ({layerKey, options, opacity, crs}) => {
 		[params, opacity]
 	);
 
-	return (
-		<WMSTileLayer
-			key={layerKey || i}
-			url={options.url}
-			crs={crs ? projectionHelpers.getCRS(crs) : null}
-			// singleTile={o.singleTile === true} TODO single tile layer
-			params={finalParams}
+	if (options.singleTile) {
+		return (
+			<SingleTileLayer 
+				key={layerKey || i}
+				url={options.url}
+				crs={crs ? projectionHelpers.getCRS(crs) : null}
+				params={finalParams}
+			/>
+		)
+	} else {
+		return (
+			<WMSTileLayer
+				key={layerKey || i}
+				url={options.url}
+				crs={crs ? projectionHelpers.getCRS(crs) : null}
+				params={finalParams}
 		/>
-	);
+		);
+	}
 };
 
 WmsLayer.propTypes = {
