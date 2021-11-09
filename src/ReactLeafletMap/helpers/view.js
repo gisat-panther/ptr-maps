@@ -54,8 +54,28 @@ function update(map, view, width, height) {
 	}
 }
 
+function getLimitedCenter(limits, lat, lon) {
+	let limitedCenter = {lat, lon};
+	const {minLat, maxLat, minLon, maxLon} = limits;
+
+	if (lat > maxLat) {
+		limitedCenter.lat = maxLat;
+	} else if (lat < minLat) {
+		limitedCenter.lat = minLat;
+	}
+
+	if (lon > maxLon) {
+		limitedCenter.lon = maxLon;
+	} else if (lon < minLon) {
+		limitedCenter.lon = minLon;
+	}
+
+	return limitedCenter;
+}
+
 export default {
 	getLeafletViewportFromViewParams,
 	getPantherViewFromLeafletViewParams,
+	getLimitedCenter,
 	update,
 };

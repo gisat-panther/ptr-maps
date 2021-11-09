@@ -409,6 +409,7 @@ const ReactLeafletMap = ({
 					center={center}
 					width={width}
 					height={height}
+					viewLimits={viewLimits}
 					onViewChange={onViewChange}
 				/>
 			) : null}

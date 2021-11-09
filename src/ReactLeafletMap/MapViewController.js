@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
+import viewHelpers from './helpers/view';
 
 const MapViewController = ({
 	map,
@@ -8,6 +9,7 @@ const MapViewController = ({
 	center,
 	width,
 	height,
+	viewLimits,
 	onViewChange,
 }) => {
 	const [lat, lon] = center;
@@ -47,9 +49,35 @@ const MapViewController = ({
 
 	// Call onViewChange if there was change in map center (e.g. by map dragging)
 	const onMove = useCallback(() => {
+		// get current map center
 		const currentCenter = map.getCenter();
-		const {lat: currentLat, lng: currentLon} = currentCenter;
+		let {lat: currentLat, lng: currentLon} = currentCenter;
 
+		// check if current map center fits limits
+		if (viewLimits?.center) {
+			let centerChanged;
+			const {lat: limitedLat, lon: limitedLon} = viewHelpers.getLimitedCenter(
+				viewLimits.center,
+				currentLat,
+				currentLon
+			);
+			if (currentLat !== limitedLat) {
+				currentLat = limitedLat;
+				centerChanged = true;
+			}
+			if (currentLon !== limitedLon) {
+				currentLon = limitedLon;
+				centerChanged = true;
+			}
+
+			// if current map center is out of limits, adjust it
+			if (centerChanged) {
+				const currentZoom = map.getZoom();
+				map.setView({lat: currentLat, lng: currentLon}, currentZoom);
+			}
+		}
+
+		// call onViewChange if current map center is different from center props
 		if (onViewChange && (currentLat !== lat || currentLon !== lon)) {
 			onViewChange({center: {lat: currentLat, lon: currentLon}});
 		}
@@ -71,6 +99,7 @@ MapViewController.propTypes = {
 	center: PropTypes.array,
 	height: PropTypes.number,
 	map: PropTypes.object,
+	viewLimits: PropTypes.object,
 	width: PropTypes.number,
 	zoom: PropTypes.number,
 
