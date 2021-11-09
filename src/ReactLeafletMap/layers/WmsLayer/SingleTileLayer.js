@@ -28,12 +28,8 @@ const SingleTileLayer = createLayerComponent(
 	updateLeafletElement
 );
 
-
 SingleTileLayer.propTypes = {
-	crs: PropTypes.oneOfType([
-		PropTypes.string,
-		PropTypes.object,
-	]),
+	crs: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 	opacity: PropTypes.number,
 	url: PropTypes.string,
 	params: PropTypes.object,
