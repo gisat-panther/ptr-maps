@@ -42,7 +42,6 @@ const getFinalParams = (params, opacity) => {
 	};
 };
 
-
 const WmsLayer = ({layerKey, options, opacity, crs}) => {
 	const {params} = options;
 	const finalParams = useMemo(
@@ -52,13 +51,13 @@ const WmsLayer = ({layerKey, options, opacity, crs}) => {
 
 	if (options.singleTile) {
 		return (
-			<SingleTileLayer 
+			<SingleTileLayer
 				key={layerKey || i}
 				url={options.url}
 				crs={crs ? projectionHelpers.getCRS(crs) : null}
 				params={finalParams}
 			/>
-		)
+		);
 	} else {
 		return (
 			<WMSTileLayer
@@ -66,7 +65,7 @@ const WmsLayer = ({layerKey, options, opacity, crs}) => {
 				url={options.url}
 				crs={crs ? projectionHelpers.getCRS(crs) : null}
 				params={finalParams}
-		/>
+			/>
 		);
 	}
 };
