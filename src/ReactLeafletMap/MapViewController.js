@@ -56,11 +56,12 @@ const MapViewController = ({
 		// check if current map center fits limits
 		if (viewLimits?.center) {
 			let centerChanged;
-			const {lat: limitedLat, lon: limitedLon} = viewHelpers.getLimitedCenter(
-				viewLimits.center,
-				currentLat,
-				currentLon
-			);
+			const {lat: limitedLat, lon: limitedLon} =
+				viewHelpers.getCenterWhichFitsLimits(
+					viewLimits.center,
+					currentLat,
+					currentLon
+				);
 			if (currentLat !== limitedLat) {
 				currentLat = limitedLat;
 				centerChanged = true;
