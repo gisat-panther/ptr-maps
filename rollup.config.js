@@ -67,6 +67,7 @@ export default {
 		'react',
 		'shallow-equal',
 		'webworldwind-esa',
+		'react-is',
 		'js-quadtree',
 		'@turf/boolean-point-in-polygon',
 		'@turf/center-of-mass',

@@ -4,6 +4,7 @@ import DeckGlMap from './DeckGlMap';
 import GoToPlace from './controls/GoToPlace';
 import MapGrid from './MapGrid';
 import MapControls from './controls/MapControls';
+import MapScale from './controls/MapScale';
 import MapSet, {MapSetMap, MapSetPresentationMap} from './MapSet';
 import MapTools from './controls/MapTools';
 import MapWrapper from './MapWrapper';
@@ -32,6 +33,7 @@ export {
 	MapControls,
 	MapGrid,
 	MapTools,
+	MapScale,
 	MapSetMap,
 	MapSetPresentationMap,
 	MapSet,
@@ -56,6 +58,7 @@ export default {
 
 	MapControls,
 	MapGrid,
+	MapScale,
 	MapSetMap,
 	MapSetPresentationMap,
 	MapSet,
