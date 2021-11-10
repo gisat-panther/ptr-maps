@@ -1,4 +1,5 @@
 import React from 'react';
+import * as ReactIs from 'react-is';
 import PropTypes from 'prop-types';
 import {isEqual as _isEqual, isEmpty as _isEmpty} from 'lodash';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
@@ -164,12 +165,9 @@ class PresentationMap extends React.PureComponent {
 
 			if (wrapper) {
 				// check if passed wrapper is React component or connected component
-				const wrapperComponent =
-					React.isValidElement(wrapper) ||
-					wrapper.WrappedComponent ||
-					wrapper.prototype?.isReactComponent
-						? wrapper
-						: MapWrapper;
+				const wrapperComponent = ReactIs.isValidElementType(wrapper)
+					? wrapper
+					: MapWrapper;
 
 				return React.createElement(
 					wrapperComponent,
