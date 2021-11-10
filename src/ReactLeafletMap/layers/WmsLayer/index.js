@@ -43,13 +43,13 @@ const getFinalParams = (params, opacity) => {
 };
 
 const WmsLayer = ({layerKey, options, opacity, crs}) => {
-	const {params} = options;
+	const {params, singleTile} = options;
 	const finalParams = useMemo(
 		() => getFinalParams(params, opacity),
 		[params, opacity]
 	);
 
-	if (options.singleTile) {
+	if (singleTile) {
 		return (
 			<SingleTileLayer
 				key={layerKey || i}
