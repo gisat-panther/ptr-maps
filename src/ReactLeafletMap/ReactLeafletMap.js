@@ -333,6 +333,20 @@ const ReactLeafletMap = ({
 		height
 	);
 
+	// adjust boxRange onMount
+	useEffect(() => {
+		const calculatedBoxRange = mapUtils.view.getBoxRangeFromZoomLevel(
+			zoom,
+			width,
+			height
+		);
+		if (calculatedBoxRange !== view.boxRange) {
+			if (onViewChange) {
+				onViewChange({boxRange: calculatedBoxRange});
+			}
+		}
+	}, []);
+
 	// Custom hooks
 	useFixTileGap();
 	useMapClick(map, onClick, width, height);
