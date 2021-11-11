@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import PropTypes from 'prop-types';
-import {isArray as _isArray} from 'lodash';
+import {isArray as _isArray, isNumber as _isNumber, isEqual as _isEqual} from 'lodash';
 import {MapContainer, MapConsumer, TileLayer} from 'react-leaflet';
 import L from 'leaflet';
 
@@ -333,6 +333,12 @@ const ReactLeafletMap = ({
 		height
 	);
 
+	const [internalMapState, setInternalMapState] = useState({
+		view,
+		zoom,
+		center,
+	});
+
 	// adjust boxRange onMount
 	useEffect(() => {
 		const calculatedBoxRange = mapUtils.view.getBoxRangeFromZoomLevel(
@@ -368,6 +374,44 @@ const ReactLeafletMap = ({
 		[width, height, viewLimits]
 	);
 
+	const onViewChangeInternal = view => {
+		const update = {};
+
+		if (onViewChange && typeof onViewChange === 'function') {
+			onViewChange(view);
+		}
+
+		if (view.boxRange) {
+			const {zoom} =
+				viewHelpers.getLeafletViewportFromViewParams(view, width, height);
+
+			update.zoom = zoom;
+		}
+
+	
+		if (view.center) {
+			const {center} =
+				viewHelpers.getLeafletViewportFromViewParams(view, width, height);
+
+			update.center = center;
+		}
+
+		if(view) {
+			update.view = {
+				...internalMapState.view,
+				...view,
+			}
+		}
+
+		const newMapState = {
+			...internalMapState,
+			...(update.view ? {view: update.view} : {}),
+			...(update.center ? {center: update.center} : {}),
+			...(_isNumber(update.zoom) ? {zoom: update.zoom} : {}),
+		}
+		setInternalMapState(newMapState);
+	};
+
 	let mapLayers =
 		layers &&
 		layers.map((layer, i) => {
@@ -385,9 +429,9 @@ const ReactLeafletMap = ({
 						i,
 						crs,
 						layersStartingZindex + i,
-						zoom,
+						internalMapState.zoom,
 						onMapLayerClick,
-						view,
+						internalMapState.view,
 						width,
 						height,
 						resources
@@ -401,8 +445,8 @@ const ReactLeafletMap = ({
 			<MapContainer
 				attributionControl={false}
 				className="ptr-map ptr-ReactLeafletMap"
-				center={center}
-				zoom={zoom}
+				center={internalMapState.center}
+				zoom={internalMapState.zoom}
 				maxZoom={maxZoom}
 				minZoom={minZoom}
 				zoomControl={false}
@@ -420,12 +464,12 @@ const ReactLeafletMap = ({
 			{map ? (
 				<MapViewController
 					map={map}
-					zoom={zoom}
-					center={center}
+					zoom={internalMapState.zoom}
+					center={internalMapState.center}
 					width={width}
 					height={height}
 					viewLimits={viewLimits}
-					onViewChange={onViewChange}
+					onViewChange={onViewChangeInternal}
 				/>
 			) : null}
 		</>

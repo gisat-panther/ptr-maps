@@ -1,7 +1,8 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import viewHelpers from './helpers/view';
+import {isEmpty as _isEmpty} from 'lodash';
 
 const MapViewController = ({
 	map,
@@ -13,13 +14,39 @@ const MapViewController = ({
 	onViewChange,
 }) => {
 	const [lat, lon] = center;
+	const [latestView, setLatestView] = useState(null);
+
+	// Trigger onViewChange on center change
+	useEffect(() => {
+		const update = {};
+
+		if (latestView?.center?.lat && latestView?.center?.lon && (latestView?.center?.lat !== lat || latestView?.center?.lon !== lon)) {
+			update.center = {
+				lat: latestView.center.lat,
+				lon: latestView.center.lon,
+			}
+		}
+
+		const boxRange = mapUtils.view.getBoxRangeFromZoomLevel(
+			zoom,
+			width,
+			height
+		);
+
+		if(latestView?.boxRange && latestView.boxRange !== boxRange) {
+			update.boxRange = latestView.boxRange;
+		}
+
+		if(!_isEmpty(update) && onViewChange) {
+			onViewChange(update);
+		}
+	}, [latestView, zoom, width, height])
 
 	// if there is a change of map view props (outside of the map component), apply it only if it differs from the current map view
 	useEffect(() => {
 		const currentZoom = map.getZoom();
 		const currentCenter = map.getCenter();
 		const {lat: currentLat, lng: currentLon} = currentCenter;
-
 		if (lat !== currentLat || lon !== currentLon || zoom !== currentZoom) {
 			const zoomToSet = currentZoom !== zoom ? zoom : currentZoom;
 			// TODO pass animation options as props
@@ -40,7 +67,7 @@ const MapViewController = ({
 				width,
 				height
 			);
-			onViewChange({
+			setLatestView({
 				boxRange,
 				center: {lat: currentCenter.lat, lon: currentCenter.lng},
 			});
@@ -78,11 +105,8 @@ const MapViewController = ({
 			}
 		}
 
-		// call onViewChange if current map center is different from center props
-		if (onViewChange && (currentLat !== lat || currentLon !== lon)) {
-			onViewChange({center: {lat: currentLat, lon: currentLon}});
-		}
-	}, [map, lat, lon]);
+		setLatestView({center: {lat: currentLat, lon: currentLon}});
+	});
 
 	useEffect(() => {
 		map.on('zoomend', onZoom);
