@@ -2,7 +2,11 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import PropTypes from 'prop-types';
-import {isArray as _isArray, isNumber as _isNumber, isEqual as _isEqual} from 'lodash';
+import {
+	isArray as _isArray,
+	isNumber as _isNumber,
+	isEqual as _isEqual,
+} from 'lodash';
 import {MapContainer, MapConsumer, TileLayer} from 'react-leaflet';
 import L from 'leaflet';
 
@@ -400,25 +404,30 @@ const ReactLeafletMap = ({
 		}
 
 		if (view.boxRange) {
-			const {zoom} =
-				viewHelpers.getLeafletViewportFromViewParams(view, width, height);
+			const {zoom} = viewHelpers.getLeafletViewportFromViewParams(
+				view,
+				width,
+				height
+			);
 
 			update.zoom = zoom;
 		}
 
-	
 		if (view.center) {
-			const {center} =
-				viewHelpers.getLeafletViewportFromViewParams(view, width, height);
+			const {center} = viewHelpers.getLeafletViewportFromViewParams(
+				view,
+				width,
+				height
+			);
 
 			update.center = center;
 		}
 
-		if(view) {
+		if (view) {
 			update.view = {
 				...internalMapState.view,
 				...view,
-			}
+			};
 		}
 
 		const newMapState = {
@@ -426,7 +435,7 @@ const ReactLeafletMap = ({
 			...(update.view ? {view: update.view} : {}),
 			...(update.center ? {center: update.center} : {}),
 			...(_isNumber(update.zoom) ? {zoom: update.zoom} : {}),
-		}
+		};
 		setInternalMapState(newMapState);
 	};
 
@@ -457,7 +466,6 @@ const ReactLeafletMap = ({
 				</MapPane>
 			);
 		});
-
 
 	//
 	// Add debug grid layer on under all "layers" or at the top
@@ -490,7 +498,8 @@ const ReactLeafletMap = ({
 					layersStartingZindex + zIndex - 1,
 					internalMapState.zoom,
 					null,
-					internalMapState.view)}
+					internalMapState.view
+				)}
 			</MapPane>
 		);
 
@@ -500,7 +509,6 @@ const ReactLeafletMap = ({
 			mapLayers = mapLayers ? [...mapLayers, tileGridLayer] : [tileGridLayer];
 		}
 	}
-
 
 	return (
 		<>

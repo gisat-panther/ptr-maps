@@ -20,11 +20,15 @@ const MapViewController = ({
 	useEffect(() => {
 		const update = {};
 
-		if (latestView?.center?.lat && latestView?.center?.lon && (latestView?.center?.lat !== lat || latestView?.center?.lon !== lon)) {
+		if (
+			latestView?.center?.lat &&
+			latestView?.center?.lon &&
+			(latestView?.center?.lat !== lat || latestView?.center?.lon !== lon)
+		) {
 			update.center = {
 				lat: latestView.center.lat,
 				lon: latestView.center.lon,
-			}
+			};
 		}
 
 		const boxRange = mapUtils.view.getBoxRangeFromZoomLevel(
@@ -33,14 +37,14 @@ const MapViewController = ({
 			height
 		);
 
-		if(latestView?.boxRange && latestView.boxRange !== boxRange) {
+		if (latestView?.boxRange && latestView.boxRange !== boxRange) {
 			update.boxRange = latestView.boxRange;
 		}
 
-		if(!_isEmpty(update) && onViewChange) {
+		if (!_isEmpty(update) && onViewChange) {
 			onViewChange(update);
 		}
-	}, [latestView, zoom, width, height])
+	}, [latestView, zoom, width, height]);
 
 	// if there is a change of map view props (outside of the map component), apply it only if it differs from the current map view
 	useEffect(() => {

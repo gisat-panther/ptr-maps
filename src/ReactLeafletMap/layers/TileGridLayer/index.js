@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import {utils as tileGridUtils, grid} from '@gisatcz/ptr-tile-grid';
 import {Marker, Pane} from 'react-leaflet';
-import { GeoJSON as LeafletGeoJSON } from 'leaflet';
-import { createLayerComponent } from '@react-leaflet/core'
+import {GeoJSON as LeafletGeoJSON} from 'leaflet';
+import {createLayerComponent} from '@react-leaflet/core';
 
 const getBoxRange = (boxRange, width, height) => {
 	const calculatedBoxRange = mapUtils.view.getNearestZoomLevelBoxRange(
@@ -20,7 +20,7 @@ const getBoxRange = (boxRange, width, height) => {
 	}
 };
 
-const getTileGridLevel = (boxRange, viewport) =>{
+const getTileGridLevel = (boxRange, viewport) => {
 	const viewportRange = mapUtils.view.getMapViewportRange(
 		viewport.width,
 		viewport.height
@@ -33,9 +33,7 @@ const getTileGridLevel = (boxRange, viewport) =>{
 	const level = grid.getLevelByViewport(nearestBoxRange, viewportRange);
 
 	return level;
-}
-
-
+};
 
 const getGeoJsonTileGrid = (tileGrid, boxRange, viewport) => {
 	const level = getTileGridLevel(boxRange, viewport);
@@ -47,7 +45,7 @@ const getGeoJsonTileGrid = (tileGrid, boxRange, viewport) => {
 	// //consider caching levels
 	const geojsonTileGrid = tileGridUtils.getTileGridAsGeoJSON(tileGrid, size);
 	return geojsonTileGrid;
-}
+};
 
 const getTilesMarkers = (tileGrid = [], boxRange, viewport) => {
 	const level = getTileGridLevel(boxRange, viewport);
@@ -79,10 +77,9 @@ const getTilesMarkers = (tileGrid = [], boxRange, viewport) => {
 	}, []);
 
 	return markers;
-}
+};
 
-
-const getGeoJsonGrid = (view, options, ) => {
+const getGeoJsonGrid = (view, options) => {
 	const recalculatedBoxrange = getBoxRange(
 		view.boxRange,
 		options.viewport.width,
@@ -114,18 +111,22 @@ const getGeoJsonGrid = (view, options, ) => {
 	// 	recalculatedBoxrange,
 	// 	options.viewport
 	// );
-}
+};
 
-
-function createLeafletElement({ layerKey, uniqueLayerKey, view, zoom, zIndex, options, pane }, ctx) {
+function createLeafletElement(
+	{layerKey, uniqueLayerKey, view, zoom, zIndex, options, pane},
+	ctx
+) {
 	const geoJsonTileGrid = getGeoJsonGrid(view, options);
-	const instance = new LeafletGeoJSON(geoJsonTileGrid.features, {})
-    return { instance, context: { ...ctx, overlayContainer: instance } }
+	const instance = new LeafletGeoJSON(geoJsonTileGrid.features, {});
+	return {instance, context: {...ctx, overlayContainer: instance}};
 }
 
-
-function updateLeafletElement(instance, { layerKey, uniqueLayerKey, view, zoom, zIndex, options, pane }, prevProps) {
-
+function updateLeafletElement(
+	instance,
+	{layerKey, uniqueLayerKey, view, zoom, zIndex, options, pane},
+	prevProps
+) {
 	//remove current tiles
 	instance.getLayers().map(l => instance.removeLayer(l));
 
@@ -133,8 +134,10 @@ function updateLeafletElement(instance, { layerKey, uniqueLayerKey, view, zoom, 
 	instance.addData(geoJsonTileGrid.features);
 }
 
-const TileGridLayer = createLayerComponent(createLeafletElement, updateLeafletElement)
-
+const TileGridLayer = createLayerComponent(
+	createLeafletElement,
+	updateLeafletElement
+);
 
 TileGridLayer.propTypes = {
 	layerKey: PropTypes.string,
