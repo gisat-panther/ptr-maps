@@ -1,3 +1,15 @@
+# v1.10.8 (Thu Nov 11 2021)
+
+#### 🐾 Patch
+
+- Bump nth-check from 2.0.0 to 2.0.1 [#95](https://github.com/gisat-panther/ptr-maps/pull/95) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 1
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+
+---
+
 # v1.10.7 (Tue Oct 26 2021)
 
 #### 🐾 Patch
