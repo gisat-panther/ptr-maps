@@ -29,15 +29,18 @@ const MapScale = ({view, mapWidth, mapHeight, maxWidth, className}) => {
 	const maxScaleWidth = maxWidth || DEFAULT_MAX_WIDTH;
 
 	if (view && mapWidth && mapHeight) {
-		const contentClasses = `ptr-MapScale-content ${className}`;
+		const classes = `ptr-MapScale ${className}`;
 		const [scaleWidth, label] = useMemo(
 			() => getScaleOptions(view, mapHeight, mapWidth, maxScaleWidth),
 			[view, mapHeight, mapWidth, maxScaleWidth]
 		);
 
 		return (
-			<div className="ptr-MapScale">
-				<div className={contentClasses} style={{width: scaleWidth + 'px'}}>
+			<div className={classes}>
+				<div
+					className="ptr-MapScale-content"
+					style={{width: scaleWidth + 'px'}}
+				>
 					<span>{label}</span>
 				</div>
 			</div>
