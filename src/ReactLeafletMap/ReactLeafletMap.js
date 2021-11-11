@@ -15,6 +15,7 @@ import MapViewController from './MapViewController';
 import CogLayer from './layers/CogLayer';
 import VectorLayer from './layers/VectorLayer';
 import WmsLayer from './layers/WmsLayer';
+import TileGridLayer from './layers/TileGridLayer';
 import MapPane from './MapPane';
 
 const backgroundLayerStartingZindex = constants.defaultLeafletPaneZindex + 1;
@@ -92,6 +93,8 @@ function getLayerByType(
 					crs,
 					resources
 				);
+			case 'tile-grid':
+				return getTileGridLayer(layer, i, zIndex, zoom, view);
 			default:
 				return null;
 		}
@@ -220,6 +223,20 @@ function getVectorLayer(
 	);
 }
 
+function getTileGridLayer(layer, i, zIndex, zoom, view) {
+	return (
+		<TileGridLayer
+			key={layer.key || i}
+			layerKey={layer.layerKey || layer.key}
+			uniqueLayerKey={layer.key || i}
+			view={view}
+			options={layer.options}
+			zoom={zoom}
+			zIndex={zIndex}
+		/>
+	);
+}
+
 /**
  * Custom hook which handles click in map
  * @param map {L.Map}
@@ -318,6 +335,7 @@ const ReactLeafletMap = ({
 	height,
 	layers,
 	mapKey,
+	debugTileGrid,
 	resources,
 	view,
 	viewLimits,
@@ -439,6 +457,50 @@ const ReactLeafletMap = ({
 				</MapPane>
 			);
 		});
+
+
+	//
+	// Add debug grid layer on under all "layers" or at the top
+	//
+	if (debugTileGrid) {
+		const bottom = debugTileGrid?.bottom;
+		const zIndex = bottom ? 0 : (mapLayers?.length || 0) + 1;
+		const tileGridLayer = (
+			<MapPane
+				key={'tilegrid'}
+				zIndex={layersStartingZindex + zIndex - 1}
+				name={'tilegrid'}
+				map={map}
+			>
+				{getLayerByType(
+					mapKey,
+					{
+						type: 'tile-grid',
+						key: 'tilegrid',
+						layerKey: 'tilegridlayerkey',
+						options: {
+							viewport: {
+								width: width,
+								height: height,
+							},
+						},
+					},
+					0,
+					crs,
+					layersStartingZindex + zIndex - 1,
+					internalMapState.zoom,
+					null,
+					internalMapState.view)}
+			</MapPane>
+		);
+
+		if (bottom) {
+			mapLayers = mapLayers ? [tileGridLayer, ...mapLayers] : [tileGridLayer];
+		} else {
+			mapLayers = mapLayers ? [...mapLayers, tileGridLayer] : [tileGridLayer];
+		}
+	}
+
 
 	return (
 		<>
