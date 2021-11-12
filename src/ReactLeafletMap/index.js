@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {useResizeDetector} from 'react-resize-detector';
 import viewport from '../utils/viewport';
@@ -8,7 +8,8 @@ import ReactLeafletMap from './ReactLeafletMap';
 import './style.scss';
 
 const ReactLeafletMapWrapper = props => {
-	const {onResize, ...restProps} = props;
+	const [mapView, setMapView] = useState(null);
+	const {onResize, onViewChange, view, ...restProps} = props;
 	const onMapResize = useCallback((width, height) => {
 		if (onResize && width && height) {
 			// postpone onResize call due to React issue (Cannot update during an existing state transition)
@@ -27,6 +28,23 @@ const ReactLeafletMapWrapper = props => {
 		onResize: onMapResize,
 	});
 
+	const onMapViewChange = useCallback(
+		viewUpdate => {
+			if (onViewChange) {
+				onViewChange(viewUpdate);
+			} else {
+				setMapView({...view, ...viewUpdate});
+			}
+		},
+		[onViewChange, view]
+	);
+
+	useEffect(() => {
+		if (!onViewChange && view) {
+			setMapView({...mapView, ...view});
+		}
+	}, [onMapViewChange, onViewChange, view]);
+
 	return (
 		<div className="ptr-ReactLeafletMap-wrapper" ref={ref}>
 			{width && height ? (
@@ -34,6 +52,8 @@ const ReactLeafletMapWrapper = props => {
 					{...restProps}
 					width={viewport.roundDimension(width)}
 					height={viewport.roundDimension(height)}
+					onViewChange={onMapViewChange}
+					view={mapView || view}
 				/>
 			) : null}
 		</div>

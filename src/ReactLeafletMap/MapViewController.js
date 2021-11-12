@@ -80,9 +80,15 @@ const MapViewController = ({
 
 		// call onViewChange if current map center is different from center props
 		if (onViewChange && (currentLat !== lat || currentLon !== lon)) {
-			onViewChange({center: {lat: currentLat, lon: currentLon}});
+			const currentZoom = map.getZoom();
+			const boxRange = mapUtils.view.getBoxRangeFromZoomLevel(
+				currentZoom,
+				width,
+				height
+			);
+			onViewChange({center: {lat: currentLat, lon: currentLon}, boxRange});
 		}
-	}, [map, lat, lon]);
+	}, [map, zoom, width, height, lat, lon]);
 
 	useEffect(() => {
 		map.on('zoomend', onZoom);
