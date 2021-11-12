@@ -376,21 +376,18 @@ const ReactLeafletMap = ({
 	}, []);
 
 	useEffect(() => {
-		const {zoom: newZoom, center: newCenter} = viewHelpers.getLeafletViewportFromViewParams(
-			view,
-			width,
-			height
-		);
+		const {zoom: newZoom, center: newCenter} =
+			viewHelpers.getLeafletViewportFromViewParams(view, width, height);
 
 		const newMapState = {
 			...internalMapState,
 			...(view ? {view: {...internalMapState.view, ...view}} : {}),
 			...(newCenter ? {center: newCenter} : {}),
 			...(_isNumber(newZoom) ? {zoom: newZoom} : {}),
-		}
+		};
 
 		// update internal state only if external change is modifying it
-		if(!_isEqual(newMapState, internalMapState)) {
+		if (!_isEqual(newMapState, internalMapState)) {
 			setInternalMapState(newMapState);
 		}
 		//TODO watch also width and height?
