@@ -8,7 +8,7 @@ import ReactLeafletMap from './ReactLeafletMap';
 import './style.scss';
 
 const ReactLeafletMapWrapper = props => {
-	const [mapView, setMapView] = useState(null);
+	const [mapView, setMapView] = useState(view);
 	const {onResize, onViewChange, view, ...restProps} = props;
 	const onMapResize = useCallback((width, height) => {
 		if (onResize && width && height) {
@@ -32,18 +32,18 @@ const ReactLeafletMapWrapper = props => {
 		viewUpdate => {
 			if (onViewChange) {
 				onViewChange(viewUpdate);
-			} else {
-				setMapView({...view, ...viewUpdate});
 			}
+			
+			setMapView({...view, ...viewUpdate});
 		},
 		[onViewChange, view]
 	);
 
 	useEffect(() => {
-		if (!onViewChange && view) {
+		if (view) {
 			setMapView({...mapView, ...view});
 		}
-	}, [onMapViewChange, onViewChange, view]);
+	}, [view]);
 
 	return (
 		<div className="ptr-ReactLeafletMap-wrapper" ref={ref}>
@@ -53,7 +53,7 @@ const ReactLeafletMapWrapper = props => {
 					width={viewport.roundDimension(width)}
 					height={viewport.roundDimension(height)}
 					onViewChange={onMapViewChange}
-					view={mapView || view}
+					view={mapView}
 				/>
 			) : null}
 		</div>
