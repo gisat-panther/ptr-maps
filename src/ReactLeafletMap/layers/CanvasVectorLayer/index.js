@@ -10,6 +10,7 @@ function createLeafletElement(props, context) {
 		paneZindex: props.zIndex,
 	});
 
+	// ensure the canvas and the corresponding pane have been created in the DOM, before features are added
 	setTimeout(() => {
 		instance.setProps(props);
 	}, 10);
