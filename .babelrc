@@ -14,7 +14,6 @@
 			{
 				"useESModules": false
 			}
-		],
-		"@babel/plugin-proposal-nullish-coalescing-operator"
+		]
 	]
 }
