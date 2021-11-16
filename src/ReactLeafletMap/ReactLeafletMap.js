@@ -414,7 +414,6 @@ const ReactLeafletMap = ({
 			);
 		});
 
-
 	//
 	// Add debug grid layer on under all "layers" or at the top
 	//
@@ -446,7 +445,8 @@ const ReactLeafletMap = ({
 					layersStartingZindex + zIndex - 1,
 					zoom,
 					null,
-					view)}
+					view
+				)}
 			</MapPane>
 		);
 

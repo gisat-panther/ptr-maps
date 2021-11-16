@@ -33,7 +33,7 @@ const ReactLeafletMapWrapper = props => {
 			if (onViewChange) {
 				onViewChange(viewUpdate);
 			}
-			
+
 			setMapView({...view, ...viewUpdate});
 		},
 		[onViewChange, view]
