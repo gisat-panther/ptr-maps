@@ -13,7 +13,7 @@ function createLeafletElement(props, context) {
 		georaster,
 		pane: paneName,
 		resolution: options.resolution || DEFAULT_RESOLUTION,
-		pixelValuesToColorFn: getStyle.bind(this, props.options.style),
+		pixelValuesToColorFn: getStyle.bind(this, options?.style),
 		opacity: opacity || 1,
 		// debugLevel: 5,
 	});
