@@ -56,11 +56,11 @@ const getTilesMarkers = (tileGrid = [], boxRange, viewport) => {
 		const rowMarkers = row.map((tile, i) => {
 			return (
 				<Pane
-					style={{zIndex: this.props.zIndex}}
+					// style={{zIndex: this.props.zIndex}}
 					key={`${level}-${tile[0]}-${tile[1]}`}
 				>
 					<Marker
-						zIndex={this.props.zIndex}
+						// zIndex={this.props.zIndex}
 						position={[tile[1], tile[0]]}
 						icon={
 							new L.DivIcon({
