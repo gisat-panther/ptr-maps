@@ -1,3 +1,16 @@
+# v1.11.0 (Thu Nov 18 2021)
+
+#### 🚀 Enhancement
+
+- Migration of React-leaflet to v3 & associated changes [#107](https://github.com/gisat-panther/ptr-maps/pull/107) ([@vlach1989](https://github.com/vlach1989) [@vdubr](https://github.com/vdubr))
+
+#### Authors: 2
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.10.8 (Thu Nov 11 2021)
 
 #### 🐾 Patch
