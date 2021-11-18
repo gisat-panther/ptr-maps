@@ -1,33 +1,43 @@
-import {MapLayer, withLeaflet} from 'react-leaflet';
+import React from 'react';
+import {createLayerComponent} from '@react-leaflet/core';
 import LeafletCanvasLayer from './LeafletCanvasLayer';
+import paneHelpers from '../../helpers/pane';
 
-class CanvasVectorLayer extends MapLayer {
-	createLeafletElement(props) {
-		let layer = new LeafletCanvasLayer({
-			paneName: props.uniqueLayerKey,
-			paneZindex: props.zIndex,
-		});
-		layer.setProps(props);
-		return layer;
+function createLeafletElement(props, context) {
+	const paneKey = paneHelpers.getKey(props.mapKey, props.uniqueLayerKey);
+	const instance = new LeafletCanvasLayer({
+		paneName: paneKey,
+		paneZindex: props.zIndex,
+	});
+
+	// ensure the canvas and the corresponding pane have been created in the DOM, before features are added
+	setTimeout(() => {
+		instance.setProps(props);
+	}, 10);
+
+	return {instance, context: {...context, overlayContainer: instance}};
+}
+
+function updateLeafletElement(instance, props, prevProps) {
+	if (prevProps.zIndex !== props.zIndex) {
+		const paneKey = paneHelpers.getKey(props.mapKey, props.uniqueLayerKey);
+		instance.setPaneZindex(paneKey, props.zIndex);
 	}
 
-	updateLeafletElement(fromProps, toProps) {
-		super.updateLeafletElement(fromProps, toProps);
-
-		if (fromProps.zIndex !== toProps.zIndex) {
-			this.leafletElement.setPaneZindex(toProps.uniqueLayerKey, toProps.zIndex);
-		}
-
-		// TODO
-		if (
-			fromProps.selected !== toProps.selected ||
-			fromProps.features !== toProps.features ||
-			fromProps.style !== toProps.style ||
-			fromProps.omittedFeatureKeys !== this.props.omittedFeatureKeys
-		) {
-			this.leafletElement.setProps(toProps);
-		}
+	// TODO
+	if (
+		prevProps.selected !== props.selected ||
+		prevProps.features !== props.features ||
+		prevProps.style !== props.style ||
+		prevProps.omittedFeatureKeys !== props.omittedFeatureKeys
+	) {
+		instance.setProps(props);
 	}
 }
 
-export default withLeaflet(CanvasVectorLayer);
+const CanvasVectorLayer = createLayerComponent(
+	createLeafletElement,
+	updateLeafletElement
+);
+
+export default CanvasVectorLayer;

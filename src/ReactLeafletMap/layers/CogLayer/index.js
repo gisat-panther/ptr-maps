@@ -1,6 +1,5 @@
 import React from 'react';
 import parseGeoRaster from 'georaster';
-import {withLeaflet} from 'react-leaflet';
 import {utils} from '@gisatcz/ptr-utils';
 import CogLayerComponent from './CogLayer';
 
@@ -11,6 +10,8 @@ class CogLayerWrapper extends React.PureComponent {
 	constructor(props) {
 		super(props);
 
+		this.cogRef = React.createRef();
+
 		this.state = {
 			georaster: null,
 		};
@@ -18,12 +19,12 @@ class CogLayerWrapper extends React.PureComponent {
 
 	// TODO handle pane z-index change & url change
 	componentDidMount() {
-		const {options, paneName, leaflet, zIndex} = this.props;
+		const {options, paneName, map, zIndex} = this.props;
 		const {url} = options;
 
-		let pane = leaflet.map.getPane(paneName);
+		let pane = map.getPane(paneName);
 		if (!pane) {
-			pane = leaflet.map.createPane(paneName);
+			pane = map.createPane(paneName);
 			pane.style.zIndex = zIndex;
 		}
 
@@ -33,10 +34,10 @@ class CogLayerWrapper extends React.PureComponent {
 	}
 
 	componentWillUnmount() {
-		const {paneName, leaflet} = this.props;
+		const {paneName, map} = this.props;
 		if (paneName) {
 			// delete pane and remove them from DOM
-			delete leaflet.map._panes[paneName];
+			delete map._panes[paneName];
 			const elements = document.querySelectorAll(`.leaflet-${paneName}-pane`);
 			if (elements.length) {
 				elements.forEach(element => element.remove());
@@ -45,11 +46,11 @@ class CogLayerWrapper extends React.PureComponent {
 	}
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
-		const {options, paneName, leaflet, zIndex, opacity} = this.props;
+		const {options, paneName, map, zIndex, opacity} = this.props;
 		const {url} = options;
 
 		if (zIndex !== prevProps.zIndex) {
-			let pane = leaflet.map.getPane(paneName);
+			let pane = map.getPane(paneName);
 			pane.style.zIndex = zIndex;
 		}
 
@@ -72,6 +73,7 @@ class CogLayerWrapper extends React.PureComponent {
 					{...this.props}
 					georaster={this.state.georaster}
 					key={this.state.key}
+					ref={this.cogRef}
 				/>
 			);
 		} else {
@@ -80,4 +82,4 @@ class CogLayerWrapper extends React.PureComponent {
 	}
 }
 
-export default withLeaflet(CogLayerWrapper);
+export default CogLayerWrapper;

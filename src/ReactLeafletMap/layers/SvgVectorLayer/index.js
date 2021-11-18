@@ -11,15 +11,12 @@ import {utils} from '@gisatcz/ptr-utils';
 import {Pane} from 'react-leaflet';
 
 import helpers from './helpers';
-import Feature from './Feature';
-import constants from '../../../constants';
 import GeoJsonLayer from './GeoJsonLayer';
 
 class SvgVectorLayer extends React.PureComponent {
 	static propTypes = {
 		layerKey: PropTypes.string,
 		uniqueLayerKey: PropTypes.string, // typically a combination of layerKey and data source key (or just layerKey, if no data source)
-		renderAsGeoJson: PropTypes.bool, // Use Leaflet's GeoJSON layer to render vector features
 		features: PropTypes.array,
 		fidColumnName: PropTypes.string,
 		omittedFeatureKeys: PropTypes.array,
@@ -154,17 +151,29 @@ class SvgVectorLayer extends React.PureComponent {
 		return data ? (
 			<>
 				{data.polygons?.length ? (
-					<Pane className={classes} style={style} name={this.polygonsPaneName}>
+					<Pane
+						className={classes}
+						style={{...style, zIndex: 1}}
+						name={this.polygonsPaneName}
+					>
 						{this.renderFeatures(data.polygons)}
 					</Pane>
 				) : null}
 				{data.lines?.length ? (
-					<Pane className={classes} style={style} name={this.linesPaneName}>
+					<Pane
+						className={classes}
+						style={{...style, zIndex: 2}}
+						name={this.linesPaneName}
+					>
 						{this.renderFeatures(data.lines)}
 					</Pane>
 				) : null}
 				{data.points?.length ? (
-					<Pane className={classes} style={style} name={this.pointsPaneName}>
+					<Pane
+						className={classes}
+						style={{...style, zIndex: 3}}
+						name={this.pointsPaneName}
+					>
 						{this.renderFeatures(data.points)}
 					</Pane>
 				) : null}
@@ -173,15 +182,7 @@ class SvgVectorLayer extends React.PureComponent {
 	}
 
 	renderFeatures(features) {
-		if (
-			this.props.renderAsGeoJson ||
-			features.length > constants.maxFeaturesAsReactElement
-		) {
-			// GeoJsonLayer doesn't get context
-			return this.renderGeoJson(features);
-		} else {
-			return features.map((item, index) => this.renderFeature(item, index));
-		}
+		return this.renderGeoJson(features);
 	}
 
 	renderGeoJson(features) {
@@ -196,33 +197,6 @@ class SvgVectorLayer extends React.PureComponent {
 				fidColumnName={this.props.fidColumnName}
 				pointAsMarker={this.props.pointAsMarker}
 				selectable={this.props.selectable}
-				hoverable={this.props.hoverable}
-				styleDefinition={this.props.style}
-				hoveredStyleDefinition={this.props.hovered && this.props.hovered.style}
-				icons={this.props.resources?.icons}
-			/>
-		);
-	}
-
-	renderFeature(data, index) {
-		const key =
-			data.uniqueFeatureKey ||
-			`${this.props.uniqueLayerKey}_${data.fid || index}`;
-
-		return (
-			<Feature
-				key={key}
-				uniqueFeatureKey={data.uniqueFeatureKey}
-				onClick={this.onFeatureClick}
-				fid={data.fid}
-				fidColumnName={this.props.fidColumnName}
-				feature={data.feature}
-				type={data.feature.geometry.type}
-				pointAsMarker={this.props.pointAsMarker}
-				selectable={this.props.selectable}
-				selected={data.selected}
-				selectedStyleDefinition={data.selectedStyleDefinition}
-				selectedHoveredStyleDefinition={data.selectedStyleDefinition}
 				hoverable={this.props.hoverable}
 				styleDefinition={this.props.style}
 				hoveredStyleDefinition={this.props.hovered && this.props.hovered.style}

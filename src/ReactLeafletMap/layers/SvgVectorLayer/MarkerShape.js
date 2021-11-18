@@ -1,8 +1,8 @@
-import L from 'leaflet';
-import {forIn as _forIn} from 'lodash';
 import ReactDOMServer from 'react-dom/server';
 import React from 'react';
-import helpers from '../helpers';
+import L from 'leaflet';
+import {forIn as _forIn} from 'lodash';
+import helpers from './helpers';
 
 /**
  * It enables to draw various shapes as marker icon.

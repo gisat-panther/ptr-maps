@@ -10,11 +10,13 @@ import view from '../../../utils/view';
 
 class VectorLayer extends React.PureComponent {
 	static propTypes = {
+		mapKey: PropTypes.string,
 		layerKey: PropTypes.string,
 		uniqueLayerKey: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 		onClick: PropTypes.func,
 		opacity: PropTypes.number,
 		options: PropTypes.object,
+		resources: PropTypes.object,
 		type: PropTypes.string,
 		view: PropTypes.object,
 		zoom: PropTypes.number,
@@ -54,7 +56,6 @@ class VectorLayer extends React.PureComponent {
 		const {type} = this.props;
 		const options = this.getOptions();
 
-		// TODO handle type 'diagram'
 		if (type === 'tiledVector' || type === 'tiled-vector') {
 			return this.renderTiledVectorLayer(options);
 		} else {

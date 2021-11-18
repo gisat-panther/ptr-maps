@@ -2,7 +2,6 @@
   Generic  Canvas Layer for leaflet 0.7 and 1.0-rc, 1.2, 1.3
   copyright Stanislav Sumbera,  2016-2018, sumbera.com , license MIT
   originally created and motivated by L.CanvasOverlay  available here: https://gist.github.com/Sumbera/11114288
-
   also thanks to contributors: heyyeyheman,andern,nikiv3, anyoneelse ?
   enjoy !
 */
@@ -123,7 +122,10 @@ export const CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 			L.Util.cancelAnimFrame(this._frame);
 		}
 
-		map.getPane(this._paneName).removeChild(this._canvas);
+		const pane = map.getPane(this._paneName);
+		if (pane) {
+			pane.removeChild(this._canvas);
+		}
 
 		map.off(this.getEvents(), this);
 

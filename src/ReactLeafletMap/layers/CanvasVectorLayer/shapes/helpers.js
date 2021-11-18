@@ -42,7 +42,7 @@ function setLineStyle(context, style) {
 
 function getSize(definedSize, pixelSizeInMeters) {
 	let size = pixelSizeInMeters ? definedSize / pixelSizeInMeters : definedSize;
-	return size < 0.5 ? 0.5 : size;
+	return size > 0.5 ? size : 0.5;
 }
 
 export default {

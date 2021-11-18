@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {utils} from '@gisatcz/ptr-utils';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import {utils as tileGridUtils, grid} from '@gisatcz/ptr-tile-grid';
-import {GeoJSON, withLeaflet, Marker, Pane} from 'react-leaflet';
-import memoize from 'memoize-one';
-import helpers from '../SvgVectorLayer/helpers';
+import {Marker, Pane} from 'react-leaflet';
+import {GeoJSON as LeafletGeoJSON} from 'leaflet';
+import {createLayerComponent} from '@react-leaflet/core';
 
 const getBoxRange = (boxRange, width, height) => {
 	const calculatedBoxRange = mapUtils.view.getNearestZoomLevelBoxRange(
@@ -21,173 +20,131 @@ const getBoxRange = (boxRange, width, height) => {
 	}
 };
 
-class TileGridLayer extends React.PureComponent {
-	static propTypes = {
-		layerKey: PropTypes.string,
-		uniqueLayerKey: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-		view: PropTypes.object,
-		zoom: PropTypes.number,
-		zIndex: PropTypes.number,
-	};
+const getTileGridLevel = (boxRange, viewport) => {
+	const viewportRange = mapUtils.view.getMapViewportRange(
+		viewport.width,
+		viewport.height
+	);
+	const nearestBoxRange = mapUtils.view.getNearestZoomLevelBoxRange(
+		viewport.width,
+		viewport.height,
+		boxRange
+	);
+	const level = grid.getLevelByViewport(nearestBoxRange, viewportRange);
 
-	constructor(props) {
-		super(props);
+	return level;
+};
 
-		this.pointsPaneName = utils.uuid();
-		this.getStyle = this.getStyle.bind(this);
-		this.onEachFeature = this.onEachFeature.bind(this);
+const getGeoJsonTileGrid = (tileGrid, boxRange, viewport) => {
+	const level = getTileGridLevel(boxRange, viewport);
 
-		this.getRenderId = memoize(features => {
-			if (features) {
-				return utils.uuid();
-			}
+	// // todo
+	// // add buffer for leveles bigger than 5
+	const size = tileGridUtils.getGridSizeForLevel(level);
+
+	// //consider caching levels
+	const geojsonTileGrid = tileGridUtils.getTileGridAsGeoJSON(tileGrid, size);
+	return geojsonTileGrid;
+};
+
+const getTilesMarkers = (tileGrid = [], boxRange, viewport) => {
+	const level = getTileGridLevel(boxRange, viewport);
+
+	const markers = tileGrid.reduce((acc, row) => {
+		const rowMarkers = row.map((tile, i) => {
+			return (
+				<Pane
+					// style={{zIndex: this.props.zIndex}}
+					key={`${level}-${tile[0]}-${tile[1]}`}
+				>
+					<Marker
+						// zIndex={this.props.zIndex}
+						position={[tile[1], tile[0]]}
+						icon={
+							new L.DivIcon({
+								//push every second tile title up to prevent overlays
+								iconAnchor: [-10, 20 + (i % 2) * 20],
+								className: 'my-div-icon',
+								html: `<div style="display:flex"><div style="white-space: nowrap;">${level}-${tile[0]}-${tile[1]}</div></div>`,
+							})
+						}
+					/>
+				</Pane>
+			);
 		});
-	}
 
-	onEachFeature(feature, layer) {}
+		return [...acc, ...rowMarkers];
+	}, []);
 
-	getStyle(feature) {
-		const styles = helpers.calculateStyle(
-			feature,
-			this.props.style,
-			undefined,
-			feature.selected,
-			feature.selectedStyleDefinition,
-			feature.selectedHoveredStyleDefinition
-		);
+	return markers;
+};
 
-		if (feature.selected) {
-			return styles.selected;
-		} else {
-			return styles.default;
-		}
-	}
+const getGeoJsonGrid = (view, options) => {
+	const recalculatedBoxrange = getBoxRange(
+		view.boxRange,
+		options.viewport.width,
+		options.viewport.height
+	);
 
-	/**
-	 * Set style of the feature
-	 * @param leafletStyle {Object} Leaflet style definition
-	 * @param element {Object} Leaflet element
-	 */
-	setStyle(leafletStyle, element) {
-		const shape = element?.options?.icon;
-		if (shape) {
-			shape.setStyle(leafletStyle, shape.id, shape.isBasicShape);
-		} else {
-			element.setStyle(leafletStyle);
-		}
-	}
+	const tileGrid = grid.getTileGrid(
+		options.viewport.width,
+		options.viewport.height,
+		recalculatedBoxrange,
+		view.center,
+		true
+	);
 
-	render() {
-		const options = this.props.options;
-		return this.renderBasicVectorLayer(options);
-	}
+	const geoJsonTileGrid = getGeoJsonTileGrid(
+		tileGrid,
+		recalculatedBoxrange,
+		options.viewport
+	);
 
-	getGeoJsonTileGrid(tileGrid, boxRange, viewport) {
-		const level = this.getTileGridLevel(boxRange, viewport);
+	return geoJsonTileGrid;
 
-		// // todo
-		// // add buffer for leveles bigger than 5
-		const size = tileGridUtils.getGridSizeForLevel(level);
+	// generate new key on features change to return the new instance
+	// more: https://react-leaflet.js.org/docs/en/components#geojson
+	// const key = this.getRenderId(geoJsonTileGrid.features);
 
-		// //consider caching levels
-		const geojsonTileGrid = tileGridUtils.getTileGridAsGeoJSON(tileGrid, size);
-		return geojsonTileGrid;
-	}
+	// const tilesMarkers = this.getTilesMarkers(
+	// 	tileGrid,
+	// 	recalculatedBoxrange,
+	// 	options.viewport
+	// );
+};
 
-	getTileGridLevel(boxRange, viewport) {
-		const viewportRange = mapUtils.view.getMapViewportRange(
-			viewport.width,
-			viewport.height
-		);
-		const nearestBoxRange = mapUtils.view.getNearestZoomLevelBoxRange(
-			viewport.width,
-			viewport.height,
-			boxRange
-		);
-		const level = grid.getLevelByViewport(nearestBoxRange, viewportRange);
-
-		return level;
-	}
-	getTilesMarkers(tileGrid = [], boxRange, viewport) {
-		const level = this.getTileGridLevel(boxRange, viewport);
-
-		const markers = tileGrid.reduce((acc, row) => {
-			const rowMarkers = row.map((tile, i) => {
-				return (
-					<Pane
-						style={{zIndex: this.props.zIndex}}
-						key={`${level}-${tile[0]}-${tile[1]}`}
-					>
-						<Marker
-							zIndex={this.props.zIndex}
-							position={[tile[1], tile[0]]}
-							icon={
-								new L.DivIcon({
-									//push every second tile title up to prevent overlays
-									iconAnchor: [-10, 20 + (i % 2) * 20],
-									className: 'my-div-icon',
-									html: `<div style="display:flex"><div style="white-space: nowrap;">${level}-${tile[0]}-${tile[1]}</div></div>`,
-								})
-							}
-						/>
-					</Pane>
-				);
-			});
-
-			return [...acc, ...rowMarkers];
-		}, []);
-
-		return markers;
-	}
-
-	renderBasicVectorLayer(options) {
-		const {options: opt, ...props} = this.props;
-
-		const recalculatedBoxrange = getBoxRange(
-			props.view.boxRange,
-			options.viewport.width,
-			options.viewport.height
-		);
-
-		const tileGrid = grid.getTileGrid(
-			options.viewport.width,
-			options.viewport.height,
-			recalculatedBoxrange,
-			props.view.center,
-			true
-		);
-
-		const geoJsonTileGrid = this.getGeoJsonTileGrid(
-			tileGrid,
-			recalculatedBoxrange,
-			options.viewport
-		);
-
-		// generate new key on features change to return the new instance
-		// more: https://react-leaflet.js.org/docs/en/components#geojson
-		const key = this.getRenderId(geoJsonTileGrid.features);
-
-		const tilesMarkers = this.getTilesMarkers(
-			tileGrid,
-			recalculatedBoxrange,
-			options.viewport
-		);
-
-		return (
-			<>
-				<GeoJSON
-					key={key}
-					data={geoJsonTileGrid.features}
-					style={this.getStyle}
-					onEachFeature={this.onEachFeature}
-					zIndex={this.props.zIndex}
-					// pointToLayer={this.pointToLayer}
-					// filter={this.filter}
-				/>
-				{tilesMarkers}
-			</>
-		);
-	}
+function createLeafletElement(
+	{layerKey, uniqueLayerKey, view, zoom, zIndex, options, pane},
+	ctx
+) {
+	const geoJsonTileGrid = getGeoJsonGrid(view, options);
+	const instance = new LeafletGeoJSON(geoJsonTileGrid.features, {});
+	return {instance, context: {...ctx, overlayContainer: instance}};
 }
 
-export default withLeaflet(TileGridLayer);
+function updateLeafletElement(
+	instance,
+	{layerKey, uniqueLayerKey, view, zoom, zIndex, options, pane},
+	prevProps
+) {
+	//remove current tiles
+	instance.getLayers().map(l => instance.removeLayer(l));
+
+	const geoJsonTileGrid = getGeoJsonGrid(view, options);
+	instance.addData(geoJsonTileGrid.features);
+}
+
+const TileGridLayer = createLayerComponent(
+	createLeafletElement,
+	updateLeafletElement
+);
+
+TileGridLayer.propTypes = {
+	layerKey: PropTypes.string,
+	uniqueLayerKey: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+	view: PropTypes.object,
+	zoom: PropTypes.number,
+	zIndex: PropTypes.number,
+};
+
+export default TileGridLayer;

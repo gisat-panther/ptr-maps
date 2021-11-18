@@ -2,10 +2,12 @@ import React from 'react';
 import {includes as _includes} from 'lodash';
 import PropTypes from 'prop-types';
 import {utils} from '@gisatcz/ptr-utils';
-import {GeoJSON, withLeaflet} from 'react-leaflet';
+import {GeoJSON} from 'react-leaflet';
 import L from 'leaflet';
 import helpers from '../helpers';
 import memoize from 'memoize-one';
+import shapes from '../shapes';
+import MarkerShape from '../MarkerShape';
 
 class GeoJsonLayer extends React.PureComponent {
 	static propTypes = {
@@ -44,6 +46,73 @@ class GeoJsonLayer extends React.PureComponent {
 		}
 	}
 
+	/**
+	 * @param id {string}
+	 * @param style {Object} Leaflet style definition
+	 * @param options {Object}
+	 * @param options.icons {Object} see https://gisat.github.io/components/maps/map#resources
+	 * @param options.onMouseMove {function}
+	 * @param options.onMouseOver {function}
+	 * @param options.onMouseOut {function}
+	 * @param options.onClick {function}
+	 * @return {MarkerShape}
+	 */
+	getMarkerShape(id, style, options) {
+		const shapeKey = style.shape;
+		const iconKey = style.icon;
+		let basicShape = true;
+		let anchorShift = 0; // shift of anchor in pixels
+		let anchorPositionX = 0.5; // relative anchor X position (0.5 means that the shape reference point is in the middle horizontally)
+		let anchorPositionY = 0.5; // relative anchor Y position
+		let shape, icon;
+
+		// find shape by key in the internal set of shapes
+		if (shapeKey) {
+			shape = shapes[shapeKey] || null;
+		}
+
+		// find icon by key in the given set of icons
+		if (iconKey) {
+			icon = options?.icons?.[iconKey] || null;
+		}
+
+		if (shape || icon) {
+			basicShape = false;
+
+			// get anchor positions from definitions, if exist
+			if (shape?.anchorPoint) {
+				anchorPositionX = shape.anchorPoint[0];
+				anchorPositionY = shape.anchorPoint[1];
+			} else if (!shape && icon?.anchorPoint) {
+				anchorPositionX = icon.anchorPoint[0];
+				anchorPositionY = icon.anchorPoint[1];
+			}
+
+			// if outline, shift the anchor point
+			if (style?.weight) {
+				anchorShift = style?.weight;
+			}
+		}
+
+		return new MarkerShape({
+			basicShape,
+			id: id,
+			style,
+			iconAnchor: style.radius
+				? [
+						(2 * style.radius + anchorShift) * anchorPositionX,
+						(2 * style.radius + anchorShift) * anchorPositionY,
+				  ]
+				: null,
+			icon,
+			shape,
+			onMouseMove: options.onMouseMove,
+			onMouseOut: options.onMouseOut,
+			onMouseOver: options.onMouseOver,
+			onClick: options.onClick,
+		});
+	}
+
 	onEachFeature(feature, layer) {
 		const geometryType = feature.geometry.type;
 		const isPolygon =
@@ -63,6 +132,11 @@ class GeoJsonLayer extends React.PureComponent {
 			click: e => {
 				if (this.props.onFeatureClick && this.props.selectable && feature.fid) {
 					this.props.onFeatureClick(feature.fid);
+				}
+			},
+			mouseover: e => {
+				if (!this.props.selectable && !this.props.hoverable) {
+					e.originalEvent.target.className.baseVal = '';
 				}
 			},
 			mousemove: e => {
@@ -135,8 +209,13 @@ class GeoJsonLayer extends React.PureComponent {
 				const shapeId = feature.uniqueFeatureKey
 					? `${feature.uniqueFeatureKey}_icon`
 					: utils.uuid();
-				const shape = helpers.getMarkerShape(shapeId, style, {
+
+				const shape = this.getMarkerShape(shapeId, style, {
 					icons: this.props.icons,
+					onClick:
+						this.props.selectable &&
+						this.props.onFeatureClick.bind(this, feature.fid),
+					// TODO on events
 				});
 
 				return L.marker(coord, {
@@ -184,4 +263,4 @@ class GeoJsonLayer extends React.PureComponent {
 	}
 }
 
-export default withLeaflet(GeoJsonLayer);
+export default GeoJsonLayer;

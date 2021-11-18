@@ -109,8 +109,8 @@ wms.Source = L.Layer.extend({
 		}
 	},
 
-	getLayer: function (name) {
-		return wms.layer(this, name);
+	getLayer: function (name, options) {
+		return wms.layer(this, name, options);
 	},
 
 	addSubLayer: function (name) {
@@ -277,8 +277,8 @@ wms.Layer = L.Layer.extend({
 	},
 });
 
-wms.layer = function (source, options) {
-	return new wms.Layer(source, options);
+wms.layer = function (source, name, options) {
+	return new wms.Layer(source, name, options);
 };
 
 // Cache of sources for use with wms.Layer auto-source option

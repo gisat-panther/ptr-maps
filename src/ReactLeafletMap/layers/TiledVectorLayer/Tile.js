@@ -125,7 +125,6 @@ class Tile extends React.PureComponent {
 					key={tileKey}
 					uniqueLayerKey={tileKey}
 					omittedFeatureKeys={this.checkIdentity(omittedFeatureKeys)}
-					renderAsGeoJson // TODO always render as GeoJson for now
 				/>
 			);
 		}
