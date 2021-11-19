@@ -11,6 +11,7 @@ function createLeafletElement(props, context) {
 	const {georaster, paneName, options, opacity} = props;
 	const instance = new GeoRasterLayer({
 		georaster,
+		resampleMethod: 'nearest',
 		pane: paneName,
 		resolution: options.resolution || DEFAULT_RESOLUTION,
 		pixelValuesToColorFn: getStyle.bind(this, options?.style),
