@@ -59,11 +59,6 @@ class CogLayerWrapper extends React.PureComponent {
 				this.setState({georaster, key: utils.uuid()});
 			});
 		}
-
-		// TODO find better solution for opacity change
-		if (opacity !== prevProps.opacity) {
-			this.setState({key: utils.uuid()});
-		}
 	}
 
 	render() {
