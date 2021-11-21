@@ -1,3 +1,15 @@
+# v1.11.1 (Fri Nov 19 2021)
+
+#### 🐾 Patch
+
+- Feature/cog resample method [#108](https://github.com/gisat-panther/ptr-maps/pull/108) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.11.0 (Thu Nov 18 2021)
 
 #### 🚀 Enhancement
