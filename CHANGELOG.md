@@ -1,3 +1,15 @@
+# v1.11.2 (Mon Nov 22 2021)
+
+#### 🐾 Patch
+
+- ReactLeaflet: handle map layer opacity using MapPane [#109](https://github.com/gisat-panther/ptr-maps/pull/109) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.11.1 (Fri Nov 19 2021)
 
 #### 🐾 Patch
