@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 import {Pane} from 'react-leaflet';
 
-const MapPane = ({children, name, zIndex, map}) => {
+const MapPane = ({children, name, zIndex, map, opacity}) => {
 	const paneRef = useRef(null);
 
 	useEffect(() => {
@@ -10,9 +10,12 @@ const MapPane = ({children, name, zIndex, map}) => {
 			let pane = map.getPane(name);
 			if (pane) {
 				pane.style.zIndex = zIndex;
+				if (opacity || opacity === 0) {
+					pane.style.opacity = opacity;
+				}
 			}
 		}
-	}, [map, zIndex]);
+	}, [map, zIndex, opacity]);
 
 	return (
 		<Pane forwardRef={paneRef} name={name} style={{zIndex}}>
@@ -24,6 +27,7 @@ const MapPane = ({children, name, zIndex, map}) => {
 MapPane.propTypes = {
 	name: PropTypes.string,
 	zIndex: PropTypes.number,
+	opacity: PropTypes.number,
 	map: PropTypes.object,
 };
 

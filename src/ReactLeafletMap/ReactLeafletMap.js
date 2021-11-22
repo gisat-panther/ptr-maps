@@ -396,6 +396,7 @@ const ReactLeafletMap = ({
 					key={paneKey}
 					zIndex={layersStartingZindex + i}
 					map={map}
+					opacity={layer.opacity}
 				>
 					{getLayerByType(
 						mapKey,

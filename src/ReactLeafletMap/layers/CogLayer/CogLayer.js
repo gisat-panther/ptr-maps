@@ -15,7 +15,6 @@ function createLeafletElement(props, context) {
 		pane: paneName,
 		resolution: options.resolution || DEFAULT_RESOLUTION,
 		pixelValuesToColorFn: getStyle.bind(this, options?.style),
-		opacity: opacity || 1,
 		// debugLevel: 5,
 	});
 
