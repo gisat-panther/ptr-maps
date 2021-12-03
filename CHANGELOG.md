@@ -1,3 +1,15 @@
+# v1.11.3 (Fri Dec 03 2021)
+
+#### 🐾 Patch
+
+- ReactLeaflet: WmsLayer [#110](https://github.com/gisat-panther/ptr-maps/pull/110) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.11.2 (Mon Nov 22 2021)
 
 #### 🐾 Patch
