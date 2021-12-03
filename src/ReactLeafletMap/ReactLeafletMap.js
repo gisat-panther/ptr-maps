@@ -135,15 +135,9 @@ function getTileLayer(layer, i) {
  * @returns {JSX.Element} WMSTileLayer https://react-leaflet.js.org/docs/api-components/#wmstilelayer
  */
 function getWmsLayer(layer, i, crs) {
-	const {options, opacity, key} = layer;
+	const {options, key} = layer;
 	return (
-		<WmsLayer
-			key={key || i}
-			layerKey={key || i}
-			options={options}
-			opacity={opacity}
-			crs={crs}
-		/>
+		<WmsLayer key={key || i} layerKey={key || i} options={options} crs={crs} />
 	);
 }
 

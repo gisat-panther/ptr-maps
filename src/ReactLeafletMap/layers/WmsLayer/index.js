@@ -15,10 +15,9 @@ const reservedWmsParamsKeys = [
 /**
  * Get final parameters for WMSTileLayer
  * @param params {Object} Panther WMS layer definition options.params
- * @param opacity {number} layer opacity
  * @returns {{layers: (*|string), format: (String|string), opacity: (*|number), transparent: boolean}}
  */
-const getFinalParams = (params, opacity) => {
+const getFinalParams = params => {
 	const layers = params?.layers || '';
 	const imageFormat = params?.imageFormat || 'image/png';
 	const restParameters =
@@ -35,19 +34,15 @@ const getFinalParams = (params, opacity) => {
 
 	return {
 		layers: layers,
-		opacity: opacity >= 0 ? opacity : 1,
 		transparent: true,
 		format: imageFormat,
 		...restParameters,
 	};
 };
 
-const WmsLayer = ({layerKey, options, opacity, crs}) => {
+const WmsLayer = ({layerKey, options, crs}) => {
 	const {params, singleTile} = options;
-	const finalParams = useMemo(
-		() => getFinalParams(params, opacity),
-		[params, opacity]
-	);
+	const finalParams = useMemo(() => getFinalParams(params), [params]);
 	const finalCrs = crs || params?.crs;
 
 	if (singleTile) {
@@ -74,7 +69,6 @@ const WmsLayer = ({layerKey, options, opacity, crs}) => {
 WmsLayer.propTypes = {
 	layerKey: PropTypes.string,
 	options: PropTypes.object,
-	opacity: PropTypes.number,
 };
 
 export default WmsLayer;
