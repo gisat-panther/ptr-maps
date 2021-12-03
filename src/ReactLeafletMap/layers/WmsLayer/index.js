@@ -48,13 +48,14 @@ const WmsLayer = ({layerKey, options, opacity, crs}) => {
 		() => getFinalParams(params, opacity),
 		[params, opacity]
 	);
+	const finalCrs = crs || params?.crs;
 
 	if (singleTile) {
 		return (
 			<SingleTileLayer
 				key={layerKey || i}
 				url={options.url}
-				crs={crs ? projectionHelpers.getCRS(crs) : null}
+				crs={finalCrs ? projectionHelpers.getCRS(finalCrs) : null}
 				params={finalParams}
 			/>
 		);
@@ -63,7 +64,7 @@ const WmsLayer = ({layerKey, options, opacity, crs}) => {
 			<WMSTileLayer
 				key={layerKey || i}
 				url={options.url}
-				crs={crs ? projectionHelpers.getCRS(crs) : null}
+				crs={finalCrs ? projectionHelpers.getCRS(finalCrs) : null}
 				params={finalParams}
 			/>
 		);
