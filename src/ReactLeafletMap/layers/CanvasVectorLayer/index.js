@@ -31,7 +31,9 @@ function updateLeafletElement(instance, props, prevProps) {
 		prevProps.style !== props.style ||
 		prevProps.omittedFeatureKeys !== props.omittedFeatureKeys
 	) {
-		instance.setProps(props);
+		setTimeout(() => {
+			instance.setProps(props);
+		}, 10);
 	}
 }
 
