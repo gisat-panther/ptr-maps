@@ -31,7 +31,10 @@ function updateLeafletElement(instance, props, prevProps) {
 		prevProps.style !== props.style ||
 		prevProps.omittedFeatureKeys !== props.omittedFeatureKeys
 	) {
-		instance.setProps(props);
+		// ensure that the layer was already created (see comment above)
+		setTimeout(() => {
+			instance.setProps(props);
+		}, 10);
 	}
 }
 
