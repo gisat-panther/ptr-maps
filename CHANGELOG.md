@@ -1,3 +1,15 @@
+# v1.11.7 (Wed Dec 22 2021)
+
+#### 🐾 Patch
+
+- genericCanvasLayer: fix if props are not defined [#114](https://github.com/gisat-panther/ptr-maps/pull/114) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.11.6 (Tue Dec 21 2021)
 
 #### 🐾 Patch
