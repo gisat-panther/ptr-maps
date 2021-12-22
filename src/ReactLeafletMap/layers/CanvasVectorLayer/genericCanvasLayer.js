@@ -61,7 +61,7 @@ export const CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		}
 	},
 	_onLayerDidZoom: function (e) {
-		if (this.props.type !== 'tiledVector') {
+		if (this.props?.type !== 'tiledVector') {
 			var topLeft = this._map.containerPointToLayerPoint([0, 0]);
 			L.DomUtil.setPosition(this._canvas, topLeft);
 			this.needRedraw();
