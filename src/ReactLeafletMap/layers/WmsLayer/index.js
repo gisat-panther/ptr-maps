@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {WMSTileLayer} from 'react-leaflet';
 import memoizeOne from 'memoize-one';
 import {isEqual as _isEqual} from 'lodash';
@@ -20,6 +20,7 @@ const reservedWmsParamsKeys = [
  * @returns {{layers: (*|string), format: (String|string), opacity: (*|number), transparent: boolean}}
  */
 const getFinalParams = params => {
+	console.log('#### params', params);
 	const layers = params?.layers || '';
 	const imageFormat = params?.imageFormat || 'image/png';
 	const restParameters =
@@ -42,13 +43,12 @@ const getFinalParams = params => {
 	};
 };
 
-const getFinalParamsMemoized = memoizeOne(getFinalParams, _isEqual);
-
 const WmsLayer = ({layerKey, options, crs}) => {
 	const {params, singleTile} = options;
 
 	// TODO remove memoization here once it is handled in ptr-state correctly
-	const finalParams = getFinalParamsMemoized(params);
+	const paramsRef = useRef(memoizeOne(getFinalParams, _isEqual));
+	const finalParams = paramsRef.current(params);
 
 	const finalCrs = crs || params?.crs;
 
