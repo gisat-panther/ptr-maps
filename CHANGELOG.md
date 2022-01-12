@@ -1,3 +1,15 @@
+# v1.11.8 (Wed Jan 12 2022)
+
+#### 🐾 Patch
+
+- Fix/wms layer memo [#115](https://github.com/gisat-panther/ptr-maps/pull/115) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.11.7 (Wed Dec 22 2021)
 
 #### 🐾 Patch
