@@ -20,7 +20,6 @@ const reservedWmsParamsKeys = [
  * @returns {{layers: (*|string), format: (String|string), opacity: (*|number), transparent: boolean}}
  */
 const getFinalParams = params => {
-	console.log('#### params', params);
 	const layers = params?.layers || '';
 	const imageFormat = params?.imageFormat || 'image/png';
 	const restParameters =
