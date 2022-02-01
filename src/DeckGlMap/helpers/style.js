@@ -116,7 +116,10 @@ function getRenderAsRulesByBoxRange(renderAs, boxRange) {
  * @returns {Array}
  */
 function getRgbaColorArray(rgbColorArray, opacity) {
-	if (opacity || opacity === 0) {
+	// if no color defined, make it transparent
+	if (!rgbColorArray) {
+		return [0, 0, 0, 0];
+	} else if (opacity || opacity === 0) {
 		return [...rgbColorArray, Math.floor(opacity * 255)];
 	} else {
 		return rgbColorArray;
