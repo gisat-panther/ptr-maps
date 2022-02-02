@@ -78,7 +78,6 @@ describe('utils/DeckGlMap/helpers/style', function () {
 							},
 							b: {
 								outlineWidth: 1,
-								fill: [255, 255, 255],
 							},
 						},
 						attributeKey: 'letter',
@@ -172,7 +171,7 @@ describe('utils/DeckGlMap/helpers/style', function () {
 			assert.equal(actual, style.baseStyle);
 		});
 
-		it('should return attribute style', function () {
+		it('should return attribute style merged with base style', function () {
 			const style = {
 				baseStyle: {
 					fill: [234, 234, 233],
@@ -196,6 +195,7 @@ describe('utils/DeckGlMap/helpers/style', function () {
 			};
 
 			const expected = {
+				fill: [234, 234, 233],
 				outlineWidth: 1,
 			};
 
@@ -222,7 +222,7 @@ describe('utils/DeckGlMap/helpers/style', function () {
 			},
 		};
 
-		it('should return style object for attribute', function () {
+		it('should return style object for attribute only', function () {
 			const attributes = {
 				letter: 'b',
 				number: 3,
@@ -233,23 +233,21 @@ describe('utils/DeckGlMap/helpers/style', function () {
 			};
 			const actual = styleHelpers.getStyleObjectForAttribute(
 				attributeStyleDefinition,
-				baseStyleDefinition,
 				attributes
 			);
 			assert.deepStrictEqual(actual, expected);
 		});
 
-		it('should return base style', function () {
+		it('should return empty object', function () {
 			const attributes = {
 				number: 3,
 			};
 
 			const actual = styleHelpers.getStyleObjectForAttribute(
 				attributeStyleDefinition,
-				baseStyleDefinition,
 				attributes
 			);
-			assert.deepStrictEqual(actual, baseStyleDefinition);
+			assert.deepStrictEqual(actual, {});
 		});
 	});
 });
