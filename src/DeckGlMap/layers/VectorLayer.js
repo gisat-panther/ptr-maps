@@ -1,11 +1,35 @@
 import {CompositeLayer} from '@deck.gl/core';
 import {GeoJsonLayer} from '@deck.gl/layers';
-import {forIn as _forIn, includes as _includes} from 'lodash';
+import {
+	forIn as _forIn,
+	includes as _includes,
+	partition as _partition,
+} from 'lodash';
 import styleHelpers from '../helpers/style';
 
 class VectorLayer extends CompositeLayer {
 	renderLayers() {
-		return [this.renderVectorLayer()];
+		const {key, options} = this.props;
+		const {features, fidColumnName, selected} = options;
+		const selectedFeatureKeys = this.getSelectedFeatureKeys(selected);
+
+		if (selectedFeatureKeys) {
+			const partition = _partition(
+				features,
+				feature =>
+					!!_includes(
+						selectedFeatureKeys,
+						this.getFeatureKey(fidColumnName, feature)
+					)
+			);
+
+			return [
+				this.renderVectorLayer(`${key}-geoJsonLayer-selected`, partition[1]),
+				this.renderVectorLayer(`${key}-geoJsonLayer`, partition[0]),
+			];
+		} else {
+			return [this.renderVectorLayer(`${key}-geoJsonLayer`, features)];
+		}
 	}
 
 	updateState({changeFlags}) {
@@ -132,6 +156,43 @@ class VectorLayer extends CompositeLayer {
 	}
 
 	/**
+	 * TODO move all selected features to the top for now
+	 * @param selectedFeatureKeys {Array}
+	 * @param fidColumnName {string}
+	 * @param feature {GeoJSONFeature}
+	 * @returns {number}
+	 */
+	getFeatureZIndex(selectedFeatureKeys, fidColumnName, feature) {
+		if (selectedFeatureKeys) {
+			const featureKey = this.getFeatureKey(fidColumnName, feature);
+			const isSelected = _includes(selectedFeatureKeys, featureKey);
+			return isSelected ? 1 : 0;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * Return all selected feature keys
+	 * @param selections {Object}
+	 * @returns {Array|null}
+	 */
+	getSelectedFeatureKeys(selections) {
+		if (selections) {
+			let selectedKeys = [];
+			_forIn(selections, selection => {
+				if (selection.keys?.length) {
+					selectedKeys = [...selectedKeys, ...selection.keys];
+				}
+			});
+
+			return selectedKeys.length ? selectedKeys : null;
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * Call on feature click
 	 * @param data {Object}
 	 */
@@ -169,13 +230,13 @@ class VectorLayer extends CompositeLayer {
 	/**
 	 * @returns {GeoJsonLayer} DeckGl.GeoJsonLayer
 	 */
-	renderVectorLayer() {
-		const {key, layerKey, options, styleForDeck, pointAsMarker} = this.props;
-		const {fidColumnName, features, selectable, hoverable} = options;
+	renderVectorLayer(vectorLayerKey, features) {
+		const {layerKey, options, styleForDeck, pointAsMarker} = this.props;
+		const {fidColumnName, selectable, hoverable} = options;
 
 		return new GeoJsonLayer({
-			id: `${key}-geoJsonLayer`,
-			key,
+			id: vectorLayerKey,
+			key: vectorLayerKey,
 			layerKey,
 			fidColumnName,
 			data: features,
