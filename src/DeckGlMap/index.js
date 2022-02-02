@@ -172,7 +172,7 @@ class DeckGlMap extends React.PureComponent {
 
 	/**
 	 * Return vector layer
-	 * TODO it supports only points currently
+	 * TODO it supports only points and polygons currently
 	 * @param layer {Object} layer data
 	 * @returns {VectorLayer}
 	 */

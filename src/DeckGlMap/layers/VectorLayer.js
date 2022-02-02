@@ -84,10 +84,15 @@ class VectorLayer extends CompositeLayer {
 	 */
 	getFeatureFill(style, fidColumnName, feature) {
 		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
-		return styleHelpers.getRgbaColorArray(
-			defaultStyle?.fill,
-			defaultStyle?.fillOpacity
-		);
+		// if no fill defined, make fill transparent
+		if (defaultStyle?.fill) {
+			return styleHelpers.getRgbaColorArray(
+				defaultStyle?.fill,
+				defaultStyle?.fillOpacity
+			);
+		} else {
+			return styleHelpers.getRgbaColorArray([255, 255, 255], 0);
+		}
 	}
 
 	/**
@@ -180,6 +185,8 @@ class VectorLayer extends CompositeLayer {
 			extruded: false,
 			pointType: 'circle',
 			lineWidthUnits: 'pixels',
+			lineCapRounded: true,
+			lineJointRounded: true,
 			getFillColor: this.getFeatureFill.bind(this, styleForDeck, fidColumnName),
 			getLineColor: this.getFeatureOutlineColor.bind(
 				this,

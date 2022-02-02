@@ -64,7 +64,7 @@ function getStylesDefinitionForDeck(style) {
 			if (style.attributeValues) {
 				let values = {};
 				_forIn(style.attributeValues, (style, value) => {
-					values[value] = {...baseStyle, ...getDeckReadyStyleObject(style)};
+					values[value] = getDeckReadyStyleObject(style);
 				});
 
 				attributeStyles.push({
@@ -74,7 +74,7 @@ function getStylesDefinitionForDeck(style) {
 			} else if (style.attributeClasses) {
 				let classes = [];
 				_forEach(style.attributeClasses, style => {
-					classes.push({...baseStyle, ...getDeckReadyStyleObject(style)});
+					classes.push(getDeckReadyStyleObject(style));
 				});
 				attributeStyles.push({
 					attributeKey,
@@ -116,10 +116,7 @@ function getRenderAsRulesByBoxRange(renderAs, boxRange) {
  * @returns {Array}
  */
 function getRgbaColorArray(rgbColorArray, opacity) {
-	// if no color defined, make it transparent
-	if (!rgbColorArray) {
-		return [0, 0, 0, 0];
-	} else if (opacity || opacity === 0) {
+	if (opacity || opacity === 0) {
 		return [...rgbColorArray, Math.floor(opacity * 255)];
 	} else {
 		return rgbColorArray;
@@ -133,16 +130,16 @@ function getRgbaColorArray(rgbColorArray, opacity) {
  * @returns {Object} style object
  */
 function getStyleForFeature(style, feature) {
-	if (style.attributeStyles) {
-		if (style.attributeStyles.length === 1) {
-			return getStyleObjectForAttribute(
-				style.attributeStyles[0],
-				style.baseStyle,
-				feature.properties
-			);
-		} else {
-			// TODO merge styles if there are styles for more attributes
-		}
+	if (style.attributeStyles?.length) {
+		let finalStyle = {...style.baseStyle};
+		style.attributeStyles.forEach(attributeStyle => {
+			finalStyle = {
+				...finalStyle,
+				...getStyleObjectForAttribute(attributeStyle, feature.properties),
+			};
+		});
+
+		return finalStyle;
 	} else {
 		return style.baseStyle;
 	}
@@ -150,19 +147,14 @@ function getStyleForFeature(style, feature) {
 
 /**
  * @param attributeStyleDefinition {Object} Style definition for given attribute key
- * @param baseStyleDefinition {Object}
  * @param attributes {Object} Feature attributes
  * @return {Object} Style object for given attribute key
  */
-function getStyleObjectForAttribute(
-	attributeStyleDefinition,
-	baseStyleDefinition,
-	attributes
-) {
+function getStyleObjectForAttribute(attributeStyleDefinition, attributes) {
 	if (attributes.hasOwnProperty(attributeStyleDefinition.attributeKey)) {
 		let value = attributes[attributeStyleDefinition.attributeKey];
 		if (value === null || value === undefined) {
-			return baseStyleDefinition;
+			return {};
 		} else {
 			if (attributeStyleDefinition.attributeClasses) {
 				return mapStyle.getStyleObjectForIntervals(
@@ -177,11 +169,11 @@ function getStyleObjectForAttribute(
 			}
 			// TODO add other cases
 			else {
-				return baseStyleDefinition;
+				return {};
 			}
 		}
 	} else {
-		return baseStyleDefinition;
+		return {};
 	}
 }
 
