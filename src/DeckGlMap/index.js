@@ -9,6 +9,7 @@ import viewHelpers from './helpers/view';
 import styleHelpers from './helpers/style';
 import TiledLayer from './layers/TiledLayer';
 import VectorLayer from './layers/VectorLayer';
+import WmsLayer from './layers/WmsLayer';
 
 import './style.scss';
 
@@ -141,13 +142,15 @@ class DeckGlMap extends React.PureComponent {
 	/**
 	 * Return layer by type
 	 * @param layer {Object} layer data
-	 * @returns {TiledLayer|VectorLayer|null}
+	 * @returns {TiledLayer|VectorLayer|WmsLayer|null}
 	 */
 	getLayerByType(layer) {
 		if (layer && layer.type) {
 			switch (layer.type) {
 				case 'wmts':
 					return this.getTileLayer(layer);
+				case 'wms':
+					return this.getWmsLayer(layer);
 				case 'vector':
 					return this.getVectorLayer(layer);
 				default:
@@ -165,6 +168,18 @@ class DeckGlMap extends React.PureComponent {
 	 */
 	getTileLayer(layer) {
 		return new TiledLayer({
+			...layer,
+			id: layer.key,
+		});
+	}
+
+	/**
+	 * Return WMS layer
+	 * @param layer {Object} layer data
+	 * @returns {WmsLayer}
+	 */
+	getWmsLayer(layer) {
+		return new WmsLayer({
 			...layer,
 			id: layer.key,
 		});

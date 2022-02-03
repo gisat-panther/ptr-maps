@@ -1,0 +1,95 @@
+import {CompositeLayer} from '@deck.gl/core';
+import {TileLayer} from '@deck.gl/geo-layers';
+import {BitmapLayer} from '@deck.gl/layers';
+import {load} from '@loaders.gl/core';
+import SphericalMercator from '@mapbox/sphericalmercator';
+
+const conversion = new SphericalMercator({size: 512, antimeridian: true});
+
+class WmsLayer extends CompositeLayer {
+	renderLayers() {
+		return [this.renderWmsLayer()];
+	}
+
+	renderWmsLayer() {
+		const {options, opacity, key} = this.props;
+		if (!options) {
+			throw new Error('WmsLayer: options are not defined!');
+		}
+		const {url, params} = options;
+		if (!url) {
+			throw new Error('WmsLayer: options.url is not defined!');
+		}
+		if (!url) {
+			throw new Error('WmsLayer: options.params are not defined!');
+		}
+		const {layers, format, tileSize, styles, version} = params;
+		if (!layers) {
+			throw new Error('WmsLayer: options.params.layers are not defined!');
+		}
+
+		const id = `${key}-wmsLayer`;
+
+		return new TileLayer({
+			id,
+			opacity,
+			getTileData: tile => {
+				const {x, y, z} = tile;
+
+				// Conversion needed due to visualizations issues.
+				const [west, south, east, north] = conversion.bbox(
+					x,
+					y,
+					z,
+					false,
+					'900913'
+				);
+
+				let urlQueryStringParams = {
+					bbox: [west, south, east, north].join(','),
+					format: format || 'image/png',
+					height: tileSize || 512,
+					layers,
+					request: 'GetMap',
+					service: 'WMS',
+					styles: styles || '',
+					width: tileSize || 512,
+					transparent: true,
+				};
+
+				if (params.hasOwnProperty('transparent')) {
+					urlQueryStringParams.transparent = params.transparent;
+				}
+
+				if (version === '1.3.0') {
+					urlQueryStringParams.crs = 'EPSG:4326';
+					urlQueryStringParams.version = version;
+				} else {
+					urlQueryStringParams.srs = 'EPSG:4326';
+					urlQueryStringParams.version = '1.1.1';
+				}
+
+				const urlQueryString = Object.keys(urlQueryStringParams)
+					.map(key => `${key}=${urlQueryStringParams[key]}`)
+					.join('&');
+
+				const finalUrl = url + '?' + urlQueryString;
+
+				return load(finalUrl);
+			},
+			renderSubLayers: props => {
+				const {
+					bbox: {west, south, east, north},
+				} = props.tile;
+
+				return new BitmapLayer(props, {
+					data: null,
+					image: props.data,
+					bounds: [west, south, east, north],
+				});
+			},
+		});
+	}
+}
+
+export default WmsLayer;
