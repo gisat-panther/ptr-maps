@@ -62,10 +62,10 @@ class WmsLayer extends CompositeLayer {
 				}
 
 				if (version === '1.3.0') {
-					urlQueryStringParams.crs = 'EPSG:4326';
+					urlQueryStringParams.crs = 'EPSG:3857';
 					urlQueryStringParams.version = version;
 				} else {
-					urlQueryStringParams.srs = 'EPSG:4326';
+					urlQueryStringParams.srs = 'EPSG:3857';
 					urlQueryStringParams.version = '1.1.1';
 				}
 
