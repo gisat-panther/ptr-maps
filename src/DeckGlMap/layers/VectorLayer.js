@@ -261,7 +261,7 @@ class VectorLayer extends CompositeLayer {
 			pointRadiusMinPixels: 1,
 
 			autoHighlight: hoverable,
-			highlightColor: [255, 255, 255, 80],
+			highlightColor: [255, 255, 255, 120],
 		});
 	}
 }
