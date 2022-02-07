@@ -8,6 +8,10 @@ import {
 import styleHelpers from '../helpers/style';
 
 class VectorLayer extends CompositeLayer {
+	constructor(props) {
+		super(props);
+	}
+
 	renderLayers() {
 		const {key, options} = this.props;
 		const {features, fidColumnName, selected} = options;
@@ -156,23 +160,6 @@ class VectorLayer extends CompositeLayer {
 	}
 
 	/**
-	 * TODO move all selected features to the top for now
-	 * @param selectedFeatureKeys {Array}
-	 * @param fidColumnName {string}
-	 * @param feature {GeoJSONFeature}
-	 * @returns {number}
-	 */
-	getFeatureZIndex(selectedFeatureKeys, fidColumnName, feature) {
-		if (selectedFeatureKeys) {
-			const featureKey = this.getFeatureKey(fidColumnName, feature);
-			const isSelected = _includes(selectedFeatureKeys, featureKey);
-			return isSelected ? 1 : 0;
-		} else {
-			return 0;
-		}
-	}
-
-	/**
 	 * Return all selected feature keys
 	 * @param selections {Object}
 	 * @returns {Array|null}
@@ -260,8 +247,6 @@ class VectorLayer extends CompositeLayer {
 				fidColumnName
 			),
 			pointRadiusUnits: pointAsMarker ? 'pixels' : 'meters',
-			onClick: this.onClick.bind(this),
-			onHover: this.onHover.bind(this),
 			getLineWidth: this.getFeatureOutlineWidth.bind(
 				this,
 				styleForDeck,
@@ -274,6 +259,9 @@ class VectorLayer extends CompositeLayer {
 				getPointRadius: [options, styleForDeck],
 			},
 			pointRadiusMinPixels: 1,
+
+			autoHighlight: hoverable,
+			highlightColor: [255, 255, 255, 80],
 		});
 	}
 }

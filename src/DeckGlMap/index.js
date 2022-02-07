@@ -193,7 +193,7 @@ class DeckGlMap extends React.PureComponent {
 	 */
 	getVectorLayer(layer) {
 		const {key, layerKey, options, ...restProps} = layer;
-		let {features, style, pointAsMarker, ...restOptions} = options;
+		let {features, style, hoverable, pointAsMarker, ...restOptions} = options;
 
 		const renderAsRules = styleHelpers.getRenderAsRulesByBoxRange(
 			options.renderAs,
@@ -215,6 +215,7 @@ class DeckGlMap extends React.PureComponent {
 			layerKey: layer.layerKey || layer.key,
 			onClick: this.onVectorLayerClick,
 			onHover: this.onVectorLayerHover,
+			autoHighlight: hoverable,
 			styleForDeck: styleHelpers.getStylesDefinitionForDeck(style),
 			pointAsMarker,
 		};
