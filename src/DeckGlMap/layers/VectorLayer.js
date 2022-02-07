@@ -6,6 +6,7 @@ import {
 	partition as _partition,
 } from 'lodash';
 import styleHelpers from '../helpers/style';
+import constants from '../../constants';
 
 class VectorLayer extends CompositeLayer {
 	constructor(props) {
@@ -28,8 +29,8 @@ class VectorLayer extends CompositeLayer {
 			);
 
 			return [
-				this.renderVectorLayer(`${key}-geoJsonLayer-selected`, partition[1]),
-				this.renderVectorLayer(`${key}-geoJsonLayer`, partition[0]),
+				this.renderVectorLayer(`${key}-geoJsonLayer`, partition[1]),
+				this.renderVectorLayer(`${key}-geoJsonLayer-selected`, partition[0]),
 			];
 		} else {
 			return [this.renderVectorLayer(`${key}-geoJsonLayer`, features)];
@@ -72,9 +73,14 @@ class VectorLayer extends CompositeLayer {
 		if (selected && featureKey) {
 			_forIn(selected, (selection, key) => {
 				if (selection.keys && _includes(selection.keys, featureKey)) {
+					let selectionStyle = selection.style;
+					if (selection.style === 'default') {
+						selectionStyle = constants.vectorFeatureStyle.selected;
+					}
+
 					selectedStyle = {
 						...defaultStyle,
-						...styleHelpers.getDeckReadyStyleObject(selection.style),
+						...styleHelpers.getDeckReadyStyleObject(selectionStyle),
 					};
 				}
 			});
