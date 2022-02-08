@@ -152,7 +152,7 @@ function getStyleForFeature(style, feature) {
  */
 function getStyleObjectForAttribute(attributeStyleDefinition, attributes) {
 	if (attributes.hasOwnProperty(attributeStyleDefinition.attributeKey)) {
-		let value = attributes[attributeStyleDefinition.attributeKey];
+		const value = attributes[attributeStyleDefinition.attributeKey];
 		if (value === null || value === undefined) {
 			return {};
 		} else {
