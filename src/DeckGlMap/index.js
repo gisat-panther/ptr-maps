@@ -9,6 +9,7 @@ import viewHelpers from './helpers/view';
 import styleHelpers from './helpers/style';
 import TiledLayer from './layers/TiledLayer';
 import VectorLayer from './layers/VectorLayer';
+import WmsLayer from './layers/WmsLayer';
 
 import './style.scss';
 
@@ -141,13 +142,15 @@ class DeckGlMap extends React.PureComponent {
 	/**
 	 * Return layer by type
 	 * @param layer {Object} layer data
-	 * @returns {TiledLayer|VectorLayer|null}
+	 * @returns {TiledLayer|VectorLayer|WmsLayer|null}
 	 */
 	getLayerByType(layer) {
 		if (layer && layer.type) {
 			switch (layer.type) {
 				case 'wmts':
 					return this.getTileLayer(layer);
+				case 'wms':
+					return this.getWmsLayer(layer);
 				case 'vector':
 					return this.getVectorLayer(layer);
 				default:
@@ -171,14 +174,30 @@ class DeckGlMap extends React.PureComponent {
 	}
 
 	/**
+	 * Return WMS layer
+	 * @param layer {Object} layer data
+	 * @returns {WmsLayer}
+	 */
+	getWmsLayer(layer) {
+		if (layer.options?.singleTile) {
+			throw new Error('DeckGlMap: singleTile option not implemented yet!');
+		} else {
+			return new WmsLayer({
+				...layer,
+				id: layer.key,
+			});
+		}
+	}
+
+	/**
 	 * Return vector layer
-	 * TODO it supports only points currently
+	 * TODO it supports only points and polygons currently
 	 * @param layer {Object} layer data
 	 * @returns {VectorLayer}
 	 */
 	getVectorLayer(layer) {
 		const {key, layerKey, options, ...restProps} = layer;
-		let {features, style, pointAsMarker, ...restOptions} = options;
+		let {features, style, hoverable, pointAsMarker, ...restOptions} = options;
 
 		const renderAsRules = styleHelpers.getRenderAsRulesByBoxRange(
 			options.renderAs,
@@ -200,6 +219,7 @@ class DeckGlMap extends React.PureComponent {
 			layerKey: layer.layerKey || layer.key,
 			onClick: this.onVectorLayerClick,
 			onHover: this.onVectorLayerHover,
+			autoHighlight: hoverable,
 			styleForDeck: styleHelpers.getStylesDefinitionForDeck(style),
 			pointAsMarker,
 		};

@@ -1,11 +1,37 @@
 import {CompositeLayer} from '@deck.gl/core';
 import {GeoJsonLayer} from '@deck.gl/layers';
-import {forIn as _forIn, includes as _includes} from 'lodash';
+import {
+	forIn as _forIn,
+	includes as _includes,
+	isEmpty as _isEmpty,
+	partition as _partition,
+} from 'lodash';
 import styleHelpers from '../helpers/style';
+import constants from '../../constants';
 
 class VectorLayer extends CompositeLayer {
 	renderLayers() {
-		return [this.renderVectorLayer()];
+		const {key, options} = this.props;
+		const {features, fidColumnName, selected} = options;
+		const selectedFeatureKeys = this.getSelectedFeatureKeys(selected);
+
+		if (selectedFeatureKeys) {
+			const partition = _partition(
+				features,
+				feature =>
+					!!_includes(
+						selectedFeatureKeys,
+						this.getFeatureKey(fidColumnName, feature)
+					)
+			);
+
+			return [
+				this.renderVectorLayer(`${key}-geoJsonLayer`, partition[1]),
+				this.renderVectorLayer(`${key}-geoJsonLayer-selected`, partition[0]),
+			];
+		} else {
+			return [this.renderVectorLayer(`${key}-geoJsonLayer`, features)];
+		}
 	}
 
 	updateState({changeFlags}) {
@@ -44,9 +70,14 @@ class VectorLayer extends CompositeLayer {
 		if (selected && featureKey) {
 			_forIn(selected, (selection, key) => {
 				if (selection.keys && _includes(selection.keys, featureKey)) {
+					let selectionStyle = selection.style;
+					if (selection.style === 'default') {
+						selectionStyle = constants.vectorFeatureStyle.selected;
+					}
+
 					selectedStyle = {
 						...defaultStyle,
-						...styleHelpers.getDeckReadyStyleObject(selection.style),
+						...styleHelpers.getDeckReadyStyleObject(selectionStyle),
 					};
 				}
 			});
@@ -84,10 +115,15 @@ class VectorLayer extends CompositeLayer {
 	 */
 	getFeatureFill(style, fidColumnName, feature) {
 		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
-		return styleHelpers.getRgbaColorArray(
-			defaultStyle?.fill,
-			defaultStyle?.fillOpacity
-		);
+		// if no fill defined, make fill transparent
+		if (defaultStyle?.fill) {
+			return styleHelpers.getRgbaColorArray(
+				defaultStyle?.fill,
+				defaultStyle?.fillOpacity
+			);
+		} else {
+			return styleHelpers.getRgbaColorArray([255, 255, 255], 0);
+		}
 	}
 
 	/**
@@ -124,6 +160,26 @@ class VectorLayer extends CompositeLayer {
 	getFeatureOutlineWidth(style, fidColumnName, feature) {
 		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
 		return defaultStyle?.outlineWidth;
+	}
+
+	/**
+	 * Return all selected feature keys
+	 * @param selections {Object}
+	 * @returns {Array|null}
+	 */
+	getSelectedFeatureKeys(selections) {
+		if (!_isEmpty(selections)) {
+			let selectedKeys = [];
+			_forIn(selections, selection => {
+				if (selection.keys?.length) {
+					selectedKeys = [...selectedKeys, ...selection.keys];
+				}
+			});
+
+			return selectedKeys.length ? selectedKeys : null;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -164,13 +220,13 @@ class VectorLayer extends CompositeLayer {
 	/**
 	 * @returns {GeoJsonLayer} DeckGl.GeoJsonLayer
 	 */
-	renderVectorLayer() {
-		const {key, layerKey, options, styleForDeck, pointAsMarker} = this.props;
-		const {fidColumnName, features, selectable, hoverable} = options;
+	renderVectorLayer(vectorLayerKey, features) {
+		const {layerKey, options, styleForDeck, pointAsMarker} = this.props;
+		const {fidColumnName, selectable, hoverable} = options;
 
 		return new GeoJsonLayer({
-			id: `${key}-geoJsonLayer`,
-			key,
+			id: vectorLayerKey,
+			key: vectorLayerKey,
 			layerKey,
 			fidColumnName,
 			data: features,
@@ -180,6 +236,8 @@ class VectorLayer extends CompositeLayer {
 			extruded: false,
 			pointType: 'circle',
 			lineWidthUnits: 'pixels',
+			lineCapRounded: true,
+			lineJointRounded: true,
 			getFillColor: this.getFeatureFill.bind(this, styleForDeck, fidColumnName),
 			getLineColor: this.getFeatureOutlineColor.bind(
 				this,
@@ -192,8 +250,6 @@ class VectorLayer extends CompositeLayer {
 				fidColumnName
 			),
 			pointRadiusUnits: pointAsMarker ? 'pixels' : 'meters',
-			onClick: this.onClick.bind(this),
-			onHover: this.onHover.bind(this),
 			getLineWidth: this.getFeatureOutlineWidth.bind(
 				this,
 				styleForDeck,
@@ -206,6 +262,9 @@ class VectorLayer extends CompositeLayer {
 				getPointRadius: [options, styleForDeck],
 			},
 			pointRadiusMinPixels: 1,
+
+			autoHighlight: hoverable,
+			highlightColor: [255, 255, 255, 120],
 		});
 	}
 }
