@@ -4,7 +4,7 @@ import {BitmapLayer} from '@deck.gl/layers';
 import {load} from '@loaders.gl/core';
 import SphericalMercator from '@mapbox/sphericalmercator';
 
-const conversion = new SphericalMercator({size: 512, antimeridian: true});
+const DEFAULT_TILE_SIZE = 256;
 
 class WmsLayer extends CompositeLayer {
 	renderLayers() {
@@ -23,16 +23,23 @@ class WmsLayer extends CompositeLayer {
 		if (!url) {
 			throw new Error('WmsLayer: options.params are not defined!');
 		}
-		const {layers, format, tileSize, styles, version} = params;
+		const {layers, format, styles, version} = params;
 		if (!layers) {
 			throw new Error('WmsLayer: options.params.layers are not defined!');
 		}
 
 		const id = `${key}-wmsLayer`;
+		const tileSize = params.tileSize || DEFAULT_TILE_SIZE;
+
+		const conversion = new SphericalMercator({
+			size: tileSize,
+			antimeridian: true,
+		});
 
 		return new TileLayer({
 			id,
 			opacity,
+			tileSize,
 			getTileData: tile => {
 				const {x, y, z} = tile;
 
@@ -48,12 +55,12 @@ class WmsLayer extends CompositeLayer {
 				let urlQueryStringParams = {
 					bbox: [west, south, east, north].join(','),
 					format: format || 'image/png',
-					height: tileSize || 512,
+					height: tileSize,
 					layers,
 					request: 'GetMap',
 					service: 'WMS',
 					styles: styles || '',
-					width: tileSize || 512,
+					width: tileSize,
 					transparent: true,
 				};
 
@@ -61,12 +68,12 @@ class WmsLayer extends CompositeLayer {
 					urlQueryStringParams.transparent = params.transparent;
 				}
 
-				if (version === '1.3.0') {
-					urlQueryStringParams.crs = 'EPSG:3857';
-					urlQueryStringParams.version = version;
-				} else {
+				if (version === '1.1.1') {
 					urlQueryStringParams.srs = 'EPSG:3857';
 					urlQueryStringParams.version = '1.1.1';
+				} else {
+					urlQueryStringParams.crs = 'EPSG:3857';
+					urlQueryStringParams.version = '1.3.0';
 				}
 
 				const urlQueryString = Object.keys(urlQueryStringParams)
