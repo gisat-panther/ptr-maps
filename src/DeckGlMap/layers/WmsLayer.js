@@ -45,7 +45,7 @@ class WmsLayer extends CompositeLayer {
 					'900913'
 				);
 
-				let urlQueryStringParams = {
+				const urlQueryStringParams = {
 					bbox: [west, south, east, north].join(','),
 					format: format || 'image/png',
 					height: tileSize || 512,
