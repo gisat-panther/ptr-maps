@@ -9,10 +9,6 @@ import styleHelpers from '../helpers/style';
 import constants from '../../constants';
 
 class VectorLayer extends CompositeLayer {
-	constructor(props) {
-		super(props);
-	}
-
 	renderLayers() {
 		const {key, options} = this.props;
 		const {features, fidColumnName, selected} = options;
