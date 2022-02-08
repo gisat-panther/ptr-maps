@@ -20,7 +20,7 @@ class WmsLayer extends CompositeLayer {
 		if (!url) {
 			throw new Error('WmsLayer: options.url is not defined!');
 		}
-		if (!url) {
+		if (!params) {
 			throw new Error('WmsLayer: options.params are not defined!');
 		}
 		const {layers, format, tileSize, styles, version} = params;
