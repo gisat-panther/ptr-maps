@@ -3,6 +3,7 @@ import {GeoJsonLayer} from '@deck.gl/layers';
 import {
 	forIn as _forIn,
 	includes as _includes,
+	isEmpty as _isEmpty,
 	partition as _partition,
 } from 'lodash';
 import styleHelpers from '../helpers/style';
@@ -167,7 +168,7 @@ class VectorLayer extends CompositeLayer {
 	 * @returns {Array|null}
 	 */
 	getSelectedFeatureKeys(selections) {
-		if (selections) {
+		if (!_isEmpty(selections)) {
 			let selectedKeys = [];
 			_forIn(selections, selection => {
 				if (selection.keys?.length) {
