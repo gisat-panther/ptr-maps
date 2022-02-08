@@ -20,7 +20,7 @@ class WmsLayer extends CompositeLayer {
 		if (!url) {
 			throw new Error('WmsLayer: options.url is not defined!');
 		}
-		if (!url) {
+		if (!params) {
 			throw new Error('WmsLayer: options.params are not defined!');
 		}
 		const {layers, format, styles, version} = params;
@@ -52,7 +52,7 @@ class WmsLayer extends CompositeLayer {
 					'900913'
 				);
 
-				let urlQueryStringParams = {
+				const urlQueryStringParams = {
 					bbox: [west, south, east, north].join(','),
 					format: format || 'image/png',
 					height: tileSize,
