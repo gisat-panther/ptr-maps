@@ -1,3 +1,15 @@
+# v1.12.0 (Tue Feb 08 2022)
+
+#### 🚀 Enhancement
+
+- Deck.gl: basic support for polygons and WMS layers [#116](https://github.com/gisat-panther/ptr-maps/pull/116) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.11.8 (Wed Jan 12 2022)
 
 #### 🐾 Patch
