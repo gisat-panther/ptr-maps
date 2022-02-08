@@ -179,10 +179,14 @@ class DeckGlMap extends React.PureComponent {
 	 * @returns {WmsLayer}
 	 */
 	getWmsLayer(layer) {
-		return new WmsLayer({
-			...layer,
-			id: layer.key,
-		});
+		if (layer.options?.singleTile) {
+			throw new Error('DeckGlMap: singleTile option not implemented yet!');
+		} else {
+			return new WmsLayer({
+				...layer,
+				id: layer.key,
+			});
+		}
 	}
 
 	/**
