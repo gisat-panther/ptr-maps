@@ -22,6 +22,7 @@ const reservedWmsParamsKeys = [
 const getFinalParams = params => {
 	const layers = params?.layers || '';
 	const imageFormat = params?.imageFormat || 'image/png';
+	const styles = params?.styles;
 	const restParameters =
 		(params &&
 			Object.entries(params).reduce((acc, [key, value]) => {
@@ -38,6 +39,7 @@ const getFinalParams = params => {
 		layers: layers,
 		transparent: true,
 		format: imageFormat,
+		...(styles ? {styles} : {}),
 		...restParameters,
 	};
 };
