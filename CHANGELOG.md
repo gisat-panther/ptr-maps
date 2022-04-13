@@ -1,3 +1,15 @@
+# v1.12.1 (Wed Apr 13 2022)
+
+#### 🐾 Patch
+
+- Add support for styles  param in wms [#119](https://github.com/gisat-panther/ptr-maps/pull/119) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.12.0 (Tue Feb 08 2022)
 
 #### 🚀 Enhancement
