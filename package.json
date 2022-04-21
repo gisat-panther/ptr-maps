@@ -124,6 +124,6 @@
 		"test:watch": "NODE_ENV=test mocha --watch",
 		"coverage": "cross-env NODE_ENV=test nyc --reporter=html --reporter=json npm run test",
 		"format": "prettier --write .",
-		"postinstall": "node scripts/postinstall.js"
+		"postinstall": "node scripts/postinstall.mjs"
 	}
 }
