@@ -2,6 +2,7 @@
 	"name": "@gisatcz/ptr-maps",
 	"version": "1.12.1",
 	"description": "Panther FE maps",
+	"sideEffects": false,
 	"keywords": [
 		"panther",
 		"gisat"
@@ -13,9 +14,9 @@
 			"pre-commit": "pretty-quick --staged"
 		}
 	},
-	"style": "dist/style.css",
+	"style": "dist/index.css",
 	"main": "dist/index.js",
-	"module": "dist/index.es.js",
+	"module": "lib/index.js",
 	"files": [
 		"dist",
 		"lib",
@@ -108,21 +109,21 @@
 	},
 	"scripts": {
 		"clean": "rimraf dist",
-		"start": "run-s clean && run-p start:es start:cjs start:lib:es",
-		"start:lib:es": "cross-env BABEL_ENV=es babel --watch src -d lib --verbose",
-		"start:cjs": "cross-env NODE_ENV=cjs rollup -c -w",
-		"start:es": "cross-env NODE_ENV=es rollup -c -w",
-		"build": "run-s clean && run-p build:es build:cjs build:lib:es",
-		"build:es": "cross-env NODE_ENV=es rollup -c",
-		"build:cjs": "cross-env NODE_ENV=cjs rollup -c",
-		"build:lib:es": "npm-run-all build:babel:lib:es copy:stylesheets copy:assets",
-		"build:babel:lib:es": "cross-env BABEL_ENV=es babel src -d lib",
+		"start": "cross-env BABEL_ENV=development run-s clean && run-p start:es start:cjs start:lib:es && copy:stylesheets copy:assets",
+		"start:lib:es": "cross-env BABEL_ENV=development babel --watch src -d lib --verbose",
+		"start:cjs": "cross-env BABEL_ENV=development NODE_ENV=cjs rollup -c -w",
+		"start:es": "cross-env BABEL_ENV=development NODE_ENV=es rollup -c -w",
+		"build": "cross-env BABEL_ENV=production run-s clean && run-p build:es build:cjs build:lib:es",
+		"build:es": "cross-env BABEL_ENV=production NODE_ENV=es rollup -c",
+		"build:cjs": "cross-env BABEL_ENV=production NODE_ENV=cjs rollup -c",
+		"build:lib:es": "cross-env BABEL_ENV=production npm-run-all build:babel:lib:es copy:stylesheets copy:assets",
+		"build:babel:lib:es": "cross-env BABEL_ENV=production babel src -d lib",
 		"copy:stylesheets": "node ./build/copy-stylesheets.js",
 		"copy:assets": "node ./build/copy-assets.js",
-		"test": "mocha",
-		"test:watch": "mocha --watch",
+		"test": "NODE_ENV=test mocha",
+		"test:watch": "NODE_ENV=test mocha --watch",
 		"coverage": "cross-env NODE_ENV=test nyc --reporter=html --reporter=json npm run test",
 		"format": "prettier --write .",
-		"postinstall": "node scripts/postinstall.js"
+		"postinstall": "node scripts/postinstall.mjs"
 	}
 }

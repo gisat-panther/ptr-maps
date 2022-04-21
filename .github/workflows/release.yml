@@ -31,7 +31,9 @@ jobs:
           key: npm-deps-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             npm-deps-${{ hashFiles('package-lock.json') }}
-
+      - name: Set the correct Node version using nvm
+        shell: bash -l {0}
+        run: nvm install
       - name: Create Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}

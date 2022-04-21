@@ -90,7 +90,7 @@ export default {
 	],
 	output: {
 		file: {
-			es: pkg.module,
+			es: 'dist/index.es.js',
 			cjs: pkg.main,
 		}[env],
 		format: env,
@@ -110,7 +110,7 @@ export default {
 			include: 'node_modules/**',
 		}),
 		postcss({
-			extract: path.resolve(Paths.DIST + '/style.css'),
+			extract: true,
 		}),
 		filesize(),
 		// Copy all imported images into build folder

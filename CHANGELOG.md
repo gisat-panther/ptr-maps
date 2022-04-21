@@ -2,7 +2,7 @@
 
 #### 🐾 Patch
 
-- Add support for styles  param in wms [#119](https://github.com/gisat-panther/ptr-maps/pull/119) ([@vdubr](https://github.com/vdubr))
+- Add support for styles param in wms [#119](https://github.com/gisat-panther/ptr-maps/pull/119) ([@vdubr](https://github.com/vdubr))
 
 #### Authors: 1
 

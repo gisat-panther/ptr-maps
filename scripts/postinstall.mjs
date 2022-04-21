@@ -1,7 +1,7 @@
-var path = require('path');
-var fs = require('fs');
-var findUp = require('find-up');
-var replace = require('replace-in-file');
+import path from 'path';
+import fs from 'fs';
+import findUp from 'find-up';
+import replace from 'replace-in-file';
 
 // path of local instance of Leaflet
 var localLeafletPath = ['node_modules', 'leaflet', 'dist', 'leaflet-src.js'];
