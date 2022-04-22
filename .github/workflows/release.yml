@@ -20,7 +20,7 @@ jobs:
         run: git fetch --unshallow --tags
 
       - name: Set the correct Node version using nvm
-        shell: bash -l {0} 
+        shell: bash -l {0}
         run: nvm install
 
       - name: Cache node modules
