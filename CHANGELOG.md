@@ -1,3 +1,18 @@
+# v1.12.2 (Fri Apr 22 2022)
+
+#### 🐾 Patch
+
+- Feature/shake ready [#123](https://github.com/gisat-panther/ptr-maps/pull/123) ([@vdubr](https://github.com/vdubr))
+- Feature/shake ready [#122](https://github.com/gisat-panther/ptr-maps/pull/122) ([@vdubr](https://github.com/vdubr))
+- Fix release [#121](https://github.com/gisat-panther/ptr-maps/pull/121) ([@vdubr](https://github.com/vdubr))
+- Feature/shake ready [#120](https://github.com/gisat-panther/ptr-maps/pull/120) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.12.1 (Wed Apr 13 2022)
 
 #### 🐾 Patch
