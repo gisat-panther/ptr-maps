@@ -1,5 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {WMSTileLayer} from 'react-leaflet';
+import WMSTileLayerWithFetchedTiles from './WMSTileLayerWithFetchedTiles';
 import memoizeOne from 'memoize-one';
 import {isEqual as _isEqual} from 'lodash';
 import PropTypes from 'prop-types';
@@ -45,7 +46,7 @@ const getFinalParams = params => {
 };
 
 const WmsLayer = ({layerKey, options, crs}) => {
-	const {params, singleTile} = options;
+	const {params, singleTile, fetchedTile} = options;
 
 	// TODO remove memoization here once it is handled in ptr-state correctly
 	const paramsRef = useRef(memoizeOne(getFinalParams, _isEqual));
@@ -56,6 +57,15 @@ const WmsLayer = ({layerKey, options, crs}) => {
 	if (singleTile) {
 		return (
 			<SingleTileLayer
+				key={layerKey || i}
+				url={options.url}
+				crs={finalCrs ? projectionHelpers.getCRS(finalCrs) : null}
+				params={finalParams}
+			/>
+		);
+	} else if (fetchedTile) {
+		return (
+			<WMSTileLayerWithFetchedTiles
 				key={layerKey || i}
 				url={options.url}
 				crs={finalCrs ? projectionHelpers.getCRS(finalCrs) : null}
