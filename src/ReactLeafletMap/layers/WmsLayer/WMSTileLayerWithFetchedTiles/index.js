@@ -23,7 +23,7 @@ async function fetchImage(url, callback, headers, abort) {
 	callback(blob);
 }
 
-var LWMSTileLayerWithFetchedTiles = TileLayer.WMS.extend({
+const LeafletWMSTileLayerWithFetchedTiles = TileLayer.WMS.extend({
 	initialize: function (url, options) {
 		const {headers, abort, results, ...props} = options;
 		TileLayer.WMS.prototype.initialize.call(this, url, props);
@@ -59,7 +59,7 @@ var LWMSTileLayerWithFetchedTiles = TileLayer.WMS.extend({
 export default createTileLayerComponent(
 	function createWMSTileLayer({params = {}, url, ...options}, context) {
 		return {
-			instance: new LWMSTileLayerWithFetchedTiles(url, {
+			instance: new LeafletWMSTileLayerWithFetchedTiles(url, {
 				...params,
 				...withPane(options, context),
 			}),
