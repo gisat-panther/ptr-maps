@@ -1,3 +1,15 @@
+# v1.12.3 (Thu Apr 28 2022)
+
+#### 🐾 Patch
+
+- Feature/wmsfetchtilelayer [#124](https://github.com/gisat-panther/ptr-maps/pull/124) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.12.2 (Fri Apr 22 2022)
 
 #### 🐾 Patch
