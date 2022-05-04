@@ -59,7 +59,7 @@
 	position: absolute;
 	border-radius: 0.25rem;
 	width: 0;
-	background: rgba(255, 255, 255, 0.8);
+	background: var(--base05);
 	transition: width 0.15s ease-in-out 0.15s, height 0.15s ease-in-out, border-radius 0s;
 	filter: drop-shadow(0 0 0.2rem rgba(0, 0, 0, 0.2));
 }
@@ -103,7 +103,7 @@
 }
 
 .ptr-simple-layers-control-menu.left:after {
-	border-left-color: rgba(255, 255, 255, 0.8);
+	border-left-color: var(--base05);
 	border-left-style: solid;
 	border-left-width: 0;
 	right: -1rem;
@@ -128,7 +128,7 @@
 }
 
 .ptr-simple-layers-control-menu.right:after {
-	border-right-color: rgba(255, 255, 255, 0.8);
+	border-right-color: var(--base05);
 	border-right-style: solid;
 	border-right-width: 0;
 	left: -1rem;
@@ -139,6 +139,28 @@
 .ptr-simple-layers-control-menu.right.open:after {
 	border-right-width: 1rem;
 	transition: border-bottom-width 0s, border-top-width 0s, border-right-width 0s;
+}
+
+/* Menu on bottom */
+.ptr-simple-layers-control-menu.bottom {
+	top: 0;
+	bottom: auto;
+}
+.ptr-simple-layers-control-menu.bottom:after {
+	top: 0;
+	bottom: auto;
+}
+.ptr-simple-layers-control-menu.bottom.right {
+	border-radius: 0 .25rem .25rem .25rem;
+}
+.ptr-simple-layers-control-menu.bottom.right:not(.open) {
+	border-radius: 0 .25rem .25rem 0;
+}
+.ptr-simple-layers-control-menu.bottom.left {
+	border-radius: .25rem 0 .25rem .25rem;
+}
+.ptr-simple-layers-control-menu.bottom.left:not(.open) {
+	border-radius: .25rem 0 0 .25rem;
 }
 
 /* Layer tile */
