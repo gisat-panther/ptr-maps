@@ -151,16 +151,16 @@
 	bottom: auto;
 }
 .ptr-simple-layers-control-menu.bottom.right {
-	border-radius: 0 .25rem .25rem .25rem;
+	border-radius: 0 0.25rem 0.25rem 0.25rem;
 }
 .ptr-simple-layers-control-menu.bottom.right:not(.open) {
-	border-radius: 0 .25rem .25rem 0;
+	border-radius: 0 0.25rem 0.25rem 0;
 }
 .ptr-simple-layers-control-menu.bottom.left {
-	border-radius: .25rem 0 .25rem .25rem;
+	border-radius: 0.25rem 0 0.25rem 0.25rem;
 }
 .ptr-simple-layers-control-menu.bottom.left:not(.open) {
-	border-radius: .25rem 0 0 .25rem;
+	border-radius: 0.25rem 0 0 0.25rem;
 }
 
 /* Layer tile */
