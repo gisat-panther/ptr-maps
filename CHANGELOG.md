@@ -1,3 +1,15 @@
+# v1.12.4 (Wed May 04 2022)
+
+#### 🐾 Patch
+
+- SimpleLayersControl: opens bottom [#125](https://github.com/gisat-panther/ptr-maps/pull/125) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.12.3 (Thu Apr 28 2022)
 
 #### 🐾 Patch
