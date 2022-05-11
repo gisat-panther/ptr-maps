@@ -10,6 +10,7 @@ import images from './images';
 const SimpleLayersControl = ({
 	onSelect,
 	opensRight,
+	opensBottom,
 	left,
 	top,
 	right,
@@ -68,6 +69,7 @@ const SimpleLayersControl = ({
 				open: isOpen,
 				right: opensRight,
 				left: !opensRight,
+				bottom: opensBottom,
 			});
 
 			const menuStyle = {
@@ -210,6 +212,7 @@ SimpleLayersControl.propTypes = {
 	layerTemplates: PropTypes.array,
 	onSelect: PropTypes.func,
 	onMount: PropTypes.func,
+	opensBottom: PropTypes.bool,
 	opensRight: PropTypes.bool,
 	left: PropTypes.number,
 	top: PropTypes.number,
