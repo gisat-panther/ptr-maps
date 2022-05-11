@@ -1,4 +1,5 @@
-import React, {useEffect, useRef} from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {useRef} from 'react';
 import {WMSTileLayer} from 'react-leaflet';
 import WMSTileLayerWithFetchedTiles from './WMSTileLayerWithFetchedTiles';
 import memoizeOne from 'memoize-one';
@@ -54,10 +55,12 @@ const WmsLayer = ({layerKey, options, crs}) => {
 
 	const finalCrs = crs || params?.crs;
 
+	const key = layerKey || '';
+
 	if (singleTile) {
 		return (
 			<SingleTileLayer
-				key={layerKey || i}
+				key={key}
 				url={options.url}
 				crs={finalCrs ? projectionHelpers.getCRS(finalCrs) : null}
 				params={finalParams}
@@ -66,7 +69,7 @@ const WmsLayer = ({layerKey, options, crs}) => {
 	} else if (fetchedTile) {
 		return (
 			<WMSTileLayerWithFetchedTiles
-				key={layerKey || i}
+				key={key}
 				url={options.url}
 				crs={finalCrs ? projectionHelpers.getCRS(finalCrs) : null}
 				params={finalParams}
@@ -75,7 +78,7 @@ const WmsLayer = ({layerKey, options, crs}) => {
 	} else {
 		return (
 			<WMSTileLayer
-				key={layerKey || i}
+				key={key}
 				url={options.url}
 				crs={finalCrs ? projectionHelpers.getCRS(finalCrs) : null}
 				params={finalParams}
@@ -87,6 +90,7 @@ const WmsLayer = ({layerKey, options, crs}) => {
 WmsLayer.propTypes = {
 	layerKey: PropTypes.string,
 	options: PropTypes.object,
+	crs: PropTypes.string,
 };
 
 export default WmsLayer;

@@ -16,7 +16,7 @@ function createLeafletElement(props, context) {
 	return {instance, context: {...context, overlayContainer: instance}};
 }
 
-function updateLeafletElement(instance, props, prevProps) {
+function updateLeafletElement() {
 	//TODO add updates
 	// if (prevProps.options.style !== props.options.style) {
 	// 	instance.updateColors(getStyle.bind(this, prevProps.options.style));

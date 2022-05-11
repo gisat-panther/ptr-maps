@@ -100,7 +100,6 @@ function update(wwd, view, width, height) {
 	// 	wwd.verticalExaggeration = wwdUpdate.elevation;
 	// 	shouldRedraw = true;
 	// }
-
 	if (shouldRedraw) {
 		wwd.redraw();
 	}

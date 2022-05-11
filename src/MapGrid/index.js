@@ -1,57 +1,49 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {useEffect, useRef, useState} from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import './style.scss';
 
-class MapGrid extends React.PureComponent {
-	constructor(props) {
-		super(props);
-		this.ref = React.createRef();
+const MapGrid = ({children}) => {
+	const ref = useRef();
+	const [size, setSize] = useState({
+		width: null,
+		height: null,
+	});
 
-		this.state = {
-			width: null,
-			height: null,
-		};
-	}
+	const resize = () => {
+		if (ref && ref.current) {
+			const width = ref.current.clientWidth;
+			const height = ref.current.clientHeight;
 
-	componentDidMount() {
-		this.resize();
-		if (typeof window !== 'undefined')
-			window.addEventListener('resize', this.resize.bind(this), {
-				passive: true,
-			}); //todo IE
-	}
-
-	resize() {
-		if (this.ref && this.ref.current) {
-			let width = this.ref.current.clientWidth;
-			let height = this.ref.current.clientHeight;
-
-			this.setState({
+			setSize({
 				width,
 				height,
 			});
 		}
-	}
+	};
 
-	render() {
-		return (
-			<div className="ptr-map-grid" ref={this.ref}>
-				{this.renderMaps()}
-			</div>
-		);
-	}
+	useEffect(() => {
+		resize();
 
-	renderMaps() {
-		let availableWidth = this.state.width;
-		let availableHeight = this.state.height;
+		if (typeof window !== 'undefined') {
+			window.addEventListener('resize', resize, {
+				passive: true,
+			}); //todo IE
+		}
+	}, []);
 
-		if (this.props.children.length && availableWidth && availableHeight) {
-			let sizeRatio = availableWidth / availableHeight;
+	const renderMaps = () => {
+		const availableWidth = size.width;
+		const availableHeight = size.height;
+
+		if (children.length && availableWidth && availableHeight) {
+			const sizeRatio = availableWidth / availableHeight;
 			let rows = 1,
 				columns = 1;
 
-			switch (this.props.children.length) {
+			switch (children.length) {
 				case 1:
 					break;
 				case 2:
@@ -126,17 +118,17 @@ class MapGrid extends React.PureComponent {
 					}
 			}
 
-			let width = +(100 / columns).toFixed(4) + '%';
-			let height = +(100 / rows).toFixed(4) + '%';
+			const width = +(100 / columns).toFixed(4) + '%';
+			const height = +(100 / rows).toFixed(4) + '%';
 
-			let style = {width, height};
+			const style = {width, height};
 
-			return this.props.children.map((map, index) => {
+			return children.map((map, index) => {
 				index++;
-				let rowNo = Math.ceil(index / columns);
-				let colNo = index % columns || columns;
+				const rowNo = Math.ceil(index / columns);
+				const colNo = index % columns || columns;
 
-				let wrapperClasses = classNames(
+				const wrapperClasses = classNames(
 					'ptr-map-grid-cell',
 					'row' + rowNo,
 					'col' + colNo,
@@ -156,7 +148,17 @@ class MapGrid extends React.PureComponent {
 		} else {
 			return null;
 		}
-	}
-}
+	};
+
+	return (
+		<div className="ptr-map-grid" ref={ref}>
+			{renderMaps()}
+		</div>
+	);
+};
+
+MapGrid.propTypes = {
+	children: PropTypes.array,
+};
 
 export default MapGrid;

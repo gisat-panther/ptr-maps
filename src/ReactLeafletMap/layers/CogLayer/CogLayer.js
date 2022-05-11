@@ -1,5 +1,4 @@
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
-import React from 'react';
 import {createLayerComponent} from '@react-leaflet/core';
 import {mapStyle as mapStyleUtils} from '@gisatcz/ptr-utils';
 
@@ -8,7 +7,7 @@ import styleConstants from '../../../constants/styles';
 const DEFAULT_RESOLUTION = 128;
 
 function createLeafletElement(props, context) {
-	const {georaster, paneName, options, opacity} = props;
+	const {georaster, paneName, options} = props;
 	const instance = new GeoRasterLayer({
 		georaster,
 		resampleMethod: 'nearest',

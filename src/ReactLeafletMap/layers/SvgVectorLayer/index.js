@@ -1,4 +1,5 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {useRef} from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import {
@@ -13,39 +14,33 @@ import {Pane} from 'react-leaflet';
 import helpers from './helpers';
 import GeoJsonLayer from './GeoJsonLayer';
 
-class SvgVectorLayer extends React.PureComponent {
-	static propTypes = {
-		layerKey: PropTypes.string,
-		uniqueLayerKey: PropTypes.string, // typically a combination of layerKey and data source key (or just layerKey, if no data source)
-		features: PropTypes.array,
-		fidColumnName: PropTypes.string,
-		omittedFeatureKeys: PropTypes.array,
-		selectable: PropTypes.bool,
-		selected: PropTypes.object,
-		hoverable: PropTypes.bool,
-		hovered: PropTypes.object,
-		style: PropTypes.object,
-		pointAsMarker: PropTypes.bool,
-		onClick: PropTypes.func,
-		withSelectedFeaturesOnly: PropTypes.bool, // True, if layer contains only selected features
-	};
+const SvgVectorLayer = ({
+	opacity,
+	layerKey,
+	uniqueLayerKey,
+	features,
+	fidColumnName,
+	omittedFeatureKeys,
+	selectable,
+	selected,
+	hoverable,
+	hovered,
+	style,
+	pointAsMarker,
+	onClick,
+	withSelectedFeaturesOnly,
+	resources,
+}) => {
+	const pointsPaneName = useRef(utils.uuid());
+	const linesPaneName = useRef(utils.uuid());
+	const polygonsPaneName = useRef(utils.uuid());
 
-	constructor(props) {
-		super(props);
-
-		this.pointsPaneName = utils.uuid();
-		this.linesPaneName = utils.uuid();
-		this.polygonsPaneName = utils.uuid();
-		this.onFeatureClick = this.onFeatureClick.bind(this);
-	}
-
-	onFeatureClick(fid) {
-		if (this.props.onClick) {
-			this.props.onClick(this.props.layerKey, [fid]);
+	const onFeatureClick = fid => {
+		if (onClick) {
+			onClick(layerKey, [fid]);
 		}
-	}
-
-	prepareData(features) {
+	};
+	const prepareData = features => {
 		if (features) {
 			let pointFeatures = [];
 			let polygonFeatures = [];
@@ -59,16 +54,14 @@ class SvgVectorLayer extends React.PureComponent {
 
 				if (type) {
 					const fid =
-						feature.id ||
-						(this.props.fidColumnName &&
-							feature.properties[this.props.fidColumnName]);
-					const uniqueFeatureKey = `${this.props.uniqueLayerKey}_${fid}`;
+						feature.id || (fidColumnName && feature.properties[fidColumnName]);
+					const uniqueFeatureKey = `${uniqueLayerKey}_${fid}`;
 
 					let selected = null;
 					let defaultStyle = null;
 
-					if (this.props.selected && fid) {
-						_forIn(this.props.selected, (selection, key) => {
+					if (selected && fid) {
+						_forIn(selected, selection => {
 							if (selection.keys && _includes(selection.keys, fid)) {
 								selected = selection;
 							}
@@ -76,7 +69,7 @@ class SvgVectorLayer extends React.PureComponent {
 					}
 
 					if (type === 'Point' || type === 'MultiPoint') {
-						defaultStyle = helpers.getDefaultStyle(feature, this.props.style);
+						defaultStyle = helpers.getDefaultStyle(feature, style);
 					}
 
 					const data = {
@@ -119,7 +112,7 @@ class SvgVectorLayer extends React.PureComponent {
 
 			// sort polygon features, if selected
 			if (polygonFeatures.length) {
-				if (this.props.selected) {
+				if (selected) {
 					sortedPolygonFeatures = _orderBy(
 						polygonFeatures,
 						['selected'],
@@ -138,72 +131,86 @@ class SvgVectorLayer extends React.PureComponent {
 		} else {
 			return null;
 		}
-	}
+	};
 
-	render() {
-		const data = this.prepareData(this.props.features);
-		const style = this.props.opacity ? {opacity: this.props.opacity} : null;
-		const classes = classnames({
-			'hoverable-pane': this.props.hoverable,
-			'selected-features-pane': this.props.withSelectedFeaturesOnly,
-		});
-
-		return data ? (
-			<>
-				{data.polygons?.length ? (
-					<Pane
-						className={classes}
-						style={{...style, zIndex: 1}}
-						name={this.polygonsPaneName}
-					>
-						{this.renderFeatures(data.polygons)}
-					</Pane>
-				) : null}
-				{data.lines?.length ? (
-					<Pane
-						className={classes}
-						style={{...style, zIndex: 2}}
-						name={this.linesPaneName}
-					>
-						{this.renderFeatures(data.lines)}
-					</Pane>
-				) : null}
-				{data.points?.length ? (
-					<Pane
-						className={classes}
-						style={{...style, zIndex: 3}}
-						name={this.pointsPaneName}
-					>
-						{this.renderFeatures(data.points)}
-					</Pane>
-				) : null}
-			</>
-		) : null;
-	}
-
-	renderFeatures(features) {
-		return this.renderGeoJson(features);
-	}
-
-	renderGeoJson(features) {
+	const renderGeoJson = features => {
 		return (
 			<GeoJsonLayer
-				layerKey={this.props.layerKey}
-				uniqueLayerKey={this.props.uniqueLayerKey}
-				paneName={this.pointsPaneName}
+				layerKey={layerKey}
+				uniqueLayerKey={uniqueLayerKey}
+				paneName={pointsPaneName.current}
 				features={features}
-				onFeatureClick={this.onFeatureClick}
-				omittedFeatureKeys={this.props.omittedFeatureKeys}
-				fidColumnName={this.props.fidColumnName}
-				pointAsMarker={this.props.pointAsMarker}
-				selectable={this.props.selectable}
-				hoverable={this.props.hoverable}
-				styleDefinition={this.props.style}
-				hoveredStyleDefinition={this.props.hovered && this.props.hovered.style}
-				icons={this.props.resources?.icons}
+				onFeatureClick={onFeatureClick}
+				omittedFeatureKeys={omittedFeatureKeys}
+				fidColumnName={fidColumnName}
+				pointAsMarker={pointAsMarker}
+				selectable={selectable}
+				hoverable={hoverable}
+				styleDefinition={style}
+				hoveredStyleDefinition={hovered && hovered.style}
+				icons={resources?.icons}
 			/>
 		);
-	}
-}
+	};
 
+	const renderFeatures = features => {
+		return renderGeoJson(features);
+	};
+
+	const data = prepareData(features);
+	const paneStyle = opacity ? {opacity: opacity} : null;
+	const classes = classnames({
+		'hoverable-pane': hoverable,
+		'selected-features-pane': withSelectedFeaturesOnly,
+	});
+	return data ? (
+		<>
+			{data.polygons?.length ? (
+				<Pane
+					className={classes}
+					style={{...paneStyle, zIndex: 1}}
+					name={polygonsPaneName.current}
+				>
+					{renderFeatures(data.polygons)}
+				</Pane>
+			) : null}
+			{data.lines?.length ? (
+				<Pane
+					className={classes}
+					style={{...paneStyle, zIndex: 2}}
+					name={linesPaneName.current}
+				>
+					{renderFeatures(data.lines)}
+				</Pane>
+			) : null}
+			{data.points?.length ? (
+				<Pane
+					className={classes}
+					style={{...paneStyle, zIndex: 3}}
+					name={pointsPaneName.current}
+				>
+					{renderFeatures(data.points)}
+				</Pane>
+			) : null}
+		</>
+	) : null;
+};
+
+SvgVectorLayer.propTypes = {
+	layerKey: PropTypes.string,
+	uniqueLayerKey: PropTypes.string, // typically a combination of layerKey and data source key (or just layerKey, if no data source)
+	features: PropTypes.array,
+	fidColumnName: PropTypes.string,
+	omittedFeatureKeys: PropTypes.array,
+	selectable: PropTypes.bool,
+	selected: PropTypes.object,
+	hoverable: PropTypes.bool,
+	hovered: PropTypes.object,
+	style: PropTypes.object,
+	pointAsMarker: PropTypes.bool,
+	onClick: PropTypes.func,
+	withSelectedFeaturesOnly: PropTypes.bool, // True, if layer contains only selected features
+	opacity: PropTypes.number,
+	resources: PropTypes.object,
+};
 export default SvgVectorLayer;

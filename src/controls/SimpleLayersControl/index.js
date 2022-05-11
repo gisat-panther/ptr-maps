@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, {useRef, useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
@@ -38,7 +39,7 @@ const SimpleLayersControl = ({
 			close();
 		}
 	};
-	useOnClickOutside(wrapperEl, handleClickOutside);
+	useOnClickOutside(wrapperEl.current, handleClickOutside);
 
 	const onControlButtonClick = () => {
 		if (isOpen) {
@@ -120,7 +121,7 @@ const SimpleLayersControl = ({
 		let previewParam = {};
 		if (
 			layerTemplate?.data?.thumbnail &&
-			images.hasOwnProperty(layerTemplate.data.thumbnail)
+			Object.hasOwn(images, layerTemplate.data.thumbnail)
 		) {
 			const image = images[layerTemplate.data.thumbnail];
 			if (typeof image === 'object') {
@@ -204,7 +205,7 @@ const SimpleLayersControl = ({
 	);
 };
 
-SimpleLayersControl.prototype = {
+SimpleLayersControl.propTypes = {
 	activeLayerTemplateKey: PropTypes.string,
 	layerTemplates: PropTypes.array,
 	onSelect: PropTypes.func,

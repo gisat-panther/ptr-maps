@@ -52,10 +52,6 @@ function getLayerByType(layerDefinition, wwd, onHover, onClick, pointAsMarker) {
 
 function getVectorLayer(layerDefinition, wwd, onHover, onClick, pointAsMarker) {
 	const url = layerDefinition.options && layerDefinition.options.url;
-	const numOfFeatures =
-		layerDefinition.options &&
-		layerDefinition.options.features &&
-		layerDefinition.options.features.length;
 	const key = layerDefinition.key || 'Vector layer';
 	const layerKey = layerDefinition.layerKey || key;
 

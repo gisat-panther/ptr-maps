@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -5,38 +6,18 @@ import classNames from 'classnames';
 import './style.scss';
 import {Button} from '@gisatcz/ptr-atoms';
 
-class MapWrapper extends React.PureComponent {
-	static propTypes = {
-		active: PropTypes.bool,
-		title: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-		onMapRemove: PropTypes.func,
-	};
-
-	static defaultProps = {
-		title: false,
-	};
-
-	render() {
-		const props = this.props;
-		const wrapperClasses = classNames('ptr-map-wrapper', {
-			active: this.props.active,
-		});
-
-		return (
-			<div className={wrapperClasses}>
-				<div className="ptr-map-wrapper-header">
-					{props.onMapRemove ? this.renderCloseButton() : null}
-					{props.title ? this.renderTitle() : null}
-				</div>
-				{this.props.children}
-			</div>
-		);
-	}
-
-	renderTitle() {
-		let title = this.props.title;
+const MapWrapper = ({
+	title = false,
+	active,
+	onMapRemove,
+	stateMapKey,
+	mapKey,
+	name,
+	children,
+}) => {
+	const renderTitle = () => {
 		if (title === true) {
-			title = this.props.name || this.props.mapKey || 'Map';
+			title = name || mapKey || stateMapKey || 'Map';
 		}
 
 		return (
@@ -44,10 +25,10 @@ class MapWrapper extends React.PureComponent {
 				{title}
 			</div>
 		);
-	}
+	};
 
-	renderCloseButton() {
-		let mapKey = this.props.stateMapKey || this.props.mapKey;
+	const renderCloseButton = () => {
+		const wrapperMapKey = stateMapKey || mapKey;
 
 		return (
 			<div className="ptr-map-wrapper-close-button">
@@ -55,11 +36,35 @@ class MapWrapper extends React.PureComponent {
 					icon="times"
 					inverted
 					invisible
-					onClick={this.props.onMapRemove.bind(this, mapKey)}
+					onClick={() => onMapRemove(wrapperMapKey)}
 				/>
 			</div>
 		);
-	}
-}
+	};
+
+	const wrapperClasses = classNames('ptr-map-wrapper', {
+		active: active,
+	});
+
+	return (
+		<div className={wrapperClasses}>
+			<div className="ptr-map-wrapper-header">
+				{onMapRemove ? renderCloseButton() : null}
+				{title ? renderTitle() : null}
+			</div>
+			{children}
+		</div>
+	);
+};
+
+MapWrapper.propTypes = {
+	active: PropTypes.bool,
+	children: PropTypes.node,
+	mapKey: PropTypes.string,
+	name: PropTypes.string,
+	onMapRemove: PropTypes.func,
+	stateMapKey: PropTypes.string,
+	title: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+};
 
 export default MapWrapper;

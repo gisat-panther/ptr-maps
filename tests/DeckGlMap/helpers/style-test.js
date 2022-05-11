@@ -1,4 +1,5 @@
 import {assert} from 'chai';
+import {describe, it} from 'mocha';
 import styleHelpers from '../../../src/DeckGlMap/helpers/style';
 
 describe('utils/DeckGlMap/helpers/style', function () {
@@ -205,11 +206,6 @@ describe('utils/DeckGlMap/helpers/style', function () {
 	});
 
 	describe('getStyleObjectForAttribute', function () {
-		const baseStyleDefinition = {
-			fill: [245, 234, 233],
-			size: 10,
-		};
-
 		const attributeStyleDefinition = {
 			attributeKey: 'letter',
 			attributeValues: {

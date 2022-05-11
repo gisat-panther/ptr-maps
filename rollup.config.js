@@ -2,7 +2,6 @@ import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import image from '@rollup/plugin-image';
 import filesize from 'rollup-plugin-filesize';
-import path from 'path';
 import postcss from 'rollup-plugin-postcss';
 
 const env = process.env.NODE_ENV;
@@ -40,6 +39,7 @@ const lodashExternal = [
 	'lodash/minBy',
 	'lodash/findIndex',
 	'lodash/uniq',
+	'lodash/cloneDeep',
 ];
 
 export default {

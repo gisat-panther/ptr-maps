@@ -151,7 +151,7 @@ function getStyleForFeature(style, feature) {
  * @return {Object} Style object for given attribute key
  */
 function getStyleObjectForAttribute(attributeStyleDefinition, attributes) {
-	if (attributes.hasOwnProperty(attributeStyleDefinition.attributeKey)) {
+	if (Object.hasOwn(attributes, attributeStyleDefinition.attributeKey)) {
 		const value = attributes[attributeStyleDefinition.attributeKey];
 		if (value === null || value === undefined) {
 			return {};

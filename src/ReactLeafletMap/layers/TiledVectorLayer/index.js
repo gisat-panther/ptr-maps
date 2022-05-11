@@ -1,4 +1,5 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {useRef} from 'react';
 import {
 	forEach as _forEach,
 	forIn as _forIn,
@@ -102,48 +103,51 @@ function getFeaturesGroupedByTileKey(
 	return {groupedFeatures, groupedFeatureKeys};
 }
 
-class TiledVectorLayer extends React.PureComponent {
-	static propTypes = {
-		fidColumnName: PropTypes.string,
-		tiles: PropTypes.array,
-		layerKey: PropTypes.string,
-		uniqueLayerKey: PropTypes.string,
-	};
+const TiledVectorLayer = ({
+	fidColumnName,
+	tiles,
+	layerKey,
+	selected,
+	uniqueLayerKey,
+}) => {
+	const getFeaturesGroupedByTileKeyMemoized = useRef(
+		memoize(getFeaturesGroupedByTileKey)
+	);
 
-	constructor(props) {
-		super(props);
+	const data = getFeaturesGroupedByTileKeyMemoized.current(
+		uniqueLayerKey,
+		tiles,
+		fidColumnName,
+		selected
+	);
 
-		this.getFeaturesGroupedByTileKey = memoize(getFeaturesGroupedByTileKey);
+	if (data.groupedFeatures?.length) {
+		return data.groupedFeatures.map(tile => {
+			return (
+				<Tile
+					layerKey={layerKey}
+					selected={selected}
+					uniqueLayerKey={uniqueLayerKey}
+					key={tile.key}
+					tileKey={tile.key}
+					features={tile.features}
+					level={tile.level}
+					tile={tile.tile}
+					featureKeysGroupedByTileKey={data.groupedFeatureKeys}
+					withSelectedFeaturesOnly={tile.withSelectedFeaturesOnly}
+				/>
+			);
+		});
+	} else {
+		return null;
 	}
+};
 
-	render() {
-		const {tiles, ...props} = this.props;
-		const data = this.getFeaturesGroupedByTileKey(
-			props.uniqueLayerKey,
-			tiles,
-			props.fidColumnName,
-			props.selected
-		);
-
-		if (data.groupedFeatures?.length) {
-			return data.groupedFeatures.map(tile => {
-				return (
-					<Tile
-						{...props}
-						key={tile.key}
-						tileKey={tile.key}
-						features={tile.features}
-						level={tile.level}
-						tile={tile.tile}
-						featureKeysGroupedByTileKey={data.groupedFeatureKeys}
-						withSelectedFeaturesOnly={tile.withSelectedFeaturesOnly}
-					/>
-				);
-			});
-		} else {
-			return null;
-		}
-	}
-}
-
+TiledVectorLayer.propTypes = {
+	fidColumnName: PropTypes.string,
+	tiles: PropTypes.array,
+	layerKey: PropTypes.string,
+	uniqueLayerKey: PropTypes.string,
+	selected: PropTypes.bool,
+};
 export default TiledVectorLayer;

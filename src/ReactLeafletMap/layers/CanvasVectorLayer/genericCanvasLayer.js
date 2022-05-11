@@ -52,7 +52,7 @@ export const CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		this._canvas.height = resizeEvent.newSize.y;
 	},
 	//-------------------------------------------------------------
-	_onLayerDidMove: function (e) {
+	_onLayerDidMove: function () {
 		var topLeft = this._map.containerPointToLayerPoint([0, 0]);
 		if (topLeft.x !== this._topLeft?.x || topLeft.y !== this._topLeft.y) {
 			this._topLeft = topLeft;
@@ -60,7 +60,7 @@ export const CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 			this.drawLayer();
 		}
 	},
-	_onLayerDidZoom: function (e) {
+	_onLayerDidZoom: function () {
 		if (this.props?.type !== 'tiledVector') {
 			var topLeft = this._map.containerPointToLayerPoint([0, 0]);
 			L.DomUtil.setPosition(this._canvas, topLeft);

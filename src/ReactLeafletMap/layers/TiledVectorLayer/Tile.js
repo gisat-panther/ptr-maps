@@ -1,4 +1,5 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {useRef} from 'react';
 import {
 	findIndex as _findIndex,
 	forEach as _forEach,
@@ -79,56 +80,67 @@ function checkIdentity(prev, next) {
 	}
 }
 
-class Tile extends React.PureComponent {
-	static propTypes = {
-		tileKey: PropTypes.string,
-		features: PropTypes.array,
-		fidColumnName: PropTypes.string,
-		level: PropTypes.number,
-		tile: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
-		featureKeysGroupedByTileKey: PropTypes.array, // a collection of all tiles and their features for each tile in the layer
-	};
+const Tile = ({
+	tileKey,
+	featureKeysGroupedByTileKey,
+	renderingTechnique,
+	features,
+	fidColumnName,
+	level,
+	tile,
+}) => {
+	const getFeatureKeysToOmitMemoized = useRef(memoize(getFeatureKeysToOmit));
+	const checkIdentityMemoized = useRef(memoize(keys => keys, checkIdentity));
 
-	constructor(props) {
-		super(props);
+	// const {tileKey, featureKeysGroupedByTileKey, component, ...props} =
+	// 	this.props;
+	const omittedFeatureKeys = getFeatureKeysToOmitMemoized.current(
+		featureKeysGroupedByTileKey,
+		tileKey,
+		features,
+		fidColumnName
+	);
 
-		this.getFeatureKeysToOmit = memoize(getFeatureKeysToOmit);
-
-		// return memoized feature keys, if nothing changed and not render IndexedVectorLayer again
-		this.checkIdentity = memoize(keys => keys, checkIdentity);
-	}
-
-	render() {
-		const {tileKey, featureKeysGroupedByTileKey, component, ...props} =
-			this.props;
-		const omittedFeatureKeys = this.getFeatureKeysToOmit(
-			featureKeysGroupedByTileKey,
-			tileKey,
-			props.features,
-			props.fidColumnName
+	if (renderingTechnique === 'canvas') {
+		return (
+			<CanvasVectorLayer
+				{...{
+					features,
+					fidColumnName,
+					level,
+					tile,
+				}}
+				key={tileKey}
+				uniqueLayerKey={tileKey}
+				omittedFeatureKeys={checkIdentityMemoized.current(omittedFeatureKeys)}
+			/>
 		);
-
-		if (props.renderingTechnique === 'canvas') {
-			return (
-				<CanvasVectorLayer
-					{...props}
-					key={tileKey}
-					uniqueLayerKey={tileKey}
-					omittedFeatureKeys={this.checkIdentity(omittedFeatureKeys)}
-				/>
-			);
-		} else {
-			return (
-				<IndexedVectorLayer
-					{...props}
-					component={SvgVectorLayer}
-					key={tileKey}
-					uniqueLayerKey={tileKey}
-					omittedFeatureKeys={this.checkIdentity(omittedFeatureKeys)}
-				/>
-			);
-		}
+	} else {
+		return (
+			<IndexedVectorLayer
+				{...{
+					features,
+					fidColumnName,
+					level,
+					tile,
+				}}
+				component={SvgVectorLayer}
+				key={tileKey}
+				uniqueLayerKey={tileKey}
+				omittedFeatureKeys={checkIdentityMemoized.current(omittedFeatureKeys)}
+			/>
+		);
 	}
-}
+};
+
+Tile.propTypes = {
+	tileKey: PropTypes.string,
+	features: PropTypes.array,
+	fidColumnName: PropTypes.string,
+	level: PropTypes.number,
+	tile: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
+	featureKeysGroupedByTileKey: PropTypes.array, // a collection of all tiles and their features for each tile in the layer
+	renderingTechnique: PropTypes.string,
+};
 
 export default Tile;

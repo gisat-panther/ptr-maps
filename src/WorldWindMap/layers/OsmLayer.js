@@ -34,7 +34,7 @@ class OsmLayer extends MercatorTiledImageLayer {
 		this.destContext = this.destCanvas.getContext('2d');
 
 		this.urlBuilder = {
-			urlForTile: function (tile, imageFormat) {
+			urlForTile: tile => {
 				//var url = "https://a.tile.openstreetmap.org/" +
 				return (
 					'https://otile1.mqcdn.com/tiles/1.0.0/osm/' +
@@ -56,7 +56,7 @@ class OsmLayer extends MercatorTiledImageLayer {
 	}
 
 	// Overridden from TiledImageLayer.
-	createTopLevelTiles(dc) {
+	createTopLevelTiles() {
 		this.topLevelTiles = [];
 
 		this.topLevelTiles.push(

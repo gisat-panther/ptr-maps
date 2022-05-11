@@ -1,1 +1,2 @@
-export default () => <p>render only on server</p>;
+const LoadableMapComponents = () => <p>render only on server</p>;
+export default LoadableMapComponents;

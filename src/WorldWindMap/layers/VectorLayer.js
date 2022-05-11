@@ -164,7 +164,7 @@ class VectorLayer extends WorldWind.RenderableLayer {
 				renderable.userProperties[this.pantherProps.fidColumnName];
 			let selectionDefintion = null;
 
-			_forIn(this.pantherProps.selected, (selection, key) => {
+			_forIn(this.pantherProps.selected, selection => {
 				if (selection.keys && _includes(selection.keys, featureKey)) {
 					selectionDefintion = selection;
 				}

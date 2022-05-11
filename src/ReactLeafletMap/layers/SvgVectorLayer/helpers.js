@@ -35,13 +35,13 @@ function getFeatureAccentedStyle(
  */
 function getFeatureLeafletStyle(feature, style) {
 	let {
-		outlineColor,
-		outlineWidth,
-		outlineOpacity,
-		fillOpacity,
-		fill,
-		size,
-		volume,
+		outlineColor, // eslint-disable-line no-unused-vars
+		outlineWidth, // eslint-disable-line no-unused-vars
+		outlineOpacity, // eslint-disable-line no-unused-vars
+		fillOpacity, // eslint-disable-line no-unused-vars
+		fill, // eslint-disable-line no-unused-vars
+		size, // eslint-disable-line no-unused-vars
+		volume, // eslint-disable-line no-unused-vars
 		...finalStyle
 	} = style;
 

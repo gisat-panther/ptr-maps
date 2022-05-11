@@ -1,4 +1,3 @@
-import React from 'react';
 import WorldWind from 'webworldwind-esa';
 import {QuadTree, Box, Point, Circle} from 'js-quadtree';
 import {
@@ -11,8 +10,7 @@ import LargeDataLayerTile from './LargeDataLayerTile';
 import {compact as _compact, each as _each} from 'lodash';
 import {mapStyle} from '@gisatcz/ptr-utils';
 
-const {Location, REDRAW_EVENT_TYPE, Sector, SurfaceCircle, TiledImageLayer} =
-	WorldWind;
+const {Location, REDRAW_EVENT_TYPE, Sector, TiledImageLayer} = WorldWind;
 
 // It supports GeoJSON as format with only points and maximum 1 000 000 points.
 // Multipolygons are represented as points

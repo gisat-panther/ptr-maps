@@ -1,5 +1,6 @@
+// eslint-disable-next-line no-unused-vars
+import React, {createElement} from 'react';
 import ReactDOMServer from 'react-dom/server';
-import React from 'react';
 import L from 'leaflet';
 import {forIn as _forIn} from 'lodash';
 import helpers from './helpers';
@@ -121,7 +122,7 @@ class MarkerShape extends L.DivIcon {
 		const props = this.shape.componentProps
 			? {...this.shape.componentProps, style}
 			: {style};
-		return React.createElement(this.shape.component, {
+		return createElement(this.shape.component, {
 			...props,
 			outlineWidth: this.style.weight,
 		});
@@ -140,7 +141,7 @@ class MarkerShape extends L.DivIcon {
 		const props = this.icon.componentProps
 			? {...this.icon.componentProps, style: iconStyle}
 			: {style: iconStyle};
-		return React.createElement(this.icon.component, props);
+		return createElement(this.icon.component, props);
 	}
 
 	/**
@@ -160,12 +161,12 @@ class MarkerShape extends L.DivIcon {
 		const iconProps = this.icon.componentProps
 			? {...this.icon.componentProps, style: iconStyle}
 			: {style: iconStyle};
-		const iconComponent = React.createElement(this.icon.component, iconProps);
+		const iconComponent = createElement(this.icon.component, iconProps);
 
 		const props = this.shape.componentProps
 			? {...this.shape.componentProps, style: shapeStyle}
 			: {style: shapeStyle};
-		return React.createElement(this.shape.component, {
+		return createElement(this.shape.component, {
 			...props,
 			icon: iconComponent,
 			outlineWidth: this.style.weight,

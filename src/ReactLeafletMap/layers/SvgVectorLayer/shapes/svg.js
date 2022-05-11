@@ -1,12 +1,14 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {createElement} from 'react';
+import PropTypes from 'prop-types';
 
-export default props => {
+const Svg = ({outlineWidth, className, style, children, ...rest}) => {
 	let svgSize = 32;
 	let offset = 0;
 
-	if (props.outlineWidth) {
-		svgSize += props.outlineWidth;
-		offset = props.outlineWidth / 2;
+	if (outlineWidth) {
+		svgSize += outlineWidth;
+		offset = outlineWidth / 2;
 	}
 
 	return (
@@ -20,10 +22,25 @@ export default props => {
 			height={svgSize + 'px'}
 			viewBox={`0 0 ${svgSize} ${svgSize}`}
 			xmlSpace="preserve"
-			className={`ptr-map-shape ${props.className || ''}`}
-			style={props.style}
+			className={`ptr-map-shape ${className || ''}`}
+			style={style}
 		>
-			{React.createElement(props.children, {...props, offset})}
+			{createElement(children, {
+				...rest,
+				offset,
+				outlineWidth,
+				className,
+				style,
+			})}
 		</svg>
 	);
 };
+
+Svg.propTypes = {
+	children: PropTypes.elementType,
+	className: PropTypes.string,
+	outlineWidth: PropTypes.number,
+	style: PropTypes.object,
+};
+
+export default Svg;

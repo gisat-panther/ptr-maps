@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, {useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 import {Pane} from 'react-leaflet';
@@ -25,10 +26,11 @@ const MapPane = ({children, name, zIndex, map, opacity}) => {
 };
 
 MapPane.propTypes = {
-	name: PropTypes.string,
-	zIndex: PropTypes.number,
-	opacity: PropTypes.number,
+	children: PropTypes.node,
 	map: PropTypes.object,
+	name: PropTypes.string,
+	opacity: PropTypes.number,
+	zIndex: PropTypes.number,
 };
 
 export default MapPane;

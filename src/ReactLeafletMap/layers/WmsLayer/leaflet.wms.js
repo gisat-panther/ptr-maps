@@ -14,7 +14,7 @@ if (!('keys' in Object)) {
 	Object.keys = function (obj) {
 		var result = [];
 		for (var i in obj) {
-			if (obj.hasOwnProperty(i)) {
+			if (Object.hasOwn(obj, i)) {
 				result.push(i);
 			}
 		}

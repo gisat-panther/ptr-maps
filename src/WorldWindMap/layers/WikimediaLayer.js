@@ -31,7 +31,7 @@ class WikimediaLayer extends OsmLayer {
 
 		let self = this;
 		this.urlBuilder = {
-			urlForTile: function (tile, imageFormat) {
+			urlForTile: tile => {
 				return (
 					self._source +
 					(tile.level.levelNumber + 1) +
