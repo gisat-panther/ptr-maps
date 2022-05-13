@@ -70,7 +70,7 @@ const IndexedVectorLayer = ({
 	const repopulateIndexTreeIfNeeded = useRef(
 		memoize(features => {
 			if (features) {
-				indexTree.current.clear();
+				indexTree.current?.clear();
 				indexTree.current.load(features);
 			}
 		})
