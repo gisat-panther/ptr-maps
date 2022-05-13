@@ -43,7 +43,7 @@ const VectorLayer = ({
 					...options,
 					style: renderAsData.options?.style || options?.style,
 					pointAsMarker: Object.has(renderAsData.options, 'pointAsMarker')
-						? renderAsData.options.pointAsMarker
+						? renderAsData.options?.pointAsMarker
 						: options?.pointAsMarker,
 					renderingTechnique:
 						renderAsData.options?.renderingTechnique ||
