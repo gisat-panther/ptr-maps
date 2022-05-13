@@ -68,7 +68,7 @@ const MapControls = ({
 
 	const isZoomButtonActive = type => {
 		const definedLimits = viewLimits?.boxRangeRange;
-		const currentBoxRange = view && view.boxRange;
+		const currentBoxRange = view?.boxRange;
 
 		if (levelsBased) {
 			const currentLevel = mapUtils.view.getZoomLevelFromBoxRange(
