@@ -71,7 +71,7 @@ const IndexedVectorLayer = ({
 		memoize(features => {
 			if (features) {
 				indexTree.current?.clear();
-				indexTree.current.load(features);
+				indexTree.current?.load(features);
 			}
 		})
 	);
