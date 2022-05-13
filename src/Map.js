@@ -40,6 +40,7 @@ const PresentationMap = ({
 	onLayerClick,
 	mapKey,
 	name,
+	crs,
 }) => {
 	const [size, setSize] = useState({
 		width: null,
@@ -165,6 +166,7 @@ const PresentationMap = ({
 							mapWidth: stateMapKey ? viewport?.width : size.width,
 							mapHeight: stateMapKey ? viewport?.height : size.height,
 							name,
+							crs,
 						});
 					})}
 				</div>
@@ -217,6 +219,7 @@ const PresentationMap = ({
 					onClick,
 					onMapRemove,
 					name,
+					crs,
 					...wrapperProps,
 				},
 				renderContent(
@@ -244,6 +247,7 @@ const PresentationMap = ({
 						viewport,
 						viewLimits,
 						wrapper,
+						crs,
 						...wrapperProps,
 						name,
 					},
@@ -278,6 +282,7 @@ const PresentationMap = ({
 					wrapper,
 					wrapperProps,
 					name,
+					crs,
 				},
 				children
 			);
@@ -312,6 +317,7 @@ PresentationMap.propTypes = {
 		PropTypes.bool,
 	]),
 	wrapperProps: PropTypes.object,
+	crs: PropTypes.string,
 };
 
 export default PresentationMap;

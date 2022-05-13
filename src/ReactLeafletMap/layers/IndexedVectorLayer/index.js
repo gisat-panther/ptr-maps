@@ -63,6 +63,8 @@ const IndexedVectorLayer = ({
 	hoverable,
 	hoveredStyleDefinition,
 	pointAsMarker,
+	selectable,
+	selected,
 }) => {
 	const indexTree = useRef(geojsonRbush());
 	const repopulateIndexTreeIfNeeded = useRef(
@@ -138,6 +140,8 @@ const IndexedVectorLayer = ({
 			hovered,
 			hoveredStyleDefinition,
 			pointAsMarker,
+			selectable,
+			selected,
 		});
 	} else {
 		return null;
@@ -160,14 +164,16 @@ IndexedVectorLayer.propTypes = {
 	uniqueLayerKey: PropTypes.string,
 	onClick: PropTypes.func,
 	opacity: PropTypes.number,
-	resources: PropTypes.string,
+	resources: PropTypes.object,
 	type: PropTypes.string,
 	zIndex: PropTypes.number,
 	fidColumnName: PropTypes.string,
-	hovered: PropTypes.bool,
+	hovered: PropTypes.object,
 	hoverable: PropTypes.bool,
 	hoveredStyleDefinition: PropTypes.object,
 	pointAsMarker: PropTypes.bool,
+	selectable: PropTypes.bool,
+	selected: PropTypes.object,
 };
 
 export default IndexedVectorLayer;

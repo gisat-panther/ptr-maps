@@ -57,13 +57,13 @@ const SvgVectorLayer = ({
 						feature.id || (fidColumnName && feature.properties[fidColumnName]);
 					const uniqueFeatureKey = `${uniqueLayerKey}_${fid}`;
 
-					let selected = null;
+					let selectedLocal = null;
 					let defaultStyle = null;
 
 					if (selected && fid) {
 						_forIn(selected, selection => {
 							if (selection.keys && _includes(selection.keys, fid)) {
-								selected = selection;
+								selectedLocal = selection;
 							}
 						});
 					}
@@ -77,9 +77,9 @@ const SvgVectorLayer = ({
 						fid,
 						uniqueFeatureKey,
 						defaultStyle,
-						selected: !!selected,
-						selectedStyleDefinition: selected?.style,
-						selectedHoveredStyleDefinition: selected?.hoveredStyle,
+						selected: !!selectedLocal,
+						selectedStyleDefinition: selectedLocal?.style,
+						selectedHoveredStyleDefinition: selectedLocal?.hoveredStyle,
 					};
 
 					switch (type) {

@@ -264,7 +264,10 @@ GeoJsonLayer.propTypes = {
 	omittedFeatureKeys: PropTypes.array, // list of feature keys that shouldn't be rendered
 	features: PropTypes.array,
 	styleDefinition: PropTypes.object,
-	hoveredStyleDefinition: PropTypes.object,
+	hoveredStyleDefinition: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.object,
+	]),
 	onFeatureClick: PropTypes.func,
 	selectable: PropTypes.bool,
 	hoverable: PropTypes.bool,
