@@ -1,10 +1,13 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {
+	useCallback,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
 import PropTypes from 'prop-types';
-import {
-	isArray as _isArray,
-	isEmpty as _isEmpty,
-	sortBy as _sortBy,
-} from 'lodash';
+import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import {CyclicPickController, utils, map as mapUtils} from '@gisatcz/ptr-utils';
 
 import WorldWind from 'webworldwind-esa';
@@ -25,323 +28,190 @@ import viewport from '../utils/viewport';
 const HoverContext = Context.getContext('HoverContext');
 const {WorldWindow, ElevationModel} = WorldWind;
 
-class WorldWindMap extends React.PureComponent {
-	static contextType = HoverContext;
+const WorldWindMap = ({
+	elevationModel = null,
+	viewLimits,
+	levelsBased,
+	view,
+	onViewChange,
+	delayedWorldWindNavigatorSync,
+	onLayerClick,
+	mapKey,
+	backgroundLayer,
+	layers,
+	pointAsMarker,
+	onClick,
+	onResize,
+}) => {
+	// const viewRef = useRef(view);
+	const hoverContext = useContext(HoverContext);
+	const [previousHoveredItemsString, setPreviousHoveredItemsString] =
+		useState();
+	const wwd = useRef(null);
+	const [size, setSize] = useState({
+		width: null,
+		height: null,
+	});
+	const [canvasId] = useState(utils.uuid());
 
-	static defaultProps = {
-		elevationModel: null,
-	};
-
-	static propTypes = {
-		backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-		layers: PropTypes.array,
-		name: PropTypes.string,
-		view: PropTypes.object,
-		viewLimits: PropTypes.object,
-
-		onClick: PropTypes.func,
-		onLayerClick: PropTypes.func,
-		onViewChange: PropTypes.func,
-
-		elevationModel: PropTypes.string,
-	};
-
-	constructor(props) {
-		super(props);
-		this.canvasId = utils.uuid();
-
-		this.state = {
-			width: null,
-			height: null,
-		};
-
-		this.onClick = this.onClick.bind(this);
-		this.onLayerHover = this.onLayerHover.bind(this);
-		this.onWorldWindHover = this.onWorldWindHover.bind(this);
-		this.onLayerClick = this.onLayerClick.bind(this);
-		this.onMouseOut = this.onMouseOut.bind(this);
-		this.onResize = this.onResize.bind(this);
-		this.onZoomLevelsBased = this.onZoomLevelsBased.bind(this);
-
-		this.onZoomLevelsBasedTimeout = null;
-		this.onZoomLevelsBasedStep = 0;
-	}
-
-	componentDidMount() {
-		this.wwd = new WorldWindow(this.canvasId, this.getElevationModel());
-
-		decorateWorldWindowController(
-			this.wwd.worldWindowController,
-			this.props.viewLimits,
-			this.props.levelsBased
-		);
-		this.wwd.worldWindowController.onNavigatorChanged =
-			this.onNavigatorChange.bind(this);
-
-		if (this.props.levelsBased) {
-			// rewrite default wheel listener.
-			this.wwd.eventListeners.wheel.listeners = [
-				this.onZoomLevelsBased.bind(this),
-			];
-		}
-
-		new CyclicPickController(
-			this.wwd,
-			[
-				'mousemove',
-				'mousedown',
-				'mouseup',
-				'mouseout',
-				'touchstart',
-				'touchmove',
-				'touchend',
-			],
-			this.onWorldWindHover,
-			true
-		);
-		this.updateNavigator(mapConstants.defaultMapView);
-		this.updateLayers();
-	}
-
-	onZoomLevelsBased(e) {
-		e.preventDefault();
-
-		if (e.wheelDelta) {
-			this.onZoomLevelsBasedStep += e.wheelDelta;
-
-			if (this.onZoomLevelsBasedTimeout) {
-				clearTimeout(this.onZoomLevelsBasedTimeout);
-			}
-
-			this.onZoomLevelsBasedTimeout = setTimeout(() => {
-				let zoomLevel = mapUtils.view.getZoomLevelFromBoxRange(
-					this.props.view.boxRange,
-					this.state.width,
-					this.state.height
-				);
-
-				if (this.onZoomLevelsBasedStep > 300) {
-					zoomLevel += 3;
-				} else if (this.onZoomLevelsBasedStep > 150) {
-					zoomLevel += 2;
-				} else if (this.onZoomLevelsBasedStep > 0) {
-					zoomLevel++;
-				} else if (this.onZoomLevelsBasedStep < -300) {
-					zoomLevel -= 3;
-				} else if (this.onZoomLevelsBasedStep < -150) {
-					zoomLevel -= 2;
-				} else {
-					zoomLevel--;
-				}
-
-				let levelsRange = mapConstants.defaultLevelsRange;
-				const boxRangeRange =
-					this.props.viewLimits && this.props.viewLimits.boxRangeRange;
-				const maxLevel =
-					boxRangeRange && boxRangeRange[0]
-						? mapUtils.view.getZoomLevelFromBoxRange(
-								boxRangeRange[0],
-								this.state.width,
-								this.state.height
-						  )
-						: levelsRange[1];
-				const minLevel =
-					boxRangeRange && boxRangeRange[1]
-						? mapUtils.view.getZoomLevelFromBoxRange(
-								boxRangeRange[1],
-								this.state.width,
-								this.state.height
-						  )
-						: levelsRange[0];
-
-				levelsRange = [minLevel, maxLevel];
-
-				let finalZoomLevel = zoomLevel;
-				if (finalZoomLevel > levelsRange[1]) {
-					finalZoomLevel = levelsRange[1];
-				} else if (finalZoomLevel < levelsRange[0]) {
-					finalZoomLevel = levelsRange[0];
-				}
-
-				const boxRange = mapUtils.view.getBoxRangeFromZoomLevel(
-					finalZoomLevel,
-					this.state.width,
-					this.state.height
-				);
-				if (this.props.onViewChange) {
-					this.props.onViewChange({
-						boxRange,
-					});
-				}
-
-				this.onZoomLevelsBasedTimeout = null;
-				this.onZoomLevelsBasedStep = 0;
-			}, 50);
-		}
-	}
-
-	componentDidUpdate(prevProps) {
-		if (prevProps) {
-			if (this.props.view && prevProps.view !== this.props.view) {
-				this.updateNavigator();
-			}
-
-			if (
-				prevProps.layers !== this.props.layers ||
-				prevProps.backgroundLayer !== this.props.backgroundLayer
-			) {
-				this.updateLayers();
-			}
-
-			if (this.context && this.context.hoveredItems) {
-				const currentHoveredItemsString = JSON.stringify(
-					_sortBy(this.context.hoveredItems)
-				);
-				if (currentHoveredItemsString !== this.previousHoveredItemsString) {
-					this.updateHoveredFeatures();
-				}
-			}
-		}
-	}
-
-	updateLayers() {
-		let layers = [];
-		if (this.props.backgroundLayer) {
-			// TODO fix for compatibility
-			let backgroundLayers = _isArray(this.props.backgroundLayer)
-				? this.props.backgroundLayer
-				: [this.props.backgroundLayer];
-
-			backgroundLayers.forEach(layer => {
-				layers.push(layersHelpers.getLayerByType(layer, this.wwd));
-			});
-		}
-
-		if (this.props.layers) {
-			this.props.layers.forEach(layer => {
-				const mapLayer = layersHelpers.getLayerByType(
-					layer,
-					this.wwd,
-					this.onLayerHover,
-					this.onLayerClick,
-					this.props.pointAsMarker
-				);
-				layers.push(mapLayer);
-			});
-		}
-
-		this.invalidateLayers(this.wwd.layers);
-		this.wwd.layers = layers;
-		this.wwd.redraw();
-	}
-
-	invalidateLayers(previousLayers) {
-		previousLayers.forEach(prevLayer => {
-			if (prevLayer instanceof LargeDataLayer) {
-				prevLayer.removeListeners();
-			}
-		});
-	}
-
-	updateHoveredFeatures() {
-		this.wwd.layers.forEach(layer => {
-			if (layer instanceof LargeDataLayer) {
-				layer.updateHoveredKeys(
-					this.context.hoveredItems,
-					this.context.x,
-					this.context.y
-				);
-			} else if (layer instanceof VectorLayer) {
-				layer.updateHoveredFeatures(this.context.hoveredItems);
-			}
-		});
-		this.wwd.redraw();
-		this.previousHoveredItemsString = JSON.stringify(
-			_sortBy(this.context.hoveredItems)
-		);
-	}
-
-	updateNavigator(defaultView) {
-		const viewport = this.wwd.viewport;
-		let width = this.state.width || viewport.width;
-		let height = this.state.height || viewport.height;
-
-		let currentView =
-			defaultView ||
-			navigator.getViewParamsFromWorldWindNavigator(
-				this.wwd.navigator,
-				width,
-				height
-			);
-		let nextView = {...currentView, ...this.props.view};
-		navigator.update(this.wwd, nextView, width, height);
-	}
+	const [onZoomLevelsBasedTimeout, setOnZoomLevelsBasedTimeout] =
+		useState(null);
+	const [onZoomLevelsBasedStep, setOnZoomLevelsBasedStep] = useState(0);
+	const [changedNavigatorTimeout, setChangedNavigatorTimeout] = useState();
 
 	/**
 	 * @returns {null | elevation}
 	 */
-	getElevationModel() {
-		switch (this.props.elevationModel) {
+	const getElevationModel = () => {
+		let elevation = null;
+		switch (elevationModel) {
 			case 'default':
 				return null;
 			case null:
-				const elevation = new ElevationModel();
+				elevation = new ElevationModel();
 				elevation.removeAllCoverages();
 				return elevation;
 		}
-	}
+	};
 
-	onNavigatorChange(event) {
-		if (event) {
+	const getSize = sizeArg => {
+		const usedSize = sizeArg || size;
+		const viewport = wwd.current.viewport;
+		const width = usedSize.width || viewport.width;
+		const height = usedSize.height || viewport.height;
+		return {
+			width,
+			height,
+		};
+	};
+
+	const onNavigatorChange = evt => {
+		if (evt) {
+			const usedSize = getSize();
 			const viewParams = navigator.getViewParamsFromWorldWindNavigator(
-				event,
-				this.state.width,
-				this.state.height
+				evt,
+				usedSize.width,
+				usedSize.height
 			);
 			const changedViewParams = navigator.getChangedViewParams(
-				{...mapConstants.defaultMapView, ...this.props.view},
+				{...mapConstants.defaultMapView, ...view},
 				viewParams
 			);
-
-			if (this.props.onViewChange) {
+			if (onViewChange) {
 				if (!_isEmpty(changedViewParams)) {
-					if (this.props.delayedWorldWindNavigatorSync) {
-						if (this.changedNavigatorTimeout) {
-							clearTimeout(this.changedNavigatorTimeout);
+					if (delayedWorldWindNavigatorSync) {
+						if (changedNavigatorTimeout) {
+							clearTimeout(changedNavigatorTimeout);
 						}
-						this.changedNavigatorTimeout = setTimeout(() => {
-							this.props.onViewChange(changedViewParams);
-						}, this.props.delayedWorldWindNavigatorSync);
+						setChangedNavigatorTimeout(
+							setTimeout(() => {
+								onViewChange(changedViewParams);
+							}, delayedWorldWindNavigatorSync)
+						);
 					} else {
-						this.props.onViewChange(changedViewParams);
+						onViewChange(changedViewParams);
 					}
 				}
 			}
 		}
-	}
+	};
 
-	onClick() {
-		if (this.props.onClick) {
-			const {width, height} = this.wwd.viewport;
-			let currentView = navigator.getViewParamsFromWorldWindNavigator(
-				this.wwd.navigator,
-				width,
-				height
+	const onZoomLevelsBased = e => {
+		e.preventDefault();
+
+		if (e.wheelDelta) {
+			setOnZoomLevelsBasedStep(onZoomLevelsBasedStep + e.wheelDelta);
+
+			if (onZoomLevelsBasedTimeout) {
+				clearTimeout(onZoomLevelsBasedTimeout);
+			}
+
+			setOnZoomLevelsBasedTimeout(
+				setTimeout(() => {
+					let zoomLevel = mapUtils.view.getZoomLevelFromBoxRange(
+						view.boxRange,
+						size.width,
+						size.height
+					);
+
+					if (onZoomLevelsBasedStep > 300) {
+						zoomLevel += 3;
+					} else if (onZoomLevelsBasedStep > 150) {
+						zoomLevel += 2;
+					} else if (onZoomLevelsBasedStep > 0) {
+						zoomLevel++;
+					} else if (onZoomLevelsBasedStep < -300) {
+						zoomLevel -= 3;
+					} else if (onZoomLevelsBasedStep < -150) {
+						zoomLevel -= 2;
+					} else {
+						zoomLevel--;
+					}
+
+					let levelsRange = mapConstants.defaultLevelsRange;
+					const boxRangeRange = viewLimits && viewLimits.boxRangeRange;
+					const maxLevel =
+						boxRangeRange && boxRangeRange[0]
+							? mapUtils.view.getZoomLevelFromBoxRange(
+									boxRangeRange[0],
+									size.width,
+									size.height
+							  )
+							: levelsRange[1];
+					const minLevel =
+						boxRangeRange && boxRangeRange[1]
+							? mapUtils.view.getZoomLevelFromBoxRange(
+									boxRangeRange[1],
+									size.width,
+									size.height
+							  )
+							: levelsRange[0];
+
+					levelsRange = [minLevel, maxLevel];
+
+					let finalZoomLevel = zoomLevel;
+					if (finalZoomLevel > levelsRange[1]) {
+						finalZoomLevel = levelsRange[1];
+					} else if (finalZoomLevel < levelsRange[0]) {
+						finalZoomLevel = levelsRange[0];
+					}
+
+					const boxRange = mapUtils.view.getBoxRangeFromZoomLevel(
+						finalZoomLevel,
+						size.width,
+						size.height
+					);
+					if (onViewChange) {
+						onViewChange({
+							boxRange,
+						});
+					}
+
+					setOnZoomLevelsBasedTimeout(null);
+					setOnZoomLevelsBasedStep(0);
+				}, 50)
 			);
-			this.props.onClick(currentView);
 		}
-	}
+	};
 
-	onMouseOut() {
-		if (this.context && this.context.onHoverOut) {
-			this.context.onHoverOut();
+	const onLayerClickHandler = (layerKey, featureKeys) => {
+		if (onLayerClick) {
+			onLayerClick(mapKey, layerKey, featureKeys);
 		}
-	}
+	};
 
-	onLayerHover(layerKey, featureKeys, x, y, popupContent, data, fidColumnName) {
+	const onLayerHover = (
+		layerKey,
+		featureKeys,
+		x,
+		y,
+		popupContent,
+		data,
+		fidColumnName
+	) => {
 		// pass data to popup
-		if (this.context && this.context.onHover && featureKeys.length) {
-			this.context.onHover(featureKeys, {
+		if (hoverContext && hoverContext.onHover && featureKeys.length) {
+			hoverContext.onHover(featureKeys, {
 				popup: {
 					x,
 					y,
@@ -351,15 +221,9 @@ class WorldWindMap extends React.PureComponent {
 				},
 			});
 		}
-	}
+	};
 
-	onLayerClick(layerKey, featureKeys) {
-		if (this.props.onLayerClick) {
-			this.props.onLayerClick(this.props.mapKey, layerKey, featureKeys);
-		}
-	}
-
-	onWorldWindHover(renderables, event) {
+	const onWorldWindHover = (renderables, event) => {
 		// TODO can be hovered more than one renderable at one time?
 		if (renderables.length && renderables.length === 1) {
 			// TODO is this enough?
@@ -370,9 +234,9 @@ class WorldWindMap extends React.PureComponent {
 
 			// TODO add support for touch events
 			if (event.type === 'mousedown' && layerPantherProps.selectable) {
-				this.onLayerClick(layerPantherProps.layerKey, featureKeys);
+				onLayerClickHandler(layerPantherProps.layerKey, featureKeys);
 			} else if (layerPantherProps.hoverable) {
-				this.onLayerHover(
+				onLayerHover(
 					layerPantherProps.layerKey,
 					featureKeys,
 					event.pageX,
@@ -382,45 +246,215 @@ class WorldWindMap extends React.PureComponent {
 					layerPantherProps.fidColumnName
 				);
 			}
-		} else if (this.context && this.context.onHoverOut) {
-			this.context.onHoverOut();
+		} else if (hoverContext && hoverContext.onHoverOut) {
+			hoverContext.onHoverOut();
 		}
-	}
+	};
 
-	onResize(width, height) {
-		height = viewport.roundDimension(height);
-		width = viewport.roundDimension(width);
+	const updateNavigator = (defaultView, sizeArg) => {
+		const usedSize = getSize(sizeArg);
+		const currentView =
+			defaultView ||
+			navigator.getViewParamsFromWorldWindNavigator(
+				wwd.current.navigator,
+				usedSize.width,
+				usedSize.height
+			);
+		const nextView = {...currentView, ...view};
+		navigator.update(wwd.current, nextView, usedSize.width, usedSize.height);
+	};
 
-		this.setState({
-			width,
-			height,
+	const invalidateLayers = previousLayers => {
+		previousLayers.forEach(prevLayer => {
+			if (prevLayer instanceof LargeDataLayer) {
+				prevLayer.removeListeners();
+			}
 		});
-		this.updateNavigator();
-		if (this.props.onResize) {
-			this.props.onResize(width, height);
+	};
+
+	const updateLayers = () => {
+		let layersUpdate = [];
+		if (backgroundLayer) {
+			// TODO fix for compatibility
+			const backgroundLayers = _isArray(backgroundLayer)
+				? backgroundLayer
+				: [backgroundLayer];
+
+			backgroundLayers.forEach(layer => {
+				layersUpdate.push(layersHelpers.getLayerByType(layer, wwd));
+			});
+		}
+
+		if (layers) {
+			layers.forEach(layer => {
+				const mapLayer = layersHelpers.getLayerByType(
+					layer,
+					wwd,
+					onLayerHover,
+					onLayerClickHandler,
+					pointAsMarker
+				);
+				layersUpdate.push(mapLayer);
+			});
+		}
+
+		invalidateLayers(wwd.current.layers);
+		wwd.current.layers = layersUpdate;
+		wwd.current.redraw();
+	};
+
+	const [navigatorEvt, setNavigatorEvt] = useState();
+
+	useEffect(() => {
+		onNavigatorChange(navigatorEvt);
+	}, [navigatorEvt, setNavigatorEvt]);
+
+	useEffect(() => {
+		wwd.current = new WorldWindow(canvasId, getElevationModel());
+
+		decorateWorldWindowController(
+			wwd.current.worldWindowController,
+			viewLimits,
+			levelsBased
+		);
+
+		const handleEvent = evt => {
+			setNavigatorEvt({
+				lookAtLocation: evt.lookAtLocation,
+				range: evt.range,
+				heading: evt.heading,
+				tilt: evt.tilt,
+				roll: evt.roll,
+			});
+		};
+		wwd.current.worldWindowController.onNavigatorChanged = handleEvent;
+
+		if (levelsBased) {
+			// rewrite default wheel listener.
+			wwd.current.eventListeners.wheel.listeners = [onZoomLevelsBased];
+		}
+
+		new CyclicPickController(
+			wwd.current,
+			[
+				'mousemove',
+				'mousedown',
+				'mouseup',
+				'mouseout',
+				'touchstart',
+				'touchmove',
+				'touchend',
+			],
+			onWorldWindHover,
+			true
+		);
+		updateNavigator(mapConstants.defaultMapView);
+		updateLayers();
+	}, []);
+
+	const updateHoveredFeatures = () => {
+		wwd.current.layers.forEach(layer => {
+			if (layer instanceof LargeDataLayer) {
+				layer.updateHoveredKeys(
+					hoverContext.hoveredItems,
+					hoverContext.x,
+					hoverContext.y
+				);
+			} else if (layer instanceof VectorLayer) {
+				layer.updateHoveredFeatures(hoverContext.hoveredItems);
+			}
+		});
+		wwd.current.redraw();
+		setPreviousHoveredItemsString(
+			[...hoverContext.hoveredItems].sort().toString()
+		);
+	};
+
+	if (hoverContext?.hoveredItems) {
+		const currentHoveredItemsString = [...hoverContext.hoveredItems]
+			.sort()
+			.toString();
+		if (currentHoveredItemsString !== previousHoveredItemsString) {
+			updateHoveredFeatures();
 		}
 	}
 
-	render() {
-		return (
-			<>
-				<ReactResizeDetector
-					handleHeight
-					handleWidth
-					onResize={this.onResize}
-				/>
-				<div
-					className="ptr-map ptr-world-wind-map"
-					onClick={this.onClick}
-					onMouseOut={this.onMouseOut}
-				>
-					<canvas className="ptr-world-wind-map-canvas" id={this.canvasId}>
-						Your browser does not support HTML5 Canvas.
-					</canvas>
-				</div>
-			</>
-		);
-	}
-}
+	useEffect(() => {
+		updateNavigator();
+	}, [view]);
+
+	useEffect(() => {
+		updateLayers();
+	}, [layers, backgroundLayer]);
+
+	const onClickHandler = () => {
+		if (onClick) {
+			const {width, height} = wwd.current.viewport;
+			let currentView = navigator.getViewParamsFromWorldWindNavigator(
+				wwd.current.navigator,
+				width,
+				height
+			);
+			onClick(currentView);
+		}
+	};
+
+	const onMouseOut = () => {
+		if (hoverContext && hoverContext.onHoverOut) {
+			hoverContext.onHoverOut();
+		}
+	};
+
+	const onResizeHandler = useCallback((width, height) => {
+		const roundHeight = viewport.roundDimension(height);
+		const roundWidth = viewport.roundDimension(width);
+		setSize({
+			width: roundWidth,
+			height: roundHeight,
+		});
+		updateNavigator(undefined, {
+			width: roundWidth,
+			height: roundHeight,
+		});
+		if (onResize) {
+			onResize(roundWidth, roundHeight);
+		}
+	});
+
+	return (
+		<>
+			<ReactResizeDetector
+				handleHeight
+				handleWidth
+				onResize={onResizeHandler}
+			/>
+			<div
+				className="ptr-map ptr-world-wind-map"
+				onClick={onClickHandler}
+				onMouseOut={onMouseOut}
+			>
+				<canvas className="ptr-world-wind-map-canvas" id={canvasId}>
+					Your browser does not support HTML5 Canvas.
+				</canvas>
+			</div>
+		</>
+	);
+};
+
+WorldWindMap.propTypes = {
+	backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+	delayedWorldWindNavigatorSync: PropTypes.number,
+	elevationModel: PropTypes.string,
+	layers: PropTypes.array,
+	levelsBased: PropTypes.bool,
+	mapKey: PropTypes.string,
+	onClick: PropTypes.func,
+	onLayerClick: PropTypes.func,
+	onResize: PropTypes.func,
+	onViewChange: PropTypes.func,
+	pointAsMarker: PropTypes.bool,
+	view: PropTypes.object,
+	viewLimits: PropTypes.object,
+};
 
 export default WorldWindMap;

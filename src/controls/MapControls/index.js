@@ -1,114 +1,80 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {mapConstants} from '@gisatcz/ptr-core';
 import {Icon, Button} from '@gisatcz/ptr-atoms';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import './style.scss';
 
-class MapControls extends React.PureComponent {
-	static propTypes = {
-		view: PropTypes.object,
-		viewLimits: PropTypes.object,
-		updateView: PropTypes.func,
-		resetHeading: PropTypes.func,
-		mapKey: PropTypes.string,
-		zoomOnly: PropTypes.bool,
-		levelsBased: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
-		mapHeight: PropTypes.number,
-		mapWidth: PropTypes.number,
+const MapControls = ({
+	view,
+	viewLimits,
+	updateView,
+	resetHeading,
+	mapKey,
+	zoomOnly,
+	levelsBased,
+	mapHeight,
+	mapWidth,
+}) => {
+	const tiltIncrement = 5;
+	const headingIncrement = 1.0;
+	const zoomIncrement = 0.04;
+	const resetHeadingDisabled = !view?.heading || view?.heading === 360;
+
+	const handleTiltUp = () => {
+		const update = {tilt: view.tilt - tiltIncrement};
+		updateView(update, mapKey);
 	};
 
-	constructor() {
-		super();
+	const handleTiltDown = () => {
+		const update = {tilt: view.tilt + tiltIncrement};
+		updateView(update, mapKey);
+	};
 
-		this.tiltIncrement = 5;
-		this.headingIncrement = 1.0;
-		this.zoomIncrement = 0.04;
-		this.exaggerationIncrement = 1;
-
-		this.state = {
-			resetHeadingDisabled: false,
-		};
-	}
-
-	componentDidUpdate(prevProps, prevState, snapshot) {
-		if (
-			this.state.resetHeadingDisabled &&
-			(!this.props.view.heading || this.props.heading === '360')
-		) {
-			this.setState({
-				resetHeadingDisabled: false,
-			});
-		}
-	}
-
-	handleTiltUp() {
-		const update = {tilt: this.props.view.tilt - this.tiltIncrement};
-		this.props.updateView(update, this.props.mapKey);
-	}
-
-	handleTiltDown() {
-		const update = {tilt: this.props.view.tilt + this.tiltIncrement};
-		this.props.updateView(update, this.props.mapKey);
-	}
-
-	handleHeadingRight() {
-		const update = {heading: this.props.view.heading - this.headingIncrement};
-		this.props.updateView(update, this.props.mapKey);
-	}
-	handleHeadingLeft() {
-		const update = {heading: this.props.view.heading + this.headingIncrement};
-		this.props.updateView(update, this.props.mapKey);
-	}
-	handleZoomIn() {
+	const handleHeadingRight = () => {
+		const update = {heading: view.heading - headingIncrement};
+		updateView(update, mapKey);
+	};
+	const handleHeadingLeft = () => {
+		const update = {heading: view.heading + headingIncrement};
+		updateView(update, mapKey);
+	};
+	const handleZoomIn = () => {
 		let update = null;
-		if (this.props.levelsBased && this.props.view && this.props.view.boxRange) {
+		if (levelsBased && view && view.boxRange) {
 			// remove 1 from box range to prevent rounding issues
-			update = {boxRange: (this.props.view.boxRange - 1) / 2};
+			update = {boxRange: (view.boxRange - 1) / 2};
 		} else {
-			update = {boxRange: this.props.view.boxRange * (1 - this.zoomIncrement)};
+			update = {boxRange: view.boxRange * (1 - zoomIncrement)};
 		}
-		this.props.updateView(update, this.props.mapKey);
-	}
+		updateView(update, mapKey);
+	};
 
-	handleZoomOut() {
+	const handleZoomOut = () => {
 		let update;
-		if (this.props.levelsBased && this.props.view && this.props.view.boxRange) {
+		if (levelsBased && view && view.boxRange) {
 			// add 1 to box range to prevent rounding issues
-			update = {boxRange: this.props.view.boxRange * 2 + 1};
+			update = {boxRange: view.boxRange * 2 + 1};
 		} else {
-			update = {boxRange: this.props.view.boxRange * (1 + this.zoomIncrement)};
+			update = {boxRange: view.boxRange * (1 + zoomIncrement)};
 		}
-		this.props.updateView(update, this.props.mapKey);
-	}
+		updateView(update, mapKey);
+	};
 
-	handleResetHeading() {
-		this.props.resetHeading(this.props.mapKey);
-		this.setState({
-			resetHeadingDisabled: true,
-		});
-	}
+	const handleResetHeading = () => {
+		resetHeading(mapKey);
+	};
 
-	handleExaggeratePlus() {
-		// const update = {elevation: this.props.view.elevation + this.exaggerationIncrement};
-		// this.props.updateView(update, this.props.mapKey);
-	}
+	const isZoomButtonActive = type => {
+		const definedLimits = viewLimits?.boxRangeRange;
+		const currentBoxRange = view?.boxRange;
 
-	handleExaggerateMinus() {
-		// const update = {elevation: Math.max(1, this.props.view.elevation - this.exaggerationIncrement)};
-		// this.props.updateView(update, this.props.mapKey);
-	}
-
-	isZoomButtonActive(type) {
-		const definedLimits =
-			this.props.viewLimits && this.props.viewLimits.boxRangeRange;
-		const currentBoxRange = this.props.view && this.props.view.boxRange;
-
-		if (this.props.levelsBased) {
+		if (levelsBased) {
 			const currentLevel = mapUtils.view.getZoomLevelFromBoxRange(
 				currentBoxRange,
-				this.props.mapWidth,
-				this.props.mapHeight
+				mapWidth,
+				mapHeight
 			);
 
 			if (type === 'in') {
@@ -116,8 +82,8 @@ class MapControls extends React.PureComponent {
 				if (definedLimits && definedLimits[0]) {
 					let definedLimitAsLevel = mapUtils.view.getZoomLevelFromBoxRange(
 						definedLimits[0],
-						this.props.mapWidth,
-						this.props.mapHeight
+						mapWidth,
+						mapHeight
 					);
 					if (definedLimitAsLevel < maxZoom) {
 						maxZoom = definedLimitAsLevel;
@@ -130,8 +96,8 @@ class MapControls extends React.PureComponent {
 				if (definedLimits && definedLimits[1]) {
 					let definedLimitAsLevel = mapUtils.view.getZoomLevelFromBoxRange(
 						definedLimits[1],
-						this.props.mapWidth,
-						this.props.mapHeight
+						mapWidth,
+						mapHeight
 					);
 					if (definedLimitAsLevel > minZoom) {
 						minZoom = definedLimitAsLevel;
@@ -144,20 +110,19 @@ class MapControls extends React.PureComponent {
 			if (type === 'in') {
 				const limit =
 					(definedLimits && definedLimits[0]) || mapConstants.minBoxRange;
-				return currentBoxRange * (1 - this.zoomIncrement) >= limit;
+				return currentBoxRange * (1 - zoomIncrement) >= limit;
 			} else {
 				const limit =
 					(definedLimits && definedLimits[1]) || mapConstants.maxBoxRange;
-				return currentBoxRange * (1 + this.zoomIncrement) <= limit;
+				return currentBoxRange * (1 + zoomIncrement) <= limit;
 			}
 		}
-	}
+	};
 
-	render() {
-		// TODO different controls for 2D
-		return (
-			<div className="ptr-map-controls">
-				{/* <div className="exaggerate-control control">
+	// TODO different controls for 2D
+	return (
+		<div className="ptr-map-controls">
+			{/* <div className="exaggerate-control control">
                         <HoldButton 
                             pressCallback={() => {this.handleExaggerateMinus()}}
                             onClick={() => {this.handleExaggerateMinus()}}
@@ -177,98 +142,108 @@ class MapControls extends React.PureComponent {
                             <Icon style={{transform: 'rotate(-90deg)'}} icon='arrow-left' width={22} height={22} viewBox={'0 0 34 34'}/>
                         </HoldButton>
                     </div> */}
-				<div className="zoom-control control">
-					<Button
-						onHold={() => {
-							this.handleZoomIn();
-						}}
-						onClick={() => {
-							this.handleZoomIn();
-						}}
-						disabled={!this.isZoomButtonActive('in')}
-					>
-						<Icon icon="plus-thick" />
-					</Button>
-					<Button
-						onHold={() => {
-							this.handleZoomOut();
-						}}
-						onClick={() => {
-							this.handleZoomOut();
-						}}
-						disabled={!this.isZoomButtonActive('out')}
-					>
-						<Icon icon="minus-thick" />
-					</Button>
-				</div>
-				{!this.props.zoomOnly ? (
-					<>
-						<div className="rotate-control control">
-							<Button
-								onHold={() => {
-									this.handleHeadingRight();
-								}}
-								onClick={() => {
-									this.handleHeadingRight();
-								}}
-							>
-								<Icon icon="rotate-right" />
-							</Button>
-							<Button
-								onClick={() => {
-									this.handleResetHeading();
-								}}
-								disabled={this.state.resetHeadingDisabled}
-							>
-								<Icon
-									style={{
-										transform: `rotate(${
-											this.props.view ? -this.props.view.heading : 0
-										}deg)`,
-									}}
-									icon="north-arrow"
-								/>
-							</Button>
-							<Button
-								onHold={() => {
-									this.handleHeadingLeft();
-								}}
-								onClick={() => {
-									this.handleHeadingLeft();
-								}}
-							>
-								<Icon icon="rotate-left" />
-							</Button>
-						</div>
-						<div className="tilt-control control">
-							<Button
-								className="tilt-more-control"
-								onHold={() => {
-									this.handleTiltDown();
-								}}
-								onClick={() => {
-									this.handleTiltDown();
-								}}
-							>
-								<Icon icon="tilt-more" />
-							</Button>
-							<Button
-								className="tilt-more-control"
-								onHold={() => {
-									this.handleTiltUp();
-								}}
-								onClick={() => {
-									this.handleTiltUp();
-								}}
-							>
-								<Icon icon="tilt-less" />
-							</Button>
-						</div>
-					</>
-				) : null}
+			<div className="zoom-control control">
+				<Button
+					onHold={() => {
+						handleZoomIn();
+					}}
+					onClick={() => {
+						handleZoomIn();
+					}}
+					disabled={!isZoomButtonActive('in')}
+				>
+					<Icon icon="plus-thick" />
+				</Button>
+				<Button
+					onHold={() => {
+						handleZoomOut();
+					}}
+					onClick={() => {
+						handleZoomOut();
+					}}
+					disabled={!isZoomButtonActive('out')}
+				>
+					<Icon icon="minus-thick" />
+				</Button>
 			</div>
-		);
-	}
-}
+			{!zoomOnly ? (
+				<>
+					<div className="rotate-control control">
+						<Button
+							onHold={() => {
+								handleHeadingRight();
+							}}
+							onClick={() => {
+								handleHeadingRight();
+							}}
+						>
+							<Icon icon="rotate-right" />
+						</Button>
+						<Button
+							onClick={() => {
+								handleResetHeading();
+							}}
+							disabled={resetHeadingDisabled}
+						>
+							<Icon
+								style={{
+									transform: `rotate(${view ? -view.heading : 0}deg)`,
+								}}
+								icon="north-arrow"
+							/>
+						</Button>
+						<Button
+							onHold={() => {
+								handleHeadingLeft();
+							}}
+							onClick={() => {
+								handleHeadingLeft();
+							}}
+						>
+							<Icon icon="rotate-left" />
+						</Button>
+					</div>
+					<div className="tilt-control control">
+						<Button
+							className="tilt-more-control"
+							onHold={() => {
+								handleTiltDown();
+							}}
+							onClick={() => {
+								handleTiltDown();
+							}}
+						>
+							<Icon icon="tilt-more" />
+						</Button>
+						<Button
+							className="tilt-more-control"
+							onHold={() => {
+								handleTiltUp();
+							}}
+							onClick={() => {
+								handleTiltUp();
+							}}
+						>
+							<Icon icon="tilt-less" />
+						</Button>
+					</div>
+				</>
+			) : null}
+		</div>
+	);
+};
+
+MapControls.propTypes = {
+	heading: PropTypes.number,
+	view: PropTypes.object,
+	viewLimits: PropTypes.object,
+	updateView: PropTypes.func,
+	resetHeading: PropTypes.func,
+	mapKey: PropTypes.string,
+	zoomOnly: PropTypes.bool,
+	levelsBased: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
+	mapHeight: PropTypes.number,
+	mapWidth: PropTypes.number,
+};
 
 export default MapControls;

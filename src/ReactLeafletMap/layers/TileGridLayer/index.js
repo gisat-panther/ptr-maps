@@ -1,8 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import {utils as tileGridUtils, grid} from '@gisatcz/ptr-tile-grid';
-import {Marker, Pane} from 'react-leaflet';
 import {GeoJSON as LeafletGeoJSON} from 'leaflet';
 import {createLayerComponent} from '@react-leaflet/core';
 
@@ -47,38 +45,6 @@ const getGeoJsonTileGrid = (tileGrid, boxRange, viewport) => {
 	return geojsonTileGrid;
 };
 
-const getTilesMarkers = (tileGrid = [], boxRange, viewport) => {
-	const level = getTileGridLevel(boxRange, viewport);
-
-	const markers = tileGrid.reduce((acc, row) => {
-		const rowMarkers = row.map((tile, i) => {
-			return (
-				<Pane
-					// style={{zIndex: this.props.zIndex}}
-					key={`${level}-${tile[0]}-${tile[1]}`}
-				>
-					<Marker
-						// zIndex={this.props.zIndex}
-						position={[tile[1], tile[0]]}
-						icon={
-							new L.DivIcon({
-								//push every second tile title up to prevent overlays
-								iconAnchor: [-10, 20 + (i % 2) * 20],
-								className: 'my-div-icon',
-								html: `<div style="display:flex"><div style="white-space: nowrap;">${level}-${tile[0]}-${tile[1]}</div></div>`,
-							})
-						}
-					/>
-				</Pane>
-			);
-		});
-
-		return [...acc, ...rowMarkers];
-	}, []);
-
-	return markers;
-};
-
 const getGeoJsonGrid = (view, options) => {
 	const recalculatedBoxrange = getBoxRange(
 		view.boxRange,
@@ -113,20 +79,13 @@ const getGeoJsonGrid = (view, options) => {
 	// );
 };
 
-function createLeafletElement(
-	{layerKey, uniqueLayerKey, view, zoom, zIndex, options, pane},
-	ctx
-) {
+function createLeafletElement({view, options}, ctx) {
 	const geoJsonTileGrid = getGeoJsonGrid(view, options);
 	const instance = new LeafletGeoJSON(geoJsonTileGrid.features, {});
 	return {instance, context: {...ctx, overlayContainer: instance}};
 }
 
-function updateLeafletElement(
-	instance,
-	{layerKey, uniqueLayerKey, view, zoom, zIndex, options, pane},
-	prevProps
-) {
+function updateLeafletElement(instance, {view, options}) {
 	//remove current tiles
 	instance.getLayers().map(l => instance.removeLayer(l));
 

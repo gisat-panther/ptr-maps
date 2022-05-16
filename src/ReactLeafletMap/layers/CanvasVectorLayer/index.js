@@ -1,4 +1,3 @@
-import React from 'react';
 import {createLayerComponent} from '@react-leaflet/core';
 import LeafletCanvasLayer from './LeafletCanvasLayer';
 import paneHelpers from '../../helpers/pane';

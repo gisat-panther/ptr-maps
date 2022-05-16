@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, {useCallback, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {useResizeDetector} from 'react-resize-detector';
@@ -7,9 +8,13 @@ import ReactLeafletMap from './ReactLeafletMap';
 
 import './style.scss';
 
-const ReactLeafletMapWrapper = props => {
+const ReactLeafletMapWrapper = ({
+	onResize,
+	onViewChange,
+	view,
+	...restProps
+}) => {
 	const [mapView, setMapView] = useState(view);
-	const {onResize, onViewChange, view, ...restProps} = props;
 	const onMapResize = useCallback((width, height) => {
 		if (onResize && width && height) {
 			// postpone onResize call due to React issue (Cannot update during an existing state transition)
@@ -62,6 +67,8 @@ const ReactLeafletMapWrapper = props => {
 
 ReactLeafletMapWrapper.propTypes = {
 	onResize: PropTypes.func,
+	onViewChange: PropTypes.func,
+	view: PropTypes.object,
 };
 
 export default ReactLeafletMapWrapper;

@@ -1,4 +1,6 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {useEffect, useRef, useState} from 'react';
+import PropTypes from 'prop-types';
 import parseGeoRaster from 'georaster';
 import {utils} from '@gisatcz/ptr-utils';
 import CogLayerComponent from './CogLayer';
@@ -6,75 +8,75 @@ import CogLayerComponent from './CogLayer';
 /**
  * Wrapper is used to load & parse geotiff data and to place layer to the pane for z-positioning
  */
-class CogLayerWrapper extends React.PureComponent {
-	constructor(props) {
-		super(props);
+const CogLayerWrapper = ({options, paneName, map, zIndex, ...rest}) => {
+	const {url} = options;
+	const urlRef = useRef(url);
+	const [georaster, setGeoraster] = useState(null);
+	const [key, setKey] = useState(utils.uuid());
 
-		this.cogRef = React.createRef();
-
-		this.state = {
-			georaster: null,
-		};
-	}
-
-	// TODO handle pane z-index change & url change
-	componentDidMount() {
-		const {options, paneName, map, zIndex} = this.props;
-		const {url} = options;
-
+	useEffect(() => {
 		let pane = map.getPane(paneName);
 		if (!pane) {
 			pane = map.createPane(paneName);
 			pane.style.zIndex = zIndex;
 		}
 
-		parseGeoRaster(url).then(georaster => {
-			this.setState({georaster, key: utils.uuid()});
+		parseGeoRaster(urlRef.current).then(georaster => {
+			setGeoraster(georaster);
 		});
-	}
 
-	componentWillUnmount() {
-		const {paneName, map} = this.props;
-		if (paneName) {
-			// delete pane and remove them from DOM
-			delete map._panes[paneName];
-			const elements = document.querySelectorAll(`.leaflet-${paneName}-pane`);
-			if (elements.length) {
-				elements.forEach(element => element.remove());
+		return () => {
+			if (paneName) {
+				// delete pane and remove them from DOM
+				delete map._panes[paneName];
+				const elements = document.querySelectorAll(`.leaflet-${paneName}-pane`);
+				if (elements.length) {
+					elements.forEach(element => element.remove());
+				}
 			}
-		}
-	}
+		};
+	}, []);
 
-	componentDidUpdate(prevProps, prevState, snapshot) {
-		const {options, paneName, map, zIndex, opacity} = this.props;
+	useEffect(() => {
+		let pane = map.getPane(paneName);
+		pane.style.zIndex = zIndex;
+	}, [zIndex]);
+
+	useEffect(() => {
 		const {url} = options;
-
-		if (zIndex !== prevProps.zIndex) {
-			let pane = map.getPane(paneName);
-			pane.style.zIndex = zIndex;
-		}
-
-		if (url !== prevProps.options.url) {
+		if (url !== urlRef.current) {
+			urlRef.current = url;
 			parseGeoRaster(url).then(georaster => {
-				this.setState({georaster, key: utils.uuid()});
+				setGeoraster(georaster);
+				setKey(utils.uuid());
 			});
 		}
-	}
+	}, [options]);
 
-	render() {
-		if (this.state.georaster) {
-			return (
-				<CogLayerComponent
-					{...this.props}
-					georaster={this.state.georaster}
-					key={this.state.key}
-					ref={this.cogRef}
-				/>
-			);
-		} else {
-			return null;
-		}
+	if (georaster) {
+		return (
+			<CogLayerComponent
+				{...{...rest, options, paneName, map, zIndex}}
+				georaster={georaster}
+				key={key}
+			/>
+		);
+	} else {
+		return null;
 	}
-}
+};
+
+CogLayerWrapper.propTypes = {
+	map: PropTypes.shape({
+		_panes: PropTypes.object,
+		createPane: PropTypes.func,
+		getPane: PropTypes.func,
+	}),
+	options: PropTypes.shape({
+		url: PropTypes.string,
+	}),
+	paneName: PropTypes.string,
+	zIndex: PropTypes.number,
+};
 
 export default CogLayerWrapper;

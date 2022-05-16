@@ -1,4 +1,5 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {useState, createElement, useCallback} from 'react';
 import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
@@ -13,46 +14,22 @@ import WmsLayer from './layers/WmsLayer';
 
 import './style.scss';
 
-class DeckGlMap extends React.PureComponent {
-	static propTypes = {
-		Tooltip: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
-		view: PropTypes.object,
-		viewLimits: PropTypes.object,
-	};
+const DeckGlMap = ({
+	onResize,
+	onViewChange,
+	viewLimits,
+	view,
+	onLayerClick,
+	mapKey,
+	backgroundLayer,
+	layers,
+	Tooltip,
+}) => {
+	const [box, setBox] = useState({width: null, height: null});
+	const [stateView, setStateView] = useState();
+	const [tooltipData, setTooltipData] = useState(null);
 
-	static getDerivedStateFromProps(props, state) {
-		if (props.onViewChange) {
-			let changes = {};
-
-			if (
-				(props.viewport?.width && props.viewport.width !== state.width) ||
-				(props.viewport?.height && props.viewport.height !== state.height)
-			) {
-				changes.height = props.viewport.height;
-				changes.width = props.viewport.width;
-			}
-
-			return _isEmpty(changes) ? null : changes;
-		} else {
-			return null;
-		}
-	}
-
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			view: null,
-			tooltipData: null,
-		};
-
-		this.onVectorLayerClick = this.onVectorLayerClick.bind(this);
-		this.onVectorLayerHover = this.onVectorLayerHover.bind(this);
-		this.onResize = this.onResize.bind(this);
-		this.onViewStateChange = this.onViewStateChange.bind(this);
-	}
-
-	onViewStateChange(views) {
+	const onViewStateChange = views => {
 		let change = {};
 		const prevView = views.oldViewState;
 		const nextView = views.viewState;
@@ -60,8 +37,8 @@ class DeckGlMap extends React.PureComponent {
 		if (prevView && prevView.zoom !== nextView.zoom) {
 			change.boxRange = viewHelpers.getBoxRangeFromZoomLevel(
 				nextView.zoom,
-				this.state.width,
-				this.state.height
+				box.width,
+				box.height
 			);
 		}
 
@@ -77,45 +54,42 @@ class DeckGlMap extends React.PureComponent {
 		}
 
 		if (!_isEmpty(change)) {
-			if (this.props.onViewChange) {
-				this.props.onViewChange(change);
+			if (onViewChange) {
+				onViewChange(change);
 			}
 			// just presentational map
 			else {
-				this.setState({
-					view: {...this.props.view, ...this.state.view, ...change},
-				});
+				setStateView({...view, ...stateView, ...change});
 			}
 		}
-	}
+	};
 
 	/**
 	 * @param width {number}
 	 * @param height {number}
 	 */
-	onResize(width, height) {
-		height = viewport.roundDimension(height);
-		width = viewport.roundDimension(width);
+	const onResizeHandler = useCallback((width, height) => {
+		const updateHeight = viewport.roundDimension(height);
+		const updateWidth = viewport.roundDimension(width);
 
-		if (this.props.onResize) {
-			this.props.onResize(width, height);
+		if (onResize) {
+			onResize(updateWidth, updateHeight);
 		}
-
-		this.setState({
-			width,
-			height,
+		setBox({
+			width: updateWidth,
+			height: updateHeight,
 		});
-	}
+	});
 
 	/**
 	 * @param layerKey {string}
 	 * @param featureKeys {Array}
 	 */
-	onVectorLayerClick(layerKey, featureKeys) {
-		if (this.props.onLayerClick) {
-			this.props.onLayerClick(this.props.mapKey, layerKey, featureKeys);
+	const onVectorLayerClick = (layerKey, featureKeys) => {
+		if (onLayerClick) {
+			onLayerClick(mapKey, layerKey, featureKeys);
 		}
-	}
+	};
 
 	/**
 	 * @param layerKey {string}
@@ -124,61 +98,37 @@ class DeckGlMap extends React.PureComponent {
 	 * @param x {number}
 	 * @param y {number}
 	 */
-	onVectorLayerHover(layerKey, featureKey, feature, x, y) {
-		if (this.props.Tooltip) {
-			this.setState({
-				tooltipData: {
-					mapKey: this.props.mapKey,
-					layerKey,
-					featureKey,
-					feature,
-					x,
-					y,
-				},
+	const onVectorLayerHover = (layerKey, featureKey, feature, x, y) => {
+		if (Tooltip) {
+			setTooltipData({
+				mapKey,
+				layerKey,
+				featureKey,
+				feature,
+				x,
+				y,
 			});
 		}
-	}
-
-	/**
-	 * Return layer by type
-	 * @param layer {Object} layer data
-	 * @returns {TiledLayer|VectorLayer|WmsLayer|null}
-	 */
-	getLayerByType(layer) {
-		if (layer && layer.type) {
-			switch (layer.type) {
-				case 'wmts':
-					return this.getTileLayer(layer);
-				case 'wms':
-					return this.getWmsLayer(layer);
-				case 'vector':
-					return this.getVectorLayer(layer);
-				default:
-					return null;
-			}
-		} else {
-			return null;
-		}
-	}
+	};
 
 	/**
 	 * Return tiled (WMTS) layer
 	 * @param layer {Object} layer data
 	 * @returns {TiledLayer}
 	 */
-	getTileLayer(layer) {
+	const getTileLayer = layer => {
 		return new TiledLayer({
 			...layer,
 			id: layer.key,
 		});
-	}
+	};
 
 	/**
 	 * Return WMS layer
 	 * @param layer {Object} layer data
 	 * @returns {WmsLayer}
 	 */
-	getWmsLayer(layer) {
+	const getWmsLayer = layer => {
 		if (layer.options?.singleTile) {
 			throw new Error('DeckGlMap: singleTile option not implemented yet!');
 		} else {
@@ -187,7 +137,7 @@ class DeckGlMap extends React.PureComponent {
 				id: layer.key,
 			});
 		}
-	}
+	};
 
 	/**
 	 * Return vector layer
@@ -195,19 +145,21 @@ class DeckGlMap extends React.PureComponent {
 	 * @param layer {Object} layer data
 	 * @returns {VectorLayer}
 	 */
-	getVectorLayer(layer) {
+	const getVectorLayer = layer => {
+		// eslint-disable-next-line no-unused-vars
 		const {key, layerKey, options, ...restProps} = layer;
+		// eslint-disable-next-line no-unused-vars
 		let {features, style, hoverable, pointAsMarker, ...restOptions} = options;
 
 		const renderAsRules = styleHelpers.getRenderAsRulesByBoxRange(
 			options.renderAs,
-			this.props.view?.boxRange
+			view?.boxRange
 		);
 
 		// Check options for renderAsRules
 		// TODO add other options
 		style = renderAsRules?.options?.style || style;
-		pointAsMarker = renderAsRules?.options?.hasOwnProperty('pointAsMarker')
+		pointAsMarker = Object.hasOwn(renderAsRules?.options || {}, 'pointAsMarker')
 			? renderAsRules.options.pointAsMarker
 			: options.pointAsMarker;
 
@@ -217,73 +169,40 @@ class DeckGlMap extends React.PureComponent {
 			id: layer.key,
 			key: layer.key,
 			layerKey: layer.layerKey || layer.key,
-			onClick: this.onVectorLayerClick,
-			onHover: this.onVectorLayerHover,
+			onClick: onVectorLayerClick,
+			onHover: onVectorLayerHover,
 			autoHighlight: hoverable,
 			styleForDeck: styleHelpers.getStylesDefinitionForDeck(style),
 			pointAsMarker,
 		};
 
 		return new VectorLayer(props);
-	}
+	};
 
-	render() {
-		return (
-			<>
-				<ReactResizeDetector
-					handleHeight
-					handleWidth
-					onResize={this.onResize}
-					refreshMode="debounce"
-					refreshRate={500}
-				/>
-				{this.state.width && this.state.height ? this.renderMap() : null}
-			</>
-		);
-	}
+	/**
+	 * Return layer by type
+	 * @param layer {Object} layer data
+	 * @returns {TiledLayer|VectorLayer|WmsLayer|null}
+	 */
+	const getLayerByType = layer => {
+		if (layer && layer.type) {
+			switch (layer.type) {
+				case 'wmts':
+					return getTileLayer(layer);
+				case 'wms':
+					return getWmsLayer(layer);
+				case 'vector':
+					return getVectorLayer(layer);
+				default:
+					return null;
+			}
+		} else {
+			return null;
+		}
+	};
 
-	renderMap() {
-		const view =
-			this.props.onViewChange || !this.state.view
-				? this.props.view
-				: this.state.view;
-
-		let deckView = viewHelpers.getDeckViewFromPantherViewParams(
-			view,
-			this.state.width,
-			this.state.height,
-			this.props.viewLimits
-		);
-		const {backgroundLayer, layers, Tooltip} = this.props;
-
-		const backgroundLayersSource = _isArray(backgroundLayer)
-			? backgroundLayer
-			: [backgroundLayer];
-		const finalBackgroundLayers =
-			backgroundLayersSource &&
-			backgroundLayersSource.map(layer => this.getLayerByType(layer));
-		const finalLayers = layers
-			? layers.map(layer => this.getLayerByType(layer))
-			: [];
-
-		return (
-			<div className="ptr-deckGl-map ptr-map">
-				<DeckGL
-					onViewStateChange={this.onViewStateChange}
-					views={new MapView({repeat: true})}
-					viewState={deckView}
-					layers={[...finalBackgroundLayers, ...finalLayers]}
-					controller={true}
-				/>
-				{Tooltip && this.state.tooltipData?.featureKey
-					? this.renderTooltip()
-					: null}
-			</div>
-		);
-	}
-
-	renderTooltip() {
-		const {x, y} = this.state.tooltipData;
+	const renderTooltip = () => {
+		const {x, y} = tooltipData;
 		const style = {
 			left: x,
 			top: y,
@@ -291,10 +210,69 @@ class DeckGlMap extends React.PureComponent {
 
 		return (
 			<div className="ptr-deckGl-map-tooltip" style={style}>
-				{React.createElement(this.props.Tooltip, {...this.state.tooltipData})}
+				{createElement(Tooltip, {...tooltipData})}
 			</div>
 		);
-	}
-}
+	};
+
+	const renderMap = () => {
+		const renderView = onViewChange || !stateView ? view : stateView;
+
+		let deckView = viewHelpers.getDeckViewFromPantherViewParams(
+			renderView,
+			box.width,
+			box.height,
+			viewLimits
+		);
+
+		const backgroundLayersSource = _isArray(backgroundLayer)
+			? backgroundLayer
+			: [backgroundLayer];
+		const finalBackgroundLayers =
+			backgroundLayersSource &&
+			backgroundLayersSource.map(layer => getLayerByType(layer));
+		const finalLayers = layers
+			? layers.map(layer => getLayerByType(layer))
+			: [];
+
+		return (
+			<div className="ptr-deckGl-map ptr-map">
+				<DeckGL
+					onViewStateChange={onViewStateChange}
+					views={new MapView({repeat: true})}
+					viewState={deckView}
+					layers={[...finalBackgroundLayers, ...finalLayers]}
+					controller={true}
+				/>
+				{Tooltip && tooltipData?.featureKey ? renderTooltip() : null}
+			</div>
+		);
+	};
+
+	return (
+		<>
+			<ReactResizeDetector
+				handleHeight
+				handleWidth
+				onResize={onResizeHandler}
+				refreshMode="debounce"
+				refreshRate={500}
+			/>
+			{box.width && box.height ? renderMap() : null}
+		</>
+	);
+};
+
+DeckGlMap.propTypes = {
+	onResize: PropTypes.func,
+	onViewChange: PropTypes.func,
+	viewLimits: PropTypes.object,
+	view: PropTypes.object,
+	onLayerClick: PropTypes.func,
+	mapKey: PropTypes.string,
+	backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+	layers: PropTypes.array,
+	Tooltip: PropTypes.func,
+};
 
 export default DeckGlMap;

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
@@ -491,17 +492,22 @@ const ReactLeafletMap = ({
 ReactLeafletMap.propTypes = {
 	backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 	crs: PropTypes.string,
+	debugTileGrid: PropTypes.oneOfType([
+		PropTypes.shape({
+			bottom: PropTypes.bool,
+		}),
+		PropTypes.array,
+	]),
 	height: PropTypes.number,
 	layers: PropTypes.array,
 	mapKey: PropTypes.string,
+	onClick: PropTypes.func,
+	onLayerClick: PropTypes.func,
+	onViewChange: PropTypes.func,
 	resources: PropTypes.object,
 	view: PropTypes.object,
 	viewLimits: PropTypes.object,
 	width: PropTypes.number,
-
-	onClick: PropTypes.func,
-	onLayerClick: PropTypes.func,
-	onViewChange: PropTypes.func,
 };
 
 export default ReactLeafletMap;

@@ -1,4 +1,5 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {useRef, createElement} from 'react';
 import PropTypes from 'prop-types';
 import memoize from 'memoize-one';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
@@ -38,81 +39,141 @@ function getBoundingBox(view, width, height, crs, optLat) {
 	}
 }
 
-class IndexedVectorLayer extends React.PureComponent {
-	static propTypes = {
-		boxRangeRange: PropTypes.array,
-		component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-		omittedFeatureKeys: PropTypes.array,
-	};
-
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			rerender: null,
-		};
-
-		this.indexTree = geojsonRbush();
-		this.repopulateIndexTreeIfNeeded = memoize(features => {
+const IndexedVectorLayer = ({
+	view,
+	zoom,
+	component,
+	width,
+	height,
+	crs,
+	boxRangeRange,
+	features,
+	omittedFeatureKeys,
+	style,
+	mapKey,
+	layerKey,
+	uniqueLayerKey,
+	onClick,
+	opacity,
+	resources,
+	type,
+	zIndex,
+	fidColumnName,
+	hovered,
+	hoverable,
+	hoveredStyleDefinition,
+	pointAsMarker,
+	selectable,
+	selected,
+}) => {
+	const indexTree = useRef(geojsonRbush());
+	const repopulateIndexTreeIfNeeded = useRef(
+		memoize(features => {
 			if (features) {
-				this.indexTree.clear();
-				this.indexTree.load(features);
+				indexTree.current?.clear();
+				indexTree.current?.load(features);
 			}
-		});
-	}
+		})
+	);
 
-	boxRangeFitsLimits() {
-		const props = this.props;
-		if (props.boxRangeRange) {
-			const minBoxRange = props.boxRangeRange[0];
-			const maxBoxRange = props.boxRangeRange[1];
+	const boxRangeFitsLimits = () => {
+		if (boxRangeRange) {
+			const minBoxRange = boxRangeRange[0];
+			const maxBoxRange = boxRangeRange[1];
 			if (minBoxRange && maxBoxRange) {
-				return (
-					minBoxRange <= props.view.boxRange &&
-					maxBoxRange >= props.view.boxRange
-				);
+				return minBoxRange <= view.boxRange && maxBoxRange >= view.boxRange;
 			} else if (minBoxRange) {
-				return minBoxRange <= props.view.boxRange;
+				return minBoxRange <= view.boxRange;
 			} else if (maxBoxRange) {
-				return maxBoxRange >= props.view.boxRange;
+				return maxBoxRange >= view.boxRange;
 			}
 		} else {
 			return true;
 		}
-	}
+	};
 
-	render() {
-		const {view, zoom, component, width, height, crs, ...props} = this.props;
+	if (features && boxRangeFitsLimits()) {
+		repopulateIndexTreeIfNeeded.current(features);
+		const bbox = getBoundingBox(
+			view,
+			width,
+			height,
+			crs,
+			mapConstants.averageLatitude
+		);
+		const geoJsonBbox = {
+			type: 'Feature',
+			bbox: [bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat],
+		};
 
-		if (props.features && this.boxRangeFitsLimits()) {
-			this.repopulateIndexTreeIfNeeded(props.features);
-			const bbox = getBoundingBox(
-				view,
-				width,
-				height,
-				crs,
-				mapConstants.averageLatitude
-			);
-			const geoJsonBbox = {
-				type: 'Feature',
-				bbox: [bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat],
-			};
+		// Find features in given bounding box
+		const foundFeatureCollection = indexTree.current.search(geoJsonBbox);
+		const foundFeatures =
+			(foundFeatureCollection && foundFeatureCollection.features) || [];
 
-			// Find features in given bounding box
-			const foundFeatureCollection = this.indexTree.search(geoJsonBbox);
-			const foundFeatures =
-				(foundFeatureCollection && foundFeatureCollection.features) || [];
-
-			// Add filtered features only to Vector layer
-			if (props.features.length !== foundFeatures.length) {
-				props.features = foundFeatures;
-			}
-
-			return React.createElement(component, props);
-		} else {
-			return null;
+		// Add filtered features only to Vector layer
+		if (features.length !== foundFeatures.length) {
+			features = foundFeatures;
 		}
+
+		return createElement(component, {
+			view,
+			zoom,
+			width,
+			height,
+			crs,
+			boxRangeRange,
+			features,
+			omittedFeatureKeys,
+			style,
+
+			mapKey,
+			layerKey,
+			uniqueLayerKey,
+			onClick,
+			opacity,
+			resources,
+			type,
+			zIndex,
+			fidColumnName,
+			hoverable,
+			hovered,
+			hoveredStyleDefinition,
+			pointAsMarker,
+			selectable,
+			selected,
+		});
+	} else {
+		return null;
 	}
-}
+};
+
+IndexedVectorLayer.propTypes = {
+	view: PropTypes.object,
+	zoom: PropTypes.number,
+	component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+	width: PropTypes.number,
+	height: PropTypes.number,
+	crs: PropTypes.string,
+	boxRangeRange: PropTypes.array,
+	features: PropTypes.array,
+	omittedFeatureKeys: PropTypes.array,
+	style: PropTypes.object,
+	mapKey: PropTypes.string,
+	layerKey: PropTypes.string,
+	uniqueLayerKey: PropTypes.string,
+	onClick: PropTypes.func,
+	opacity: PropTypes.number,
+	resources: PropTypes.object,
+	type: PropTypes.string,
+	zIndex: PropTypes.number,
+	fidColumnName: PropTypes.string,
+	hovered: PropTypes.object,
+	hoverable: PropTypes.bool,
+	hoveredStyleDefinition: PropTypes.object,
+	pointAsMarker: PropTypes.bool,
+	selectable: PropTypes.bool,
+	selected: PropTypes.object,
+};
 
 export default IndexedVectorLayer;

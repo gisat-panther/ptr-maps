@@ -64,7 +64,7 @@ class WmsLayer extends CompositeLayer {
 					transparent: true,
 				};
 
-				if (params.hasOwnProperty('transparent')) {
+				if (Object.hasOwn(params, 'transparent')) {
 					urlQueryStringParams.transparent = params.transparent;
 				}
 

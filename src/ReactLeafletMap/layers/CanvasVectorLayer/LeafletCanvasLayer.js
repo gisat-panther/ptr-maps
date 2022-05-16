@@ -151,7 +151,7 @@ const LeafletCanvasLayer = CanvasLayer.extend({
 			};
 
 			if (props.selected && fid) {
-				_forIn(props.selected, (selection, key) => {
+				_forIn(props.selected, selection => {
 					if (selection.keys && _includes(selection.keys, fid)) {
 						preparedFeature.selected = true;
 						preparedFeature.selectedStyle = {

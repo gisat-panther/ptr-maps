@@ -1,4 +1,6 @@
 import {assert} from 'chai';
+import {describe, it} from 'mocha';
+
 import viewHelpers from '../../../src/ReactLeafletMap/helpers/view';
 
 describe('ReactLeafletMap/helpers/view', function () {

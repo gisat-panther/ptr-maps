@@ -1,4 +1,3 @@
-import React from 'react';
 import Loadable from 'react-loadable';
 import {isServer} from '@gisatcz/ptr-core';
 import PresentationEmpty from '../LoadableMap/presentationEmpty';

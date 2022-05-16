@@ -1,4 +1,5 @@
-import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, {useRef} from 'react';
 import {includes as _includes} from 'lodash';
 import PropTypes from 'prop-types';
 import {utils} from '@gisatcz/ptr-utils';
@@ -9,31 +10,32 @@ import memoize from 'memoize-one';
 import shapes from '../shapes';
 import MarkerShape from '../MarkerShape';
 
-class GeoJsonLayer extends React.PureComponent {
-	static propTypes = {
-		omittedFeatureKeys: PropTypes.array, // list of feature keys that shouldn't be rendered
-	};
-
-	constructor(props) {
-		super(props);
-
-		this.getStyle = this.getStyle.bind(this);
-		this.filter = this.filter.bind(this);
-		this.onEachFeature = this.onEachFeature.bind(this);
-		this.pointToLayer = this.pointToLayer.bind(this);
-
-		this.getRenderId = memoize(features => {
+const GeoJsonLayer = ({
+	omittedFeatureKeys,
+	features,
+	styleDefinition,
+	hoveredStyleDefinition,
+	onFeatureClick,
+	selectable,
+	hoverable,
+	pointAsMarker,
+	paneName,
+	icons,
+	fidColumnName,
+}) => {
+	const getRenderId = useRef(
+		memoize(features => {
 			if (features) {
 				return utils.uuid();
 			}
-		});
-	}
+		})
+	);
 
-	getStyle(feature) {
+	const getStyle = feature => {
 		const styles = helpers.calculateStyle(
 			feature.feature,
-			this.props.styleDefinition,
-			this.props.hoveredStyleDefinition,
+			styleDefinition,
+			hoveredStyleDefinition,
 			feature.selected,
 			feature.selectedStyleDefinition,
 			feature.selectedHoveredStyleDefinition
@@ -44,7 +46,7 @@ class GeoJsonLayer extends React.PureComponent {
 		} else {
 			return styles.default;
 		}
-	}
+	};
 
 	/**
 	 * @param id {string}
@@ -57,7 +59,7 @@ class GeoJsonLayer extends React.PureComponent {
 	 * @param options.onClick {function}
 	 * @return {MarkerShape}
 	 */
-	getMarkerShape(id, style, options) {
+	const getMarkerShape = (id, style, options) => {
 		const shapeKey = style.shape;
 		const iconKey = style.icon;
 		let basicShape = true;
@@ -111,9 +113,9 @@ class GeoJsonLayer extends React.PureComponent {
 			onMouseOver: options.onMouseOver,
 			onClick: options.onClick,
 		});
-	}
+	};
 
-	onEachFeature(feature, layer) {
+	const onEachFeature = (feature, layer) => {
 		const geometryType = feature.geometry.type;
 		const isPolygon =
 			geometryType === 'Polygon' || geometryType === 'MultiPolygon';
@@ -121,30 +123,30 @@ class GeoJsonLayer extends React.PureComponent {
 
 		const styles = helpers.calculateStyle(
 			feature.feature,
-			this.props.styleDefinition,
-			this.props.hoveredStyleDefinition,
+			styleDefinition,
+			hoveredStyleDefinition,
 			feature.selected,
 			feature.selectedStyleDefinition,
 			feature.selectedHoveredStyleDefinition
 		);
 
 		layer.on({
-			click: e => {
-				if (this.props.onFeatureClick && this.props.selectable && feature.fid) {
-					this.props.onFeatureClick(feature.fid);
+			click: () => {
+				if (onFeatureClick && selectable && feature.fid) {
+					onFeatureClick(feature.fid);
 				}
 			},
 			mouseover: e => {
-				if (!this.props.selectable && !this.props.hoverable) {
+				if (!selectable && !hoverable) {
 					e.originalEvent.target.className.baseVal = '';
 				}
 			},
 			mousemove: e => {
-				if (this.props.hoverable) {
+				if (hoverable) {
 					if (feature.selected && styles.selectedHovered) {
-						this.setStyle(styles.selectedHovered, e.target);
+						setStyle(styles.selectedHovered, e.target);
 					} else {
-						this.setStyle(styles.hovered, e.target);
+						setStyle(styles.hovered, e.target);
 					}
 
 					if (isPolygon || isLine) {
@@ -153,11 +155,11 @@ class GeoJsonLayer extends React.PureComponent {
 				}
 			},
 			mouseout: e => {
-				if (this.props.hoverable) {
+				if (hoverable) {
 					if (feature.selected && styles.selected) {
-						this.setStyle(styles.selected, e.target);
+						setStyle(styles.selected, e.target);
 					} else {
-						this.setStyle(styles.default, e.target);
+						setStyle(styles.default, e.target);
 					}
 
 					if ((isLine || isPolygon) && !feature.selected) {
@@ -166,39 +168,39 @@ class GeoJsonLayer extends React.PureComponent {
 				}
 			},
 		});
-	}
+	};
 
 	/**
 	 * Set style of the feature
 	 * @param leafletStyle {Object} Leaflet style definition
 	 * @param element {Object} Leaflet element
 	 */
-	setStyle(leafletStyle, element) {
+	const setStyle = (leafletStyle, element) => {
 		const shape = element?.options?.icon;
 		if (shape) {
 			shape.setStyle(leafletStyle, shape.id, shape.isBasicShape);
 		} else {
 			element.setStyle(leafletStyle);
 		}
-	}
+	};
 
 	// render points
-	pointToLayer(feature, coord) {
-		if (this.props.pointAsMarker) {
+	const pointToLayer = (feature, coord) => {
+		if (pointAsMarker) {
 			let style = feature.defaultStyle;
 
 			// for circles, use L.circleMarker due to better performance
 			if ((!style?.shape && !style?.icon) || style?.shape === 'circle') {
 				return L.circleMarker(coord, {
 					...feature.defaultStyle,
-					pane: this.props.paneName,
+					pane: paneName,
 				});
 			} else {
 				if (feature.selected) {
 					const styles = helpers.calculateStyle(
 						feature.feature,
-						this.props.styleDefinition,
-						this.props.hoveredStyleDefinition,
+						styleDefinition,
+						hoveredStyleDefinition,
 						feature.selected,
 						feature.selectedStyleDefinition,
 						feature.selectedHoveredStyleDefinition
@@ -210,57 +212,69 @@ class GeoJsonLayer extends React.PureComponent {
 					? `${feature.uniqueFeatureKey}_icon`
 					: utils.uuid();
 
-				const shape = this.getMarkerShape(shapeId, style, {
-					icons: this.props.icons,
-					onClick:
-						this.props.selectable &&
-						this.props.onFeatureClick.bind(this, feature.fid),
+				const shape = getMarkerShape(shapeId, style, {
+					icons,
+					onClick: () => {
+						selectable && onFeatureClick(feature.fid);
+					},
 					// TODO on events
 				});
 
 				return L.marker(coord, {
-					pane: this.props.paneName,
-					interactive: this.props.hoverable || this.props.selectable,
+					pane: paneName,
+					interactive: hoverable || selectable,
 					icon: shape,
 				});
 			}
 		} else {
 			return L.circle(coord, feature.defaultStyle);
 		}
-	}
+	};
 
-	filter(feature) {
-		if (this.props.omittedFeatureKeys) {
-			const featureKey =
-				feature.id || feature.properties[this.props.fidColumnName];
-			return !(
-				featureKey && _includes(this.props.omittedFeatureKeys, featureKey)
-			);
+	const filter = feature => {
+		if (omittedFeatureKeys) {
+			const featureKey = feature.id || feature.properties[fidColumnName];
+			return !(featureKey && _includes(omittedFeatureKeys, featureKey));
 		} else {
 			return true;
 		}
-	}
+	};
 
-	render() {
-		const features = this.props.features.map(item => {
-			return {...item.feature, ...item};
-		});
+	const meggedFeatures = features.map(item => {
+		return {...item.feature, ...item};
+	});
 
-		// generate new key on features change to return the new instance
-		// more: https://react-leaflet.js.org/docs/en/components#geojson
-		const key = this.getRenderId(this.props.features);
+	// generate new key on features change to return the new instance
+	// more: https://react-leaflet.js.org/docs/en/components#geojson
+	const key = getRenderId.current(meggedFeatures);
 
-		return (
-			<GeoJSON
-				key={key}
-				data={features}
-				style={this.getStyle}
-				onEachFeature={this.onEachFeature}
-				pointToLayer={this.pointToLayer}
-				filter={this.filter}
-			/>
-		);
-	}
-}
+	return (
+		<GeoJSON
+			key={key}
+			data={meggedFeatures}
+			style={getStyle}
+			onEachFeature={onEachFeature}
+			pointToLayer={pointToLayer}
+			filter={filter}
+		/>
+	);
+};
+
+GeoJsonLayer.propTypes = {
+	omittedFeatureKeys: PropTypes.array, // list of feature keys that shouldn't be rendered
+	features: PropTypes.array,
+	styleDefinition: PropTypes.object,
+	hoveredStyleDefinition: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.object,
+	]),
+	onFeatureClick: PropTypes.func,
+	selectable: PropTypes.bool,
+	hoverable: PropTypes.bool,
+	pointAsMarker: PropTypes.bool,
+	paneName: PropTypes.string,
+	icons: PropTypes.object,
+	fidColumnName: PropTypes.string,
+};
 
 export default GeoJsonLayer;

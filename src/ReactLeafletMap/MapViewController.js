@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, {useCallback, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
