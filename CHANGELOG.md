@@ -1,3 +1,15 @@
+# v1.13.0 (Mon May 16 2022)
+
+#### 🚀 Enhancement
+
+- Feature/deck fix [#126](https://github.com/gisat-panther/ptr-maps/pull/126) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.12.4 (Wed May 04 2022)
 
 #### 🐾 Patch
