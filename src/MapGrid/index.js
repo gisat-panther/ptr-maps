@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 

@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, {useRef} from 'react';
+import {useRef} from 'react';
 import {WMSTileLayer} from 'react-leaflet';
 import WMSTileLayerWithFetchedTiles from './WMSTileLayerWithFetchedTiles';
 import memoizeOne from 'memoize-one';

@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-import React from 'react';
 import {find as _find, cloneDeep as _cloneDeep} from 'lodash';
 import PropTypes from 'prop-types';
 

@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, {useState, createElement, useCallback} from 'react';
+import {useState, createElement, useCallback} from 'react';
 import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';

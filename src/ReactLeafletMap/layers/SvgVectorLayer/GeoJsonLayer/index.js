@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, {useRef} from 'react';
+import {useRef} from 'react';
 import {includes as _includes} from 'lodash';
 import PropTypes from 'prop-types';
 import {utils} from '@gisatcz/ptr-utils';

@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, {useRef, createElement} from 'react';
+import {useRef, createElement} from 'react';
 import PropTypes from 'prop-types';
 import memoize from 'memoize-one';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
