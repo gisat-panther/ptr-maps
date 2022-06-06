@@ -45,6 +45,7 @@ const lodashExternal = [
 export default {
 	input: 'src/index.js',
 	external: [
+		'react/jsx-runtime',
 		'react',
 		'react-dom/server',
 		'prop-types',
@@ -65,7 +66,6 @@ export default {
 		'@react-leaflet/core',
 		'react-loadable',
 		'react-resize-detector',
-		'react',
 		'shallow-equal',
 		'webworldwind-esa',
 		'react-is',

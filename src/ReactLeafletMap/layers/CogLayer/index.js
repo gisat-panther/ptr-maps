@@ -4,11 +4,13 @@ import PropTypes from 'prop-types';
 import parseGeoRaster from 'georaster';
 import {utils} from '@gisatcz/ptr-utils';
 import CogLayerComponent from './CogLayer';
+import {useMap} from 'react-leaflet';
 
 /**
  * Wrapper is used to load & parse geotiff data and to place layer to the pane for z-positioning
  */
-const CogLayerWrapper = ({options, paneName, map, zIndex, ...rest}) => {
+const CogLayerWrapper = ({options, paneName, zIndex, ...rest}) => {
+	const map = useMap();
 	const {url} = options;
 	const urlRef = useRef(url);
 	const [georaster, setGeoraster] = useState(null);
@@ -67,11 +69,6 @@ const CogLayerWrapper = ({options, paneName, map, zIndex, ...rest}) => {
 };
 
 CogLayerWrapper.propTypes = {
-	map: PropTypes.shape({
-		_panes: PropTypes.object,
-		createPane: PropTypes.func,
-		getPane: PropTypes.func,
-	}),
 	options: PropTypes.shape({
 		url: PropTypes.string,
 	}),

@@ -4,7 +4,7 @@ import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import PropTypes from 'prop-types';
 import {isArray as _isArray} from 'lodash';
-import {MapContainer, MapConsumer, TileLayer} from 'react-leaflet';
+import {MapContainer, TileLayer} from 'react-leaflet';
 import L from 'leaflet';
 
 import viewHelpers from './helpers/view';
@@ -153,19 +153,14 @@ function getWmsLayer(layer, i, crs) {
 function getCogLayer(mapKey, layer, i, zIndex) {
 	const paneKey = paneHelpers.getKey(mapKey, layer, i);
 	return (
-		<MapConsumer>
-			{map => (
-				<CogLayer
-					key={layer.key || i}
-					layerKey={layer.layerKey || layer.key}
-					uniqueLayerKey={layer.key || i}
-					paneName={paneKey}
-					zIndex={zIndex}
-					map={map}
-					{...layer}
-				/>
-			)}
-		</MapConsumer>
+		<CogLayer
+			key={layer.key || i}
+			layerKey={layer.layerKey || layer.key}
+			uniqueLayerKey={layer.key || i}
+			paneName={paneKey}
+			zIndex={zIndex}
+			{...layer}
+		/>
 	);
 }
 
@@ -463,7 +458,7 @@ const ReactLeafletMap = ({
 				maxZoom={maxZoom}
 				minZoom={minZoom}
 				zoomControl={false}
-				whenCreated={setMap}
+				whenReady={ev => setMap(ev.target)}
 				crs={projectionHelpers.getCRS(crs)}
 			>
 				<MapPane
