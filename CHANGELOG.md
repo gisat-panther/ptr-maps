@@ -1,3 +1,15 @@
+# v1.13.1 (Thu Jun 16 2022)
+
+#### 🐾 Patch
+
+- DeckGlMap: pass Tooltip to map set and map & remove hover effect [#127](https://github.com/gisat-panther/ptr-maps/pull/127) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.13.0 (Mon May 16 2022)
 
 #### 🚀 Enhancement
