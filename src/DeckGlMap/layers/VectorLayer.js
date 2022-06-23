@@ -262,9 +262,6 @@ class VectorLayer extends CompositeLayer {
 				getPointRadius: [options, styleForDeck],
 			},
 			pointRadiusMinPixels: 1,
-
-			autoHighlight: hoverable,
-			highlightColor: [255, 255, 255, 120],
 		});
 	}
 }
