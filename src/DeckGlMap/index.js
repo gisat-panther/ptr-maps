@@ -18,6 +18,7 @@ const DeckGlMap = ({
 	onViewChange,
 	viewLimits,
 	view,
+	onClick,
 	onLayerClick,
 	mapKey,
 	backgroundLayer,
@@ -235,7 +236,7 @@ const DeckGlMap = ({
 			: [];
 
 		return (
-			<div className="ptr-deckGl-map ptr-map">
+			<div className="ptr-deckGl-map ptr-map" onClick={() => onClick(mapKey)}>
 				<DeckGL
 					onViewStateChange={onViewStateChange}
 					views={new MapView({repeat: true})}
@@ -267,6 +268,7 @@ DeckGlMap.propTypes = {
 	onViewChange: PropTypes.func,
 	viewLimits: PropTypes.object,
 	view: PropTypes.object,
+	onClick: PropTypes.func,
 	onLayerClick: PropTypes.func,
 	mapKey: PropTypes.string,
 	backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
