@@ -221,7 +221,8 @@ class VectorLayer extends CompositeLayer {
 	 * @returns {GeoJsonLayer} DeckGl.GeoJsonLayer
 	 */
 	renderVectorLayer(vectorLayerKey, features) {
-		const {layerKey, options, styleForDeck, pointAsMarker} = this.props;
+		const {layerKey, options, styleForDeck, pointAsMarker, opacity} =
+			this.props;
 		const {fidColumnName, selectable, hoverable} = options;
 
 		return new GeoJsonLayer({
@@ -262,6 +263,7 @@ class VectorLayer extends CompositeLayer {
 				getPointRadius: [options, styleForDeck],
 			},
 			pointRadiusMinPixels: 1,
+			opacity,
 		});
 	}
 }
