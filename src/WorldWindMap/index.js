@@ -346,21 +346,23 @@ const WorldWindMap = ({
 	}, []);
 
 	const updateHoveredFeatures = () => {
-		wwd.current.layers.forEach(layer => {
-			if (layer instanceof LargeDataLayer) {
-				layer.updateHoveredKeys(
-					hoverContext.hoveredItems,
-					hoverContext.x,
-					hoverContext.y
-				);
-			} else if (layer instanceof VectorLayer) {
-				layer.updateHoveredFeatures(hoverContext.hoveredItems);
-			}
-		});
-		wwd.current.redraw();
-		setPreviousHoveredItemsString(
-			[...hoverContext.hoveredItems].sort().toString()
-		);
+		if (wwd.current.layers) {
+			wwd.current.layers.forEach(layer => {
+				if (layer instanceof LargeDataLayer) {
+					layer.updateHoveredKeys(
+						hoverContext.hoveredItems,
+						hoverContext.x,
+						hoverContext.y
+					);
+				} else if (layer instanceof VectorLayer) {
+					layer.updateHoveredFeatures(hoverContext.hoveredItems);
+				}
+			});
+			wwd.current.redraw();
+			setPreviousHoveredItemsString(
+				[...hoverContext.hoveredItems].sort().toString()
+			);
+		}
 	};
 
 	if (hoverContext?.hoveredItems) {

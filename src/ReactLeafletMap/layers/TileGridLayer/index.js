@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
+import paneHelpers from '../../helpers/pane';
 import {utils as tileGridUtils, grid} from '@gisatcz/ptr-tile-grid';
 import {GeoJSON as LeafletGeoJSON} from 'leaflet';
 import {createLayerComponent} from '@react-leaflet/core';
@@ -79,10 +80,13 @@ const getGeoJsonGrid = (view, options) => {
 	// );
 };
 
-function createLeafletElement({view, options}, ctx) {
+function createLeafletElement({view, options, mapKey, uniqueLayerKey}, ctx) {
+	const paneKey = paneHelpers.getKey(mapKey, uniqueLayerKey);
 	const geoJsonTileGrid = getGeoJsonGrid(view, options);
-	const instance = new LeafletGeoJSON(geoJsonTileGrid.features, {});
-	return {instance, context: {...ctx, overlayContainer: instance}};
+	const instance = new LeafletGeoJSON(geoJsonTileGrid.features, {
+		pane: paneKey,
+	});
+	return {instance, context: {...ctx, layerContainer: instance}};
 }
 
 function updateLeafletElement(instance, {view, options}) {

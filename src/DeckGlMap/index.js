@@ -18,7 +18,7 @@ const DeckGlMap = ({
 	onViewChange,
 	viewLimits,
 	view,
-	onClick,
+	onClick = () => {},
 	onLayerClick,
 	mapKey,
 	backgroundLayer,
