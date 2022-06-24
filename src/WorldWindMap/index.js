@@ -346,7 +346,7 @@ const WorldWindMap = ({
 	}, []);
 
 	const updateHoveredFeatures = () => {
-		if (wwd.current.layers) {
+		if (wwd.current?.layers) {
 			wwd.current.layers.forEach(layer => {
 				if (layer instanceof LargeDataLayer) {
 					layer.updateHoveredKeys(
