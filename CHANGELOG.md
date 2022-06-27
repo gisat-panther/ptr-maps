@@ -1,3 +1,19 @@
+# v1.14.0 (Mon Jun 27 2022)
+
+#### 🚀 Enhancement
+
+- :sparkles: [#130](https://github.com/gisat-panther/ptr-maps/pull/130) ([@vdubr](https://github.com/vdubr))
+
+#### 🐾 Patch
+
+- Fix package-lock [#131](https://github.com/gisat-panther/ptr-maps/pull/131) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.13.3 (Mon Jun 20 2022)
 
 #### 🐾 Patch
