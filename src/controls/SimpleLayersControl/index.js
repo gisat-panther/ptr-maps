@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, {useRef, useState, useEffect} from 'react';
+import {useRef, useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import {Icon, Button} from '@gisatcz/ptr-atoms';

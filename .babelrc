@@ -8,7 +8,7 @@
 						"modules": false
 					}
 				],
-				"@babel/preset-react"
+				["@babel/preset-react", {"runtime": "automatic"}]
 			],
 			"plugins": [["@babel/plugin-transform-runtime"]]
 		},
@@ -17,10 +17,10 @@
 				[
 					"@babel/preset-env",
 					{
-						"modules": false
+						"modules": "auto"
 					}
 				],
-				"@babel/preset-react"
+				["@babel/preset-react", {"runtime": "automatic"}]
 			],
 			"plugins": [["@babel/plugin-transform-runtime"]]
 		},
@@ -32,7 +32,7 @@
 						"modules": "auto"
 					}
 				],
-				"@babel/preset-react"
+				["@babel/preset-react", {"runtime": "automatic"}]
 			],
 			"plugins": [
 				[

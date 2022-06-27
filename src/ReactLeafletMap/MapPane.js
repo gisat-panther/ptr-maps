@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, {useEffect, useRef} from 'react';
+import {useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 import {Pane} from 'react-leaflet';
 

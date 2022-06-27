@@ -1,10 +1,9 @@
-// eslint-disable-next-line no-unused-vars
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {mapConstants} from '@gisatcz/ptr-core';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import PropTypes from 'prop-types';
 import {isArray as _isArray} from 'lodash';
-import {MapContainer, MapConsumer, TileLayer} from 'react-leaflet';
+import {MapContainer, TileLayer} from 'react-leaflet';
 import L from 'leaflet';
 
 import viewHelpers from './helpers/view';
@@ -95,7 +94,7 @@ function getLayerByType(
 					resources
 				);
 			case 'tile-grid':
-				return getTileGridLayer(layer, i, zIndex, zoom, view);
+				return getTileGridLayer(mapKey, layer, i, zIndex, zoom, view);
 			default:
 				return null;
 		}
@@ -153,19 +152,14 @@ function getWmsLayer(layer, i, crs) {
 function getCogLayer(mapKey, layer, i, zIndex) {
 	const paneKey = paneHelpers.getKey(mapKey, layer, i);
 	return (
-		<MapConsumer>
-			{map => (
-				<CogLayer
-					key={layer.key || i}
-					layerKey={layer.layerKey || layer.key}
-					uniqueLayerKey={layer.key || i}
-					paneName={paneKey}
-					zIndex={zIndex}
-					map={map}
-					{...layer}
-				/>
-			)}
-		</MapConsumer>
+		<CogLayer
+			key={layer.key || i}
+			layerKey={layer.layerKey || layer.key}
+			uniqueLayerKey={layer.key || i}
+			paneName={paneKey}
+			zIndex={zIndex}
+			{...layer}
+		/>
 	);
 }
 
@@ -218,9 +212,10 @@ function getVectorLayer(
 	);
 }
 
-function getTileGridLayer(layer, i, zIndex, zoom, view) {
+function getTileGridLayer(mapKey, layer, i, zIndex, zoom, view) {
 	return (
 		<TileGridLayer
+			mapKey={mapKey}
 			key={layer.key || i}
 			layerKey={layer.layerKey || layer.key}
 			uniqueLayerKey={layer.key || i}
@@ -416,27 +411,30 @@ const ReactLeafletMap = ({
 	if (debugTileGrid) {
 		const bottom = debugTileGrid?.bottom;
 		const zIndex = bottom ? 0 : (mapLayers?.length || 0) + 1;
+		const layer = {
+			type: 'tile-grid',
+			key: 'tilegrid',
+			layerKey: 'tilegridlayerkey',
+			options: {
+				viewport: {
+					width: width,
+					height: height,
+				},
+			},
+		};
+		const i = 0;
+		const paneKey = paneHelpers.getKey(mapKey, layer, i);
 		const tileGridLayer = (
 			<MapPane
-				key={'tilegrid'}
+				name={paneKey}
+				key={paneKey}
 				zIndex={layersStartingZindex + zIndex - 1}
-				name={'tilegrid'}
 				map={map}
 			>
 				{getLayerByType(
 					mapKey,
-					{
-						type: 'tile-grid',
-						key: 'tilegrid',
-						layerKey: 'tilegridlayerkey',
-						options: {
-							viewport: {
-								width: width,
-								height: height,
-							},
-						},
-					},
-					0,
+					layer,
+					i,
 					crs,
 					layersStartingZindex + zIndex - 1,
 					zoom,
@@ -463,7 +461,7 @@ const ReactLeafletMap = ({
 				maxZoom={maxZoom}
 				minZoom={minZoom}
 				zoomControl={false}
-				whenCreated={setMap}
+				whenReady={ev => setMap(ev.target)}
 				crs={projectionHelpers.getCRS(crs)}
 			>
 				<MapPane
@@ -496,7 +494,7 @@ ReactLeafletMap.propTypes = {
 		PropTypes.shape({
 			bottom: PropTypes.bool,
 		}),
-		PropTypes.array,
+		PropTypes.bool,
 	]),
 	height: PropTypes.number,
 	layers: PropTypes.array,
