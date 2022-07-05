@@ -41,8 +41,10 @@ class WmsLayer extends CompositeLayer {
 			opacity,
 			tileSize,
 			getTileData: tile => {
-				const {x, y, z} = tile;
-
+				let {x, y, z, index} = tile;
+				x = x || index.x;
+				y = y || index.y;
+				z = z || index.z;
 				// Conversion needed due to visualizations issues.
 				const [west, south, east, north] = conversion.bbox(
 					x,
