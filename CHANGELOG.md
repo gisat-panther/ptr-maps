@@ -1,3 +1,15 @@
+# v1.14.1 (Tue Jul 05 2022)
+
+#### 🐾 Patch
+
+- DeckGlMap: get wms bounding box correctly [#132](https://github.com/gisat-panther/ptr-maps/pull/132) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.14.0 (Mon Jun 27 2022)
 
 #### 🚀 Enhancement
