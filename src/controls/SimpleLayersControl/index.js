@@ -39,7 +39,7 @@ const SimpleLayersControl = ({
 			close();
 		}
 	};
-	useOnClickOutside(wrapperEl.current, handleClickOutside);
+	useOnClickOutside(wrapperEl, handleClickOutside);
 
 	const onControlButtonClick = () => {
 		if (isOpen) {
