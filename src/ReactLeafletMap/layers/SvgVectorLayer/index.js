@@ -34,9 +34,9 @@ const SvgVectorLayer = ({
 	const linesPaneName = useRef(utils.uuid());
 	const polygonsPaneName = useRef(utils.uuid());
 
-	const onFeatureClick = fid => {
+	const onFeatureClick = (fid, position) => {
 		if (onClick) {
-			onClick(layerKey, [fid]);
+			onClick(layerKey, [fid], position);
 		}
 	};
 	const prepareData = features => {

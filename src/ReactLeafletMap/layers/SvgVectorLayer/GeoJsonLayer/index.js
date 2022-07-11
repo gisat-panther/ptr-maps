@@ -213,8 +213,8 @@ const GeoJsonLayer = ({
 
 				const shape = getMarkerShape(shapeId, style, {
 					icons,
-					onClick: () => {
-						selectable && onFeatureClick(feature.fid);
+					onClick: e => {
+						selectable && onFeatureClick(feature.fid, {x: e.x, y: e.y});
 					},
 					// TODO on events
 				});

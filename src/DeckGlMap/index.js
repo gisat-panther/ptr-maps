@@ -84,10 +84,11 @@ const DeckGlMap = ({
 	/**
 	 * @param layerKey {string}
 	 * @param featureKeys {Array}
+	 * @param position {{x: Number, y: Number}}
 	 */
-	const onVectorLayerClick = (layerKey, featureKeys) => {
+	const onVectorLayerClick = (layerKey, featureKeys, position) => {
 		if (onLayerClick) {
-			onLayerClick(mapKey, layerKey, featureKeys);
+			onLayerClick(mapKey, layerKey, featureKeys, position);
 		}
 	};
 

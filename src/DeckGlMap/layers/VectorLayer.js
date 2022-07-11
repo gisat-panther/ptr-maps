@@ -187,10 +187,13 @@ class VectorLayer extends CompositeLayer {
 	 * @param data {Object}
 	 */
 	onClick(data) {
+		const {x, y, object} = data;
 		if (this.props.options.selectable && this.props.onClick) {
-			this.props.onClick(this.props.layerKey, [
-				this.getFeatureKey(this.props.options.fidColumnName, data.object),
-			]);
+			this.props.onClick(
+				this.props.layerKey,
+				[this.getFeatureKey(this.props.options.fidColumnName, object)],
+				{x, y}
+			);
 		}
 	}
 

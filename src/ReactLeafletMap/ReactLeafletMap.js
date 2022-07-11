@@ -362,9 +362,9 @@ const ReactLeafletMap = ({
 
 	// Callbacks
 	const onMapLayerClick = useCallback(
-		(layerKey, featureKeys) => {
+		(layerKey, featureKeys, position) => {
 			if (onLayerClick) {
-				onLayerClick(mapKey, layerKey, featureKeys);
+				onLayerClick(mapKey, layerKey, featureKeys, position);
 			}
 		},
 		[mapKey, onLayerClick]
