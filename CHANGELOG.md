@@ -1,3 +1,15 @@
+# v1.14.4 (Mon Jul 11 2022)
+
+#### 🐾 Patch
+
+- Bump moment from 2.29.3 to 2.29.4 [#135](https://github.com/gisat-panther/ptr-maps/pull/135) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 1
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+
+---
+
 # v1.14.3 (Mon Jul 11 2022)
 
 #### 🐾 Patch
