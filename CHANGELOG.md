@@ -1,3 +1,15 @@
+# v1.14.3 (Mon Jul 11 2022)
+
+#### 🐾 Patch
+
+- Map: pass onClick position & fix ref [#134](https://github.com/gisat-panther/ptr-maps/pull/134) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.14.2 (Tue Jul 05 2022)
 
 #### 🐾 Patch
