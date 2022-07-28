@@ -3,10 +3,27 @@ import {TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
 import {load} from '@loaders.gl/core';
 import SphericalMercator from '@mapbox/sphericalmercator';
+import {omit as _omit} from 'lodash';
 
 const DEFAULT_TILE_SIZE = 256;
 
 class WmsLayer extends CompositeLayer {
+	constructor(props) {
+		super(_omit(props, ['onClick', 'onHover']));
+		this.originProps = props;
+	}
+	onHover(event, info) {
+		if (typeof this.originProps.onHover === 'function') {
+			this.originProps.onHover(this.props.key, event, info);
+		}
+	}
+
+	onClick(event, info) {
+		if (typeof this.originProps.onClick === 'function') {
+			this.originProps.onClick(this.props.key, event, info);
+		}
+	}
+
 	renderLayers() {
 		return [this.renderWmsLayer()];
 	}
@@ -36,10 +53,13 @@ class WmsLayer extends CompositeLayer {
 			antimeridian: true,
 		});
 
+		const pickable = options.pickable === true || false;
+
 		return new TileLayer({
 			id,
 			opacity,
 			tileSize,
+			pickable,
 			getTileData: tile => {
 				let {x, y, z, index} = tile;
 				x = x || index.x;
