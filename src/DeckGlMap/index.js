@@ -94,6 +94,23 @@ const DeckGlMap = ({
 
 	/**
 	 * @param layerKey {string}
+	 * @param info {Object}
+	 * @param event {Object}
+	 */
+	const onRasterLayerClick = (layerKey, info, event) => {
+		if (onLayerClick) {
+			onLayerClick(
+				mapKey,
+				layerKey,
+				null,
+				{x: info.x, y: info.y},
+				{event, info}
+			);
+		}
+	};
+
+	/**
+	 * @param layerKey {string}
 	 * @param featureKey {string}
 	 * @param feature {Object}
 	 * @param x {number}
@@ -108,6 +125,24 @@ const DeckGlMap = ({
 				feature,
 				x,
 				y,
+			});
+		}
+	};
+	/**
+	 * @param layerKey {string}
+	 * @param info {Object}
+	 * @param event {Object}
+	 */
+	const onRasterLayerHover = (layerKey, info, event) => {
+		if (Tooltip) {
+			setTooltipData({
+				featureKey: true,
+				layerKey,
+				mapKey,
+				event,
+				info,
+				x: info.x,
+				y: info.y,
 			});
 		}
 	};
@@ -136,6 +171,8 @@ const DeckGlMap = ({
 			return new WmsLayer({
 				...layer,
 				id: layer.key,
+				onClick: onRasterLayerClick,
+				onHover: onRasterLayerHover,
 			});
 		}
 	};
