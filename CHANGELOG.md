@@ -1,3 +1,15 @@
+# v1.14.5 (Fri Jul 29 2022)
+
+#### 🐾 Patch
+
+- Add possibility to execute onClick and onHover events on WMS layer [#137](https://github.com/gisat-panther/ptr-maps/pull/137) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.14.4 (Mon Jul 11 2022)
 
 #### 🐾 Patch
