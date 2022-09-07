@@ -38,6 +38,7 @@ const PresentationMap = ({
 	wrapper,
 	wrapperProps,
 	Tooltip,
+	tooltipProps,
 	onLayerClick,
 	mapKey,
 	name,
@@ -253,6 +254,7 @@ const PresentationMap = ({
 						Tooltip,
 						crs,
 						...wrapperProps,
+						tooltipProps,
 						name,
 					},
 					children
@@ -287,6 +289,7 @@ const PresentationMap = ({
 					wrapper,
 					Tooltip,
 					wrapperProps,
+					tooltipProps,
 					name,
 					crs,
 				},
@@ -325,6 +328,7 @@ PresentationMap.propTypes = {
 	]),
 	wrapperProps: PropTypes.object,
 	Tooltip: PropTypes.elementType,
+	tooltipProps: PropTypes.object,
 	crs: PropTypes.string,
 };
 

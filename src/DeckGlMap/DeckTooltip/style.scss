@@ -1,0 +1,10 @@
+@use 'sass:math';
+
+.ptr-DeckTooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 50000;
+  width: 20rem;
+}
+

@@ -1,4 +1,4 @@
-import {useState, createElement, useCallback} from 'react';
+import {useState, useCallback} from 'react';
 import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
@@ -12,6 +12,7 @@ import VectorLayer from './layers/VectorLayer';
 import WmsLayer from './layers/WmsLayer';
 
 import './style.scss';
+import DeckTooltip from './DeckTooltip';
 
 const DeckGlMap = ({
 	onResize,
@@ -24,6 +25,7 @@ const DeckGlMap = ({
 	backgroundLayer,
 	layers,
 	Tooltip,
+	tooltipProps,
 }) => {
 	const [box, setBox] = useState({width: null, height: null});
 	const [stateView, setStateView] = useState();
@@ -240,16 +242,14 @@ const DeckGlMap = ({
 	};
 
 	const renderTooltip = () => {
-		const {x, y} = tooltipData;
-		const style = {
-			left: x,
-			top: y,
-		};
-
 		return (
-			<div className="ptr-deckGl-map-tooltip" style={style}>
-				{createElement(Tooltip, {...tooltipData})}
-			</div>
+			<DeckTooltip
+				Tooltip={Tooltip}
+				data={tooltipData}
+				mapWidth={box?.width}
+				mapHeight={box?.height}
+				{...tooltipProps}
+			/>
 		);
 	};
 
@@ -312,6 +312,7 @@ DeckGlMap.propTypes = {
 	backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 	layers: PropTypes.array,
 	Tooltip: PropTypes.func,
+	tooltipProps: PropTypes.object,
 };
 
 export default DeckGlMap;
