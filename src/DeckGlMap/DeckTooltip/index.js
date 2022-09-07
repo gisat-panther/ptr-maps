@@ -1,53 +1,14 @@
 import PropTypes from 'prop-types';
 import {createElement, useRef} from 'react';
+import {getTootlipPosition} from '@gisatcz/ptr-core';
 import './style.scss';
 
-const MARGIN_HORIZONTAL = 5;
-const MARGIN_VERTICAL = 5;
-
-const getPosition = (
-	x,
-	y,
-	mapWidth,
-	mapHeight,
-	tooltipHeight,
-	tooltipWidth,
-	renderLeft,
-	renderTop
-) => {
-	const fullTooltipWidth = tooltipWidth + MARGIN_HORIZONTAL;
-	const fullTooltipHeight = tooltipHeight + MARGIN_VERTICAL;
-	let left = x + MARGIN_HORIZONTAL,
-		top = y + MARGIN_VERTICAL;
-
-	if (renderLeft) {
-		if (left > fullTooltipWidth) {
-			left = left - fullTooltipWidth;
-		}
-	} else {
-		if (mapWidth && fullTooltipWidth + left > mapWidth) {
-			left = left - fullTooltipWidth;
-		}
-	}
-
-	if (renderTop) {
-		if (top > fullTooltipHeight) {
-			top = top - fullTooltipHeight;
-		}
-	} else {
-		if (mapHeight && fullTooltipHeight + top > mapHeight) {
-			top = top - fullTooltipHeight;
-		}
-	}
-
-	return {left, top};
-};
+const MARGIN = 10;
 
 const DeckTooltip = ({
 	Tooltip,
 	data,
 	renderLeft,
-	renderTop,
 	height,
 	width,
 	mapWidth,
@@ -67,26 +28,25 @@ const DeckTooltip = ({
 		height = tooltipElementData?.clientHeight;
 	}
 
-	const {left, top} = getPosition(
-		x,
-		y,
-		mapWidth,
-		mapHeight,
-		height,
-		width,
-		renderLeft,
-		renderTop
-	);
-
-	const style = {
-		left,
-		top,
-		width,
-		height,
+	const getTooltipStyle = () => {
+		return getTootlipPosition(
+			'corner',
+			renderLeft
+				? ['left', 'right', 'top', 'bottom']
+				: ['right', 'left', 'top', 'bottom'],
+			[0, mapWidth, mapHeight, 0],
+			MARGIN
+		);
 	};
 
+	const {top, left} = getTooltipStyle()(x, y, width, height);
+
 	return (
-		<div className="ptr-DeckTooltip" style={style} ref={tooltipElement}>
+		<div
+			className="ptr-DeckTooltip"
+			style={{left, top, width}}
+			ref={tooltipElement}
+		>
 			{createElement(Tooltip, {...data})}
 		</div>
 	);
