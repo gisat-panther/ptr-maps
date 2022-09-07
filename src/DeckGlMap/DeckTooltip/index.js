@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import {createElement, useRef} from 'react';
+import {createElement, useRef, useState, useLayoutEffect} from 'react';
 import {getTootlipPosition} from '@gisatcz/ptr-core';
 import './style.scss';
 
@@ -17,6 +17,15 @@ const DeckTooltip = ({
 	const tooltipElement = useRef();
 	const tooltipElementData = tooltipElement?.current;
 	const {x, y} = data;
+	const heightRef = useRef();
+	const [tooltipHeight, setTooltipHeight] = useState(0);
+
+	useLayoutEffect(() => {
+		heightRef.current = tooltipElement?.current?.offsetHeight;
+		if (tooltipElement?.current?.offsetHeight !== tooltipHeight) {
+			setTooltipHeight(tooltipElement?.current?.offsetHeight);
+		}
+	}, [data]);
 
 	// Get width from element if not passed as a prop
 	if (tooltipElementData && !width) {
@@ -41,12 +50,23 @@ const DeckTooltip = ({
 
 	const {top, left} = getTooltipStyle()(x, y, width, height);
 
+	const style =
+		tooltipElement &&
+		tooltipElement.offsetWidth !== 0 &&
+		tooltipElement.offsetHeight !== 0
+			? {...{left, top, width}}
+			: {
+					...{left, top, width},
+					position: 'absolute',
+					overfloat: 'auto',
+			  };
+
+	if (tooltipElement && !tooltipElement.current) {
+		style.display = 'none';
+	}
+
 	return (
-		<div
-			className="ptr-DeckTooltip"
-			style={{left, top, width}}
-			ref={tooltipElement}
-		>
+		<div className="ptr-DeckTooltip" style={style} ref={tooltipElement}>
 			{createElement(Tooltip, {...data})}
 		</div>
 	);
