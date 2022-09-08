@@ -1,3 +1,16 @@
+# v1.15.0 (Thu Sep 08 2022)
+
+#### 🚀 Enhancement
+
+- DeckTooltip - setup & position [#138](https://github.com/gisat-panther/ptr-maps/pull/138) ([@vlach1989](https://github.com/vlach1989) [@vdubr](https://github.com/vdubr))
+
+#### Authors: 2
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.14.5 (Fri Jul 29 2022)
 
 #### 🐾 Patch
