@@ -1,3 +1,15 @@
+# v1.15.1 (Fri Sep 09 2022)
+
+#### 🐾 Patch
+
+- Fix/map set tooltip [#139](https://github.com/gisat-panther/ptr-maps/pull/139) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.15.0 (Thu Sep 08 2022)
 
 #### 🚀 Enhancement
