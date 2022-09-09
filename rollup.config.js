@@ -40,6 +40,7 @@ const lodashExternal = [
 	'lodash/findIndex',
 	'lodash/uniq',
 	'lodash/cloneDeep',
+	'lodash/omit',
 ];
 
 export default {

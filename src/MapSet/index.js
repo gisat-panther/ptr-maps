@@ -51,6 +51,7 @@ const MapSet = ({
 	wrapper,
 	wrapperProps = {},
 	Tooltip,
+	tooltipProps,
 	children,
 	onMapRemove,
 	resetHeading,
@@ -265,6 +266,7 @@ const MapSet = ({
 						wrapperProps,
 						onMapRemove,
 						Tooltip,
+						tooltipProps,
 					};
 					mapsToRender.push(
 						renderMap(
@@ -365,6 +367,7 @@ MapSet.propTypes = {
 	wrapper: PropTypes.oneOfType([PropTypes.elementType, PropTypes.bool]),
 	wrapperProps: PropTypes.object,
 	Tooltip: PropTypes.elementType,
+	tooltipProps: PropTypes.object,
 	onClick: PropTypes.func,
 };
 

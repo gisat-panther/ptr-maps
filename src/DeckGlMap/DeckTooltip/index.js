@@ -10,7 +10,7 @@ const DeckTooltip = ({
 	data,
 	renderLeft,
 	height,
-	width,
+	width = 200,
 	mapWidth,
 	mapHeight,
 }) => {
