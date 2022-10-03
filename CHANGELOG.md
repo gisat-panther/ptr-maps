@@ -1,3 +1,15 @@
+# v1.15.2 (Mon Oct 03 2022)
+
+#### 🐾 Patch
+
+- Tooltip: add width fallback & fix externals [#140](https://github.com/gisat-panther/ptr-maps/pull/140) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.15.1 (Fri Sep 09 2022)
 
 #### 🐾 Patch
