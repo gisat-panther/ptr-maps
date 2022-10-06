@@ -1,3 +1,15 @@
+# v1.16.0 (Thu Oct 06 2022)
+
+#### 🚀 Enhancement
+
+- Deck.gl: vector layer multi-click select [#142](https://github.com/gisat-panther/ptr-maps/pull/142) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.15.3 (Thu Oct 06 2022)
 
 #### 🐾 Patch
