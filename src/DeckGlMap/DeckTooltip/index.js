@@ -4,13 +4,14 @@ import {getTootlipPosition} from '@gisatcz/ptr-core';
 import './style.scss';
 
 const MARGIN = 10;
+const WIDTH_FALLBACK = 200;
 
 const DeckTooltip = ({
 	Tooltip,
 	data,
 	renderLeft,
 	height,
-	width,
+	width = 200,
 	mapWidth,
 	mapHeight,
 }) => {
@@ -29,7 +30,7 @@ const DeckTooltip = ({
 
 	// Get width from element if not passed as a prop
 	if (tooltipElementData && !width) {
-		width = tooltipElementData?.clientWidth;
+		width = tooltipElementData?.clientWidth || WIDTH_FALLBACK;
 	}
 
 	// Get height from element if not passed as a prop
