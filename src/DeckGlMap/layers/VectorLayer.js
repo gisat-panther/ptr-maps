@@ -7,8 +7,10 @@ import {
 	partition as _partition,
 } from 'lodash';
 import styleHelpers from '../helpers/style';
+import featureHelpers from '../../utils/feature';
 import constants from '../../constants';
 
+// TODO handle different selections
 class VectorLayer extends CompositeLayer {
 	renderLayers() {
 		const {key, options} = this.props;
@@ -21,7 +23,7 @@ class VectorLayer extends CompositeLayer {
 				feature =>
 					!!_includes(
 						selectedFeatureKeys,
-						this.getFeatureKey(fidColumnName, feature)
+						featureHelpers.getKey(fidColumnName, feature)
 					)
 			);
 
@@ -42,7 +44,7 @@ class VectorLayer extends CompositeLayer {
 			if (styleForDeck && features) {
 				let styleByFeatureKey = {};
 				features.forEach(feature => {
-					const featureKey = this.getFeatureKey(fidColumnName, feature);
+					const featureKey = featureHelpers.getKey(fidColumnName, feature);
 					styleByFeatureKey[featureKey] = this.calculateDefaultStyle(
 						styleForDeck,
 						featureKey,
@@ -87,23 +89,13 @@ class VectorLayer extends CompositeLayer {
 	}
 
 	/**
-	 * Get feature key
-	 * @param fidColumnName {string}
-	 * @param feature {GeoJSONFeature}
-	 * @returns {string}
-	 */
-	getFeatureKey(fidColumnName, feature) {
-		return feature.id || feature.properties[fidColumnName];
-	}
-
-	/**
 	 * Get default style from state
 	 * @param fidColumnName {string}
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Object} DeckGl-ready style object
 	 */
 	getDefaultFeatureStyle(fidColumnName, feature) {
-		const featureKey = this.getFeatureKey(fidColumnName, feature);
+		const featureKey = featureHelpers.getKey(fidColumnName, feature);
 		return this.state.styleByFeatureKey[featureKey] || null;
 	}
 
@@ -185,13 +177,22 @@ class VectorLayer extends CompositeLayer {
 	/**
 	 * Call on feature click
 	 * @param data {Object}
+	 * @param e {Object}
 	 */
-	onClick(data) {
+	onClick(data, e) {
+		const {options, onClick, layerKey} = this.props;
+		const {srcEvent} = e;
 		const {x, y, object} = data;
-		if (this.props.options.selectable && this.props.onClick) {
-			this.props.onClick(
-				this.props.layerKey,
-				[this.getFeatureKey(this.props.options.fidColumnName, object)],
+		if (options?.selectable && onClick) {
+			onClick(
+				layerKey,
+				featureHelpers.getSelectedFeatureKeysOnClick(
+					options?.fidColumnName,
+					object,
+					(srcEvent.ctrlKey || srcEvent.metaKey) &&
+						!options?.selectedOptions?.disableMultiClick,
+					this.getSelectedFeatureKeys(options?.selected)
+				),
 				{x, y}
 			);
 		}
@@ -205,7 +206,8 @@ class VectorLayer extends CompositeLayer {
 		if (this.props.options.hoverable && this.props.onHover) {
 			const {layer, object, x, y} = data;
 			const featureKey =
-				object && this.getFeatureKey(this.props.options.fidColumnName, object);
+				object &&
+				featureHelpers.getKey(this.props.options.fidColumnName, object);
 			this.props.onHover(layer, featureKey, object, x, y);
 		}
 
