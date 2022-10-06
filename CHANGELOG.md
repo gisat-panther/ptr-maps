@@ -1,3 +1,15 @@
+# v1.15.3 (Thu Oct 06 2022)
+
+#### 🐾 Patch
+
+- Feature/add map handlers [#141](https://github.com/gisat-panther/ptr-maps/pull/141) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.15.2 (Mon Oct 03 2022)
 
 #### 🐾 Patch
