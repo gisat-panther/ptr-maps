@@ -1,4 +1,4 @@
-import {useState, useCallback} from 'react';
+import {useState, useCallback, useRef} from 'react';
 import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
@@ -17,6 +17,8 @@ import DeckTooltip from './DeckTooltip';
 const DeckGlMap = ({
 	onResize,
 	onViewChange,
+	onZoomEnd,
+	onPanEnd,
 	viewLimits,
 	view,
 	onClick = () => {},
@@ -27,14 +29,16 @@ const DeckGlMap = ({
 	Tooltip,
 	tooltipProps,
 }) => {
+	const prevViewRef = useRef(null);
+	const nextViewRef = useRef(null);
+	const zoomingTimeoutRef = useRef(null);
+
 	const [box, setBox] = useState({width: null, height: null});
 	const [stateView, setStateView] = useState();
 	const [tooltipData, setTooltipData] = useState(null);
 
-	const onViewStateChange = views => {
+	const getViewChange = (prevView, nextView) => {
 		let change = {};
-		const prevView = views.oldViewState;
-		const nextView = views.viewState;
 
 		if (prevView && prevView.zoom !== nextView.zoom) {
 			change.boxRange = viewHelpers.getBoxRangeFromZoomLevel(
@@ -54,7 +58,25 @@ const DeckGlMap = ({
 				lon: nextView.longitude,
 			};
 		}
+		return change;
+	};
 
+	const onViewStateChange = views => {
+		const prevView = views.oldViewState;
+		const nextView = views.viewState;
+
+		if (views.interactionState.isZooming) {
+			prevViewRef.current = prevView;
+			nextViewRef.current = nextView;
+			window.clearTimeout(zoomingTimeoutRef.current);
+			zoomingTimeoutRef.current = window.setTimeout(() => {
+				if (typeof onZoomEnd === 'function') {
+					const change = getViewChange(prevView, nextView);
+					onZoomEnd(change);
+				}
+			}, 100);
+		}
+		const change = getViewChange(prevView, nextView);
 		if (!_isEmpty(change)) {
 			if (onViewChange) {
 				onViewChange(change);
@@ -277,6 +299,7 @@ const DeckGlMap = ({
 			<div className="ptr-deckGl-map ptr-map" onClick={() => onClick(mapKey)}>
 				<DeckGL
 					onViewStateChange={onViewStateChange}
+					{...(typeof onPanEnd === 'function' ? {onDragEnd: onPanEnd} : {})}
 					views={new MapView({repeat: true})}
 					viewState={deckView}
 					layers={[...finalBackgroundLayers, ...finalLayers]}
@@ -308,6 +331,8 @@ DeckGlMap.propTypes = {
 	view: PropTypes.object,
 	onClick: PropTypes.func,
 	onLayerClick: PropTypes.func,
+	onZoomEnd: PropTypes.func,
+	onPanEnd: PropTypes.func,
 	mapKey: PropTypes.string,
 	backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 	layers: PropTypes.array,
