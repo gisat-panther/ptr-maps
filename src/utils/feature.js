@@ -15,28 +15,29 @@ function getKey(fidColumnName, feature) {
  * @param fidColumnName {string}
  * @param feature {GeoJSONFeature}
  * @param isMultiSelect {boolean}
- * @param selectedFeatureKeys {Array}
+ * @param [previousSelectedFeatureKeys] {Array}
  * @return {Array} List of feature keys
  */
 function getSelectedFeatureKeysOnClick(
 	fidColumnName,
 	feature,
 	isMultiSelect,
-	selectedFeatureKeys
+	previousSelectedFeatureKeys
 ) {
 	const currentFeatureKey = getKey(fidColumnName, feature);
 
-	if (selectedFeatureKeys?.length) {
-		const alreadySelectedIndex = selectedFeatureKeys.indexOf(currentFeatureKey);
+	if (previousSelectedFeatureKeys?.length) {
+		const alreadySelectedIndex =
+			previousSelectedFeatureKeys.indexOf(currentFeatureKey);
 
 		if (isMultiSelect) {
 			if (alreadySelectedIndex !== -1) {
 				return stateManagement.removeItemByIndex(
-					selectedFeatureKeys,
+					previousSelectedFeatureKeys,
 					alreadySelectedIndex
 				);
 			} else {
-				return [...selectedFeatureKeys, currentFeatureKey];
+				return [...previousSelectedFeatureKeys, currentFeatureKey];
 			}
 		} else {
 			if (alreadySelectedIndex !== -1) {
