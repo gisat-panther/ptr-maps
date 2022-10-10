@@ -10,7 +10,7 @@ It must be set to true if tooltip should be displyed.
 #### hoverable (bool)
 It must be set to true if tooltip should be displyed.
 #### transparentColor (Array)
-https://deck.gl/docs/api-reference/layers/bitmap-layer#transparentcolor[https://deck.gl/docs/api-reference/layers/bitmap-layer#transparentcolor]
+[https://deck.gl/docs/api-reference/layers/bitmap-layer#transparentcolor](https://deck.gl/docs/api-reference/layers/bitmap-layer#transparentcolor).
 The color to use for transparent pixels, in [r, g, b, a]. Each component is in the [0, 255] range.
 
 Default value:
@@ -18,6 +18,8 @@ Default value:
 [0, 0, 0, 0]
 ``
 #### textureParameters (Object)
+[https://deck.gl/docs/api-reference/layers/bitmap-layer#textureparameters](https://deck.gl/docs/api-reference/layers/bitmap-layer#textureparameters)
+
 Default value:
 ```
 {
