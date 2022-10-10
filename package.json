@@ -38,6 +38,7 @@
 		"@deck.gl/layers": "^8.6.8",
 		"@deck.gl/mesh-layers": "^8.6.8",
 		"@deck.gl/react": "^8.7.10",
+		"@luma.gl/constants": "^8.5.17",
 		"@gisatcz/cross-package-react-context": "^0.2.0",
 		"@gisatcz/ptr-atoms": "^1.6.0",
 		"@gisatcz/ptr-core": "^1.7.0",

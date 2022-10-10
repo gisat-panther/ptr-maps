@@ -2,6 +2,7 @@ import {CompositeLayer} from '@deck.gl/core';
 import {TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
 import {load} from '@loaders.gl/core';
+import GL from '@luma.gl/constants';
 import SphericalMercator from '@mapbox/sphericalmercator';
 import {omit as _omit} from 'lodash';
 
@@ -115,6 +116,12 @@ class WmsLayer extends CompositeLayer {
 					data: null,
 					image: props.data,
 					bounds: [west, south, east, north],
+					textureParameters: {
+						[GL.TEXTURE_MIN_FILTER]: GL.NEAREST,
+						[GL.TEXTURE_MAG_FILTER]: GL.NEAREST,
+						[GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
+						[GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE,
+					},
 				});
 			},
 		});
