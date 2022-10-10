@@ -1,3 +1,16 @@
+# v1.17.0 (Mon Oct 10 2022)
+
+#### 🚀 Enhancement
+
+- Feature/deck wms bitmap [#143](https://github.com/gisat-panther/ptr-maps/pull/143) ([@vlach1989](https://github.com/vlach1989) [@vdubr](https://github.com/vdubr))
+
+#### Authors: 2
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.16.0 (Thu Oct 06 2022)
 
 #### 🚀 Enhancement
