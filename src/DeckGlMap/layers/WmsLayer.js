@@ -34,7 +34,7 @@ class WmsLayer extends CompositeLayer {
 		if (!options) {
 			throw new Error('WmsLayer: options are not defined!');
 		}
-		const {url, params} = options;
+		const {url, params, transparentColor = [0, 0, 0, 0]} = options;
 		if (!url) {
 			throw new Error('WmsLayer: options.url is not defined!');
 		}
@@ -61,6 +61,7 @@ class WmsLayer extends CompositeLayer {
 			opacity,
 			tileSize,
 			pickable,
+			transparentColor,
 			getTileData: tile => {
 				let {x, y, z, index} = tile;
 				x = x || index.x;
