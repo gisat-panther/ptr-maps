@@ -34,7 +34,17 @@ class WmsLayer extends CompositeLayer {
 		if (!options) {
 			throw new Error('WmsLayer: options are not defined!');
 		}
-		const {url, params, transparentColor = [0, 0, 0, 0]} = options;
+		const {
+			url,
+			params,
+			transparentColor = [0, 0, 0, 0],
+			textureParameters = {
+				[GL.TEXTURE_MIN_FILTER]: GL.LINEAR_MIPMAP_LINEAR,
+				[GL.TEXTURE_MAG_FILTER]: GL.LINEAR,
+				[GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
+				[GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE,
+			},
+		} = options;
 		if (!url) {
 			throw new Error('WmsLayer: options.url is not defined!');
 		}
@@ -117,12 +127,7 @@ class WmsLayer extends CompositeLayer {
 					data: null,
 					image: props.data,
 					bounds: [west, south, east, north],
-					textureParameters: {
-						[GL.TEXTURE_MIN_FILTER]: GL.NEAREST,
-						[GL.TEXTURE_MAG_FILTER]: GL.NEAREST,
-						[GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
-						[GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE,
-					},
+					textureParameters,
 				});
 			},
 		});

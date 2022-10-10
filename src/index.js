@@ -1,3 +1,4 @@
+import GL from '@luma.gl/constants';
 import constants from './constants';
 import view from './utils/view';
 import DeckGlMap from './DeckGlMap';
@@ -26,6 +27,7 @@ export {
 	view,
 	DeckGlMap,
 	GoToPlace,
+	GL,
 	LoadableMapControls,
 	LoadableMapSet,
 	LoadableReactLeafletMap,
@@ -50,6 +52,7 @@ export default {
 	proj,
 
 	GoToPlace,
+	GL,
 
 	LoadableMapControls,
 	LoadableMapSet,
