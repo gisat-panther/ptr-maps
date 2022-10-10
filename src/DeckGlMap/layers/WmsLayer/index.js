@@ -2,6 +2,7 @@ import {CompositeLayer} from '@deck.gl/core';
 import {TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
 import {load} from '@loaders.gl/core';
+import GL from '@luma.gl/constants';
 import SphericalMercator from '@mapbox/sphericalmercator';
 import {omit as _omit} from 'lodash';
 
@@ -33,7 +34,17 @@ class WmsLayer extends CompositeLayer {
 		if (!options) {
 			throw new Error('WmsLayer: options are not defined!');
 		}
-		const {url, params} = options;
+		const {
+			url,
+			params,
+			transparentColor = [0, 0, 0, 0],
+			textureParameters = {
+				[GL.TEXTURE_MIN_FILTER]: GL.LINEAR_MIPMAP_LINEAR,
+				[GL.TEXTURE_MAG_FILTER]: GL.LINEAR,
+				[GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
+				[GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE,
+			},
+		} = options;
 		if (!url) {
 			throw new Error('WmsLayer: options.url is not defined!');
 		}
@@ -60,6 +71,7 @@ class WmsLayer extends CompositeLayer {
 			opacity,
 			tileSize,
 			pickable,
+			transparentColor,
 			getTileData: tile => {
 				let {x, y, z, index} = tile;
 				x = x || index.x;
@@ -115,6 +127,7 @@ class WmsLayer extends CompositeLayer {
 					data: null,
 					image: props.data,
 					bounds: [west, south, east, north],
+					textureParameters,
 				});
 			},
 		});
