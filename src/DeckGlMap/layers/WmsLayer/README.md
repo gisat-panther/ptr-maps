@@ -3,7 +3,16 @@
 ### options (Object)
 #### url (string)
 #### params (Object)
+#### pickable (bool)
+The "picking engine" identifies which object in which layer is at the given coordinates. While usually intuitive, what constitutes a pickable "object" is defined by each layer. 
+
+It must be set to true if tooltip should be displyed.
+#### hoverable (bool)
+It must be set to true if tooltip should be displyed.
 #### transparentColor (Array)
+https://deck.gl/docs/api-reference/layers/bitmap-layer#transparentcolor[https://deck.gl/docs/api-reference/layers/bitmap-layer#transparentcolor]
+The color to use for transparent pixels, in [r, g, b, a]. Each component is in the [0, 255] range.
+
 Default value:
 ``
 [0, 0, 0, 0]
