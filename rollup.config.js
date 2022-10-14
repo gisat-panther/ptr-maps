@@ -82,6 +82,8 @@ export default {
 		'@deck.gl/react',
 		'@deck.gl/geo-layers',
 		'@deck.gl/layers',
+		'@luma.gl/constants',
+		'@luma.gl/core',
 		'@loaders.gl/core',
 		'@mapbox/sphericalmercator',
 		'georaster',

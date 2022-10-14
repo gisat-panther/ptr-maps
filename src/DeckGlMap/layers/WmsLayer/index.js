@@ -13,11 +13,6 @@ class WmsLayer extends CompositeLayer {
 		super(_omit(props, ['onClick', 'onHover']));
 		this.originProps = props;
 	}
-	onHover(event, info) {
-		if (typeof this.originProps.onHover === 'function') {
-			this.originProps.onHover(this.props.key, event, info);
-		}
-	}
 
 	onClick(event, info) {
 		if (typeof this.originProps.onClick === 'function') {
@@ -27,6 +22,12 @@ class WmsLayer extends CompositeLayer {
 
 	renderLayers() {
 		return [this.renderWmsLayer()];
+	}
+
+	getPickable() {
+		const {options} = this.props;
+		const pickable = options.pickable === true || false;
+		return pickable;
 	}
 
 	renderWmsLayer() {
@@ -64,8 +65,7 @@ class WmsLayer extends CompositeLayer {
 			antimeridian: true,
 		});
 
-		const pickable = options.pickable === true || false;
-
+		const pickable = this.getPickable();
 		return new TileLayer({
 			id,
 			opacity,
@@ -115,7 +115,7 @@ class WmsLayer extends CompositeLayer {
 					.join('&');
 
 				const finalUrl = url + '?' + urlQueryString;
-
+				console.log('xxx_finalUrl', finalUrl);
 				return load(finalUrl);
 			},
 			renderSubLayers: props => {
@@ -123,7 +123,11 @@ class WmsLayer extends CompositeLayer {
 					bbox: {west, south, east, north},
 				} = props.tile;
 
-				return new BitmapLayer(props, {
+				const pickable = this.getPickable();
+
+				return new BitmapLayer({
+					...props,
+					pickable,
 					data: null,
 					image: props.data,
 					bounds: [west, south, east, north],
