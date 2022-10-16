@@ -61,13 +61,12 @@ const DeckGlMap = ({
 						//this is path fot tile layer
 						const image =
 							item?.tile?.layers?.[0]?.props?.tile?.layers?.[0]?.props?.image;
-						const pixelColor = readPixelsToArray(image, {
+						item.pixelColor = readPixelsToArray(image, {
 							sourceX: event?.bitmap?.pixel?.[0],
 							sourceY: event?.bitmap?.pixel?.[1],
 							sourceWidth: 1,
 							sourceHeight: 1,
 						});
-						item.pixelColor = pixelColor;
 						rasterHoveredItems.push(item);
 					}
 				});
