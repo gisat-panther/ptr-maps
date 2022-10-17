@@ -1,3 +1,15 @@
+# v1.17.1 (Mon Oct 17 2022)
+
+#### 🐾 Patch
+
+- Improve work with tooltip in deckGL [#144](https://github.com/gisat-panther/ptr-maps/pull/144) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.17.0 (Mon Oct 10 2022)
 
 #### 🚀 Enhancement
