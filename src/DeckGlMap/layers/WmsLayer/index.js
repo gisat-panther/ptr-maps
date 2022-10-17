@@ -115,7 +115,6 @@ class WmsLayer extends CompositeLayer {
 					.join('&');
 
 				const finalUrl = url + '?' + urlQueryString;
-				console.log('xxx_finalUrl', finalUrl);
 				return load(finalUrl);
 			},
 			renderSubLayers: props => {

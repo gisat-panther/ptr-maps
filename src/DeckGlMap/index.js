@@ -53,10 +53,8 @@ const DeckGlMap = ({
 				hoveredItems.forEach(item => {
 					if (item.layer instanceof VectorLayer) {
 						//add to vector items
-						console.log('xxx_isvector');
 						vectorHoveredItems.push(item);
 					} else if (item.layer instanceof WmsLayer) {
-						console.log('xxx_israster');
 						//add to raster items
 						//this is path fot tile layer
 						const image =
