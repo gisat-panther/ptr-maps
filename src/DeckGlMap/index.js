@@ -1,4 +1,5 @@
 import {useState, useCallback, useRef} from 'react';
+import {readPixelsToArray} from '@luma.gl/core';
 import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
@@ -29,13 +30,56 @@ const DeckGlMap = ({
 	Tooltip,
 	tooltipProps,
 }) => {
+	const deckRef = useRef();
+
 	const prevViewRef = useRef(null);
 	const nextViewRef = useRef(null);
 	const zoomingTimeoutRef = useRef(null);
 
 	const [box, setBox] = useState({width: null, height: null});
 	const [stateView, setStateView] = useState();
-	const [tooltipData, setTooltipData] = useState(null);
+	const [tooltipData, setTooltipData] = useState({
+		vector: [],
+		raster: [],
+		event: null,
+	});
+
+	const onHover = useCallback(
+		event => {
+			if (deckRef?.current?.pickMultipleObjects) {
+				const hoveredItems = deckRef?.current?.pickMultipleObjects(event);
+				const vectorHoveredItems = [];
+				const rasterHoveredItems = [];
+				hoveredItems.forEach(item => {
+					if (item.layer instanceof VectorLayer) {
+						//add to vector items
+						vectorHoveredItems.push(item);
+					} else if (item.layer instanceof WmsLayer) {
+						//add to raster items
+						//this is path fot tile layer
+						const image =
+							item?.tile?.layers?.[0]?.props?.tile?.layers?.[0]?.props?.image;
+						item.pixelColor = readPixelsToArray(image, {
+							sourceX: event?.bitmap?.pixel?.[0],
+							sourceY: event?.bitmap?.pixel?.[1],
+							sourceWidth: 1,
+							sourceHeight: 1,
+						});
+						rasterHoveredItems.push(item);
+					}
+				});
+
+				if (Tooltip) {
+					setTooltipData({
+						vector: vectorHoveredItems,
+						raster: rasterHoveredItems,
+						event,
+					});
+				}
+			}
+		},
+		[deckRef.current]
+	);
 
 	const getViewChange = (prevView, nextView) => {
 		let change = {};
@@ -143,30 +187,18 @@ const DeckGlMap = ({
 	const onVectorLayerHover = (layerKey, featureKey, feature, x, y) => {
 		if (Tooltip) {
 			setTooltipData({
-				mapKey,
-				layerKey,
-				featureKey,
-				feature,
-				x,
-				y,
-			});
-		}
-	};
-	/**
-	 * @param layerKey {string}
-	 * @param info {Object}
-	 * @param event {Object}
-	 */
-	const onRasterLayerHover = (layerKey, info, event) => {
-		if (Tooltip) {
-			setTooltipData({
-				featureKey: true,
-				layerKey,
-				mapKey,
-				event,
-				info,
-				x: info.x,
-				y: info.y,
+				vector: [
+					{
+						mapKey,
+						layerKey,
+						featureKey,
+						feature,
+						x,
+						y,
+					},
+				],
+				raster: tooltipData.raster,
+				event: {x, y},
 			});
 		}
 	};
@@ -196,7 +228,6 @@ const DeckGlMap = ({
 				...layer,
 				id: layer.key,
 				onClick: onRasterLayerClick,
-				onHover: onRasterLayerHover,
 			});
 		}
 	};
@@ -264,15 +295,17 @@ const DeckGlMap = ({
 	};
 
 	const renderTooltip = () => {
-		return (
-			<DeckTooltip
-				Tooltip={Tooltip}
-				data={tooltipData}
-				mapWidth={box?.width}
-				mapHeight={box?.height}
-				{...tooltipProps}
-			/>
-		);
+		if (tooltipData?.vector?.length || tooltipData?.raster?.length) {
+			return (
+				<DeckTooltip
+					Tooltip={Tooltip}
+					data={tooltipData}
+					mapWidth={box?.width}
+					mapHeight={box?.height}
+					{...tooltipProps}
+				/>
+			);
+		}
 	};
 
 	const renderMap = () => {
@@ -298,14 +331,16 @@ const DeckGlMap = ({
 		return (
 			<div className="ptr-deckGl-map ptr-map" onClick={() => onClick(mapKey)}>
 				<DeckGL
+					ref={deckRef}
 					onViewStateChange={onViewStateChange}
 					{...(typeof onPanEnd === 'function' ? {onDragEnd: onPanEnd} : {})}
 					views={new MapView({repeat: true})}
 					viewState={deckView}
 					layers={[...finalBackgroundLayers, ...finalLayers]}
 					controller={true}
+					onHover={onHover}
 				/>
-				{Tooltip && tooltipData?.featureKey ? renderTooltip() : null}
+				{Tooltip && tooltipData ? renderTooltip() : null}
 			</div>
 		);
 	};

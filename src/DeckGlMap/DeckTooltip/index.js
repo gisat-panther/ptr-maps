@@ -17,7 +17,7 @@ const DeckTooltip = ({
 }) => {
 	const tooltipElement = useRef();
 	const tooltipElementData = tooltipElement?.current;
-	const {x, y} = data;
+	const {x, y} = data.event || {};
 	const heightRef = useRef();
 	const [tooltipHeight, setTooltipHeight] = useState(0);
 
