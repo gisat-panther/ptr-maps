@@ -1,3 +1,15 @@
+# v1.17.2 (Thu Nov 24 2022)
+
+#### 🐾 Patch
+
+- Feature/cursor and hover [#146](https://github.com/gisat-panther/ptr-maps/pull/146) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.17.1 (Mon Oct 17 2022)
 
 #### 🐾 Patch
