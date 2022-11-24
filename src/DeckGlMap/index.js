@@ -181,32 +181,6 @@ const DeckGlMap = ({
 	};
 
 	/**
-	 * @param layerKey {string}
-	 * @param featureKey {string}
-	 * @param feature {Object}
-	 * @param x {number}
-	 * @param y {number}
-	 */
-	const onVectorLayerHover = (layerKey, featureKey, feature, x, y) => {
-		if (Tooltip) {
-			setTooltipData({
-				vector: [
-					{
-						mapKey,
-						layerKey,
-						featureKey,
-						feature,
-						x,
-						y,
-					},
-				],
-				raster: tooltipData.raster,
-				event: {x, y},
-			});
-		}
-	};
-
-	/**
 	 * Return tiled (WMTS) layer
 	 * @param layer {Object} layer data
 	 * @returns {TiledLayer}
@@ -266,7 +240,6 @@ const DeckGlMap = ({
 			key: layer.key,
 			layerKey: layer.layerKey || layer.key,
 			onClick: onVectorLayerClick,
-			onHover: onVectorLayerHover,
 			autoHighlight: hoverable,
 			styleForDeck: styleHelpers.getStylesDefinitionForDeck(style),
 			pointAsMarker,
