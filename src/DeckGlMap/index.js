@@ -15,7 +15,10 @@ import WmsLayer from './layers/WmsLayer';
 import './style.scss';
 import DeckTooltip from './DeckTooltip';
 
+const defaultGetCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
+
 const DeckGlMap = ({
+	getCursor,
 	onResize,
 	onViewChange,
 	onZoomEnd,
@@ -331,6 +334,7 @@ const DeckGlMap = ({
 		return (
 			<div className="ptr-deckGl-map ptr-map" onClick={() => onClick(mapKey)}>
 				<DeckGL
+					getCursor={getCursor || defaultGetCursor}
 					ref={deckRef}
 					onViewStateChange={onViewStateChange}
 					{...(typeof onPanEnd === 'function' ? {onDragEnd: onPanEnd} : {})}
@@ -373,6 +377,7 @@ DeckGlMap.propTypes = {
 	layers: PropTypes.array,
 	Tooltip: PropTypes.func,
 	tooltipProps: PropTypes.object,
+	getCursor: PropTypes.function,
 };
 
 export default DeckGlMap;
