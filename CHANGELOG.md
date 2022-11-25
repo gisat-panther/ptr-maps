@@ -1,3 +1,15 @@
+# v1.17.3 (Fri Nov 25 2022)
+
+#### 🐾 Patch
+
+- Fix getCursor proptypes [#147](https://github.com/gisat-panther/ptr-maps/pull/147) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.17.2 (Thu Nov 24 2022)
 
 #### 🐾 Patch
