@@ -350,7 +350,7 @@ DeckGlMap.propTypes = {
 	layers: PropTypes.array,
 	Tooltip: PropTypes.func,
 	tooltipProps: PropTypes.object,
-	getCursor: PropTypes.function,
+	getCursor: PropTypes.func,
 };
 
 export default DeckGlMap;
