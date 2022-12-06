@@ -271,6 +271,7 @@ const DeckGlMap = ({
 	};
 
 	const renderTooltip = () => {
+		tooltipData.mapKey = mapKey;
 		if (tooltipData?.vector?.length || tooltipData?.raster?.length) {
 			return (
 				<DeckTooltip
@@ -278,6 +279,7 @@ const DeckGlMap = ({
 					data={tooltipData}
 					mapWidth={box?.width}
 					mapHeight={box?.height}
+					mapKey={mapKey}
 					{...tooltipProps}
 				/>
 			);

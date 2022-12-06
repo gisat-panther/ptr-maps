@@ -14,6 +14,7 @@ const DeckTooltip = ({
 	width = 200,
 	mapWidth,
 	mapHeight,
+	...restProps
 }) => {
 	const tooltipElement = useRef();
 	const tooltipElementData = tooltipElement?.current;
@@ -68,7 +69,7 @@ const DeckTooltip = ({
 
 	return (
 		<div className="ptr-DeckTooltip" style={style} ref={tooltipElement}>
-			{createElement(Tooltip, {...data})}
+			{createElement(Tooltip, {...data, ...restProps})}
 		</div>
 	);
 };
