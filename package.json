@@ -1,6 +1,6 @@
 {
 	"name": "@gisatcz/ptr-maps",
-	"version": "1.17.3",
+	"version": "1.17.4",
 	"description": "Panther FE maps",
 	"sideEffects": false,
 	"keywords": [
