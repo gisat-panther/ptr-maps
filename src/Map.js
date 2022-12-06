@@ -215,6 +215,7 @@ const PresentationMap = ({
 					viewLimits,
 					wrapper,
 					Tooltip,
+					tooltipProps,
 					onResize: onResizeHandler,
 					onLayerClick,
 					// view: !_isEmpty(stateView) ? stateView : view,
