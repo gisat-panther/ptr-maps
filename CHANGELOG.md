@@ -1,3 +1,15 @@
+# v1.17.4 (Tue Dec 06 2022)
+
+#### 🐾 Patch
+
+- Add more props to tooltip [#149](https://github.com/gisat-panther/ptr-maps/pull/149) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.17.3 (Fri Nov 25 2022)
 
 #### 🐾 Patch
