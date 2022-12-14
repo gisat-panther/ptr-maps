@@ -1,3 +1,15 @@
+# v1.17.6 (Wed Dec 14 2022)
+
+#### 🐾 Patch
+
+- Fix object.hasOwn && update deck.gl [#151](https://github.com/gisat-panther/ptr-maps/pull/151) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.17.5 (Wed Dec 14 2022)
 
 #### 🐾 Patch
