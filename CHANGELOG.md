@@ -1,3 +1,15 @@
+# v1.17.5 (Wed Dec 14 2022)
+
+#### 🐾 Patch
+
+- Deck.gl: WMS Layer - readme: links [#150](https://github.com/gisat-panther/ptr-maps/pull/150) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.17.4 (Tue Dec 06 2022)
 
 #### 🐾 Patch
