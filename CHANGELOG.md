@@ -1,3 +1,15 @@
+# v1.17.7 (Tue Dec 27 2022)
+
+#### ⚠️ Pushed to `master`
+
+- Use moize library for better memoization ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.17.6 (Wed Dec 14 2022)
 
 #### 🐾 Patch
