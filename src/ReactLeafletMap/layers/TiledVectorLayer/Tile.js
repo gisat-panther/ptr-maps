@@ -5,7 +5,7 @@ import {
 	isEqual as _isEqual,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import memoize from 'memoize-one';
+import memoize from 'moize';
 
 import IndexedVectorLayer from '../IndexedVectorLayer';
 import CanvasVectorLayer from '../CanvasVectorLayer';

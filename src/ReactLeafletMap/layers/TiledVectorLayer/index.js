@@ -7,7 +7,7 @@ import {
 	uniq as _uniq,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import memoize from 'memoize-one';
+import memoize from 'moize';
 
 import Tile from './Tile';
 

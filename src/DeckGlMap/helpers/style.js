@@ -5,7 +5,7 @@ import {
 	forIn as _forIn,
 	isEmpty as _isEmpty,
 } from 'lodash';
-import memoize from 'memoize-one';
+import memoize from 'moize';
 import chroma from 'chroma-js';
 import view from '../../utils/view';
 import defaultStyles from '../../constants/styles';
@@ -181,7 +181,9 @@ export default {
 	getRgbaColorArray,
 	getDeckReadyColor,
 	getDeckReadyStyleObject,
-	getStylesDefinitionForDeck: memoize(getStylesDefinitionForDeck),
+	getStylesDefinitionForDeck: memoize(getStylesDefinitionForDeck, {
+		maxSize: 100,
+	}),
 	getStyleForFeature,
 	getStyleObjectForAttribute,
 	getRenderAsRulesByBoxRange,

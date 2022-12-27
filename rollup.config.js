@@ -58,7 +58,7 @@ export default {
 		'@gisatcz/ptr-utils',
 		'@gisatcz/ptr-core',
 		'@gisatcz/cross-package-react-context',
-		'memoize-one',
+		'moize',
 		'leaflet',
 		'leaflet/dist/leaflet.css',
 		'proj4',

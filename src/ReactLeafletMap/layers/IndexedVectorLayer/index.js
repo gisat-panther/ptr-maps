@@ -1,6 +1,6 @@
 import {useRef, createElement} from 'react';
 import PropTypes from 'prop-types';
-import memoize from 'memoize-one';
+import memoize from 'moize';
 import {map as mapUtils} from '@gisatcz/ptr-utils';
 import {mapConstants} from '@gisatcz/ptr-core';
 

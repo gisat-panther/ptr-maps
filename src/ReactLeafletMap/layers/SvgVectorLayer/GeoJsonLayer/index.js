@@ -5,7 +5,7 @@ import {utils} from '@gisatcz/ptr-utils';
 import {GeoJSON} from 'react-leaflet';
 import L from 'leaflet';
 import helpers from '../helpers';
-import memoize from 'memoize-one';
+import memoize from 'moize';
 import shapes from '../shapes';
 import MarkerShape from '../MarkerShape';
 

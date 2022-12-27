@@ -233,6 +233,8 @@ const DeckGlMap = ({
 			? renderAsRules.options.pointAsMarker
 			: options.pointAsMarker;
 
+		const styleForDeck = styleHelpers.getStylesDefinitionForDeck(style, key);
+
 		let props = {
 			...restProps,
 			options,
@@ -241,7 +243,7 @@ const DeckGlMap = ({
 			layerKey: layer.layerKey || layer.key,
 			onClick: onVectorLayerClick,
 			autoHighlight: hoverable,
-			styleForDeck: styleHelpers.getStylesDefinitionForDeck(style),
+			styleForDeck,
 			pointAsMarker,
 		};
 

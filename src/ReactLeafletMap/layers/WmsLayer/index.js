@@ -1,7 +1,7 @@
 import {useRef} from 'react';
 import {WMSTileLayer} from 'react-leaflet';
 import WMSTileLayerWithFetchedTiles from './WMSTileLayerWithFetchedTiles';
-import memoizeOne from 'memoize-one';
+import memoizeOne from 'moize';
 import {isEqual as _isEqual} from 'lodash';
 import PropTypes from 'prop-types';
 import projectionHelpers from '../../helpers/projection';

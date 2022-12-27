@@ -1,4 +1,4 @@
-import memoize from 'memoize-one';
+import memoize from 'moize';
 import {mapStyle} from '@gisatcz/ptr-utils';
 import flip from '@turf/flip';
 import constants from '../../../constants';
