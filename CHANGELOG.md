@@ -1,3 +1,15 @@
+# v1.17.8 (Wed Jan 11 2023)
+
+#### 🐾 Patch
+
+- Fix displaying empty mapTooltip [#153](https://github.com/gisat-panther/ptr-maps/pull/153) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.17.7 (Tue Dec 27 2022)
 
 #### ⚠️ Pushed to `master`
