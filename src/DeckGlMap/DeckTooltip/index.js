@@ -40,7 +40,7 @@ const DeckTooltip = ({
 		height = tooltipElementData?.clientHeight;
 	}
 
-	// TODO move map tooltip on the other site of the cursor whrn coursor approach open right panel
+	// TODO move map tooltip on the other side of the cursor when coursor approach open right panel
 	const getTooltipStyle = () => {
 		return getTootlipPosition(
 			'corner',
