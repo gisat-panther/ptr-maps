@@ -4,14 +4,14 @@ import {getTootlipPosition} from '@gisatcz/ptr-core';
 import './style.scss';
 
 const MARGIN = 10;
-const WIDTH_FALLBACK = 200;
+const WIDTH_FALLBACK = 0;
 
 const DeckTooltip = ({
 	Tooltip,
 	data,
 	renderLeft,
 	height,
-	width = 200,
+	width = 'auto',
 	mapWidth,
 	mapHeight,
 	...restProps
@@ -34,11 +34,13 @@ const DeckTooltip = ({
 		width = tooltipElementData?.clientWidth || WIDTH_FALLBACK;
 	}
 
+	const contentWidth = tooltipElementData?.clientWidth || width;
 	// Get height from element if not passed as a prop
 	if (tooltipElementData && !height) {
 		height = tooltipElementData?.clientHeight;
 	}
 
+	// TODO move map tooltip on the other site of the cursor whrn coursor approach open right panel
 	const getTooltipStyle = () => {
 		return getTootlipPosition(
 			'corner',
@@ -50,8 +52,7 @@ const DeckTooltip = ({
 		);
 	};
 
-	const {top, left} = getTooltipStyle()(x, y, width, height);
-
+	const {top, left} = getTooltipStyle()(x, y, contentWidth, height);
 	const style =
 		tooltipElement &&
 		tooltipElement.offsetWidth !== 0 &&
