@@ -15,6 +15,10 @@ import SimpleLayersControl from './controls/SimpleLayersControl';
 import WorldWindMap from './WorldWindMap';
 import * as proj from './proj';
 
+import * as deckgl_core from '@deck.gl/core';
+import * as deckgl_layers from '@deck.gl/layers';
+import * as deckgl_geolayers from '@deck.gl/geo-layers';
+
 //loadable
 import LoadableMapControls from './controls/LoadableMapControls';
 import LoadableMapSet from './LoadableMapSet';
@@ -28,6 +32,9 @@ export {
 	DeckGlMap,
 	GoToPlace,
 	GL,
+	deckgl_core,
+	deckgl_layers,
+	deckgl_geolayers,
 	LoadableMapControls,
 	LoadableMapSet,
 	LoadableReactLeafletMap,
@@ -53,6 +60,9 @@ export default {
 
 	GoToPlace,
 	GL,
+	deckgl_core,
+	deckgl_layers,
+	deckgl_geolayers,
 
 	LoadableMapControls,
 	LoadableMapSet,

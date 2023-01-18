@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
-import {MapView} from '@deck.gl/core';
+import {Layer, MapView} from '@deck.gl/core';
 import viewport from '../utils/viewport';
 import viewHelpers from './helpers/view';
 import styleHelpers from './helpers/style';
@@ -256,7 +256,9 @@ const DeckGlMap = ({
 	 * @returns {TiledLayer|VectorLayer|WmsLayer|null}
 	 */
 	const getLayerByType = layer => {
-		if (layer && layer.type) {
+		if (layer && layer instanceof Layer) {
+			return layer;
+		} else if (layer && layer.type) {
 			switch (layer.type) {
 				case 'wmts':
 					return getTileLayer(layer);
