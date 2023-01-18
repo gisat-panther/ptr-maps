@@ -1,3 +1,15 @@
+# v1.18.0 (Wed Jan 18 2023)
+
+#### 🚀 Enhancement
+
+- DeckMap accept layers as a Deck custom instances [#154](https://github.com/gisat-panther/ptr-maps/pull/154) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.17.8 (Wed Jan 11 2023)
 
 #### 🐾 Patch
