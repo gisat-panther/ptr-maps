@@ -105,6 +105,14 @@ const DeckGlMap = ({
 				lon: nextView.longitude,
 			};
 		}
+
+		if (prevView && prevView.bearing !== nextView.bearing) {
+			change.bearing = nextView.bearing;
+		}
+
+		if (prevView && prevView.pitch !== nextView.pitch) {
+			change.pitch = nextView.pitch;
+		}
 		return change;
 	};
 

@@ -89,6 +89,8 @@ describe('utils/DeckGlMap/helpers/view', function () {
 					lon: 15,
 					lat: 50,
 				},
+				bearing: 30,
+				pitch: 10,
 			};
 			const width = 1000;
 			const height = 1000;
@@ -99,6 +101,8 @@ describe('utils/DeckGlMap/helpers/view', function () {
 				latitude: 50,
 				minZoom: 0,
 				maxZoom: 19,
+				bearing: 30,
+				pitch: 10,
 			};
 
 			const output = viewHelpers.getDeckViewFromPantherViewParams(
@@ -110,6 +114,8 @@ describe('utils/DeckGlMap/helpers/view', function () {
 			assert.approximately(output.zoom, expectedView.zoom, 0.5);
 			assert.approximately(output.minZoom, expectedView.minZoom, 0.5);
 			assert.approximately(output.maxZoom, expectedView.maxZoom, 0.5);
+			assert.equal(output.bearing, expectedView.bearing);
+			assert.equal(output.pitch, expectedView.pitch);
 			assert.hasAllDeepKeys(output, expectedView);
 		});
 
@@ -133,6 +139,8 @@ describe('utils/DeckGlMap/helpers/view', function () {
 				latitude: 50,
 				minZoom: 13,
 				maxZoom: 19,
+				bearing: 0,
+				pitch: 0,
 			};
 
 			const output = viewHelpers.getDeckViewFromPantherViewParams(
@@ -145,6 +153,8 @@ describe('utils/DeckGlMap/helpers/view', function () {
 			assert.approximately(output.zoom, expectedView.zoom, 0.5);
 			assert.approximately(output.minZoom, expectedView.minZoom, 0.5);
 			assert.approximately(output.maxZoom, expectedView.maxZoom, 0.5);
+			assert.equal(output.bearing, undefined);
+			assert.equal(output.pitch, undefined);
 			assert.hasAllDeepKeys(output, expectedView);
 		});
 
@@ -155,6 +165,8 @@ describe('utils/DeckGlMap/helpers/view', function () {
 					lon: 15,
 					lat: 50,
 				},
+				bearing: 0,
+				pitch: 0,
 			};
 			const width = 1000;
 			const height = 1000;
@@ -168,6 +180,8 @@ describe('utils/DeckGlMap/helpers/view', function () {
 				latitude: 50,
 				minZoom: 0,
 				maxZoom: 19,
+				bearing: 0,
+				pitch: 0,
 			};
 
 			const output = viewHelpers.getDeckViewFromPantherViewParams(
@@ -180,6 +194,8 @@ describe('utils/DeckGlMap/helpers/view', function () {
 			assert.approximately(output.zoom, expectedView.zoom, 0.5);
 			assert.approximately(output.minZoom, expectedView.minZoom, 0.5);
 			assert.approximately(output.maxZoom, expectedView.maxZoom, 0.5);
+			assert.equal(output.bearing, expectedView.bearing);
+			assert.equal(output.pitch, expectedView.pitch);
 			assert.hasAllDeepKeys(output, expectedView);
 		});
 	});
