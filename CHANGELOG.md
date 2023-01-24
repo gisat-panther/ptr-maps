@@ -1,3 +1,15 @@
+# v1.18.1 (Tue Jan 24 2023)
+
+#### 🐾 Patch
+
+- Add support for rendering 3D map view [#155](https://github.com/gisat-panther/ptr-maps/pull/155) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.18.0 (Wed Jan 18 2023)
 
 #### 🚀 Enhancement
