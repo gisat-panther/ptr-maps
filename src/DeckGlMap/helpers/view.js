@@ -108,6 +108,8 @@ function getDeckViewFromPantherViewParams(view, width, height, viewLimits) {
 		zoom: getZoomLevelFromBoxRange(completeView.boxRange, width, height),
 		minZoom,
 		maxZoom,
+		pitch: completeView.pitch,
+		bearing: completeView.bearing,
 	};
 }
 
