@@ -45,6 +45,7 @@ const PresentationMap = ({
 	mapKey,
 	name,
 	crs,
+	mapComponentProps,
 }) => {
 	const [size, setSize] = useState({
 		width: null,
@@ -263,6 +264,7 @@ const PresentationMap = ({
 						...wrapperProps,
 						tooltipProps,
 						name,
+						...(mapComponentProps ? mapComponentProps : {}),
 					},
 					children
 				)
@@ -301,6 +303,7 @@ const PresentationMap = ({
 					tooltipProps,
 					name,
 					crs,
+					...(mapComponentProps ? mapComponentProps : {}),
 				},
 				children
 			);
@@ -341,6 +344,7 @@ PresentationMap.propTypes = {
 	Tooltip: PropTypes.elementType,
 	tooltipProps: PropTypes.object,
 	crs: PropTypes.string,
+	mapComponentProps: PropTypes.object,
 };
 
 export default PresentationMap;

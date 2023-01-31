@@ -110,6 +110,9 @@ function getDeckViewFromPantherViewParams(view, width, height, viewLimits) {
 		maxZoom,
 		pitch: completeView.pitch,
 		bearing: completeView.bearing,
+		...(completeView.deckGlTransitionProperties
+			? {...completeView.deckGlTransitionProperties}
+			: {}),
 	};
 }
 

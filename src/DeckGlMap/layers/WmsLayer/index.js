@@ -57,7 +57,7 @@ class WmsLayer extends CompositeLayer {
 			throw new Error('WmsLayer: options.params.layers are not defined!');
 		}
 
-		const id = `${key}-wmsLayer`;
+		const id = `${key}-wmsLayer-${url}`;
 		const tileSize = params.tileSize || DEFAULT_TILE_SIZE;
 
 		const conversion = new SphericalMercator({
