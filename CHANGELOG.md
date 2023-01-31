@@ -1,3 +1,15 @@
+# v1.18.2 (Tue Jan 31 2023)
+
+#### 🐾 Patch
+
+- Add custom mapComponentProps [#156](https://github.com/gisat-panther/ptr-maps/pull/156) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.18.1 (Tue Jan 24 2023)
 
 #### 🐾 Patch
