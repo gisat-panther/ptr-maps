@@ -335,6 +335,8 @@ const DeckGlMap = ({
 					views={new MapView({repeat: true})}
 					viewState={deckView}
 					layers={[...finalBackgroundLayers, ...finalLayers]}
+					// Description of controller property
+					// https://deck.gl/docs/api-reference/core/deck#controller
 					controller={
 						controller || controller === false
 							? controller
