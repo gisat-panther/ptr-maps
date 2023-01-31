@@ -32,6 +32,7 @@ const DeckGlMap = ({
 	layers,
 	Tooltip,
 	tooltipProps,
+	controller,
 }) => {
 	const deckRef = useRef();
 
@@ -131,6 +132,12 @@ const DeckGlMap = ({
 				}
 			}, 100);
 		}
+
+		//Do not change state while transition
+		if (views.interactionState.inTransition === true) {
+			return;
+		}
+
 		const change = getViewChange(prevView, nextView);
 		if (!_isEmpty(change)) {
 			if (onViewChange) {
@@ -328,7 +335,13 @@ const DeckGlMap = ({
 					views={new MapView({repeat: true})}
 					viewState={deckView}
 					layers={[...finalBackgroundLayers, ...finalLayers]}
-					controller={true}
+					controller={
+						controller || controller === false
+							? controller
+							: {
+									dragRotate: false,
+							  }
+					}
 					onHover={onHover}
 				/>
 				{Tooltip && tooltipData ? renderTooltip() : null}
@@ -365,6 +378,7 @@ DeckGlMap.propTypes = {
 	Tooltip: PropTypes.func,
 	tooltipProps: PropTypes.object,
 	getCursor: PropTypes.func,
+	controller: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 };
 
 export default DeckGlMap;
