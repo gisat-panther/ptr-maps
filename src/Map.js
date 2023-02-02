@@ -118,7 +118,7 @@ const PresentationMap = ({
 			if (viewRef.current) {
 				if (!_isEqual(validView, viewRef.current)) {
 					if (!stateMapKey) {
-						saveViewChange(validView, false);
+						saveViewChange(validView, true);
 					} else {
 						onPropViewChangeHandler(validView);
 					}

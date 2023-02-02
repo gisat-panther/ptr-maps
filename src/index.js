@@ -58,6 +58,7 @@ export default {
 	view,
 	proj,
 
+	DeckGlMap,
 	GoToPlace,
 	GL,
 	deckgl_core,
