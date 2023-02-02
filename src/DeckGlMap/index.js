@@ -133,11 +133,8 @@ const DeckGlMap = ({
 			}, 100);
 		}
 
-		//Do not change state while transition
-		if (views.interactionState.inTransition === true) {
-			return;
-		}
-
+		// Type of transition
+		// views.interactionState.inTransition
 		const change = getViewChange(prevView, nextView);
 		if (!_isEmpty(change)) {
 			if (onViewChange) {
