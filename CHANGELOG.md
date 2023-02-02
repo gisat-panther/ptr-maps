@@ -1,3 +1,15 @@
+# v1.18.3 (Thu Feb 02 2023)
+
+#### 🐾 Patch
+
+- Proper bubling view state [#157](https://github.com/gisat-panther/ptr-maps/pull/157) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.18.2 (Tue Jan 31 2023)
 
 #### 🐾 Patch
