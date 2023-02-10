@@ -108,6 +108,25 @@ const TiledVectorLayer = ({
 	layerKey,
 	selected,
 	uniqueLayerKey,
+	renderingTechnique,
+	view,
+	zoom,
+	width,
+	height,
+	crs,
+	boxRangeRange,
+	style,
+	mapKey,
+	onClick,
+	opacity,
+	resources,
+	type,
+	zIndex,
+	hovered,
+	hoverable,
+	hoveredStyleDefinition,
+	pointAsMarker,
+	selectable,
 }) => {
 	const getFeaturesGroupedByTileKeyMemoized = useRef(
 		memoize(getFeaturesGroupedByTileKey)
@@ -119,21 +138,40 @@ const TiledVectorLayer = ({
 		fidColumnName,
 		selected
 	);
-
 	if (data.groupedFeatures?.length) {
 		return data.groupedFeatures.map(tile => {
 			return (
 				<Tile
-					layerKey={layerKey}
-					selected={selected}
-					uniqueLayerKey={uniqueLayerKey}
 					key={tile.key}
 					tileKey={tile.key}
-					features={tile.features}
+					featureKeysGroupedByTileKey={data.groupedFeatureKeys}
+					renderingTechnique={renderingTechnique}
 					level={tile.level}
 					tile={tile.tile}
-					featureKeysGroupedByTileKey={data.groupedFeatureKeys}
+					features={tile.features}
 					withSelectedFeaturesOnly={tile.withSelectedFeaturesOnly}
+					view={view}
+					zoom={zoom}
+					width={width}
+					height={height}
+					crs={crs}
+					boxRangeRange={boxRangeRange}
+					style={style}
+					mapKey={mapKey}
+					layerKey={layerKey}
+					uniqueLayerKey={uniqueLayerKey}
+					onClick={onClick}
+					opacity={opacity}
+					resources={resources}
+					type={type}
+					zIndex={zIndex}
+					fidColumnName={fidColumnName}
+					hovered={hovered}
+					hoverable={hoverable}
+					hoveredStyleDefinition={hoveredStyleDefinition}
+					pointAsMarker={pointAsMarker}
+					selectable={selectable}
+					selected={selected}
 				/>
 			);
 		});
@@ -147,6 +185,25 @@ TiledVectorLayer.propTypes = {
 	tiles: PropTypes.array,
 	layerKey: PropTypes.string,
 	uniqueLayerKey: PropTypes.string,
-	selected: PropTypes.bool,
+	selected: PropTypes.object,
+	view: PropTypes.object,
+	zoom: PropTypes.number,
+	width: PropTypes.number,
+	height: PropTypes.number,
+	crs: PropTypes.string,
+	boxRangeRange: PropTypes.array,
+	style: PropTypes.object,
+	mapKey: PropTypes.string,
+	onClick: PropTypes.func,
+	opacity: PropTypes.number,
+	resources: PropTypes.object,
+	type: PropTypes.string,
+	zIndex: PropTypes.number,
+	hovered: PropTypes.object,
+	hoverable: PropTypes.bool,
+	hoveredStyleDefinition: PropTypes.object,
+	pointAsMarker: PropTypes.bool,
+	selectable: PropTypes.bool,
+	renderingTechnique: PropTypes.string,
 };
 export default TiledVectorLayer;
