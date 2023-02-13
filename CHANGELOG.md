@@ -1,3 +1,15 @@
+# v1.18.4 (Mon Feb 13 2023)
+
+#### 🐾 Patch
+
+- Fix tile layer [#159](https://github.com/gisat-panther/ptr-maps/pull/159) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.18.3 (Thu Feb 02 2023)
 
 #### 🐾 Patch
