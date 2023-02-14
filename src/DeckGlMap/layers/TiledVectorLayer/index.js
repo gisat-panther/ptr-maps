@@ -27,7 +27,6 @@ class TiledVectorLayer extends CompositeLayer {
 		const fidColumnName = this.props?.options?.fidColumnName;
 		const selected = this.props?.selected;
 		const uniqueLayerKey = this.props?.uniqueLayerKey;
-		console.log('xxx_uniqueLayerKey', uniqueLayerKey);
 		const data = getFeaturesGroupedByTileKey(
 			uniqueLayerKey,
 			tiles,
