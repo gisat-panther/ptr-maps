@@ -1,5 +1,7 @@
 import {CompositeLayer} from '@deck.gl/core';
 import {GeoJsonLayer} from '@deck.gl/layers';
+import TiledVectorLayer from './TiledVectorLayer';
+
 import {
 	forIn as _forIn,
 	includes as _includes,
@@ -13,26 +15,29 @@ import constants from '../../constants';
 // TODO handle different selections
 class VectorLayer extends CompositeLayer {
 	renderLayers() {
-		const {key, options} = this.props;
+		const {key, options, type} = this.props;
 		const {features, fidColumnName, selected} = options;
 		const selectedFeatureKeys = this.getSelectedFeatureKeys(selected);
-
-		if (selectedFeatureKeys) {
-			const partition = _partition(
-				features,
-				feature =>
-					!!_includes(
-						selectedFeatureKeys,
-						featureHelpers.getKey(fidColumnName, feature)
-					)
-			);
-
-			return [
-				this.renderVectorLayer(`${key}-geoJsonLayer`, partition[1]),
-				this.renderVectorLayer(`${key}-geoJsonLayer-selected`, partition[0]),
-			];
+		if (type === 'tiledVector' || type === 'tiled-vector') {
+			return [this.renderTiledVectorLayer(`${key}-tiledVectorLayer`)];
 		} else {
-			return [this.renderVectorLayer(`${key}-geoJsonLayer`, features)];
+			if (selectedFeatureKeys) {
+				const partition = _partition(
+					features,
+					feature =>
+						!!_includes(
+							selectedFeatureKeys,
+							featureHelpers.getKey(fidColumnName, feature)
+						)
+				);
+
+				return [
+					this.renderVectorLayer(`${key}-geoJsonLayer`, partition[1]),
+					this.renderVectorLayer(`${key}-geoJsonLayer-selected`, partition[0]),
+				];
+			} else {
+				return [this.renderVectorLayer(`${key}-geoJsonLayer`, features)];
+			}
 		}
 	}
 
@@ -222,6 +227,14 @@ class VectorLayer extends CompositeLayer {
 		}
 	}
 
+	renderTiledVectorLayer(vectorLayerKey) {
+		return new TiledVectorLayer({
+			id: vectorLayerKey,
+			key: vectorLayerKey,
+			...this.props,
+		});
+	}
+
 	/**
 	 * @returns {GeoJsonLayer} DeckGl.GeoJsonLayer
 	 */
@@ -229,13 +242,16 @@ class VectorLayer extends CompositeLayer {
 		const {layerKey, options, styleForDeck, pointAsMarker, opacity} =
 			this.props;
 		const {fidColumnName, selectable, hoverable} = options;
+		const revizedFeatures = this.props.omittedFeatureKeys
+			? features.filter(f => !this.props.omittedFeatureKeys.includes(f.key))
+			: features;
 
 		return new GeoJsonLayer({
 			id: vectorLayerKey,
 			key: vectorLayerKey,
 			layerKey,
 			fidColumnName,
-			data: features,
+			data: revizedFeatures,
 			pickable: selectable || hoverable,
 			stroked: true,
 			filled: true,

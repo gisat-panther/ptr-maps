@@ -257,6 +257,7 @@ const DeckGlMap = ({
 			autoHighlight: hoverable,
 			styleForDeck,
 			pointAsMarker,
+			uniqueLayerKey: layer.key,
 		};
 
 		return new VectorLayer(props);
@@ -277,6 +278,8 @@ const DeckGlMap = ({
 				case 'wms':
 					return getWmsLayer(layer);
 				case 'vector':
+				case 'tiledVector':
+				case 'tiled-vector':
 					return getVectorLayer(layer);
 				default:
 					return null;
