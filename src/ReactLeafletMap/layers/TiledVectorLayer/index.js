@@ -29,7 +29,7 @@ function getTileKey(uniqueLayerKey, tile) {
  * @param selections {Object}
  * @return {Object} groupedFeatures - a collection of features grouped by tile key, groupedFeaturesKeys - a collection of feature keys grouped by tile key
  */
-function getFeaturesGroupedByTileKey(
+export function getFeaturesGroupedByTileKey(
 	uniqueLayerKey,
 	tiles,
 	fidColumnName,

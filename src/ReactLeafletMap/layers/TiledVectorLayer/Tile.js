@@ -18,7 +18,7 @@ import SvgVectorLayer from '../SvgVectorLayer';
  * @param fidColumnName {String}
  * @return {[]|null} List of feature keys to omit
  */
-function getFeatureKeysToOmit(
+export function getFeatureKeysToOmit(
 	featureKeysGroupedByTileKey,
 	tileKey,
 	features,
@@ -26,11 +26,11 @@ function getFeatureKeysToOmit(
 ) {
 	// Find the order of current tile among others
 	const indexOfCurrentTile = _findIndex(featureKeysGroupedByTileKey, tile => {
-		return tile.tileKey === tileKey;
+		return tile.key === tileKey;
 	});
 
 	let i = 0;
-	if (indexOfCurrentTile > 0) {
+	if (indexOfCurrentTile >= 0) {
 		let featureKeysToOmit = [];
 		let renderedFeatureKeys = new Set();
 
