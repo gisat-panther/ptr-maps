@@ -1,3 +1,15 @@
+# v1.19.0 (Tue Feb 21 2023)
+
+#### 🚀 Enhancement
+
+- Feature/add deck tile layer [#160](https://github.com/gisat-panther/ptr-maps/pull/160) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.18.4 (Mon Feb 13 2023)
 
 #### 🐾 Patch
