@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import image from '@rollup/plugin-image';
 import filesize from 'rollup-plugin-filesize';
 import postcss from 'rollup-plugin-postcss';
-import pkg from './package.json' assert { type: "json" };
+import pkg from './package.json' assert {type: 'json'};
 
 const env = process.env.NODE_ENV;
 
