@@ -26,7 +26,7 @@ class TiledLayer extends CompositeLayer {
 	}
 
 	renderTiledLayer() {
-		const {options, key} = this.props;
+		const {options, opacity, key} = this.props;
 		const {url, urls, minNativeZoom, maxNativeZoom, tileSize} = options;
 
 		let finalUrls = urls
@@ -35,6 +35,7 @@ class TiledLayer extends CompositeLayer {
 
 		return new TileLayer({
 			id: `${key}-tileLayer`,
+			opacity: opacity || opacity === 0 ? opacity : 1,
 			data: finalUrls,
 			minZoom: minNativeZoom || mapConstants.defaultLevelsRange[0],
 			maxZoom: maxNativeZoom || mapConstants.defaultLevelsRange[1],
