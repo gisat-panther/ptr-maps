@@ -3,9 +3,9 @@ import commonjs from '@rollup/plugin-commonjs';
 import image from '@rollup/plugin-image';
 import filesize from 'rollup-plugin-filesize';
 import postcss from 'rollup-plugin-postcss';
+import pkg from './package.json' assert {type: 'json'};
 
 const env = process.env.NODE_ENV;
-const pkg = require('./package.json');
 
 const CWD = process.cwd();
 const Paths = {
@@ -67,7 +67,6 @@ export default {
 		'@react-leaflet/core',
 		'react-loadable',
 		'react-resize-detector',
-		'shallow-equal',
 		'webworldwind-esa',
 		'react-is',
 		'js-quadtree',
