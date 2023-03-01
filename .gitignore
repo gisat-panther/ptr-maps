@@ -21,4 +21,4 @@ yarn-debug.log*
 yarn-error.log*
 
 #dev
-rollup.config.js
+rollup.config.mjs
