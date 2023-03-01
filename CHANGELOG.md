@@ -1,3 +1,15 @@
+# v1.19.1 (Wed Mar 01 2023)
+
+#### 🐾 Patch
+
+- upgrade dependencies & change rollup.config [#161](https://github.com/gisat-panther/ptr-maps/pull/161) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.19.0 (Tue Feb 21 2023)
 
 #### 🚀 Enhancement
