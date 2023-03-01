@@ -1,3 +1,15 @@
+# v1.19.2 (Wed Mar 01 2023)
+
+#### 🐾 Patch
+
+- Feature/wmts opacity [#162](https://github.com/gisat-panther/ptr-maps/pull/162) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.19.1 (Wed Mar 01 2023)
 
 #### 🐾 Patch
