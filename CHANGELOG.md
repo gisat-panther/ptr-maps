@@ -1,3 +1,15 @@
+# v1.19.3 (Thu Apr 13 2023)
+
+#### 🐾 Patch
+
+- Add native wms deck.gl experimental layer. Update deck [#163](https://github.com/gisat-panther/ptr-maps/pull/163) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.19.2 (Wed Mar 01 2023)
 
 #### 🐾 Patch
