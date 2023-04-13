@@ -11,6 +11,7 @@ import styleHelpers from './helpers/style';
 import TiledLayer from './layers/TiledLayer';
 import VectorLayer from './layers/VectorLayer';
 import WmsLayer from './layers/WmsLayer';
+import {_WMSLayer as SingleTileWmsLayer} from '@deck.gl/geo-layers';
 
 import './style.scss';
 import DeckTooltip from './DeckTooltip';
@@ -211,7 +212,13 @@ const DeckGlMap = ({
 	 */
 	const getWmsLayer = layer => {
 		if (layer.options?.singleTile) {
-			throw new Error('DeckGlMap: singleTile option not implemented yet!');
+			return new SingleTileWmsLayer({
+				data: `${layer.options.url}?SERVICE=WMS&REQUEST=GetMap&version=1.3.0&STYLES=&CRS=EPSG:3857&FORMAT=image/png&WIDTH={width}&HEIGHT={height}&BBOX={east},{north},{west},{south}&LAYERS={layers}&TRANSPARENT=true`,
+				serviceType: 'template',
+				layers: layer.options.params.layers,
+				//pickable in experimental dont work
+				pickable: layer.options.pickable === true || false,
+			});
 		} else {
 			return new WmsLayer({
 				...layer,
