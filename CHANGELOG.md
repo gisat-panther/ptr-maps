@@ -1,3 +1,15 @@
+# v1.19.4 (Tue Apr 25 2023)
+
+#### ⚠️ Pushed to `master`
+
+- DeckGlMap: fix multiple selected for active selection only ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.19.3 (Thu Apr 13 2023)
 
 #### 🐾 Patch
