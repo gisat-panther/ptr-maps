@@ -162,13 +162,14 @@ class VectorLayer extends CompositeLayer {
 	/**
 	 * Return all selected feature keys
 	 * @param selections {Object}
+	 * @param selectionKey {string} If specified, return feature keys for this selection only
 	 * @returns {Array|null}
 	 */
-	getSelectedFeatureKeys(selections) {
+	getSelectedFeatureKeys(selections, selectionKey) {
 		if (!_isEmpty(selections)) {
 			let selectedKeys = [];
-			_forIn(selections, selection => {
-				if (selection.keys?.length) {
+			_forIn(selections, (selection, key) => {
+				if (selection.keys?.length && (!selectionKey || selectionKey === key)) {
 					selectedKeys = [...selectedKeys, ...selection.keys];
 				}
 			});
@@ -185,7 +186,7 @@ class VectorLayer extends CompositeLayer {
 	 * @param e {Object}
 	 */
 	onClick(data, e) {
-		const {options, onClick, layerKey} = this.props;
+		const {options, onClick, layerKey, activeSelectionKey} = this.props;
 		const {srcEvent} = e;
 		const {x, y, object} = data;
 		if (options?.selectable && onClick) {
@@ -196,7 +197,7 @@ class VectorLayer extends CompositeLayer {
 					object,
 					(srcEvent.ctrlKey || srcEvent.metaKey) &&
 						!options?.selectedOptions?.disableMultiClick,
-					this.getSelectedFeatureKeys(options?.selected)
+					this.getSelectedFeatureKeys(options?.selected, activeSelectionKey)
 				),
 				{x, y}
 			);

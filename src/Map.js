@@ -19,6 +19,7 @@ import './style.scss';
 const PresentationMap = ({
 	onClick,
 	active,
+	activeSelectionKey,
 	backgroundLayer,
 	children,
 	layers,
@@ -203,6 +204,7 @@ const PresentationMap = ({
 				wrapperComponent,
 				{
 					// FIXME better props definition
+					activeSelectionKey,
 					backgroundLayer,
 					layers,
 					mapComponent,
@@ -235,6 +237,7 @@ const PresentationMap = ({
 					mapComponent,
 					{
 						// FIXME better props definition
+						activeSelectionKey,
 						backgroundLayer,
 						children,
 						layers,
@@ -274,6 +277,7 @@ const PresentationMap = ({
 				mapComponent,
 				{
 					// FIXME better props definition
+					activeSelectionKey,
 					backgroundLayer,
 					children,
 					layers,
@@ -314,6 +318,7 @@ const PresentationMap = ({
 PresentationMap.propTypes = {
 	mapKey: PropTypes.string,
 	active: PropTypes.bool,
+	activeSelectionKey: PropTypes.bool,
 	name: PropTypes.string,
 	backgroundLayer: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 	children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),

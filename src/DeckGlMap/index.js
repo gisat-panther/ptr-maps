@@ -19,6 +19,7 @@ import DeckTooltip from './DeckTooltip';
 const defaultGetCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
 
 const DeckGlMap = ({
+	activeSelectionKey,
 	getCursor,
 	onResize,
 	onViewChange,
@@ -265,6 +266,7 @@ const DeckGlMap = ({
 			styleForDeck,
 			pointAsMarker,
 			uniqueLayerKey: layer.key,
+			activeSelectionKey,
 		};
 
 		return new VectorLayer(props);
@@ -373,6 +375,7 @@ const DeckGlMap = ({
 };
 
 DeckGlMap.propTypes = {
+	activeSelectionKey: PropTypes.string,
 	onResize: PropTypes.func,
 	onViewChange: PropTypes.func,
 	viewLimits: PropTypes.object,
