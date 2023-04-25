@@ -83,7 +83,7 @@ DeckTooltip.propTypes = {
 	width: PropTypes.number,
 	renderLeft: PropTypes.bool,
 	renderTop: PropTypes.bool,
-	Tooltip: PropTypes.func,
+	Tooltip: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
 };
 
 export default DeckTooltip;

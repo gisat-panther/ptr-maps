@@ -387,7 +387,7 @@ DeckGlMap.propTypes = {
 	mapKey: PropTypes.string,
 	backgroundLayer: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 	layers: PropTypes.array,
-	Tooltip: PropTypes.func,
+	Tooltip: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
 	tooltipProps: PropTypes.object,
 	getCursor: PropTypes.func,
 	controller: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),

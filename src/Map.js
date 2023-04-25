@@ -318,7 +318,7 @@ const PresentationMap = ({
 PresentationMap.propTypes = {
 	mapKey: PropTypes.string,
 	active: PropTypes.bool,
-	activeSelectionKey: PropTypes.bool,
+	activeSelectionKey: PropTypes.string,
 	name: PropTypes.string,
 	backgroundLayer: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 	children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
