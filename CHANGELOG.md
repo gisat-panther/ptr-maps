@@ -1,3 +1,15 @@
+# v1.19.5 (Tue Apr 25 2023)
+
+#### 🐾 Patch
+
+- DeckGlMap: fix prop types [#164](https://github.com/gisat-panther/ptr-maps/pull/164) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.19.4 (Tue Apr 25 2023)
 
 #### ⚠️ Pushed to `master`
