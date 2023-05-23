@@ -1,3 +1,15 @@
+# v1.19.6 (Tue May 23 2023)
+
+#### 🐾 Patch
+
+- MapSet: better component check [#165](https://github.com/gisat-panther/ptr-maps/pull/165) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.19.5 (Tue Apr 25 2023)
 
 #### 🐾 Patch
