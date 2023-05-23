@@ -21,6 +21,7 @@ import MapGrid from '../MapGrid';
 
 import './style.scss';
 import MapWrapper from '../MapWrapper';
+import * as ReactIs from 'react-is';
 
 const Map = () => {
 	return null;
@@ -231,11 +232,9 @@ const MapSet = ({
 			};
 			// Render wrapper here, if mapComponent is final (framework-specific) map component
 			if (renderWrapper) {
-				const wrapperComponent =
-					(wrapper.prototype && wrapper.prototype.isReactComponent) ||
-					typeof wrapper === 'function'
-						? wrapper
-						: MapWrapper;
+				const wrapperComponent = ReactIs.isValidElementType(wrapper)
+					? wrapper
+					: MapWrapper;
 				return createElement(
 					wrapperComponent,
 					allProps,
