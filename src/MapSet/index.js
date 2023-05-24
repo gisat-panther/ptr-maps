@@ -85,8 +85,7 @@ const MapSet = ({
 					typeof child === 'object' &&
 					(child.type === Map ||
 						child.type === connectedMapComponent ||
-						child.type === PresentationMap) &&
-					child.props.mapKey === activeMapKey
+						child.type === PresentationMap)
 				) {
 					updateMapViews[child.props.mapKey] = mapUtils.view.mergeViews(
 						mapConstants.defaultMapView,
