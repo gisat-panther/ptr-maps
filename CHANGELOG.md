@@ -1,3 +1,15 @@
+# v1.19.7 (Wed May 24 2023)
+
+#### 🐾 Patch
+
+- Add all child maps views of mapset to state on mount [#166](https://github.com/gisat-panther/ptr-maps/pull/166) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.19.6 (Tue May 23 2023)
 
 #### 🐾 Patch
