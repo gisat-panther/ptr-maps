@@ -57,7 +57,10 @@ const DeckGlMap = ({
 				const vectorHoveredItems = [];
 				const rasterHoveredItems = [];
 				hoveredItems.forEach(item => {
-					if (item.layer instanceof VectorLayer) {
+					if (
+						item.layer instanceof VectorLayer ||
+						item.layer.displayTooltip === true
+					) {
 						//add to vector items
 						vectorHoveredItems.push(item);
 					} else if (item.layer instanceof WmsLayer) {
