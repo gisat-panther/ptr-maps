@@ -1,3 +1,15 @@
+# v1.19.8 (Thu Jun 01 2023)
+
+#### 🐾 Patch
+
+- Display layer tooltip even if layer has displayTooltip set to true [#167](https://github.com/gisat-panther/ptr-maps/pull/167) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.19.7 (Wed May 24 2023)
 
 #### 🐾 Patch
