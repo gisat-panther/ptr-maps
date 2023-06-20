@@ -58,6 +58,7 @@ export default {
 		'@gisatcz/ptr-utils',
 		'@gisatcz/ptr-core',
 		'@gisatcz/cross-package-react-context',
+		'@gisatcz/deckgl-geolib',
 		'moize',
 		'leaflet',
 		'leaflet/dist/leaflet.css',
