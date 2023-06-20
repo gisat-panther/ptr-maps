@@ -1,3 +1,15 @@
+# v1.20.0 (Tue Jun 20 2023)
+
+#### 🚀 Enhancement
+
+- Add cog bitmap layer [#168](https://github.com/gisat-panther/ptr-maps/pull/168) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.19.8 (Thu Jun 01 2023)
 
 #### 🐾 Patch
