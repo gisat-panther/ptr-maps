@@ -12,9 +12,12 @@ import TiledLayer from './layers/TiledLayer';
 import VectorLayer from './layers/VectorLayer';
 import WmsLayer from './layers/WmsLayer';
 import {_WMSLayer as SingleTileWmsLayer} from '@deck.gl/geo-layers';
+import geolib from '@gisatcz/deckgl-geolib';
 
 import './style.scss';
 import DeckTooltip from './DeckTooltip';
+
+const CogBitmapLayer = geolib.CogBitmapLayer;
 
 const defaultGetCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
 
@@ -276,6 +279,19 @@ const DeckGlMap = ({
 	};
 
 	/**
+	 * Return COG
+	 * @param layer {Object} layer data
+	 * @returns {CogBitmapLayer}
+	 */
+	const getCogBitmapLayer = layer => {
+		const {key, options} = layer;
+
+		const {url, ...restOptions} = options;
+
+		return new CogBitmapLayer(key, url, restOptions);
+	};
+
+	/**
 	 * Return layer by type
 	 * @param layer {Object} layer data
 	 * @returns {TiledLayer|VectorLayer|WmsLayer|null}
@@ -293,6 +309,8 @@ const DeckGlMap = ({
 				case 'tiledVector':
 				case 'tiled-vector':
 					return getVectorLayer(layer);
+				case 'cog-bitmap':
+					return getCogBitmapLayer(layer);
 				default:
 					return null;
 			}
