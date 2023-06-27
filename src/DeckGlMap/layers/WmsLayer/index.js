@@ -31,7 +31,7 @@ class WmsLayer extends CompositeLayer {
 	}
 
 	renderWmsLayer() {
-		const {options, opacity, key} = this.props;
+		const {options, opacity, key, terrainDrawMode, extensions} = this.props;
 		if (!options) {
 			throw new Error('WmsLayer: options are not defined!');
 		}
@@ -72,6 +72,9 @@ class WmsLayer extends CompositeLayer {
 			tileSize,
 			pickable,
 			transparentColor,
+			...(extensions ? {extensions: extensions} : {}),
+			...(terrainDrawMode ? {terrainDrawMode: terrainDrawMode} : {}),
+
 			getTileData: tile => {
 				let {x, y, z, index} = tile;
 				x = x || index.x;

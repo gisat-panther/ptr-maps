@@ -1,5 +1,6 @@
 import {CompositeLayer} from '@deck.gl/core';
 import {GeoJsonLayer} from '@deck.gl/layers';
+import {_TerrainExtension as TerrainExtension} from '@deck.gl/extensions';
 import TiledVectorLayer from './TiledVectorLayer';
 
 import {
@@ -242,7 +243,7 @@ class VectorLayer extends CompositeLayer {
 	renderVectorLayer(vectorLayerKey, features) {
 		const {layerKey, options, styleForDeck, pointAsMarker, opacity} =
 			this.props;
-		const {fidColumnName, selectable, hoverable} = options;
+		const {fidColumnName, selectable, hoverable, clampToTerrain} = options;
 		const revizedFeatures = this.props.omittedFeatureKeys
 			? features.filter(f => !this.props.omittedFeatureKeys.includes(f.key))
 			: features;
@@ -286,6 +287,10 @@ class VectorLayer extends CompositeLayer {
 			},
 			pointRadiusMinPixels: 1,
 			opacity,
+			extensions: clampToTerrain ? [new TerrainExtension()] : [],
+			...(clampToTerrain?.terrainDrawMode
+				? {terrainDrawMode: clampToTerrain.terrainDrawMode}
+				: {}),
 		});
 	}
 }

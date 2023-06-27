@@ -12,12 +12,14 @@ import TiledLayer from './layers/TiledLayer';
 import VectorLayer from './layers/VectorLayer';
 import WmsLayer from './layers/WmsLayer';
 import {_WMSLayer as SingleTileWmsLayer} from '@deck.gl/geo-layers';
+import {_TerrainExtension as TerrainExtension} from '@deck.gl/extensions';
 import geolib from '@gisatcz/deckgl-geolib';
 
 import './style.scss';
 import DeckTooltip from './DeckTooltip';
 
 const CogBitmapLayer = geolib.CogBitmapLayer;
+const CogTerrainLayer = geolib.CogTerrainLayer;
 
 const defaultGetCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
 
@@ -225,12 +227,25 @@ const DeckGlMap = ({
 				layers: layer.options.params.layers,
 				//pickable in experimental dont work
 				pickable: layer.options.pickable === true || false,
+				extensions: layer.options.clampToTerrain
+					? [new TerrainExtension()]
+					: [],
+				...(layer.options?.clampToTerrain?.terrainDrawMode
+					? {terrainDrawMode: layer.options.clampToTerrain.terrainDrawMode}
+					: {}),
 			});
 		} else {
 			return new WmsLayer({
 				...layer,
 				id: layer.key,
 				onClick: onRasterLayerClick,
+				clampToTerrain: layer.options.clampToTerrain,
+				extensions: layer.options.clampToTerrain
+					? [new TerrainExtension()]
+					: [],
+				...(layer.options?.clampToTerrain?.terrainDrawMode
+					? {terrainDrawMode: layer.options.clampToTerrain.terrainDrawMode}
+					: {}),
 			});
 		}
 	};
@@ -279,7 +294,7 @@ const DeckGlMap = ({
 	};
 
 	/**
-	 * Return COG
+	 * Return COG bitmap layer
 	 * @param layer {Object} layer data
 	 * @returns {CogBitmapLayer}
 	 */
@@ -289,6 +304,24 @@ const DeckGlMap = ({
 		const {url, ...restOptions} = options;
 
 		return new CogBitmapLayer(key, url, restOptions);
+	};
+
+	/**
+	 * Return COG bitmap layer
+	 * @param layer {Object} layer data
+	 * @param layer.options {Object} layer options
+	 * @param layer.options.url {string} url of COGTiff
+	 * @param layer.options.type {string} rendering type [terrain]
+	 * @param layer.options.multiplier {number} Multiplier of heights
+	 * @param layer.options.useChannel {number} which channel from COG will be rendered
+	 * @returns {CogBitmapLayer}
+	 */
+	const getCogTerrainLayer = layer => {
+		const {key, options} = layer;
+
+		const {url, ...restOptions} = options;
+
+		return new CogTerrainLayer(key, url, restOptions);
 	};
 
 	/**
@@ -311,6 +344,8 @@ const DeckGlMap = ({
 					return getVectorLayer(layer);
 				case 'cog-bitmap':
 					return getCogBitmapLayer(layer);
+				case 'cog-terrain':
+					return getCogTerrainLayer(layer);
 				default:
 					return null;
 			}
