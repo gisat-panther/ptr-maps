@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import {CompositeLayer} from '@deck.gl/core';
+import {_TerrainExtension as TerrainExtension} from '@deck.gl/extensions';
 
 import VectorLayer from '../VectorLayer';
 import {getFeatureKeysToOmit} from '../../../ReactLeafletMap/layers/TiledVectorLayer/Tile';
@@ -26,6 +27,15 @@ class Tile extends CompositeLayer {
 					autoHighlight: this.props.hoverable,
 					styleForDeck: this.props.styleForDeck,
 					pointAsMarker: this.props.pointAsMarker,
+					extensions: this.props?.options?.clampToTerrain
+						? [new TerrainExtension()]
+						: [],
+					...(this.props?.options?.clampToTerrain?.terrainDrawMode
+						? {
+								terrainDrawMode:
+									this.props.options.clampToTerrain.terrainDrawMode,
+						  }
+						: {}),
 				})
 			),
 		];

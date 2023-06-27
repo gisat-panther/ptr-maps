@@ -2,6 +2,7 @@ import {flatten as _flatten} from 'lodash';
 import {CompositeLayer} from '@deck.gl/core';
 import {TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
+import {_TerrainExtension as TerrainExtension} from '@deck.gl/extensions';
 import {mapConstants} from '@gisatcz/ptr-core';
 
 class TiledLayer extends CompositeLayer {
@@ -27,7 +28,8 @@ class TiledLayer extends CompositeLayer {
 
 	renderTiledLayer() {
 		const {options, opacity, key} = this.props;
-		const {url, urls, minNativeZoom, maxNativeZoom, tileSize} = options;
+		const {url, urls, minNativeZoom, maxNativeZoom, tileSize, clampToTerrain} =
+			options;
 
 		let finalUrls = urls
 			? _flatten(urls.map(url => this.getValidUrlTemplates(url)))
@@ -40,6 +42,10 @@ class TiledLayer extends CompositeLayer {
 			minZoom: minNativeZoom || mapConstants.defaultLevelsRange[0],
 			maxZoom: maxNativeZoom || mapConstants.defaultLevelsRange[1],
 			tileSize: tileSize || 256,
+			extensions: clampToTerrain ? [new TerrainExtension()] : [],
+			...(clampToTerrain?.terrainDrawMode
+				? {terrainDrawMode: clampToTerrain.terrainDrawMode}
+				: {}),
 
 			renderSubLayers: props => {
 				const {
