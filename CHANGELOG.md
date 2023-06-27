@@ -1,3 +1,15 @@
+# v1.21.0 (Tue Jun 27 2023)
+
+#### 🚀 Enhancement
+
+- Add terrain layer and possibility to clamp other deck layers on terrain [#169](https://github.com/gisat-panther/ptr-maps/pull/169) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.20.0 (Tue Jun 20 2023)
 
 #### 🚀 Enhancement
