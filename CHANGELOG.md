@@ -1,3 +1,15 @@
+# v1.21.1 (Mon Aug 07 2023)
+
+#### 🐾 Patch
+
+- Update deckgl-geotiff package [#170](https://github.com/gisat-panther/ptr-maps/pull/170) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.21.0 (Tue Jun 27 2023)
 
 #### 🚀 Enhancement
