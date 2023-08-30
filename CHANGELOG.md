@@ -1,3 +1,15 @@
+# v1.22.0 (Wed Aug 30 2023)
+
+#### 🚀 Enhancement
+
+- DeckGl: return event & info on map click [#171](https://github.com/gisat-panther/ptr-maps/pull/171) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.21.1 (Mon Aug 07 2023)
 
 #### 🐾 Patch
