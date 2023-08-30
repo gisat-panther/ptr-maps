@@ -1,4 +1,4 @@
-import {useState, useCallback, useRef} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {readPixelsToArray} from '@luma.gl/core';
 import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
@@ -391,7 +391,7 @@ const DeckGlMap = ({
 			: [];
 
 		return (
-			<div className="ptr-deckGl-map ptr-map" onClick={() => onClick(mapKey)}>
+			<div className="ptr-deckGl-map ptr-map">
 				<DeckGL
 					getCursor={getCursor || defaultGetCursor}
 					ref={deckRef}
@@ -410,6 +410,9 @@ const DeckGlMap = ({
 							  }
 					}
 					onHover={onHover}
+					onClick={(info, event) => {
+						onClick(mapKey, {info, event});
+					}}
 				/>
 				{Tooltip && tooltipData ? renderTooltip() : null}
 			</div>
