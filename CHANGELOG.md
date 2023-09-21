@@ -1,3 +1,15 @@
+# v1.22.1 (Thu Sep 21 2023)
+
+#### 🐾 Patch
+
+- bump geolib [#172](https://github.com/gisat-panther/ptr-maps/pull/172) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.22.0 (Wed Aug 30 2023)
 
 #### 🚀 Enhancement
