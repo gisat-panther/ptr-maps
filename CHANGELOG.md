@@ -1,3 +1,15 @@
+# v1.22.2 (Wed Oct 11 2023)
+
+#### 🐾 Patch
+
+- Change cog layers types names [#173](https://github.com/gisat-panther/ptr-maps/pull/173) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.22.1 (Thu Sep 21 2023)
 
 #### 🐾 Patch
