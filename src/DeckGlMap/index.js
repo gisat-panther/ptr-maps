@@ -342,9 +342,9 @@ const DeckGlMap = ({
 				case 'tiledVector':
 				case 'tiled-vector':
 					return getVectorLayer(layer);
-				case 'cog-bitmap':
+				case 'cogBitmap':
 					return getCogBitmapLayer(layer);
-				case 'cog-terrain':
+				case 'cogTerrain':
 					return getCogTerrainLayer(layer);
 				default:
 					return null;
