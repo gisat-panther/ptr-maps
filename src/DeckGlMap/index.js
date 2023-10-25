@@ -10,6 +10,7 @@ import viewHelpers from './helpers/view';
 import styleHelpers from './helpers/style';
 import TiledLayer from './layers/TiledLayer';
 import VectorLayer from './layers/VectorLayer';
+import MVTLayer from './layers/MVTLayer';
 import WmsLayer from './layers/WmsLayer';
 import {_WMSLayer as SingleTileWmsLayer} from '@deck.gl/geo-layers';
 import {_TerrainExtension as TerrainExtension} from '@deck.gl/extensions';
@@ -251,12 +252,11 @@ const DeckGlMap = ({
 	};
 
 	/**
-	 * Return vector layer
-	 * TODO it supports only points and polygons currently
-	 * @param layer {Object} layer data
-	 * @returns {VectorLayer}
+	 * It prepares common props used in Vector and MVT layer.
+	 * @param {Object} layer
+	 * @returns {Object} props
 	 */
-	const getVectorLayer = layer => {
+	const getVectorLayerProps = layer => {
 		// eslint-disable-next-line no-unused-vars
 		const {key, layerKey, options, ...restProps} = layer;
 		// eslint-disable-next-line no-unused-vars
@@ -276,7 +276,7 @@ const DeckGlMap = ({
 
 		const styleForDeck = styleHelpers.getStylesDefinitionForDeck(style, key);
 
-		let props = {
+		const props = {
 			...restProps,
 			options,
 			id: layer.key,
@@ -289,6 +289,31 @@ const DeckGlMap = ({
 			uniqueLayerKey: layer.key,
 			activeSelectionKey,
 		};
+		return props;
+	};
+
+	/**
+	 * Return MVT layer
+	 * @param layer {Object} layer data
+	 * @returns {MVTLayer}
+	 */
+	const getMVTLayer = layer => {
+		let {
+			options: {url, fidColumnName},
+		} = layer;
+
+		const props = getVectorLayerProps(layer);
+		return new MVTLayer({...props, data: url, fidColumnName});
+	};
+
+	/**
+	 * Return vector layer
+	 * TODO it supports only points and polygons currently
+	 * @param layer {Object} layer data
+	 * @returns {VectorLayer}
+	 */
+	const getVectorLayer = layer => {
+		const props = getVectorLayerProps(layer);
 
 		return new VectorLayer(props);
 	};
@@ -346,6 +371,8 @@ const DeckGlMap = ({
 					return getCogBitmapLayer(layer);
 				case 'cogTerrain':
 					return getCogTerrainLayer(layer);
+				case 'mvt':
+					return getMVTLayer(layer);
 				default:
 					return null;
 			}

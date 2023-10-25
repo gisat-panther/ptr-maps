@@ -12,6 +12,7 @@ import {
 import styleHelpers from '../helpers/style';
 import featureHelpers from '../../utils/feature';
 import constants from '../../constants';
+import {binaryToFeatureForAccessor} from './utils/geojson-binary';
 
 // TODO handle different selections
 class VectorLayer extends CompositeLayer {
@@ -42,24 +43,92 @@ class VectorLayer extends CompositeLayer {
 		}
 	}
 
+	getStyleByFeatureKey() {
+		const {options, styleForDeck} = this.props;
+		const {fidColumnName, features, selected} = options;
+		let styleByFeatureKey = {};
+		features.forEach(feature => {
+			const featureKey = featureHelpers.getKey(fidColumnName, feature);
+			styleByFeatureKey[featureKey] = this.calculateDefaultStyle(
+				styleForDeck,
+				featureKey,
+				feature,
+				selected
+			);
+		});
+		return styleByFeatureKey;
+	}
+	getStyleByFeatureKeyBinary() {
+		const {options, styleForDeck} = this.props;
+		const {fidColumnName, features, selected} = options;
+		let styleByFeatureKey = {};
+		//TODO - add polygon outlines?
+		const types = [
+			['lines', 'pathIndices'],
+			['points', 'positions'],
+			['polygons', 'polygonIndices'],
+		];
+
+		types.forEach(([type, indicesName]) => {
+			let length = features?.[type]?.[indicesName].value.length - 1;
+
+			if (type === 'points') {
+				length =
+					features?.[type]?.positions.value.length /
+					features?.[type]?.positions.size;
+			}
+			let keys = [];
+			let properties = [];
+			for (let index = 0; index < length; index++) {
+				const indicesIndex = features?.[type]?.[indicesName].value[index];
+				const key = features?.[type]?.featureIds.value[indicesIndex];
+				keys.push(key);
+
+				properties.push(
+					binaryToFeatureForAccessor(features?.[type], indicesIndex)
+				);
+			}
+			let uniquePropertiesFIDs = new Set();
+			let uniqueProperties = [];
+			properties.forEach(prop => {
+				const key = prop.properties[fidColumnName];
+				if (!uniquePropertiesFIDs.has(key)) {
+					uniquePropertiesFIDs.add(key);
+					uniqueProperties.push(prop);
+				}
+			});
+
+			properties.forEach(p => {
+				const featureKey = featureHelpers.getKey(fidColumnName, p);
+				styleByFeatureKey[featureKey] = this.calculateDefaultStyle(
+					styleForDeck,
+					featureKey,
+					p,
+					selected
+				);
+			});
+		});
+		return styleByFeatureKey;
+	}
+
 	updateState({changeFlags}) {
 		if (changeFlags.propsOrDataChanged) {
 			// prepare style for each feature in advance
-			const {options, styleForDeck} = this.props;
-			const {fidColumnName, features, selected} = options;
-			if (styleForDeck && features) {
-				let styleByFeatureKey = {};
-				features.forEach(feature => {
-					const featureKey = featureHelpers.getKey(fidColumnName, feature);
-					styleByFeatureKey[featureKey] = this.calculateDefaultStyle(
-						styleForDeck,
-						featureKey,
-						feature,
-						selected
-					);
-				});
-				this.setState({styleByFeatureKey});
+			const {
+				options: {features},
+				styleForDeck,
+			} = this.props;
+			let styleByFeatureKey = {};
+
+			if (styleForDeck && features && !this.isBinary()) {
+				styleByFeatureKey = this.getStyleByFeatureKey();
 			}
+
+			if (styleForDeck && features && this.isBinary()) {
+				styleByFeatureKey = this.getStyleByFeatureKeyBinary();
+			}
+
+			this.setState({styleByFeatureKey});
 		}
 	}
 
@@ -102,7 +171,7 @@ class VectorLayer extends CompositeLayer {
 	 */
 	getDefaultFeatureStyle(fidColumnName, feature) {
 		const featureKey = featureHelpers.getKey(fidColumnName, feature);
-		return this.state.styleByFeatureKey[featureKey] || null;
+		return this.state?.styleByFeatureKey?.[featureKey] || null;
 	}
 
 	/**
@@ -229,6 +298,15 @@ class VectorLayer extends CompositeLayer {
 		}
 	}
 
+	isBinary() {
+		const features = this.props?.options?.features;
+		return (
+			features &&
+			'points' in features &&
+			'polygons' in features &&
+			'lines' in features
+		);
+	}
 	renderTiledVectorLayer(vectorLayerKey) {
 		return new TiledVectorLayer({
 			id: vectorLayerKey,
@@ -244,9 +322,19 @@ class VectorLayer extends CompositeLayer {
 		const {layerKey, options, styleForDeck, pointAsMarker, opacity} =
 			this.props;
 		const {fidColumnName, selectable, hoverable, clampToTerrain} = options;
-		const revizedFeatures = this.props.omittedFeatureKeys
-			? features.filter(f => !this.props.omittedFeatureKeys.includes(f.key))
-			: features;
+
+		let revizedFeatures = [];
+		if (this.isBinary()) {
+			revizedFeatures = features;
+		} else {
+			revizedFeatures = this.props.omittedFeatureKeys
+				? features.filter(f => !this.props.omittedFeatureKeys.includes(f.key))
+				: features;
+		}
+
+		const extensions = [
+			...(this.props.extensions ? [...this.props.extensions] : []),
+		];
 
 		return new GeoJsonLayer({
 			id: vectorLayerKey,
@@ -287,9 +375,19 @@ class VectorLayer extends CompositeLayer {
 			},
 			pointRadiusMinPixels: 1,
 			opacity,
-			extensions: clampToTerrain ? [new TerrainExtension()] : [],
+			extensions: clampToTerrain
+				? [new TerrainExtension(), ...extensions]
+				: [...extensions],
 			...(clampToTerrain?.terrainDrawMode
 				? {terrainDrawMode: clampToTerrain.terrainDrawMode}
+				: {}),
+
+			...(this.props.modelMatrix ? {modelMatrix: this.props.modelMatrix} : {}),
+			...(this.props.coordinateOrigin
+				? {coordinateOrigin: this.props.coordinateOrigin}
+				: {}),
+			...(Object.hasOwn(this.props, 'coordinateSystem')
+				? {coordinateSystem: this.props.coordinateSystem}
 				: {}),
 		});
 	}
