@@ -1,3 +1,17 @@
+# v1.22.3 (Thu Oct 26 2023)
+
+#### 🐾 Patch
+
+- add exports and dependencies [#175](https://github.com/gisat-panther/ptr-maps/pull/175) ([@vlach1989](https://github.com/vlach1989))
+- Add support for MVT layer [#174](https://github.com/gisat-panther/ptr-maps/pull/174) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 2
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.22.2 (Wed Oct 11 2023)
 
 #### 🐾 Patch
