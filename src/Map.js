@@ -150,7 +150,6 @@ const PresentationMap = ({
 	const renderContent = (MapComponent, props, children) => {
 		//TODO is it correct to create element on each change?
 		// const map = createElement(mapComponent, props);
-
 		if (!children) {
 			// return map
 			return <MapComponent {...props} />;
