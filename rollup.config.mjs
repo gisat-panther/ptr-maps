@@ -90,6 +90,7 @@ export default {
 		'georaster',
 		'georaster-layer-for-leaflet',
 		/@babel\/runtime/,
+		'@math.gl/core ',
 		...lodashExternal,
 	],
 	output: {
