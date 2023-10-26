@@ -4,7 +4,7 @@
 /**
  * Return the feature for an accessor
  */
-function binaryToFeatureForAccessor(data, index) {
+export function binaryToFeatureForAccessor(data, index) {
 	if (!data) {
 		return null;
 	}
@@ -20,7 +20,11 @@ function binaryToFeatureForAccessor(data, index) {
 	return null;
 }
 
-function getPropertiesForIndex(data, propertiesIndex, numericPropsIndex) {
+export function getPropertiesForIndex(
+	data,
+	propertiesIndex,
+	numericPropsIndex
+) {
 	const feature = {
 		properties: {...data.properties[propertiesIndex]},
 	};
@@ -31,8 +35,3 @@ function getPropertiesForIndex(data, propertiesIndex, numericPropsIndex) {
 
 	return feature;
 }
-
-// Export the functions and types
-module.exports = {
-	binaryToFeatureForAccessor,
-};
