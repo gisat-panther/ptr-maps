@@ -23,20 +23,27 @@ class VectorLayer extends CompositeLayer {
 		if (type === 'tiledVector' || type === 'tiled-vector') {
 			return [this.renderTiledVectorLayer(`${key}-tiledVectorLayer`)];
 		} else {
-			if (selectedFeatureKeys) {
-				const partition = _partition(
-					features,
-					feature =>
-						!!_includes(
-							selectedFeatureKeys,
-							featureHelpers.getKey(fidColumnName, feature)
-						)
-				);
+			if (!this.isBinary()) {
+				if (selectedFeatureKeys) {
+					const partition = _partition(
+						features,
+						feature =>
+							!!_includes(
+								selectedFeatureKeys,
+								featureHelpers.getKey(fidColumnName, feature)
+							)
+					);
 
-				return [
-					this.renderVectorLayer(`${key}-geoJsonLayer`, partition[1]),
-					this.renderVectorLayer(`${key}-geoJsonLayer-selected`, partition[0]),
-				];
+					return [
+						this.renderVectorLayer(`${key}-geoJsonLayer`, partition[1]),
+						this.renderVectorLayer(
+							`${key}-geoJsonLayer-selected`,
+							partition[0]
+						),
+					];
+				} else {
+					return [this.renderVectorLayer(`${key}-geoJsonLayer`, features)];
+				}
 			} else {
 				return [this.renderVectorLayer(`${key}-geoJsonLayer`, features)];
 			}
@@ -269,7 +276,8 @@ class VectorLayer extends CompositeLayer {
 						!options?.selectedOptions?.disableMultiClick,
 					this.getSelectedFeatureKeys(options?.selected, activeSelectionKey)
 				),
-				{x, y}
+				{x, y},
+				object
 			);
 		}
 	}

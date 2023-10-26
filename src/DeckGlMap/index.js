@@ -180,9 +180,9 @@ const DeckGlMap = ({
 	 * @param featureKeys {Array}
 	 * @param position {{x: Number, y: Number}}
 	 */
-	const onVectorLayerClick = (layerKey, featureKeys, position) => {
+	const onVectorLayerClick = (layerKey, featureKeys, position, object) => {
 		if (onLayerClick) {
-			onLayerClick(mapKey, layerKey, featureKeys, position);
+			onLayerClick(mapKey, layerKey, featureKeys, position, object);
 		}
 	};
 
@@ -303,7 +303,13 @@ const DeckGlMap = ({
 		} = layer;
 
 		const props = getVectorLayerProps(layer);
-		return new MVTLayer({...props, data: url, fidColumnName});
+		return new MVTLayer({
+			...props,
+			data: url,
+			fidColumnName,
+			pickable: false,
+			onClick: onVectorLayerClick,
+		});
 	};
 
 	/**
@@ -328,7 +334,10 @@ const DeckGlMap = ({
 
 		const {url, ...restOptions} = options;
 
-		return new CogBitmapLayer(key, url, restOptions);
+		return new CogBitmapLayer(key, url, {
+			...restOptions,
+			onClick: onRasterLayerClick, //TODO add support for click in library
+		});
 	};
 
 	/**
@@ -346,7 +355,10 @@ const DeckGlMap = ({
 
 		const {url, ...restOptions} = options;
 
-		return new CogTerrainLayer(key, url, restOptions);
+		return new CogTerrainLayer(key, url, {
+			...restOptions,
+			onClick: onRasterLayerClick, //TODO add support for click in library
+		});
 	};
 
 	/**

@@ -33,6 +33,7 @@ const PresentationMap = () => {
 
 const MapSet = ({
 	// mapKey,
+	onLayerClick,
 	onViewChange,
 	onZoomEnd,
 	onPanEnd,
@@ -265,6 +266,7 @@ const MapSet = ({
 						onPanEnd,
 						// onClick: view => onMapClick(mapKey, view),
 						onClick,
+						onLayerClick,
 						wrapperProps,
 						onMapRemove,
 						Tooltip,
@@ -301,6 +303,7 @@ const MapSet = ({
 					onViewChange: update => onViewChangeLocal(childMapKey, update),
 					onZoomEnd,
 					onPanEnd,
+					onLayerClick,
 					onClick: view => onMapClick(childMapKey, view),
 					onResize: (w, h) => onMapResize(w, h, childMapKey),
 					mapKey: childMapKey,
@@ -365,6 +368,7 @@ MapSet.propTypes = {
 	onViewChange: PropTypes.func,
 	onZoomEnd: PropTypes.func,
 	onPanEnd: PropTypes.func,
+	onLayerClick: PropTypes.func,
 	resetHeading: PropTypes.func,
 	stateMapSetKey: PropTypes.string,
 	sync: PropTypes.object,

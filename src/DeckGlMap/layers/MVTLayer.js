@@ -54,6 +54,20 @@ class MVTLayer extends DeckMVTLayer {
 
 		return -1;
 	}
+	onClick(obj, evt) {
+		obj.tile.layers[0].onClick(obj, evt);
+		return true;
+	}
+
+	/**
+	 * Call on feature hover
+	 * @param data {Object}
+	 */
+	// FIXME
+	// onHover(obj, evt) {
+	// obj.tile.layers[0].onClick(obj, evt);
+	// return true;
+	// }
 
 	renderSubLayers(props) {
 		const {x, y, z} = props.tile.index;
