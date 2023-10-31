@@ -1,3 +1,15 @@
+# v1.22.4 (Tue Oct 31 2023)
+
+#### 🐾 Patch
+
+- Fix MVT deck layer min max zoom limits [#176](https://github.com/gisat-panther/ptr-maps/pull/176) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.22.3 (Thu Oct 26 2023)
 
 #### 🐾 Patch
