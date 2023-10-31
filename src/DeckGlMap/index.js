@@ -5,6 +5,7 @@ import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
 import {Layer, MapView} from '@deck.gl/core';
+import {mapConstants} from '@gisatcz/ptr-core';
 import viewport from '../utils/viewport';
 import viewHelpers from './helpers/view';
 import styleHelpers from './helpers/style';
@@ -288,6 +289,8 @@ const DeckGlMap = ({
 			pointAsMarker,
 			uniqueLayerKey: layer.key,
 			activeSelectionKey,
+			minZoom: options.minZoom || mapConstants.defaultLevelsRange[0],
+			maxZoom: options.maxZoom || mapConstants.defaultLevelsRange[1],
 		};
 		return props;
 	};
