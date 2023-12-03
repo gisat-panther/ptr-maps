@@ -13,19 +13,33 @@ import defaultStyles from '../../constants/styles';
 /**
  * Get style object ready for usage in DeckGl-based layers, where colors are represented by RGB array
  * @param styleObject {Object} Panther style object
+ * @param [distinctSelectionColor] {string} Color of distinct selection
  * @returns {Object} DeckGl-ready style object
  */
-function getDeckReadyStyleObject(styleObject) {
+function getDeckReadyStyleObject(styleObject, distinctSelectionColor) {
 	const {fill, outlineColor, ...restProps} = styleObject;
 
 	let deckReadyStyleObject = {...restProps};
 
+	// Overwrite fill or outlineColor with distinctSelectionColor if exists
 	if (fill) {
-		deckReadyStyleObject.fill = getDeckReadyColor(fill);
+		deckReadyStyleObject.fill = getDeckReadyColor(
+			distinctSelectionColor || fill
+		);
 	}
 
 	if (outlineColor) {
-		deckReadyStyleObject.outlineColor = getDeckReadyColor(outlineColor);
+		deckReadyStyleObject.outlineColor = getDeckReadyColor(
+			distinctSelectionColor || outlineColor
+		);
+	}
+
+	/* If there is no fill color and outline color defined in style and at the same time there is distinctSelectionColor
+	 use as outlineColor */
+	if (!fill && !outlineColor && distinctSelectionColor) {
+		deckReadyStyleObject.outlineColor = getDeckReadyColor(
+			distinctSelectionColor
+		);
 	}
 
 	return deckReadyStyleObject;

@@ -13,6 +13,7 @@ import styleHelpers from '../helpers/style';
 import featureHelpers from '../../utils/feature';
 import constants from '../../constants';
 import {binaryToFeatureForAccessor} from './utils/geojson-binary';
+import {distinctColours} from '@gisatcz/ptr-core';
 
 // TODO handle different selections
 class VectorLayer extends CompositeLayer {
@@ -158,10 +159,15 @@ class VectorLayer extends CompositeLayer {
 					if (selection.style === 'default') {
 						selectionStyle = constants.vectorFeatureStyle.selected;
 					}
-
+					const distinctSelectionColor =
+						selection.distinctItems &&
+						distinctColours?.[selection.keyColourIndexPairs?.[featureKey]];
 					selectedStyle = {
 						...defaultStyle,
-						...styleHelpers.getDeckReadyStyleObject(selectionStyle),
+						...styleHelpers.getDeckReadyStyleObject(
+							selectionStyle,
+							distinctSelectionColor
+						),
 					};
 				}
 			});
