@@ -1,3 +1,15 @@
+# v1.23.0 (Mon Dec 04 2023)
+
+#### 🚀 Enhancement
+
+- Deck.gl VectorLayer: Apply distinct colours selection [#177](https://github.com/gisat-panther/ptr-maps/pull/177) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.22.4 (Tue Oct 31 2023)
 
 #### 🐾 Patch
