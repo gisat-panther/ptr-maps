@@ -1,3 +1,15 @@
+# v1.24.0 (Wed Dec 06 2023)
+
+#### 🚀 Enhancement
+
+- Deck.gl VectorLayer: enable custom palette for distinct colours selec… [#178](https://github.com/gisat-panther/ptr-maps/pull/178) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 1
+
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+
+---
+
 # v1.23.0 (Mon Dec 04 2023)
 
 #### 🚀 Enhancement
