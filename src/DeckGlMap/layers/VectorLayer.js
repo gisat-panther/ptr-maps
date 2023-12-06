@@ -159,9 +159,10 @@ class VectorLayer extends CompositeLayer {
 					if (selection.style === 'default') {
 						selectionStyle = constants.vectorFeatureStyle.selected;
 					}
+					const colourPalette = selection?.colourPalette || distinctColours;
 					const distinctSelectionColor =
 						selection.distinctItems &&
-						distinctColours?.[selection.keyColourIndexPairs?.[featureKey]];
+						colourPalette[selection.keyColourIndexPairs?.[featureKey]];
 					selectedStyle = {
 						...defaultStyle,
 						...styleHelpers.getDeckReadyStyleObject(
