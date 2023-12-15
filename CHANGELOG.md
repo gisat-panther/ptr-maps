@@ -1,3 +1,15 @@
+# v1.24.1 (Fri Dec 15 2023)
+
+#### 🐾 Patch
+
+- Feature ID is primary defined by FIDcolumnName [#179](https://github.com/gisat-panther/ptr-maps/pull/179) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.24.0 (Wed Dec 06 2023)
 
 #### 🚀 Enhancement
