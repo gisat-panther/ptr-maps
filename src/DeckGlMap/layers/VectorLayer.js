@@ -154,14 +154,7 @@ class VectorLayer extends CompositeLayer {
 		let selectedStyle;
 		if (selected && featureKey) {
 			_forIn(selected, selection => {
-				if (
-					selection.keys &&
-					selection.keys.length &&
-					_includes(
-						selection.keys.map(k => k.toString()),
-						featureKey.toString()
-					)
-				) {
+				if (selection.keys && _includes(selection.keys, featureKey)) {
 					let selectionStyle = selection.style;
 					if (selection.style === 'default') {
 						selectionStyle = constants.vectorFeatureStyle.selected;
