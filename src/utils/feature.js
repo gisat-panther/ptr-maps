@@ -7,7 +7,9 @@ import {stateManagement} from '@gisatcz/ptr-utils';
  * @returns {string}
  */
 function getKey(fidColumnName, feature) {
-	return feature.id || feature.properties[fidColumnName];
+	return fidColumnName && Object.hasOwn(feature.properties, fidColumnName)
+		? feature.properties[fidColumnName]
+		: feature.id;
 }
 
 /**
