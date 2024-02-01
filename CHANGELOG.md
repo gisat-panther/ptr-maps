@@ -1,3 +1,15 @@
+# v1.24.2 (Thu Feb 01 2024)
+
+#### 🐾 Patch
+
+- Update deck packages [#180](https://github.com/gisat-panther/ptr-maps/pull/180) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.24.1 (Fri Dec 15 2023)
 
 #### 🐾 Patch
