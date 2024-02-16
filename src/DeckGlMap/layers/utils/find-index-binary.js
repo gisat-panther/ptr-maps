@@ -1,6 +1,6 @@
 // Original file is from Deck.gl
 // https://github.com/visgl/deck.gl/blob/master/modules/geo-layers/src/mvt-layer/find-index-binary.ts
-const GEOM_TYPES = ['points', 'lines', 'polygons'];
+export const GEOM_TYPES = ['points', 'lines', 'polygons'];
 
 /**
  * Return the index of the feature (numericProps or featureIds) for the given feature id.
@@ -99,7 +99,7 @@ function getLayerRange(geomData, layerName) {
 }
 
 // Returns global feature id
-function getGlobalFeatureId(geomData, featureIndex) {
+export function getGlobalFeatureId(geomData, featureIndex) {
 	if (!geomData.__ids) {
 		// Cache a map from featureId to globalFeatureId
 		const result = [];
