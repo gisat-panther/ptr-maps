@@ -1,3 +1,15 @@
+# v1.24.3 (Fri Feb 16 2024)
+
+#### 🐾 Patch
+
+- Fix getting feature id from mvt tiles [#181](https://github.com/gisat-panther/ptr-maps/pull/181) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.24.2 (Thu Feb 01 2024)
 
 #### 🐾 Patch
