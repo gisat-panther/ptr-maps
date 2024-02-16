@@ -2,6 +2,7 @@ import {CompositeLayer} from '@deck.gl/core';
 import {GeoJsonLayer} from '@deck.gl/layers';
 import {_TerrainExtension as TerrainExtension} from '@deck.gl/extensions';
 import TiledVectorLayer from './TiledVectorLayer';
+import {getGlobalFeatureId, GEOM_TYPES} from './utils/find-index-binary';
 
 import {
 	forIn as _forIn,
@@ -14,6 +15,29 @@ import featureHelpers from '../../utils/feature';
 import constants from '../../constants';
 import {binaryToFeatureForAccessor} from './utils/geojson-binary';
 import {distinctColours} from '@gisatcz/ptr-core';
+
+/**
+ *
+ * @param {Object} data - The data in binary format
+ * @param {*} index of the feature in data
+ * @returns
+ */
+const findFeatureIDBinary = (data, index) => {
+	for (const gt of GEOM_TYPES) {
+		const globalFeatureId = data[gt] && getGlobalFeatureId(data[gt], index);
+		if (globalFeatureId >= 0) {
+			if (
+				data[gt].fields[globalFeatureId] &&
+				Object.hasOwn(data[gt].fields[globalFeatureId], 'id')
+			) {
+				return data[gt].fields[globalFeatureId].id;
+			} else {
+				return -1;
+			}
+		}
+	}
+	return -1;
+};
 
 // TODO handle different selections
 class VectorLayer extends CompositeLayer {
@@ -66,6 +90,7 @@ class VectorLayer extends CompositeLayer {
 		});
 		return styleByFeatureKey;
 	}
+
 	getStyleByFeatureKeyBinary() {
 		const {options, styleForDeck} = this.props;
 		const {fidColumnName, features, selected} = options;
@@ -88,30 +113,34 @@ class VectorLayer extends CompositeLayer {
 			let keys = [];
 			let properties = [];
 			for (let index = 0; index < length; index++) {
-				const indicesIndex = features?.[type]?.[indicesName].value[index];
-				const key = features?.[type]?.featureIds.value[indicesIndex];
+				// Get feature id which is defined on feature level in MVT tile
+				// TODO - check if getting ID this way is correct if MVT tile contains points, lines and polygons
+				const key = findFeatureIDBinary(features, index);
+
 				keys.push(key);
 
-				properties.push(
-					binaryToFeatureForAccessor(features?.[type], indicesIndex)
-				);
+				properties.push(binaryToFeatureForAccessor(features?.[type], index));
 			}
+
 			let uniquePropertiesFIDs = new Set();
 			let uniqueProperties = [];
-			properties.forEach(prop => {
-				const key = prop.properties[fidColumnName];
+			properties.forEach((prop, i) => {
+				let key = null;
+				// TODO - check support of custom fidColumnName in style
+				if (Object.hasOwn(prop.properties, fidColumnName)) {
+					key = prop.properties[fidColumnName];
+				} else {
+					key = keys[i];
+				}
 				if (!uniquePropertiesFIDs.has(key)) {
 					uniquePropertiesFIDs.add(key);
 					uniqueProperties.push(prop);
 				}
-			});
 
-			properties.forEach(p => {
-				const featureKey = featureHelpers.getKey(fidColumnName, p);
-				styleByFeatureKey[featureKey] = this.calculateDefaultStyle(
+				styleByFeatureKey[key] = this.calculateDefaultStyle(
 					styleForDeck,
-					featureKey,
-					p,
+					key,
+					{id: key, ...prop},
 					selected
 				);
 			});
@@ -181,10 +210,23 @@ class VectorLayer extends CompositeLayer {
 	 * Get default style from state
 	 * @param fidColumnName {string}
 	 * @param feature {GeoJSONFeature}
+	 * @param info {Object}
 	 * @returns {Object} DeckGl-ready style object
 	 */
-	getDefaultFeatureStyle(fidColumnName, feature) {
-		const featureKey = featureHelpers.getKey(fidColumnName, feature);
+	getDefaultFeatureStyle(fidColumnName, feature, info) {
+		let extendedFeature;
+		if (this.isBinary()) {
+			const id = findFeatureIDBinary(this.props.options.features, info.index);
+			extendedFeature = {
+				id,
+				...feature,
+			};
+		}
+
+		const featureKey = featureHelpers.getKey(
+			fidColumnName,
+			extendedFeature || feature
+		);
 		return this.state?.styleByFeatureKey?.[featureKey] || null;
 	}
 
@@ -194,8 +236,12 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Array} Array representing RGBA channels
 	 */
-	getFeatureFill(style, fidColumnName, feature) {
-		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
+	getFeatureFill(style, fidColumnName, feature, info) {
+		const defaultStyle = this.getDefaultFeatureStyle(
+			fidColumnName,
+			feature,
+			info
+		);
 		// if no fill defined, make fill transparent
 		if (defaultStyle?.fill) {
 			return styleHelpers.getRgbaColorArray(
@@ -213,8 +259,12 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Array} Array representing RGBA channels
 	 */
-	getFeatureOutlineColor(style, fidColumnName, feature) {
-		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
+	getFeatureOutlineColor(style, fidColumnName, feature, info) {
+		const defaultStyle = this.getDefaultFeatureStyle(
+			fidColumnName,
+			feature,
+			info
+		);
 		return styleHelpers.getRgbaColorArray(
 			defaultStyle?.outlineColor,
 			defaultStyle?.outlineOpacity
@@ -227,8 +277,12 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {number}
 	 */
-	getPointRadius(style, fidColumnName, feature) {
-		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
+	getPointRadius(style, fidColumnName, feature, info) {
+		const defaultStyle = this.getDefaultFeatureStyle(
+			fidColumnName,
+			feature,
+			info
+		);
 		return defaultStyle?.size && defaultStyle.size / 2;
 	}
 
@@ -238,8 +292,12 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {number}
 	 */
-	getFeatureOutlineWidth(style, fidColumnName, feature) {
-		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
+	getFeatureOutlineWidth(style, fidColumnName, feature, info) {
+		const defaultStyle = this.getDefaultFeatureStyle(
+			fidColumnName,
+			feature,
+			info
+		);
 		return defaultStyle?.outlineWidth;
 	}
 
