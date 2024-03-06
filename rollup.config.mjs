@@ -1,9 +1,10 @@
+import {join} from 'path';
+import {readFileSync} from 'fs';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import image from '@rollup/plugin-image';
 import filesize from 'rollup-plugin-filesize';
 import postcss from 'rollup-plugin-postcss';
-import pkg from './package.json' assert {type: 'json'};
 
 const env = process.env.NODE_ENV;
 
@@ -17,6 +18,13 @@ Object.assign(Paths, {
 	INPUT: Paths.SRC + '/index.js',
 	OUTPUT: Paths.DIST + '/index.js',
 });
+
+function loadPkgInfo() {
+	const pkgFile = join(process.cwd(), 'package.json');
+	return JSON.parse(readFileSync(pkgFile).toString());
+}
+
+const pkg = loadPkgInfo();
 
 const lodashExternal = [
 	'lodash/isEmpty',
