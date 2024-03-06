@@ -35,6 +35,7 @@ const DeckGlMap = ({
 	viewLimits,
 	view,
 	onClick = () => {},
+	onHover = () => {},
 	onLayerClick,
 	mapKey,
 	backgroundLayer,
@@ -57,7 +58,7 @@ const DeckGlMap = ({
 		event: null,
 	});
 
-	const onHover = useCallback(
+	const onMapHover = useCallback(
 		event => {
 			if (deckRef?.current?.pickMultipleObjects) {
 				const hoveredItems = deckRef?.current?.pickMultipleObjects(event);
@@ -87,6 +88,14 @@ const DeckGlMap = ({
 
 				if (Tooltip) {
 					setTooltipData({
+						vector: vectorHoveredItems,
+						raster: rasterHoveredItems,
+						event,
+					});
+				}
+
+				if (typeof onHover === 'function') {
+					onHover({
 						vector: vectorHoveredItems,
 						raster: rasterHoveredItems,
 						event,
@@ -451,7 +460,7 @@ const DeckGlMap = ({
 									dragRotate: false,
 							  }
 					}
-					onHover={onHover}
+					onHover={onMapHover}
 					onClick={(info, event) => {
 						onClick(mapKey, {info, event});
 					}}
@@ -482,6 +491,7 @@ DeckGlMap.propTypes = {
 	viewLimits: PropTypes.object,
 	view: PropTypes.object,
 	onClick: PropTypes.func,
+	onHover: PropTypes.func,
 	onLayerClick: PropTypes.func,
 	onZoomEnd: PropTypes.func,
 	onPanEnd: PropTypes.func,
