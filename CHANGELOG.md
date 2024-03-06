@@ -1,3 +1,15 @@
+# v1.24.4 (Wed Mar 06 2024)
+
+#### 🐾 Patch
+
+- Add onHover callback on deckGl map, update deckgl-geolib [#182](https://github.com/gisat-panther/ptr-maps/pull/182) ([@vdubr](https://github.com/vdubr))
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.24.3 (Fri Feb 16 2024)
 
 #### 🐾 Patch
