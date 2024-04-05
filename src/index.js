@@ -1,4 +1,4 @@
-import GL from '@luma.gl/constants';
+import {GL} from '@luma.gl/constants';
 import constants from './constants';
 import view from './utils/view';
 import DeckGlMap from './DeckGlMap';

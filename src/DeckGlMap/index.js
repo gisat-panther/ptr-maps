@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState} from 'react';
-import {readPixelsToArray} from '@luma.gl/core';
+import {readPixelsToArray} from '@luma.gl/webgl-legacy';
 import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';

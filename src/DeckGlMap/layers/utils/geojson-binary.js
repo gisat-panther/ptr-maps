@@ -1,20 +1,24 @@
 // Original file is from Deck.gl
 // https://github.com/visgl/deck.gl/blob/master/modules/layers/src/geojson-layer/geojson-binary.ts
+// updates after migration to version 9 from carto file
+// https://github.com/visgl/deck.gl/blob/master/modules/carto/src/layers/utils.ts
 
 /**
  * Return the feature for an accessor
  */
-export function binaryToFeatureForAccessor(data, index) {
+export function binaryToFeatureForAccessor(data, index, indices) {
 	if (!data) {
 		return null;
 	}
 
-	const featureIndex =
-		'startIndices' in data ? data.startIndices[index] : index;
-	const geometryIndex = data.featureIds.value[featureIndex];
+	// const featureIndex =
+	// 	'startIndices' in data ? data.startIndices[index] : index;
+	const startIndex = indices.value[index];
+	const featureId = data.globalFeatureIds.value[startIndex];
+	// const geometryIndex = data.featureIds.value[startIndex];
 
-	if (featureIndex !== -1) {
-		return getPropertiesForIndex(data, geometryIndex, featureIndex);
+	if (featureId !== -1) {
+		return getPropertiesForIndex(data, startIndex, startIndex);
 	}
 
 	return null;

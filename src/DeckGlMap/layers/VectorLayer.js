@@ -103,7 +103,8 @@ class VectorLayer extends CompositeLayer {
 		];
 
 		types.forEach(([type, indicesName]) => {
-			let length = features?.[type]?.[indicesName].value.length - 1;
+			const indices = features?.[type]?.[indicesName];
+			let length = indices.value.length - 1;
 
 			if (type === 'points') {
 				length =
@@ -119,7 +120,9 @@ class VectorLayer extends CompositeLayer {
 
 				keys.push(key);
 
-				properties.push(binaryToFeatureForAccessor(features?.[type], index));
+				properties.push(
+					binaryToFeatureForAccessor(features?.[type], index, indices)
+				);
 			}
 
 			let uniquePropertiesFIDs = new Set();
