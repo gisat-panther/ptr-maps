@@ -2,7 +2,7 @@ import {CompositeLayer} from '@deck.gl/core';
 import {TileLayer} from '@deck.gl/geo-layers';
 import {BitmapLayer} from '@deck.gl/layers';
 import {load} from '@loaders.gl/core';
-import GL from '@luma.gl/constants';
+import {GL} from '@luma.gl/constants';
 import SphericalMercator from '@mapbox/sphericalmercator';
 import {omit as _omit} from 'lodash';
 
