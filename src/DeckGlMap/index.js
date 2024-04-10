@@ -365,12 +365,19 @@ const DeckGlMap = ({
 	const getCogTerrainLayer = layer => {
 		const {key, options} = layer;
 
-		const {url, ...restOptions} = options;
+		const {url, terrainOptions, ...restOptions} = options;
 
-		return new CogTerrainLayer(key, url, {
-			...restOptions,
-			onClick: onRasterLayerClick, //TODO add support for click in library
-		});
+		return new CogTerrainLayer(
+			{
+				id: key,
+				elevationData: url,
+				onClick: onRasterLayerClick,
+				...restOptions,
+			},
+			{
+				...terrainOptions,
+			}
+		);
 	};
 
 	/**
