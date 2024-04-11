@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState} from 'react';
-import {readPixelsToArray} from '@luma.gl/webgl-legacy';
+// import {readPixelsToArray} from '@luma.gl/webgl-legacy';
 import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
@@ -74,15 +74,16 @@ const DeckGlMap = ({
 					} else if (item.layer instanceof WmsLayer) {
 						//add to raster items
 						//this is path fot tile layer
-						const image =
-							item?.tile?.layers?.[0]?.props?.tile?.layers?.[0]?.props?.image;
-						item.pixelColor = readPixelsToArray(image, {
-							sourceX: event?.bitmap?.pixel?.[0],
-							sourceY: event?.bitmap?.pixel?.[1],
-							sourceWidth: 1,
-							sourceHeight: 1,
-						});
-						rasterHoveredItems.push(item);
+						// FIXME replace readPixelsToArray
+						// const image =
+						// 	item?.tile?.layers?.[0]?.props?.tile?.layers?.[0]?.props?.image;
+						// item.pixelColor = readPixelsToArray(image, {
+						// 	sourceX: event?.bitmap?.pixel?.[0],
+						// 	sourceY: event?.bitmap?.pixel?.[1],
+						// 	sourceWidth: 1,
+						// 	sourceHeight: 1,
+						// });
+						// rasterHoveredItems.push(item);
 					}
 				});
 
