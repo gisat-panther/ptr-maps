@@ -94,6 +94,7 @@ export default {
 		'@luma.gl/constants',
 		'@luma.gl/core',
 		'@loaders.gl/core',
+		'@math.gl/core',
 		'@mapbox/sphericalmercator',
 		'georaster',
 		'georaster-layer-for-leaflet',
