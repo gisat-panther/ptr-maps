@@ -6,19 +6,17 @@
 /**
  * Return the feature for an accessor
  */
-export function binaryToFeatureForAccessor(data, index, indices) {
+export function binaryToFeatureForAccessor(data, index) {
 	if (!data) {
 		return null;
 	}
 
-	// const featureIndex =
-	// 	'startIndices' in data ? data.startIndices[index] : index;
-	const startIndex = indices.value[index];
-	const featureId = data.globalFeatureIds.value[startIndex];
-	// const geometryIndex = data.featureIds.value[startIndex];
+	const featureIndex =
+		'startIndices' in data ? data.startIndices[index] : index;
+	const geometryIndex = data.featureIds.value[featureIndex];
 
-	if (featureId !== -1) {
-		return getPropertiesForIndex(data, startIndex, startIndex);
+	if (featureIndex !== -1) {
+		return getPropertiesForIndex(data, geometryIndex, featureIndex);
 	}
 
 	return null;

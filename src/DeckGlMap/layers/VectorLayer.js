@@ -2,7 +2,7 @@ import {CompositeLayer} from '@deck.gl/core';
 import {GeoJsonLayer} from '@deck.gl/layers';
 import {_TerrainExtension as TerrainExtension} from '@deck.gl/extensions';
 import TiledVectorLayer from './TiledVectorLayer';
-import {getGlobalFeatureId, GEOM_TYPES} from './utils/find-index-binary';
+import {GEOM_TYPES} from './utils/find-index-binary';
 
 import {
 	forIn as _forIn,
@@ -16,27 +16,34 @@ import constants from '../../constants';
 import {binaryToFeatureForAccessor} from './utils/geojson-binary';
 import {distinctColours} from '@gisatcz/ptr-core';
 
-/**
- *
- * @param {Object} data - The data in binary format
- * @param {*} index of the feature in data
- * @returns
- */
-const findFeatureIDBinary = (data, index) => {
-	for (const gt of GEOM_TYPES) {
-		const globalFeatureId = data[gt] && getGlobalFeatureId(data[gt], index);
-		if (globalFeatureId >= 0) {
-			if (
-				data[gt].fields[globalFeatureId] &&
-				Object.hasOwn(data[gt].fields[globalFeatureId], 'id')
-			) {
-				return data[gt].fields[globalFeatureId].id;
-			} else {
-				return -1;
-			}
-		}
+const findFeatureIndexBinary = (data, index, indices) => {
+	let featureIndex;
+	if ('startIndices' in data) {
+		featureIndex = data.startIndices[index];
+	} else {
+		featureIndex = indices.value[index];
 	}
-	return -1;
+	return featureIndex;
+};
+
+const addIdsToProperties = features => {
+	for (const gt of GEOM_TYPES) {
+		features[gt].properties.forEach((prop, i) => {
+			prop.ID = features[gt].fields[i].id;
+		});
+	}
+};
+
+const findFeatureIDBinary = (data, index, indices) => {
+	let featureIndex;
+	if ('startIndices' in data) {
+		featureIndex = findFeatureIndexBinary(data, index, indices);
+		return data.featureIds.value[featureIndex];
+	} else {
+		featureIndex = findFeatureIndexBinary(data, index, indices);
+		const globalFeatureId = data.globalFeatureIds.value[featureIndex];
+		return data.fields[globalFeatureId].id;
+	}
 };
 
 // TODO handle different selections
@@ -111,17 +118,24 @@ class VectorLayer extends CompositeLayer {
 					features?.[type]?.positions.value.length /
 					features?.[type]?.positions.size;
 			}
-			let keys = [];
-			let properties = [];
+			const keys = [];
+			const properties = [];
+			const featureIndexes = [];
+
 			for (let index = 0; index < length; index++) {
 				// Get feature id which is defined on feature level in MVT tile
 				// TODO - check if getting ID this way is correct if MVT tile contains points, lines and polygons
-				const key = findFeatureIDBinary(features, index);
-
+				const key = findFeatureIDBinary(features?.[type], index, indices);
+				const featureIndex = findFeatureIndexBinary(
+					features?.[type],
+					index,
+					indices
+				);
+				featureIndexes.push(featureIndex);
 				keys.push(key);
 
 				properties.push(
-					binaryToFeatureForAccessor(features?.[type], index, indices)
+					binaryToFeatureForAccessor(features?.[type], featureIndex)
 				);
 			}
 
@@ -216,21 +230,14 @@ class VectorLayer extends CompositeLayer {
 	 * @param info {Object}
 	 * @returns {Object} DeckGl-ready style object
 	 */
-	getDefaultFeatureStyle(fidColumnName, feature, info) {
-		let extendedFeature;
+	getDefaultFeatureStyle(fidColumnName, feature) {
 		if (this.isBinary()) {
-			const id = findFeatureIDBinary(this.props.options.features, info.index);
-			extendedFeature = {
-				id,
-				...feature,
-			};
+			const id = feature.properties[fidColumnName || 'ID'];
+			return this.state?.styleByFeatureKey?.[id] || null;
+		} else if (fidColumnName) {
+			const featureKey = featureHelpers.getKey(fidColumnName, feature);
+			return this.state?.styleByFeatureKey?.[featureKey] || null;
 		}
-
-		const featureKey = featureHelpers.getKey(
-			fidColumnName,
-			extendedFeature || feature
-		);
-		return this.state?.styleByFeatureKey?.[featureKey] || null;
 	}
 
 	/**
@@ -239,12 +246,8 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Array} Array representing RGBA channels
 	 */
-	getFeatureFill(style, fidColumnName, feature, info) {
-		const defaultStyle = this.getDefaultFeatureStyle(
-			fidColumnName,
-			feature,
-			info
-		);
+	getFeatureFill(style, fidColumnName, feature) {
+		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
 		// if no fill defined, make fill transparent
 		if (defaultStyle?.fill) {
 			return styleHelpers.getRgbaColorArray(
@@ -262,12 +265,8 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {Array} Array representing RGBA channels
 	 */
-	getFeatureOutlineColor(style, fidColumnName, feature, info) {
-		const defaultStyle = this.getDefaultFeatureStyle(
-			fidColumnName,
-			feature,
-			info
-		);
+	getFeatureOutlineColor(style, fidColumnName, feature) {
+		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
 		return styleHelpers.getRgbaColorArray(
 			defaultStyle?.outlineColor,
 			defaultStyle?.outlineOpacity
@@ -280,12 +279,8 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {number}
 	 */
-	getPointRadius(style, fidColumnName, feature, info) {
-		const defaultStyle = this.getDefaultFeatureStyle(
-			fidColumnName,
-			feature,
-			info
-		);
+	getPointRadius(style, fidColumnName, feature) {
+		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
 		return defaultStyle?.size && defaultStyle.size / 2;
 	}
 
@@ -295,12 +290,8 @@ class VectorLayer extends CompositeLayer {
 	 * @param feature {GeoJSONFeature}
 	 * @returns {number}
 	 */
-	getFeatureOutlineWidth(style, fidColumnName, feature, info) {
-		const defaultStyle = this.getDefaultFeatureStyle(
-			fidColumnName,
-			feature,
-			info
-		);
+	getFeatureOutlineWidth(style, fidColumnName, feature) {
+		const defaultStyle = this.getDefaultFeatureStyle(fidColumnName, feature);
 		return defaultStyle?.outlineWidth;
 	}
 
@@ -401,6 +392,9 @@ class VectorLayer extends CompositeLayer {
 
 		let revizedFeatures = [];
 		if (this.isBinary()) {
+			if (!fidColumnName) {
+				addIdsToProperties(features);
+			}
 			revizedFeatures = features;
 		} else {
 			revizedFeatures = this.props.omittedFeatureKeys

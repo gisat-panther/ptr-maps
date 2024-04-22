@@ -1,5 +1,4 @@
 import {useCallback, useRef, useState} from 'react';
-import {readPixelsToArray} from '@luma.gl/webgl-legacy';
 import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
@@ -73,10 +72,10 @@ const DeckGlMap = ({
 						vectorHoveredItems.push(item);
 					} else if (item.layer instanceof WmsLayer) {
 						//add to raster items
-						//this is path fot tile layer
+						const {device} = item.layer.context;
 						const image =
 							item?.tile?.layers?.[0]?.props?.tile?.layers?.[0]?.props?.image;
-						item.pixelColor = readPixelsToArray(image, {
+						item.pixelColor = device.readPixelsToArrayWebGL(image, {
 							sourceX: event?.bitmap?.pixel?.[0],
 							sourceY: event?.bitmap?.pixel?.[1],
 							sourceWidth: 1,
@@ -365,12 +364,19 @@ const DeckGlMap = ({
 	const getCogTerrainLayer = layer => {
 		const {key, options} = layer;
 
-		const {url, ...restOptions} = options;
+		const {url, terrainOptions, ...restOptions} = options;
 
-		return new CogTerrainLayer(key, url, {
-			...restOptions,
-			onClick: onRasterLayerClick, //TODO add support for click in library
-		});
+		return new CogTerrainLayer(
+			{
+				id: key,
+				elevationData: url,
+				onClick: onRasterLayerClick,
+				...restOptions,
+			},
+			{
+				...terrainOptions,
+			}
+		);
 	};
 
 	/**
