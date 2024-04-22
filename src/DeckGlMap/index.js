@@ -72,17 +72,16 @@ const DeckGlMap = ({
 						vectorHoveredItems.push(item);
 					} else if (item.layer instanceof WmsLayer) {
 						//add to raster items
-						//this is path fot tile layer
-						// TODO replace readPixelsToArray
-						// const image =
-						// 	item?.tile?.layers?.[0]?.props?.tile?.layers?.[0]?.props?.image;
-						// item.pixelColor = readPixelsToArray(image, {
-						// 	sourceX: event?.bitmap?.pixel?.[0],
-						// 	sourceY: event?.bitmap?.pixel?.[1],
-						// 	sourceWidth: 1,
-						// 	sourceHeight: 1,
-						// });
-						// rasterHoveredItems.push(item);
+						const {device} = item.layer.context;
+						const image =
+							item?.tile?.layers?.[0]?.props?.tile?.layers?.[0]?.props?.image;
+						item.pixelColor = device.readPixelsToArrayWebGL(image, {
+							sourceX: event?.bitmap?.pixel?.[0],
+							sourceY: event?.bitmap?.pixel?.[1],
+							sourceWidth: 1,
+							sourceHeight: 1,
+						});
+						rasterHoveredItems.push(item);
 					}
 				});
 
