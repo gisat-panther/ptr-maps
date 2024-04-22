@@ -13,7 +13,7 @@ import {
 import styleHelpers from '../helpers/style';
 import featureHelpers from '../../utils/feature';
 import constants from '../../constants';
-import {binaryToFeatureForAccesor} from './utils/geojson-binary';
+import {binaryToFeatureForAccessor} from './utils/geojson-binary';
 import {distinctColours} from '@gisatcz/ptr-core';
 
 const findFeatureIndexBinary = (data, index, indices) => {
@@ -135,7 +135,7 @@ class VectorLayer extends CompositeLayer {
 				keys.push(key);
 
 				properties.push(
-					binaryToFeatureForAccesor(features?.[type], featureIndex)
+					binaryToFeatureForAccessor(features?.[type], featureIndex)
 				);
 			}
 

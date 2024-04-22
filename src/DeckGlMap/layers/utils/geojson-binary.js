@@ -4,9 +4,9 @@
 // https://github.com/visgl/deck.gl/blob/master/modules/carto/src/layers/utils.ts
 
 /**
- * Return the feature for an accesor
+ * Return the feature for an accessor
  */
-export function binaryToFeatureForAccesor(data, index) {
+export function binaryToFeatureForAccessor(data, index) {
 	if (!data) {
 		return null;
 	}
