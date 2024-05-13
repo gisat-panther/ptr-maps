@@ -365,18 +365,15 @@ const DeckGlMap = ({
 		const {key, options} = layer;
 
 		const {url, terrainOptions, ...restOptions} = options;
-
-		return new CogTerrainLayer(
-			{
-				id: key,
-				elevationData: url,
-				onClick: onRasterLayerClick,
-				...restOptions,
-			},
-			{
+		return new CogTerrainLayer({
+			id: key,
+			elevationData: url,
+			onClick: onRasterLayerClick,
+			...restOptions,
+			terrainOptions: {
 				...terrainOptions,
-			}
-		);
+			},
+		});
 	};
 
 	/**
@@ -388,6 +385,7 @@ const DeckGlMap = ({
 		if (layer && layer instanceof Layer) {
 			return layer;
 		} else if (layer && layer.type) {
+			//memoize result by layer
 			switch (layer.type) {
 				case 'wmts':
 					return getTileLayer(layer);
