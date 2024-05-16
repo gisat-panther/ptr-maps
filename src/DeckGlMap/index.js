@@ -49,12 +49,35 @@ const DeckGlMap = ({
 	const nextViewRef = useRef(null);
 	const zoomingTimeoutRef = useRef(null);
 
+	// Array of [minAltitude, maxAltitude] which are used for terrain layer
+	const zRangeRef = useRef(null);
+
 	const [box, setBox] = useState({width: null, height: null});
 	const [stateView, setStateView] = useState();
 	const [tooltipData, setTooltipData] = useState({
 		vector: [],
 		raster: [],
 		event: null,
+	});
+
+	const onAfterRender = useCallback(() => {
+		const lastRenderedLayers =
+			deckRef?.current?.deck?.layerManager?._lastRenderedLayers;
+
+		lastRenderedLayers?.forEach(l => {
+			const zRange = l?.state.zRange;
+			if (
+				(zRange !== null &&
+					zRange !== undefined &&
+					zRangeRef.current === null) ||
+				zRange?.[0] < zRangeRef.current?.[0] ||
+				zRange?.[1] + 100 > zRangeRef.current?.[1]
+			) {
+				// save maximum and minimum zRange from layers rendered layers
+				// add "safety coefficient" to prevent zRange from going out of bounds in some layers (like MVT)
+				zRangeRef.current = [zRange[0], zRange[1] + 100];
+			}
+		});
 	});
 
 	const onMapHover = useCallback(
@@ -221,6 +244,7 @@ const DeckGlMap = ({
 		return new TiledLayer({
 			...layer,
 			id: layer.key,
+			zRange: zRangeRef.current,
 		});
 	};
 
@@ -320,6 +344,7 @@ const DeckGlMap = ({
 			fidColumnName,
 			pickable: false,
 			onClick: onVectorLayerClick,
+			zRange: zRangeRef.current,
 		});
 	};
 
@@ -468,6 +493,7 @@ const DeckGlMap = ({
 					onClick={(info, event) => {
 						onClick(mapKey, {info, event});
 					}}
+					onAfterRender={onAfterRender}
 				/>
 				{Tooltip && tooltipData ? renderTooltip() : null}
 			</div>
