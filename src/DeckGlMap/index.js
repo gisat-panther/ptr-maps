@@ -125,7 +125,7 @@ const DeckGlMap = ({
 				}
 			}
 		},
-		[deckRef.current]
+		[deckRef.current],
 	);
 
 	const getViewChange = (prevView, nextView) => {
@@ -135,7 +135,7 @@ const DeckGlMap = ({
 			change.boxRange = viewHelpers.getBoxRangeFromZoomLevel(
 				nextView.zoom,
 				box.width,
-				box.height
+				box.height,
 			);
 		}
 
@@ -230,7 +230,7 @@ const DeckGlMap = ({
 				layerKey,
 				null,
 				{x: info.x, y: info.y},
-				{event, info}
+				{event, info},
 			);
 		}
 	};
@@ -297,7 +297,7 @@ const DeckGlMap = ({
 
 		const renderAsRules = styleHelpers.getRenderAsRulesByBoxRange(
 			options.renderAs,
-			view?.boxRange
+			view?.boxRange,
 		);
 
 		// Check options for renderAsRules
@@ -379,6 +379,7 @@ const DeckGlMap = ({
 	/**
 	 * Return COG bitmap layer
 	 * @param layer {Object} layer data
+	 * @param layer.opacity {Number} layer opacity [0-1]
 	 * @param layer.options {Object} layer options
 	 * @param layer.options.url {string} url of COGTiff
 	 * @param layer.options.type {string} rendering type [terrain]
@@ -387,14 +388,14 @@ const DeckGlMap = ({
 	 * @returns {CogBitmapLayer}
 	 */
 	const getCogTerrainLayer = layer => {
-		const {key, options} = layer;
-
+		const {key, opacity, options} = layer;
 		const {url, terrainOptions, ...restOptions} = options;
 		return new CogTerrainLayer({
 			id: key,
 			elevationData: url,
 			onClick: onRasterLayerClick,
 			...restOptions,
+			opacity,
 			terrainOptions: {
 				...terrainOptions,
 			},
@@ -457,7 +458,7 @@ const DeckGlMap = ({
 			renderView,
 			box.width,
 			box.height,
-			viewLimits
+			viewLimits,
 		);
 
 		const backgroundLayersSource = _isArray(backgroundLayer)
@@ -487,7 +488,7 @@ const DeckGlMap = ({
 							? controller
 							: {
 									dragRotate: false,
-							  }
+								}
 					}
 					onHover={onMapHover}
 					onClick={(info, event) => {
