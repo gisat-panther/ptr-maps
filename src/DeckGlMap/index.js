@@ -1,10 +1,10 @@
-import {useCallback, useRef, useState} from 'react';
+import { useCallback, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
+import { isArray as _isArray, isEmpty as _isEmpty } from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
-import {Layer, MapView} from '@deck.gl/core';
-import {mapConstants} from '@gisatcz/ptr-core';
+import { Layer, MapView } from '@deck.gl/core';
+import { mapConstants } from '@gisatcz/ptr-core';
 import viewport from '../utils/viewport';
 import viewHelpers from './helpers/view';
 import styleHelpers from './helpers/style';
@@ -12,8 +12,8 @@ import TiledLayer from './layers/TiledLayer';
 import VectorLayer from './layers/VectorLayer';
 import MVTLayer from './layers/MVTLayer';
 import WmsLayer from './layers/WmsLayer';
-import {_WMSLayer as SingleTileWmsLayer} from '@deck.gl/geo-layers';
-import {_TerrainExtension as TerrainExtension} from '@deck.gl/extensions';
+import { _WMSLayer as SingleTileWmsLayer } from '@deck.gl/geo-layers';
+import { _TerrainExtension as TerrainExtension } from '@deck.gl/extensions';
 import geolib from '@gisatcz/deckgl-geolib';
 
 import './style.scss';
@@ -22,7 +22,7 @@ import DeckTooltip from './DeckTooltip';
 const CogBitmapLayer = geolib.CogBitmapLayer;
 const CogTerrainLayer = geolib.CogTerrainLayer;
 
-const defaultGetCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
+const defaultGetCursor = ({ isDragging }) => (isDragging ? 'grabbing' : 'grab');
 
 const DeckGlMap = ({
 	activeSelectionKey,
@@ -33,8 +33,8 @@ const DeckGlMap = ({
 	onPanEnd,
 	viewLimits,
 	view,
-	onClick = () => {},
-	onHover = () => {},
+	onClick = () => { },
+	onHover = () => { },
 	onLayerClick,
 	mapKey,
 	backgroundLayer,
@@ -49,7 +49,7 @@ const DeckGlMap = ({
 	const nextViewRef = useRef(null);
 	const zoomingTimeoutRef = useRef(null);
 
-	const [box, setBox] = useState({width: null, height: null});
+	const [box, setBox] = useState({ width: null, height: null });
 	const [stateView, setStateView] = useState();
 	const [tooltipData, setTooltipData] = useState({
 		vector: [],
@@ -57,7 +57,23 @@ const DeckGlMap = ({
 		event: null,
 	});
 
-	const [mapImage, setMapImage] = useState(null);
+	const onAfterRender = () => {
+		// onAfterRender events (empty)
+	};
+
+	const captureScreenshot = () => {
+		if (deckRef?.current?.deck?.getCanvas) {
+			// Converts the deck.gl canvas to a base64-encoded image. Other image MIME types can be used here as well.
+			const base64Image = deckRef.current.deck.getCanvas().toDataURL('image/png');
+
+			// Creates a temporary link and clicks on it to download.
+			// No need to append this element to the DOM.
+			const a = document.createElement('a');
+			a.href = base64Image;
+			a.download = 'screenshot.png';
+			a.click();
+		}
+	};
 
 	const onMapHover = useCallback(
 		event => {
@@ -74,7 +90,7 @@ const DeckGlMap = ({
 						vectorHoveredItems.push(item);
 					} else if (item.layer instanceof WmsLayer) {
 						//add to raster items
-						const {device} = item.layer.context;
+						const { device } = item.layer.context;
 						const image =
 							item?.tile?.layers?.[0]?.props?.tile?.layers?.[0]?.props?.image;
 						item.pixelColor = device.readPixelsToArrayWebGL(image, {
@@ -164,7 +180,7 @@ const DeckGlMap = ({
 			}
 			// just presentational map
 			else {
-				setStateView({...view, ...stateView, ...change});
+				setStateView({ ...view, ...stateView, ...change });
 			}
 		}
 	};
@@ -208,8 +224,8 @@ const DeckGlMap = ({
 				mapKey,
 				layerKey,
 				null,
-				{x: info.x, y: info.y},
-				{event, info}
+				{ x: info.x, y: info.y },
+				{ event, info }
 			);
 		}
 	};
@@ -243,7 +259,7 @@ const DeckGlMap = ({
 					? [new TerrainExtension()]
 					: [],
 				...(layer.options?.clampToTerrain?.terrainDrawMode
-					? {terrainDrawMode: layer.options.clampToTerrain.terrainDrawMode}
+					? { terrainDrawMode: layer.options.clampToTerrain.terrainDrawMode }
 					: {}),
 			});
 		} else {
@@ -256,7 +272,7 @@ const DeckGlMap = ({
 					? [new TerrainExtension()]
 					: [],
 				...(layer.options?.clampToTerrain?.terrainDrawMode
-					? {terrainDrawMode: layer.options.clampToTerrain.terrainDrawMode}
+					? { terrainDrawMode: layer.options.clampToTerrain.terrainDrawMode }
 					: {}),
 			});
 		}
@@ -269,9 +285,9 @@ const DeckGlMap = ({
 	 */
 	const getVectorLayerProps = layer => {
 		// eslint-disable-next-line no-unused-vars
-		const {key, layerKey, options, ...restProps} = layer;
+		const { key, layerKey, options, ...restProps } = layer;
 		// eslint-disable-next-line no-unused-vars
-		let {features, style, hoverable, pointAsMarker, ...restOptions} = options;
+		let { features, style, hoverable, pointAsMarker, ...restOptions } = options;
 
 		const renderAsRules = styleHelpers.getRenderAsRulesByBoxRange(
 			options.renderAs,
@@ -312,7 +328,7 @@ const DeckGlMap = ({
 	 */
 	const getMVTLayer = layer => {
 		let {
-			options: {url, fidColumnName},
+			options: { url, fidColumnName },
 		} = layer;
 
 		const props = getVectorLayerProps(layer);
@@ -343,9 +359,9 @@ const DeckGlMap = ({
 	 * @returns {CogBitmapLayer}
 	 */
 	const getCogBitmapLayer = layer => {
-		const {key, options} = layer;
+		const { key, options } = layer;
 
-		const {url, ...restOptions} = options;
+		const { url, ...restOptions } = options;
 
 		return new CogBitmapLayer(key, url, {
 			...restOptions,
@@ -364,9 +380,9 @@ const DeckGlMap = ({
 	 * @returns {CogBitmapLayer}
 	 */
 	const getCogTerrainLayer = layer => {
-		const {key, options} = layer;
+		const { key, options } = layer;
 
-		const {url, terrainOptions, ...restOptions} = options;
+		const { url, terrainOptions, ...restOptions } = options;
 
 		return new CogTerrainLayer(
 			{
@@ -413,18 +429,6 @@ const DeckGlMap = ({
 		}
 	};
 
-	const onAfterRender = () => {
-		if (deckRef.current) {
-			const canvas = deckRef.current.deck.canvas;
-			const imageData = canvas.toDataURL('image/png');
-			setMapImage(imageData);
-		}
-	};
-
-	const exportMapImage = () => {
-		return mapImage;
-	};
-
 	const renderTooltip = () => {
 		tooltipData.mapKey = mapKey;
 		if (tooltipData?.vector?.length || tooltipData?.raster?.length) {
@@ -467,10 +471,8 @@ const DeckGlMap = ({
 					getCursor={getCursor || defaultGetCursor}
 					ref={deckRef}
 					onViewStateChange={onViewStateChange}
-					{...(typeof onPanEnd === 'function' ? {onDragEnd: onPanEnd} : {})}
-					// Used to capture Canvas e.g. PDF from Map report generation
-					onAfterRender={onAfterRender}
-					views={new MapView({repeat: true})}
+					{...(typeof onPanEnd === 'function' ? { onDragEnd: onPanEnd } : {})}
+					views={new MapView({ repeat: true })}
 					viewState={deckView}
 					layers={[...finalBackgroundLayers, ...finalLayers]}
 					// Description of controller property
@@ -479,13 +481,14 @@ const DeckGlMap = ({
 						controller || controller === false
 							? controller
 							: {
-									dragRotate: false,
-							  }
+								dragRotate: false,
+							}
 					}
 					onHover={onMapHover}
 					onClick={(info, event) => {
-						onClick(mapKey, {info, event});
+						onClick(mapKey, { info, event });
 					}}
+					onAfterRender={onAfterRender}
 				/>
 				{Tooltip && tooltipData ? renderTooltip() : null}
 			</div>
@@ -524,7 +527,6 @@ DeckGlMap.propTypes = {
 	tooltipProps: PropTypes.object,
 	getCursor: PropTypes.func,
 	controller: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
-	onAfterRender: PropTypes.func,
 };
 
 export default DeckGlMap;
