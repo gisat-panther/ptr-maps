@@ -57,6 +57,8 @@ const DeckGlMap = ({
 		event: null,
 	});
 
+	const [mapImage, setMapImage] = useState(null);
+
 	const onMapHover = useCallback(
 		event => {
 			if (deckRef?.current?.pickMultipleObjects) {
@@ -411,6 +413,18 @@ const DeckGlMap = ({
 		}
 	};
 
+	const onAfterRender = () => {
+		if (deckRef.current) {
+			const canvas = deckRef.current.deck.canvas;
+			const imageData = canvas.toDataURL('image/png');
+			setMapImage(imageData);
+		}
+	};
+
+	const exportMapImage = () => {
+		return mapImage;
+	};
+
 	const renderTooltip = () => {
 		tooltipData.mapKey = mapKey;
 		if (tooltipData?.vector?.length || tooltipData?.raster?.length) {
@@ -455,19 +469,7 @@ const DeckGlMap = ({
 					onViewStateChange={onViewStateChange}
 					{...(typeof onPanEnd === 'function' ? {onDragEnd: onPanEnd} : {})}
 					// Used to capture Canvas e.g. PDF from Map report generation
-					onAfterRender={() => {
-						// Fires multiple times.
-
-                    	// Converts the deck.gl canvas to a base64-encoded image.  Other image MIME types can be used here as well.
-                    	// See https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL
-						// const base64Image = deckRef?.current?.deck?.getCanvas()?.toDataURL('image/png');
-						// Creates a temporary link and clicks on it to download.
-                    	// No need to append this element to the DOM.
-						// const mapCanvas = document.createElement('mapCanvas');
-						// mapCanvas.href = base64Image;
-						// mapCanvas.download = 'screenshot.png';
-						// mapCanvas.click();
-					}}
+					onAfterRender={onAfterRender}
 					views={new MapView({repeat: true})}
 					viewState={deckView}
 					layers={[...finalBackgroundLayers, ...finalLayers]}
