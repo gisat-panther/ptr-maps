@@ -60,6 +60,8 @@ const DeckGlMap = ({
 		event: null,
 	});
 
+	// Starting export Ref
+
 	const onAfterRender = useCallback(() => {
 		const lastRenderedLayers =
 			deckRef?.current?.deck?.layerManager?._lastRenderedLayers;
