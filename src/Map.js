@@ -148,15 +148,18 @@ const PresentationMap = ({
 	};
 
 	const renderContent = (MapComponent, props, children) => {
+		// Create a ref for the DeckGlMap
+		const mapRef = useRef();
+
 		//TODO is it correct to create element on each change?
 		// const map = createElement(mapComponent, props);
 		if (!children) {
 			// return map
-			return <MapComponent {...props} />;
+			return <MapComponent ref={mapRef} {...props} />;
 		} else {
 			return (
 				<div className="ptr-map-controls-wrapper">
-					<MapComponent {...props} />;
+					<MapComponent ref={mapRef} {...props} />;
 					{Children.map(children, child => {
 						return cloneElement(child, {
 							// FIXME better props definition

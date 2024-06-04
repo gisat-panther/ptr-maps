@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState} from 'react';
+import {useCallback, useRef, useState, forwardRef, useImperativeHandle} from 'react';
 import PropTypes from 'prop-types';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
@@ -24,7 +24,7 @@ const CogTerrainLayer = geolib.CogTerrainLayer;
 
 const defaultGetCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
 
-const DeckGlMap = ({
+const DeckGlMap = forwardRef(({
 	activeSelectionKey,
 	getCursor,
 	onResize,
@@ -42,7 +42,7 @@ const DeckGlMap = ({
 	Tooltip,
 	tooltipProps,
 	controller,
-}) => {
+}, ref) => {
 	const deckRef = useRef();
 
 	const prevViewRef = useRef(null);
@@ -60,7 +60,24 @@ const DeckGlMap = ({
 		event: null,
 	});
 
-	// Starting export Ref
+	const captureScreenshot = () => {
+		if (deckRef?.current?.deck?.getCanvas) {
+			// Converts the deck.gl canvas to a base64-encoded image. Other image MIME types can be used here as well.
+			const base64Image = deckRef.current.deck.getCanvas().toDataURL('image/png');
+
+			// Creates a temporary link and clicks on it to download.
+			// No need to append this element to the DOM.
+			const a = document.createElement('a');
+			a.href = base64Image;
+			a.download = 'screenshot.png';
+			a.click();
+		}
+	};
+
+	useImperativeHandle(ref, () => ({
+		captureScreenshot,
+	}));
+
 
 	const onAfterRender = useCallback(() => {
 		const lastRenderedLayers =
@@ -527,7 +544,7 @@ const DeckGlMap = ({
 			{box.width && box.height ? renderMap() : null}
 		</>
 	);
-};
+});
 
 DeckGlMap.propTypes = {
 	activeSelectionKey: PropTypes.string,
