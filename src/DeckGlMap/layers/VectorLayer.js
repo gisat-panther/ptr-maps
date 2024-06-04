@@ -324,7 +324,7 @@ class VectorLayer extends CompositeLayer {
 	onClick(data, e) {
 		const {options, onClick, layerKey, activeSelectionKey} = this.props;
 		const {srcEvent} = e;
-		const {x, y, object} = data;
+		const {x, y, object, coordinate} = data;
 		if (options?.selectable && onClick) {
 			onClick(
 				layerKey,
@@ -336,7 +336,8 @@ class VectorLayer extends CompositeLayer {
 					this.getSelectedFeatureKeys(options?.selected, activeSelectionKey)
 				),
 				{x, y},
-				object
+				object,
+				coordinate
 			);
 		}
 	}

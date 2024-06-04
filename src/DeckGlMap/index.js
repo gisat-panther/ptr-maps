@@ -125,7 +125,7 @@ const DeckGlMap = ({
 				}
 			}
 		},
-		[deckRef.current],
+		[deckRef.current]
 	);
 
 	const getViewChange = (prevView, nextView) => {
@@ -135,7 +135,7 @@ const DeckGlMap = ({
 			change.boxRange = viewHelpers.getBoxRangeFromZoomLevel(
 				nextView.zoom,
 				box.width,
-				box.height,
+				box.height
 			);
 		}
 
@@ -211,10 +211,22 @@ const DeckGlMap = ({
 	 * @param layerKey {string}
 	 * @param featureKeys {Array}
 	 * @param position {{x: Number, y: Number}}
+	 * @param object {Object} Feature object
+	 * @param coordinate {Array} geographical coordinates of cursor
 	 */
-	const onVectorLayerClick = (layerKey, featureKeys, position, object) => {
+	const onVectorLayerClick = (
+		layerKey,
+		featureKeys,
+		position,
+		object,
+		coordinate
+	) => {
 		if (onLayerClick) {
 			onLayerClick(mapKey, layerKey, featureKeys, position, object);
+		}
+
+		if (onClick) {
+			onClick(mapKey, {info: {coordinate}});
 		}
 	};
 
@@ -230,7 +242,7 @@ const DeckGlMap = ({
 				layerKey,
 				null,
 				{x: info.x, y: info.y},
-				{event, info},
+				{event, info}
 			);
 		}
 	};
@@ -297,7 +309,7 @@ const DeckGlMap = ({
 
 		const renderAsRules = styleHelpers.getRenderAsRulesByBoxRange(
 			options.renderAs,
-			view?.boxRange,
+			view?.boxRange
 		);
 
 		// Check options for renderAsRules
@@ -458,7 +470,7 @@ const DeckGlMap = ({
 			renderView,
 			box.width,
 			box.height,
-			viewLimits,
+			viewLimits
 		);
 
 		const backgroundLayersSource = _isArray(backgroundLayer)
@@ -488,7 +500,7 @@ const DeckGlMap = ({
 							? controller
 							: {
 									dragRotate: false,
-								}
+							  }
 					}
 					onHover={onMapHover}
 					onClick={(info, event) => {
