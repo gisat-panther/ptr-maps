@@ -5,6 +5,7 @@ import {
 	createElement,
 	cloneElement,
 	Children,
+	forwardRef,
 } from 'react';
 import * as ReactIs from 'react-is';
 import PropTypes from 'prop-types';
@@ -16,223 +17,270 @@ import MapWrapper from './MapWrapper';
 
 import './style.scss';
 
-const PresentationMap = ({
-	onClick,
-	active,
-	activeSelectionKey,
-	backgroundLayer,
-	children,
-	layers,
-	mapComponent,
-	onMount,
-	onUnmount,
-	onPropViewChange,
-	onResize,
-	onViewChange,
-	onZoomEnd,
-	onPanEnd,
-	onMapRemove,
-	resetHeading,
-	resources,
-	stateMapKey,
-	view,
-	viewport,
-	viewLimits,
-	wrapper,
-	wrapperProps,
-	Tooltip,
-	tooltipProps,
-	onLayerClick,
-	mapKey,
-	name,
-	crs,
-	mapComponentProps,
-}) => {
-	const [size, setSize] = useState({
-		width: null,
-		height: null,
-	});
+const PresentationMap = forwardRef(
+	(
+		{
+			onClick,
+			active,
+			activeSelectionKey,
+			backgroundLayer,
+			children,
+			layers,
+			mapComponent,
+			onMount,
+			onUnmount,
+			onPropViewChange,
+			onResize,
+			onViewChange,
+			onZoomEnd,
+			onPanEnd,
+			onMapRemove,
+			resetHeading,
+			resources,
+			stateMapKey,
+			view,
+			viewport,
+			viewLimits,
+			wrapper,
+			wrapperProps,
+			Tooltip,
+			tooltipProps,
+			onLayerClick,
+			mapKey,
+			name,
+			crs,
+			mapComponentProps,
+		},
+		ref
+	) => {
+		const [size, setSize] = useState({
+			width: null,
+			height: null,
+		});
 
-	// const [stateView, setStateView] = useState({test: 'aaa'});
-	const [stateView, setStateView] = useState();
+		// const [stateView, setStateView] = useState({test: 'aaa'});
+		const [stateView, setStateView] = useState();
 
-	useEffect(() => {
-		if (!stateMapKey) {
-			setStateView({...mapConstants.defaultMapView, ...view});
-		}
-
-		if (typeof onUnmount === 'function') {
-			return onUnmount;
-		}
-	}, []);
-
-	const saveViewChange = (view, checkViewEquality) => {
-		// if (checkViewEquality && !_isEqual(view, viewRef.current)) {
-		viewRef.current = view;
-		if (checkViewEquality && !_isEqual(view, stateView)) {
+		useEffect(() => {
 			if (!stateMapKey) {
-				setStateView(view);
+				setStateView({...mapConstants.defaultMapView, ...view});
 			}
-		}
-	};
 
-	const getValidView = update => {
-		let validView = {...mapConstants.defaultMapView, ...view};
-		if (stateView && !_isEmpty(stateView)) {
-			validView = {...stateView, ...update};
-		}
-		validView = mapUtils.view.ensureViewIntegrity(validView);
-		return validView;
-	};
+			if (typeof onUnmount === 'function') {
+				return onUnmount;
+			}
+		}, []);
 
-	const onViewChangeDecorator = onViewChange => {
-		return update => {
-			onViewChange(update, size.width, size.height);
-		};
-	};
-
-	const onViewChangeHandler = stateMapKey
-		? onViewChange
-		: update => {
-				const view = getValidView(update);
-
-				// TODO buble view to map!!!
-				saveViewChange(view, true);
-
-				if (!_isEqual(view, stateView)) {
-					if (onViewChange && !stateMapKey) {
-						onViewChangeDecorator(onViewChange)(view);
-					}
+		const saveViewChange = (view, checkViewEquality) => {
+			// if (checkViewEquality && !_isEqual(view, viewRef.current)) {
+			viewRef.current = view;
+			if (checkViewEquality && !_isEqual(view, stateView)) {
+				if (!stateMapKey) {
+					setStateView(view);
 				}
-		  };
+			}
+		};
 
-	const onPropViewChangeHandler = view => {
-		if (stateMapKey && onPropViewChange) {
-			onViewChangeDecorator(onPropViewChange)(view);
-		}
-	};
+		const getValidView = update => {
+			let validView = {...mapConstants.defaultMapView, ...view};
+			if (stateView && !_isEmpty(stateView)) {
+				validView = {...stateView, ...update};
+			}
+			validView = mapUtils.view.ensureViewIntegrity(validView);
+			return validView;
+		};
 
-	const viewRef = useRef(view);
-	useEffect(() => {
-		if (view) {
-			const validView = getValidView(view);
-			if (viewRef.current) {
-				if (!_isEqual(validView, viewRef.current)) {
+		const onViewChangeDecorator = onViewChange => {
+			return update => {
+				onViewChange(update, size.width, size.height);
+			};
+		};
+
+		const onViewChangeHandler = stateMapKey
+			? onViewChange
+			: update => {
+					const view = getValidView(update);
+
+					// TODO buble view to map!!!
+					saveViewChange(view, true);
+
+					if (!_isEqual(view, stateView)) {
+						if (onViewChange && !stateMapKey) {
+							onViewChangeDecorator(onViewChange)(view);
+						}
+					}
+			  };
+
+		const onPropViewChangeHandler = view => {
+			if (stateMapKey && onPropViewChange) {
+				onViewChangeDecorator(onPropViewChange)(view);
+			}
+		};
+
+		const viewRef = useRef(view);
+		useEffect(() => {
+			if (view) {
+				const validView = getValidView(view);
+				if (viewRef.current) {
+					if (!_isEqual(validView, viewRef.current)) {
+						if (!stateMapKey) {
+							saveViewChange(validView, true);
+						} else {
+							onPropViewChangeHandler(validView);
+						}
+					}
+				} else {
 					if (!stateMapKey) {
 						saveViewChange(validView, true);
 					} else {
 						onPropViewChangeHandler(validView);
 					}
 				}
-			} else {
-				if (!stateMapKey) {
-					saveViewChange(validView, true);
-				} else {
-					onPropViewChangeHandler(validView);
-				}
 			}
-		}
-	}, [view]);
+		}, [view]);
 
-	const resetHeadingHandler = () => {
-		mapUtils.resetHeading(stateView.heading, heading =>
-			setStateView({...stateView, heading})
-		);
-	};
+		const resetHeadingHandler = () => {
+			mapUtils.resetHeading(stateView.heading, heading =>
+				setStateView({...stateView, heading})
+			);
+		};
 
-	const onResizeHandler = (width, height) => {
-		if (onResize) {
-			onResize(width, height);
-		}
-		setSize({width, height});
-	};
+		const onResizeHandler = (width, height) => {
+			if (onResize) {
+				onResize(width, height);
+			}
+			setSize({width, height});
+		};
 
-	const renderContent = (MapComponent, props, children) => {
-		//TODO is it correct to create element on each change?
-		// const map = createElement(mapComponent, props);
-		if (!children) {
-			// return map
-			return <MapComponent {...props} />;
+		const renderContent = (MapComponent, props, children) => {
+			//TODO is it correct to create element on each change?
+			// const map = createElement(mapComponent, props);
+			if (!children) {
+				// return map
+				return <MapComponent {...props} ref={ref} />;
+			} else {
+				return (
+					<div className="ptr-map-controls-wrapper">
+						<MapComponent {...props} />;
+						{Children.map(children, child => {
+							return cloneElement(child, {
+								// FIXME better props definition
+								...child.props,
+								view: props.view,
+								mapKey,
+								viewLimits,
+								updateView: props.onViewChange,
+								active,
+								onMapRemove,
+								resetHeading: stateMapKey ? resetHeading : resetHeadingHandler,
+								mapWidth: stateMapKey ? viewport?.width : size.width,
+								mapHeight: stateMapKey ? viewport?.height : size.height,
+								name,
+								crs,
+								ref,
+							});
+						})}
+					</div>
+				);
+			}
+		};
+
+		if (!mapComponent) {
+			return <Error centered>mapComponent not supplied to Map</Error>;
 		} else {
-			return (
-				<div className="ptr-map-controls-wrapper">
-					<MapComponent {...props} />;
-					{Children.map(children, child => {
-						return cloneElement(child, {
+			let usedView = view;
+			if (!stateMapKey) {
+				// onViewChangeHandledLocal = onViewChange;
+				// what? whay? is it legal?
+				// props.onResize = this.onResize;
+				// if (!props.stateMapKey) {
+				// 	props.view = this.state.view || props.view;
+				// 	props.onViewChange = this.onViewChange;
+				// }
+				usedView = stateView;
+			}
+			if (wrapper) {
+				// check if passed wrapper is React component or connected component
+				const wrapperComponent = ReactIs.isValidElementType(wrapper)
+					? wrapper
+					: MapWrapper;
+
+				return createElement(
+					wrapperComponent,
+					{
+						// FIXME better props definition
+						activeSelectionKey,
+						backgroundLayer,
+						layers,
+						mapComponent,
+						onMount,
+						onUnmount,
+						onPropViewChange: onPropViewChangeHandler,
+						resetHeading: stateMapKey ? resetHeading : resetHeadingHandler,
+						stateMapKey,
+						mapKey,
+						viewport,
+						viewLimits,
+						wrapper,
+						Tooltip,
+						tooltipProps,
+						onResize: onResizeHandler,
+						onLayerClick,
+						// view: !_isEmpty(stateView) ? stateView : view,
+						view: usedView,
+						onViewChange: onViewChangeHandler,
+						onZoomEnd,
+						onPanEnd,
+						active,
+						onClick,
+						onMapRemove,
+						name,
+						crs,
+						ref,
+						...wrapperProps,
+					},
+					renderContent(
+						mapComponent,
+						{
 							// FIXME better props definition
-							...child.props,
-							view: props.view,
-							mapKey,
-							viewLimits,
-							updateView: props.onViewChange,
+							activeSelectionKey,
+							backgroundLayer,
+							children,
+							layers,
+							mapComponent,
+							onMount,
+							onUnmount,
+							onPropViewChange: onPropViewChangeHandler,
+							onResize: onResizeHandler,
+							onLayerClick,
+							onViewChange: onViewChangeHandler,
+							onZoomEnd,
+							onPanEnd,
+							onClick,
 							active,
 							onMapRemove,
 							resetHeading: stateMapKey ? resetHeading : resetHeadingHandler,
-							mapWidth: stateMapKey ? viewport?.width : size.width,
-							mapHeight: stateMapKey ? viewport?.height : size.height,
-							name,
+							resources,
+							stateMapKey,
+							mapKey,
+							// view: !_isEmpty(stateView) ? stateView : view,
+							view: usedView,
+							viewport,
+							viewLimits,
+							wrapper,
+							Tooltip,
 							crs,
-						});
-					})}
-				</div>
-			);
-		}
-	};
-
-	if (!mapComponent) {
-		return <Error centered>mapComponent not supplied to Map</Error>;
-	} else {
-		let usedView = view;
-		if (!stateMapKey) {
-			// onViewChangeHandledLocal = onViewChange;
-			// what? whay? is it legal?
-			// props.onResize = this.onResize;
-			// if (!props.stateMapKey) {
-			// 	props.view = this.state.view || props.view;
-			// 	props.onViewChange = this.onViewChange;
-			// }
-			usedView = stateView;
-		}
-		if (wrapper) {
-			// check if passed wrapper is React component or connected component
-			const wrapperComponent = ReactIs.isValidElementType(wrapper)
-				? wrapper
-				: MapWrapper;
-
-			return createElement(
-				wrapperComponent,
-				{
-					// FIXME better props definition
-					activeSelectionKey,
-					backgroundLayer,
-					layers,
-					mapComponent,
-					onMount,
-					onUnmount,
-					onPropViewChange: onPropViewChangeHandler,
-					resetHeading: stateMapKey ? resetHeading : resetHeadingHandler,
-					stateMapKey,
-					mapKey,
-					viewport,
-					viewLimits,
-					wrapper,
-					Tooltip,
-					tooltipProps,
-					onResize: onResizeHandler,
-					onLayerClick,
-					// view: !_isEmpty(stateView) ? stateView : view,
-					view: usedView,
-					onViewChange: onViewChangeHandler,
-					onZoomEnd,
-					onPanEnd,
-					active,
-					onClick,
-					onMapRemove,
-					name,
-					crs,
-					...wrapperProps,
-				},
-				renderContent(
+							...wrapperProps,
+							tooltipProps,
+							name,
+							...(mapComponentProps ? mapComponentProps : {}),
+							ref,
+						},
+						children
+					)
+				);
+			} else {
+				return renderContent(
 					mapComponent,
 					{
 						// FIXME better props definition
@@ -249,9 +297,9 @@ const PresentationMap = ({
 						onViewChange: onViewChangeHandler,
 						onZoomEnd,
 						onPanEnd,
-						onClick,
 						active,
 						onMapRemove,
+						onClick,
 						resetHeading: stateMapKey ? resetHeading : resetHeadingHandler,
 						resources,
 						stateMapKey,
@@ -262,57 +310,19 @@ const PresentationMap = ({
 						viewLimits,
 						wrapper,
 						Tooltip,
-						crs,
-						...wrapperProps,
+						wrapperProps,
 						tooltipProps,
 						name,
+						crs,
+						ref,
 						...(mapComponentProps ? mapComponentProps : {}),
 					},
 					children
-				)
-			);
-		} else {
-			return renderContent(
-				mapComponent,
-				{
-					// FIXME better props definition
-					activeSelectionKey,
-					backgroundLayer,
-					children,
-					layers,
-					mapComponent,
-					onMount,
-					onUnmount,
-					onPropViewChange: onPropViewChangeHandler,
-					onResize: onResizeHandler,
-					onLayerClick,
-					onViewChange: onViewChangeHandler,
-					onZoomEnd,
-					onPanEnd,
-					active,
-					onMapRemove,
-					onClick,
-					resetHeading: stateMapKey ? resetHeading : resetHeadingHandler,
-					resources,
-					stateMapKey,
-					mapKey,
-					// view: !_isEmpty(stateView) ? stateView : view,
-					view: usedView,
-					viewport,
-					viewLimits,
-					wrapper,
-					Tooltip,
-					wrapperProps,
-					tooltipProps,
-					name,
-					crs,
-					...(mapComponentProps ? mapComponentProps : {}),
-				},
-				children
-			);
+				);
+			}
 		}
 	}
-};
+);
 
 PresentationMap.propTypes = {
 	mapKey: PropTypes.string,
@@ -350,5 +360,7 @@ PresentationMap.propTypes = {
 	crs: PropTypes.string,
 	mapComponentProps: PropTypes.object,
 };
+
+PresentationMap.displayName = 'PresentationMap';
 
 export default PresentationMap;
