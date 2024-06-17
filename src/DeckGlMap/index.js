@@ -68,6 +68,10 @@ const DeckGlMap = forwardRef(
 			event: null,
 		});
 
+		const glOptions = {
+			preserveDrawingBuffer: true,
+		};
+
 		const onAfterRender = useCallback(() => {
 			// Create base64Image, and pass it into ref
 			if (ref && _isObject(ref.current)) {
@@ -526,6 +530,7 @@ const DeckGlMap = forwardRef(
 							onClick(mapKey, {info, event});
 						}}
 						onAfterRender={onAfterRender}
+						glOptions={glOptions}
 					/>
 					{Tooltip && tooltipData ? renderTooltip() : null}
 				</div>
