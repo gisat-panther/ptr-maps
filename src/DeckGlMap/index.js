@@ -48,6 +48,7 @@ const DeckGlMap = forwardRef(
 		},
 		ref
 	) => {
+		// Pass mapKey into ref
 		const deckRef = useRef();
 		if (ref && _isObject(ref.current)) {
 			ref.current[mapKey] = deckRef;
@@ -68,6 +69,14 @@ const DeckGlMap = forwardRef(
 		});
 
 		const onAfterRender = useCallback(() => {
+			// Create base64Image, and pass it into ref
+			if (ref && _isObject(ref.current)) {
+				ref.current[mapKey].onAfterRender = true;
+				ref.current[mapKey].base64Image = deckRef.current.deck
+					.getCanvas()
+					.toDataURL('image/png');
+			}
+
 			const lastRenderedLayers =
 				deckRef?.current?.deck?.layerManager?._lastRenderedLayers;
 
