@@ -460,8 +460,8 @@ const DeckGlMap = forwardRef(
 						if (typeof resolveLayers === 'function') {
 							return resolveLayers(layer);
 						} else {
-						return null;
-				}
+							return null;
+						}
 				}
 			} else {
 				return null;
