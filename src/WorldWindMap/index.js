@@ -18,7 +18,7 @@ import {mapConstants} from '@gisatcz/ptr-core';
 import Context from '@gisatcz/cross-package-react-context';
 import {useResizeDetector} from 'react-resize-detector';
 import viewport from '../utils/viewport';
-const HoverContext = Context.default.getContext('HoverContext');
+const HoverContext = Context.getContext('HoverContext');
 const {WorldWindow, ElevationModel} = WorldWind;
 
 const WorldWindMap = ({
