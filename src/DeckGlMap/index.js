@@ -2,7 +2,7 @@ import {useCallback, useRef, useState, forwardRef} from 'react';
 import PropTypes from 'prop-types';
 import {isObject as _isObject} from 'lodash';
 import {isArray as _isArray, isEmpty as _isEmpty} from 'lodash';
-import ReactResizeDetector from 'react-resize-detector';
+import {useResizeDetector} from 'react-resize-detector';
 import DeckGL from '@deck.gl/react';
 import {Layer, MapView} from '@deck.gl/core';
 import {mapConstants} from '@gisatcz/ptr-core';
@@ -45,6 +45,7 @@ const DeckGlMap = forwardRef(
 			Tooltip,
 			tooltipProps,
 			controller,
+			resolveLayers,
 		},
 		ref
 	) => {
@@ -201,7 +202,7 @@ const DeckGlMap = forwardRef(
 		 * @param width {number}
 		 * @param height {number}
 		 */
-		const onResizeHandler = useCallback((width, height) => {
+		const onResizeHandler = useCallback(({width, height}) => {
 			const updateHeight = viewport.roundDimension(height);
 			const updateWidth = viewport.roundDimension(width);
 
@@ -212,6 +213,12 @@ const DeckGlMap = forwardRef(
 				width: updateWidth,
 				height: updateHeight,
 			});
+		});
+
+		const {ref: mapRef} = useResizeDetector({
+			refreshMode: 'debounce',
+			refreshRate: 100,
+			onResize: onResizeHandler,
 		});
 
 		/**
@@ -450,7 +457,11 @@ const DeckGlMap = forwardRef(
 					case 'mvt':
 						return getMVTLayer(layer);
 					default:
+						if (typeof resolveLayers === 'function') {
+							return resolveLayers(layer);
+						} else {
 						return null;
+				}
 				}
 			} else {
 				return null;
@@ -524,16 +535,9 @@ const DeckGlMap = forwardRef(
 		};
 
 		return (
-			<>
-				<ReactResizeDetector
-					handleHeight
-					handleWidth
-					onResize={onResizeHandler}
-					refreshMode="debounce"
-					refreshRate={500}
-				/>
+			<div ref={mapRef} style={{height: '100%', width: '100%'}}>
 				{box.width && box.height ? renderMap() : null}
-			</>
+			</div>
 		);
 	}
 );
@@ -543,6 +547,7 @@ DeckGlMap.displayName = 'DeckGlMap';
 DeckGlMap.propTypes = {
 	activeSelectionKey: PropTypes.string,
 	onResize: PropTypes.func,
+	resolveLayers: PropTypes.func,
 	onViewChange: PropTypes.func,
 	viewLimits: PropTypes.object,
 	view: PropTypes.object,

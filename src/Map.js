@@ -161,7 +161,7 @@ const PresentationMap = forwardRef(
 			} else {
 				return (
 					<div className="ptr-map-controls-wrapper">
-						<MapComponent {...props} />;
+						<MapComponent {...props} />
 						{Children.map(children, child => {
 							return cloneElement(child, {
 								// FIXME better props definition
