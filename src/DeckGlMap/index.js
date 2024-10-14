@@ -408,13 +408,20 @@ const DeckGlMap = forwardRef(
 		 * @returns {CogBitmapLayer}
 		 */
 		const getCogBitmapLayer = layer => {
-			const {key, options} = layer;
+			const {key, opacity, options} = layer;
 
-			const {url, ...restOptions} = options;
-
-			return new CogBitmapLayer(key, url, {
+			const {url, cogBitmapOptions, ...restOptions} = options;
+			return new CogBitmapLayer({
+				id: key,
+				rasterData: url,
+				isTiled: true,
+				onClick: onRasterLayerClick,
 				...restOptions,
-				onClick: onRasterLayerClick, //TODO add support for click in library
+				opacity,
+				cogBitmapOptions: {
+					type: 'image',
+					...cogBitmapOptions,
+				},
 			});
 		};
 
