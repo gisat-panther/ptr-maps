@@ -27,7 +27,7 @@ class TiledLayer extends CompositeLayer {
 	}
 
 	renderTiledLayer() {
-		const {options, opacity, key} = this.props;
+		const {options, opacity, key, zRange} = this.props;
 		const {url, urls, minNativeZoom, maxNativeZoom, tileSize, clampToTerrain} =
 			options;
 
@@ -43,6 +43,7 @@ class TiledLayer extends CompositeLayer {
 			maxZoom: maxNativeZoom || mapConstants.defaultLevelsRange[1],
 			tileSize: tileSize || 256,
 			extensions: clampToTerrain ? [new TerrainExtension()] : [],
+			zRange,
 			...(clampToTerrain?.terrainDrawMode
 				? {terrainDrawMode: clampToTerrain.terrainDrawMode}
 				: {}),

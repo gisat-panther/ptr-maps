@@ -14,7 +14,7 @@ const ReactLeafletMapWrapper = ({
 	...restProps
 }) => {
 	const [mapView, setMapView] = useState(view);
-	const onMapResize = useCallback((width, height) => {
+	const onResizeHandler = useCallback(({width, height}) => {
 		if (onResize && width && height) {
 			// postpone onResize call due to React issue (Cannot update during an existing state transition)
 			setTimeout(() => {
@@ -29,7 +29,7 @@ const ReactLeafletMapWrapper = ({
 	const {width, height, ref} = useResizeDetector({
 		refreshMode: 'debounce',
 		refreshRate: 500,
-		onResize: onMapResize,
+		onResize: onResizeHandler,
 	});
 
 	const onMapViewChange = useCallback(

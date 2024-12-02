@@ -16,7 +16,7 @@ import VectorLayer from './layers/VectorLayer';
 
 import {mapConstants} from '@gisatcz/ptr-core';
 import Context from '@gisatcz/cross-package-react-context';
-import ReactResizeDetector from 'react-resize-detector';
+import {useResizeDetector} from 'react-resize-detector';
 import viewport from '../utils/viewport';
 const HoverContext = Context.getContext('HoverContext');
 const {WorldWindow, ElevationModel} = WorldWind;
@@ -400,7 +400,7 @@ const WorldWindMap = ({
 		}
 	};
 
-	const onResizeHandler = useCallback((width, height) => {
+	const onResizeHandler = useCallback(({width, height}) => {
 		const roundHeight = viewport.roundDimension(height);
 		const roundWidth = viewport.roundDimension(width);
 		setSize({
@@ -416,13 +416,14 @@ const WorldWindMap = ({
 		}
 	});
 
+	const {ref: mapRef} = useResizeDetector({
+		refreshMode: 'debounce',
+		refreshRate: 100,
+		onResize: onResizeHandler,
+	});
+
 	return (
-		<>
-			<ReactResizeDetector
-				handleHeight
-				handleWidth
-				onResize={onResizeHandler}
-			/>
+		<div ref={mapRef} style={{height: '100%', width: '100%'}}>
 			<div
 				className="ptr-map ptr-world-wind-map"
 				onClick={onClickHandler}
@@ -432,7 +433,7 @@ const WorldWindMap = ({
 					Your browser does not support HTML5 Canvas.
 				</canvas>
 			</div>
-		</>
+		</div>
 	);
 };
 
