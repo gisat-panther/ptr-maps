@@ -2,7 +2,6 @@
 
 #### 🚀 Enhancement
 
-
 #### 🐾 Patch
 
 - Update packages [#199](https://github.com/gisat-panther/ptr-maps/pull/199) ([@vdubr](https://github.com/vdubr))
@@ -29,7 +28,6 @@
 # v1.24.7 (Mon Apr 22 2024)
 
 #### 🐾 Patch
-
 
 #### Authors: 1
 
