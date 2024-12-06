@@ -10,9 +10,7 @@ import MapSet, {MapSetMap, MapSetPresentationMap} from './MapSet';
 import MapTools from './controls/MapTools';
 import MapWrapper from './MapWrapper';
 import PresentationMap from './Map';
-import ReactLeafletMap from './ReactLeafletMap';
 import SimpleLayersControl from './controls/SimpleLayersControl';
-import WorldWindMap from './WorldWindMap';
 import * as proj from './proj';
 
 import * as deckgl_core from '@deck.gl/core';
@@ -22,7 +20,6 @@ import * as deckgl_geolayers from '@deck.gl/geo-layers';
 //loadable
 import LoadableMapControls from './controls/LoadableMapControls';
 import LoadableMapSet from './LoadableMapSet';
-import LoadableReactLeafletMap from './LoadableReactLeafletMap';
 import LoadableMap from './LoadableMap';
 
 export {
@@ -37,7 +34,6 @@ export {
 	deckgl_geolayers,
 	LoadableMapControls,
 	LoadableMapSet,
-	LoadableReactLeafletMap,
 	LoadableMap,
 	MapControls,
 	MapGrid,
@@ -48,9 +44,7 @@ export {
 	MapSet,
 	MapWrapper,
 	PresentationMap,
-	ReactLeafletMap,
 	SimpleLayersControl,
-	WorldWindMap,
 };
 
 export default {
@@ -67,7 +61,6 @@ export default {
 
 	LoadableMapControls,
 	LoadableMapSet,
-	LoadableReactLeafletMap,
 	LoadableMap,
 
 	MapControls,
@@ -80,6 +73,4 @@ export default {
 	MapTools,
 	PresentationMap,
 	SimpleLayersControl,
-	ReactLeafletMap,
-	WorldWindMap,
 };

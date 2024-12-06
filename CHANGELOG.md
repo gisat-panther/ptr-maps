@@ -1,3 +1,40 @@
+# v1.25.0 (Mon Dec 02 2024)
+
+#### 🚀 Enhancement
+
+#### 🐾 Patch
+
+- Update packages [#199](https://github.com/gisat-panther/ptr-maps/pull/199) ([@vdubr](https://github.com/vdubr))
+- Update NPM package [#198](https://github.com/gisat-panther/ptr-maps/pull/198) ([@vdubr](https://github.com/vdubr))
+- Update NPM package [#197](https://github.com/gisat-panther/ptr-maps/pull/197) ([@vdubr](https://github.com/vdubr))
+- Update NPM package [#196](https://github.com/gisat-panther/ptr-maps/pull/196) ([@vdubr](https://github.com/vdubr))
+- Implement reactive COG bitmap layer [#195](https://github.com/gisat-panther/ptr-maps/pull/195) ([@vdubr](https://github.com/vdubr))
+- Update packages [#194](https://github.com/gisat-panther/ptr-maps/pull/194) ([@vdubr](https://github.com/vdubr))
+- Update @gisatcz/deckgl-geolib package [#193](https://github.com/gisat-panther/ptr-maps/pull/193) ([@vdubr](https://github.com/vdubr))
+- Fix getContext [#192](https://github.com/gisat-panther/ptr-maps/pull/192) ([@vdubr](https://github.com/vdubr))
+- Fix resize for worldwind [#191](https://github.com/gisat-panther/ptr-maps/pull/191) ([@vdubr](https://github.com/vdubr))
+- Update resize handler and related fixes [#190](https://github.com/gisat-panther/ptr-maps/pull/190) ([@vdubr](https://github.com/vdubr))
+- fix png map generation [#189](https://github.com/gisat-panther/ptr-maps/pull/189) (ander481@PC-ANDREY.local)
+- Deck.gl VectorLayer: pass onClick event [#187](https://github.com/gisat-panther/ptr-maps/pull/187) ([@vlach1989](https://github.com/vlach1989))
+
+#### Authors: 3
+
+- Andrii Khrystodulov ([@ander481](https://github.com/ander481))
+- Pavel Vlach ([@vlach1989](https://github.com/vlach1989))
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
+# v1.24.7 (Mon Apr 22 2024)
+
+#### 🐾 Patch
+
+#### Authors: 1
+
+- Vojtěch Dubrovský ([@vdubr](https://github.com/vdubr))
+
+---
+
 # v1.24.6 (Fri Apr 05 2024)
 
 #### 🐾 Patch
